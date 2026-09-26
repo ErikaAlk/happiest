@@ -1,6 +1,8 @@
 import { readdir, stat } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 
+import { isMatchingCodexRolloutFileName } from '../utils/codexSessionFiles';
+
 export type CodexRolloutFile = Readonly<{ filePath: string; fileRelPath: string; sortMs: number; mtimeMs: number }>;
 
 function parseRolloutTimestampFromFilename(filePath: string): number | null {
@@ -89,7 +91,7 @@ async function collectRolloutMatchesFromFlatDir(params: Readonly<{ codexHome: st
     if (!entry.isFile()) continue;
     const name = typeof entry.name === 'string' ? entry.name : String(entry.name);
     if (!name.startsWith('rollout-') || !name.endsWith('.jsonl')) continue;
-    if (!name.includes(params.remoteSessionId)) continue;
+    if (!isMatchingCodexRolloutFileName(name, params.remoteSessionId)) continue;
 
     const filePath = join(params.dir, name);
     try {
@@ -146,7 +148,7 @@ export async function collectCodexSessionRolloutFiles(params: Readonly<{ codexHo
       }
       if (!entry.isFile()) continue;
       if (!name.startsWith('rollout-') || !name.endsWith('.jsonl')) continue;
-      if (!name.includes(params.remoteSessionId)) continue;
+      if (!isMatchingCodexRolloutFileName(name, params.remoteSessionId)) continue;
       try {
         const s = await stat(full);
         const fromName = parseRolloutTimestampFromFilename(full);

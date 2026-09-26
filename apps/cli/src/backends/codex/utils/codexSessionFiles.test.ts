@@ -7,8 +7,21 @@ import { describe, expect, it } from 'vitest';
 import {
   findCodexRolloutFileById,
   isMatchingCodexRolloutFileName,
+  parseCodexRolloutFilename,
   resolveCodexNativeSessionsRoot,
 } from './codexSessionFiles';
+
+describe('parseCodexRolloutFilename', () => {
+  it('returns the thread and continuation ids from a supported composite filename', () => {
+    expect(parseCodexRolloutFilename(
+      'rollout-2026-09-25T11-50-33-019d94f3-0a6f-7c41-bb18-d26425384658_019d94f4-0a6f-7c41-bb18-d26425384659.jsonl',
+    )).toEqual({
+      sessionId: '019d94f3-0a6f-7c41-bb18-d26425384658_019d94f4-0a6f-7c41-bb18-d26425384659',
+      threadId: '019d94f3-0a6f-7c41-bb18-d26425384658',
+      turnId: '019d94f4-0a6f-7c41-bb18-d26425384659',
+    });
+  });
+});
 
 describe('isMatchingCodexRolloutFileName', () => {
   it('matches a rollout file whose name ends with the vendor resume id', () => {

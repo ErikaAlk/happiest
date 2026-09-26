@@ -5,6 +5,27 @@ import { join } from 'node:path';
 import { resolveConfiguredCodexHome } from '@/backends/codex/utils/resolveConfiguredCodexHome';
 
 const CODEX_NATIVE_SEARCH_MAX_DEPTH = 8;
+const CODEX_ROLLOUT_SUFFIX_PATTERN = /^rollout-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-(.+)\.jsonl$/i;
+const CODEX_ROLLOUT_ID_PATTERN = /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:_([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}))?$/i;
+
+export type CodexRolloutFilename = Readonly<{
+  sessionId: string;
+  threadId?: string;
+  turnId?: string;
+}>;
+
+/** Parses all supported rollout suffixes and identifies UUID-based continuations. */
+export function parseCodexRolloutFilename(filePath: string): CodexRolloutFilename | null {
+  const name = filePath.split(/[/\\\\]/).pop() ?? '';
+  const suffix = CODEX_ROLLOUT_SUFFIX_PATTERN.exec(name)?.[1];
+  if (!suffix) return null;
+  const ids = CODEX_ROLLOUT_ID_PATTERN.exec(suffix);
+  return {
+    sessionId: suffix,
+    ...(ids?.[1] ? { threadId: ids[1] } : {}),
+    ...(ids?.[2] ? { turnId: ids[2] } : {}),
+  };
+}
 
 /**
  * Codex rollout file names are usually `rollout-<ISO-timestamp>-<sessionId>.jsonl`. Newer Codex
@@ -13,14 +34,8 @@ const CODEX_NATIVE_SEARCH_MAX_DEPTH = 8;
  */
 export function isMatchingCodexRolloutFileName(name: string, vendorResumeId: string): boolean {
   if (!name.startsWith('rollout-')) return false;
-  if (name.endsWith(`-${vendorResumeId}.jsonl`)) return true;
-
-  const escapedVendorResumeId = vendorResumeId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const continuationPattern = new RegExp(
-    `-${escapedVendorResumeId}_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.jsonl$`,
-    'i',
-  );
-  return continuationPattern.test(name);
+  const parsed = parseCodexRolloutFilename(name);
+  return parsed?.sessionId === vendorResumeId || parsed?.threadId === vendorResumeId;
 }
 
 /**

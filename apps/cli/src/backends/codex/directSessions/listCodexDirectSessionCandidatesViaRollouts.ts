@@ -7,6 +7,7 @@ import { deriveDirectSessionActivityFromTimestamp } from '@/api/directSessions/a
 import { mapWithConcurrency } from '@/api/directSessions/discovery/mapWithConcurrency';
 
 import { readCodexSessionMetaFromRollout } from '../localControl/rolloutDiscovery';
+import { parseCodexRolloutFilename } from '../utils/codexSessionFiles';
 import { readCodexSessionTitleFromRollout } from './readCodexSessionTitleFromRollout';
 import type { CodexDirectSessionHomeEntry } from './resolveCodexHomeEntriesForDirectSessionsSource';
 import { resolveCodexHomeEntriesForDirectSessionsSource } from './resolveCodexHomeEntriesForDirectSessionsSource';
@@ -65,34 +66,21 @@ async function collectRolloutFiles(params: Readonly<{
   return out;
 }
 
-function parseResumeIdFromRolloutFilename(filePath: string): string | null {
-  const name = basename(filePath);
-  const match = /^rollout-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-(.+)\.jsonl$/i.exec(name);
-  return match ? match[1] : null;
-}
-
 /** Codex app-server resume accepts canonical UUID thread IDs. */
 function isCanonicalCodexThreadId(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 }
 
 /** Reads the resumable thread UUID from either supported rollout filename form. */
-function parseThreadIdFromRolloutFilename(filePath: string): string | null {
-  const name = basename(filePath);
-  const match = /^rollout-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?\.jsonl$/i.exec(name);
-  return match ? match[1] : null;
-}
-
 /** Resolves a rollout to a validated Codex thread ID without exposing arbitrary filename suffixes. */
 async function resolveResumeIdFromRolloutFile(filePath: string): Promise<string | null> {
-  const filenameId = parseResumeIdFromRolloutFilename(filePath);
-  if (!filenameId) return null;
+  const filename = parseCodexRolloutFilename(filePath);
+  if (!filename) return null;
 
   // Codex rollout filenames end with the thread UUID, optionally followed by a turn UUID for
   // continuations (`<thread>_<turn>`). Both filename forms identify the resumable thread directly.
   // Other suffixes need metadata to prove the ID; never expose an unresolved suffix as a resume ID.
-  const filenameThreadId = parseThreadIdFromRolloutFilename(filePath);
-  if (filenameThreadId) return filenameThreadId;
+  if (filename.threadId) return filename.threadId;
 
   const metadata = await readCodexSessionMetaFromRollout(filePath);
   const metadataId = typeof metadata?.id === 'string' ? metadata.id.trim() : '';

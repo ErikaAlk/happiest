@@ -73,4 +73,19 @@ describe('collectCodexSessionRolloutFiles', () => {
       `sessions/custom/tree/rollout-2026-02-14T08-28-05-${remoteSessionId}.jsonl`,
     ]);
   });
+
+  it('does not treat a filename containing the id as a rollout for that id', async () => {
+    const codexHome = await mkdtemp(join(tmpdir(), 'happier-codex-rollout-exact-match-'));
+    const remoteSessionId = 'legacy-session-id';
+    const sessionsDir = join(codexHome, 'sessions');
+    await mkdir(sessionsDir, { recursive: true });
+    const target = join(sessionsDir, `rollout-2026-02-14T08-28-05-${remoteSessionId}.jsonl`);
+    const decoy = join(sessionsDir, `rollout-2026-02-14T08-28-06-other-${remoteSessionId}-suffix.jsonl`);
+    await writeFile(target, '{"event":"target"}\n', 'utf8');
+    await writeFile(decoy, '{"event":"decoy"}\n', 'utf8');
+
+    const files = await collectCodexSessionRolloutFiles({ codexHome, remoteSessionId });
+
+    expect(files.map((file) => file.filePath)).toEqual([target]);
+  });
 });
