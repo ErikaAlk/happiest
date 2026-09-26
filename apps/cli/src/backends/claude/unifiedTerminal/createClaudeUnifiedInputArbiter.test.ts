@@ -5,9 +5,13 @@ import { createClaudeUnifiedInputArbiter } from './createClaudeUnifiedInputArbit
 describe('createClaudeUnifiedInputArbiter', () => {
   it('fills Claude native steer queue without waiting for prior steer consumption', async () => {
     const injectedTexts: string[] = [];
+    const acceptedTexts: string[] = [];
     const arbiter = createClaudeUnifiedInputArbiter({
       quietPeriodMs: 0,
       evaluateInFlightSteer: vi.fn(async () => ({ steer: true as const })),
+      onPromptAccepted: vi.fn(async (batch) => {
+        acceptedTexts.push(batch.message);
+      }),
       injectPrompt: vi.fn(async (batch) => {
         injectedTexts.push(batch.message);
         return {
@@ -42,6 +46,10 @@ describe('createClaudeUnifiedInputArbiter', () => {
       terminalCustodyCount: 1,
       providerAcceptancePendingCount: 0,
     });
+    await expect(arbiter.confirmPromptAcceptedByProviderIf((batch) => batch === first)).resolves.toBe(true);
+    await expect(arbiter.confirmPromptAcceptedByProviderIf((batch) => batch === second)).resolves.toBe(true);
+    await expect(arbiter.confirmPromptAcceptedByProviderIf((batch) => batch === third)).resolves.toBe(true);
+    expect(acceptedTexts).toEqual(['first steer', 'second steer', 'third steer']);
 
     await arbiter.dispose();
   });

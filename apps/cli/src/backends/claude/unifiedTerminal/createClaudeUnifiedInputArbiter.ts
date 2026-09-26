@@ -665,6 +665,18 @@ export function createClaudeUnifiedInputArbiter<Mode = unknown>(opts: Readonly<{
       }
       forgetRetiredBatchDelivery(custody.batch);
     }
+    for (let index = submittedSteerAcceptances.length - 1; index >= 0; index -= 1) {
+      const submitted = submittedSteerAcceptances[index];
+      if (!submitted) continue;
+      const deliveryState = readPromptDeliveryState(submitted.batch);
+      if (deliveryState === 'pending') continue;
+      submittedSteerAcceptances.splice(index, 1);
+      if (deliveryState === 'accepted') {
+        await acceptSubmittedSteer(submitted);
+        continue;
+      }
+      forgetRetiredBatchDelivery(submitted.batch);
+    }
     releaseRetiredSubmittedHead();
     if (!pendingProviderAcceptance && queue.length === 0) {
       headInputState = terminalCustody.length > 0 ? 'terminal_custody' : null;
