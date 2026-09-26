@@ -115,6 +115,7 @@ import {
   type QuotaProbeFreshProofResult,
 } from './proof/quotaProbeFreshProof';
 import type { ConnectedServiceRuntimeAuthApplyCapability } from '../credentials/lifecycleTypes';
+import type { ConnectedServiceQuotaCredentialRefreshOutcome } from '../refresh/refreshTypes';
 import {
   runtimeAuthApplyRequiresLiveIdentityProbe,
 } from '../accountGroups/switching/predictiveSoftSwitchPolicy';
@@ -156,6 +157,7 @@ import {
   deriveQuotaSnapshotStatus,
   extractActiveBindings,
   activeBindingMatchesRuntimeIdentity,
+  isRecord,
   isQuotaUnknownFallbackSnapshot,
   isQuotaAuthFailure,
   normalizeConnectedServiceQuotaGeneration,
@@ -2680,12 +2682,21 @@ export class ConnectedServiceQuotasCoordinator {
       consecutiveFailuresBeforeCurrent: existingFailureState?.consecutiveFailures ?? 0,
     });
     if (shouldProbeCredentialRefreshForQuotaFailure(input.error, { consecutiveFailures })) {
-      const probe = await this.refreshConnectedServiceCredentialForQuota?.({
-        serviceId: input.serviceId,
-        profileId: input.profileId,
-        force: true,
-        reason: 'auth_failure',
-      }).catch(() => null);
+      const refreshProbe = this.refreshConnectedServiceCredentialForQuota;
+      let probe: ConnectedServiceQuotaCredentialRefreshOutcome | null = null;
+      if (refreshProbe) {
+        try {
+          probe = await refreshProbe({
+            serviceId: input.serviceId,
+            profileId: input.profileId,
+            force: true,
+            reason: 'auth_failure',
+          });
+        } catch {
+          // A failed probe is inconclusive. Keep the quota failure retryable and
+          // let the bounded probe counter decide when reconnection is required.
+        }
+      }
       if (probe?.reauthRequired === true) {
         // The refresh coordinator (canonical owner of refresh-failure health) proved this
         // credential needs reconnection — permanent provider auth failure (e.g. 401
