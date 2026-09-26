@@ -105,7 +105,6 @@ export type LocalHappierJsonCommandParams = Readonly<{
   releaseRing: PublicReleaseRingId;
   processEnv?: NodeJS.ProcessEnv;
   allowJsonFailure?: boolean;
-  signal?: AbortSignal;
   /**
    * A CLI this caller already resolved through one of the resolvers below. Passing it runs the
    * command against exactly that CLI instead of resolving again, so a caller that issues several
@@ -120,29 +119,18 @@ export type LocalHappierJsonCommandParams = Readonly<{
  * command rather than a separate step a caller can forget.
  */
 export async function runLocalHappierJsonCommand(params: LocalHappierJsonCommandParams): Promise<unknown> {
-  params.signal?.throwIfAborted();
   const processEnv = params.processEnv ?? process.env;
   const cli = params.cli ?? await ensureLocalFirstPartyComponentCommand(resolveHappierCliParams({
     releaseRing: params.releaseRing,
     processEnv,
-    signal: params.signal,
   }));
   const { command } = cli;
-  // Service mutations already own OS-command, ownership-wait and recovery budgets. An outer
-  // minute can kill a valid Windows ownership wait (120s plus grace), or interrupt recovery.
-  const serviceArgs = params.args[0] === 'daemon' ? params.args.slice(1) : params.args;
-  const serviceMutation = serviceArgs[0] === 'service'
-    && ['install', 'start', 'stop', 'restart'].includes(serviceArgs[1] ?? '')
-    && !params.args.includes('--dry-run');
 
   const result = await runCommandCapture({
     command,
     args: params.args,
     env: resolveLocalHappierCliEnv(processEnv),
-    ...(serviceMutation ? { timeoutMs: 0 } : {}),
-    signal: params.signal,
   }).catch((error: unknown) => {
-    params.signal?.throwIfAborted();
     if (error instanceof CommandTimeoutError) {
       throw new systemTasks.SystemTaskExecutionError('cli_command_timeout', error.message);
     }

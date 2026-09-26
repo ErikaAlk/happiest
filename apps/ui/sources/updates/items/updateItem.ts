@@ -13,7 +13,6 @@ export type UpdateSubject =
     | Readonly<{ kind: 'installable'; key: string }>;
 
 /**
- * - `unchecked`: the applicable update owner has not checked yet.
  * - `checking`: the first answer has not arrived; nothing is known yet.
  * - `upToDate`: the producer proved the latest version runs.
  * - `available` / `required`: a newer version exists (`required`: this one no longer works).
@@ -25,7 +24,6 @@ export type UpdateSubject =
  * - `offline`: the machine is not connected; last-known versions only.
  */
 export type UpdateItemState =
-    | 'unchecked'
     | 'checking'
     | 'upToDate'
     | 'available'
@@ -47,7 +45,8 @@ export type UpdateItemAction =
 
 /** Which step is running, when the producer says, for the row's one-line status. */
 /** `reconnecting`: installed on another machine, waiting for it to come back (K5 `pendingReconnect`). */
-export type UpdateItemStep = 'downloading' | 'installing' | 'restarting' | 'restartingService' | 'reconnecting' | null;
+/** `lostConnection`: the machine stopped answering before its update task reported; it may still be updating. */
+export type UpdateItemStep = 'downloading' | 'installing' | 'restarting' | 'restartingService' | 'reconnecting' | 'lostConnection' | null;
 
 /** Why the last attempt did not finish, as a key the row maps to one sentence. */
 export type UpdateItemFailure =
@@ -56,6 +55,7 @@ export type UpdateItemFailure =
     | Readonly<{ kind: 'appInstall' }>
     | Readonly<{ kind: 'message'; message: string }>
     | Readonly<{ kind: 'rolledBack'; kept: string; target: string }>
+    | Readonly<{ kind: 'lostConnection' }>
     | Readonly<{ kind: 'latestUnknown' }>;
 
 export type UpdateItem = Readonly<{
@@ -77,10 +77,10 @@ export type UpdateItem = Readonly<{
     failure: UpdateItemFailure | null;
     /** The person skipped exactly this version (the desktop app only). */
     skipped: boolean;
+    /** The update runs the vendor's own updater (K6 `native`), which the person confirms first. */
+    vendorUpdater: boolean;
     /** The failed run's own log on its machine (the screen's "View log"); absent otherwise. */
     logPath?: string | null;
-    /** The last update found it already current ("Already up to date"). */
-    alreadyCurrent?: boolean;
 }>;
 
 /** Counted by the pill and included in "Update all": a supported, authorized update for a newer version. */

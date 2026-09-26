@@ -106,15 +106,11 @@ describe.skipIf(process.platform === 'win32')('classifyProviderCliInstall', () =
 });
 
 describe('fetchProviderCliLatestVersion', () => {
-  const DAY_MS = 24 * 60 * 60_000;
-  const now = Date.parse('2026-09-26T08:00:00Z');
-
   it('reads the npm registry latest dist-tag for npm-published agents', async () => {
-    const fetchJson = vi.fn(async (_url: string) => ({ version: '1.14.2' }));
+    const fetchImpl = vi.fn(async (_url: string | URL | Request) => new Response(JSON.stringify({ version: '1.14.2' }), { status: 200 }));
 
-    await expect(fetchProviderCliLatestVersion({ providerId: 'claude', installSource: 'native', deps: { fetchJson } }))
-      .resolves.toEqual({ latestVersion: '1.14.2', heldVersion: null });
-    expect(fetchJson.mock.calls[0]?.[0]).toBe('https://registry.npmjs.org/@anthropic-ai%2Fclaude-code/latest');
+    await expect(fetchProviderCliLatestVersion({ providerId: 'claude', deps: { fetchImpl } })).resolves.toBe('1.14.2');
+    expect(String(fetchImpl.mock.calls[0]?.[0])).toBe('https://registry.npmjs.org/@anthropic-ai%2Fclaude-code/latest');
   });
 
   it('reads the GitHub latest release tag for release-binary agents', async () => {
@@ -122,54 +118,16 @@ describe('fetchProviderCliLatestVersion', () => {
 
     await expect(fetchProviderCliLatestVersion({
       providerId: 'codex',
-      installSource: 'managed',
       deps: { fetchGitHubLatestRelease },
-    })).resolves.toEqual({ latestVersion: '0.157.0', heldVersion: null });
+    })).resolves.toBe('0.157.0');
     expect(fetchGitHubLatestRelease).toHaveBeenCalledWith(expect.objectContaining({ githubRepo: 'openai/codex' }));
   });
 
-  it('offers a managed package only once the managed installer will take it', async () => {
-    const packument = {
-      'dist-tags': { latest: '0.24.6' },
-      time: {
-        '0.24.4': new Date(now - 9 * DAY_MS).toISOString(),
-        '0.24.5': new Date(now - 3 * DAY_MS).toISOString(),
-        '0.25.0-preview.1': new Date(now - 2 * DAY_MS).toISOString(),
-        '0.24.6': new Date(now - 7 * 60 * 60_000).toISOString(),
-      },
-    };
-    const fetchJson = vi.fn(async (_url: string) => packument);
-    const readMinimumReleaseAgeMs = vi.fn(async () => DAY_MS);
+  it('returns null when the catalog declares no latest-version source and rejects on registry failure', async () => {
+    const fetchImpl = vi.fn(async () => new Response('nope', { status: 503 }));
 
-    await expect(fetchProviderCliLatestVersion({
-      providerId: 'qwen',
-      installSource: 'managed',
-      now: () => now,
-      deps: { fetchJson, readMinimumReleaseAgeMs },
-    })).resolves.toEqual({
-      latestVersion: '0.24.5',
-      heldVersion: { version: '0.24.6', minimumReleaseAgeMs: DAY_MS },
-    });
-    expect(fetchJson.mock.calls[0]?.[0]).toBe('https://registry.npmjs.org/@qwen-code%2Fqwen-code');
-
-    // The same package installed by npm keeps npm's own "latest".
-    const npmFetch = vi.fn(async (_url: string) => ({ version: '0.24.6' }));
-    await expect(fetchProviderCliLatestVersion({
-      providerId: 'qwen',
-      installSource: 'npm',
-      deps: { fetchJson: npmFetch, readMinimumReleaseAgeMs },
-    })).resolves.toEqual({ latestVersion: '0.24.6', heldVersion: null });
-  });
-
-  it('returns no version when the catalog declares no latest-version source and rejects on registry failure', async () => {
-    const fetchJson = vi.fn(async (_url: string): Promise<unknown> => {
-      throw new Error('[http] request failed (503)');
-    });
-
-    await expect(fetchProviderCliLatestVersion({ providerId: 'kiro', installSource: 'other', deps: { fetchJson } }))
-      .resolves.toEqual({ latestVersion: null, heldVersion: null });
-    expect(fetchJson).not.toHaveBeenCalled();
-    await expect(fetchProviderCliLatestVersion({ providerId: 'gemini', installSource: 'npm', deps: { fetchJson } }))
-      .rejects.toThrow('503');
+    await expect(fetchProviderCliLatestVersion({ providerId: 'kiro', deps: { fetchImpl } })).resolves.toBeNull();
+    expect(fetchImpl).not.toHaveBeenCalled();
+    await expect(fetchProviderCliLatestVersion({ providerId: 'gemini', deps: { fetchImpl } })).rejects.toThrow('503');
   });
 });

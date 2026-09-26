@@ -46,7 +46,6 @@ function desktopSnapshot(state: DemoState): DesktopUpdaterSnapshot {
 function buildDemoGroups(state: DemoState): UpdatesGroup[] {
     const app = buildAppUpdateItem({
         platformOs: 'web',
-        desktopHost: true,
         title: 'Happier',
         native: { updateUrl: null, required: false },
         webUiUpdateAvailable: false,
@@ -146,8 +145,6 @@ export default function UpdatesDemoScreen() {
             summary: buildUpdatesSummary(groups.flatMap((group) => group.items)),
             groups,
             checkedAt: Date.now() - 2 * 60 * 60 * 1000,
-            uncheckedMachineCount: 0,
-            sessionsRunningOn: new Set(),
             runItem: asyncNoop,
             updateAll: asyncNoop,
             stopAfterCurrent: noop,

@@ -19,8 +19,7 @@ import {
 } from '@/auth/terminal/approveSetupPairingForTarget';
 
 import { desktopSetupCoordinator } from '@/setup/desktopSetupCoordinator';
-import { presentRelayReconciliationConsent } from '@/setup/presentRelayReconciliationConsent';
-import type { RelayReconciliationConsentAnswer, ThisComputerMoveRequest } from '@/setup/presentRelayReconciliationConsent';
+import type { ThisComputerMoveRequest } from '@/setup/presentRelayReconciliationConsent';
 import { resolveAppAccountLabel, resolveDaemonAccountLabel } from '@/setup/thisComputerLabels';
 import { toRelayHostDisplay } from '@/sync/domains/server/url/serverUrlDisplay';
 
@@ -105,6 +104,7 @@ export type ThisComputerSetupStartOptions = Readonly<{
 
 /** The canonical account question, loaded when it is actually asked. `true` means move. */
 async function presentAccountConsent(request: ThisComputerMoveRequest): Promise<boolean> {
+    const { presentRelayReconciliationConsent } = await import('@/setup/presentRelayReconciliationConsent');
     return (await presentRelayReconciliationConsent(request)) !== 'keep';
 }
 
@@ -142,8 +142,6 @@ export function useThisComputerSetupTask(options: Readonly<{
      * can answer it; `null` means the question was dismissed and the run stops unchanged.
      */
     onCliChoiceRequired?: (prompt: SetupCliChoicePromptPayload) => Promise<SetupCliChoice | null>;
-    /** The coordinator's consent presenter, supplied by surfaces that must keep the action path loaded. */
-    confirm?: (request: ThisComputerMoveRequest) => Promise<RelayReconciliationConsentAnswer>;
 }> = {}) {
     const runner = options.runner ?? getSystemTasksRunner();
     const [activeTaskId, setActiveTaskId] = React.useState<string | null>(null);
@@ -151,7 +149,6 @@ export function useThisComputerSetupTask(options: Readonly<{
     const [startError, setStartError] = React.useState<string | null>(null);
     const activeTaskSnapshot = useSystemTaskSnapshot(runner, activeTaskId);
     const handledResultTaskIdRef = React.useRef<string | null>(null);
-    const confirmMove = options.confirm;
 
     // `launch` hands one explicit executor spec to the runner and makes it this hook's run; it is
     // what the coordinator calls once the one question — if the facts called for one — is answered.
@@ -179,7 +176,6 @@ export function useThisComputerSetupTask(options: Readonly<{
         try {
             const outcome = await desktopSetupCoordinator.startSetup({
                 start: launch,
-                ...(confirmMove ? { confirm: confirmMove } : {}),
                 ...(startOptions.reconsiderCli ? { reconsiderCli: true } : {}),
             });
             return outcome?.taskId ?? null;
@@ -189,7 +185,7 @@ export function useThisComputerSetupTask(options: Readonly<{
         } finally {
             setIsStarting(false);
         }
-    }, [confirmMove, launch]);
+    }, [launch]);
 
     const cancel = React.useCallback(() => {
         if (!activeTaskId) {

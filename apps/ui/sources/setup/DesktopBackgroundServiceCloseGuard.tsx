@@ -1,11 +1,9 @@
 import * as React from 'react';
 
-import { getActiveServerSnapshot } from '@/sync/domains/server/serverRuntime';
 import { getActiveServerAccountScope } from '@/sync/domains/scope/activeServerAccountScope';
 import { getStorage } from '@/sync/domains/state/storageStore';
 import { invokeTauri, listenTauriEvent } from '@/utils/platform/tauri';
 
-import { daemonRelayMatchesExpectation } from './deriveDesktopLocalSetupSnapshot';
 import { stopBackgroundService } from './desktopBackgroundServiceControl';
 import { desktopSetupCoordinator } from './desktopSetupCoordinator';
 import { presentBackgroundServiceCloseConsent } from './presentBackgroundServiceCloseConsent';
@@ -45,28 +43,14 @@ export function DesktopBackgroundServiceCloseGuard(props: Readonly<{ enabled: bo
                     // pressing Quit again. Nothing established yet means nothing to act on.
                     const inspection = desktopSetupCoordinator.readInspectionSnapshot();
                     const facts = inspection.status === 'resolved' ? inspection.facts : null;
-                    const appScope = getActiveServerAccountScope();
-                    const activeServer = getActiveServerSnapshot();
-                    const storage = getStorage().getState();
+                    const appAccountId = getActiveServerAccountScope()?.accountId ?? null;
                     const decision = resolveDesktopCloseDaemonDecision({
                         autostart: facts?.service.autostart ?? null,
                         activeLocalSessionCount: countActiveLocalAgentSessions({
-                            sessions: Object.values(storage.sessions ?? {}),
+                            sessions: Object.values(getStorage().getState().sessions ?? {}),
                             machineId: facts?.auth.machineId ?? null,
                         }),
-                        canSeeDaemonSessions: storage.isDataReady
-                            && appScope !== null
-                            && facts !== null
-                            && facts.auth.machineId !== null
-                            && facts.auth.validatedAccountId === appScope.accountId
-                            && facts.runtimeConvergence?.controlReachable === true
-                            && facts.runtimeConvergence.serviceOwnsRunningDaemon
-                            && facts.runtimeConvergence.machineIdMatches
-                            && daemonRelayMatchesExpectation(facts, {
-                                relayUrl: activeServer.serverUrl,
-                                localRelayUrl: activeServer.activeLocalRelayUrl ?? null,
-                                accountId: appScope.accountId,
-                            }),
+                        canSeeDaemonSessions: appAccountId !== null && facts?.auth.validatedAccountId === appAccountId,
                     });
                     if (decision === 'ask' || decision === 'askUnknown') {
                         // Quit from the tray leaves the window hidden, so the question would be

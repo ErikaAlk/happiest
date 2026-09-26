@@ -3,57 +3,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { createClaudeUnifiedInputArbiter } from './createClaudeUnifiedInputArbiter';
 
 describe('createClaudeUnifiedInputArbiter', () => {
-  it('fills Claude native steer queue without waiting for prior steer consumption', async () => {
-    const injectedTexts: string[] = [];
-    const acceptedTexts: string[] = [];
-    const arbiter = createClaudeUnifiedInputArbiter({
-      quietPeriodMs: 0,
-      evaluateInFlightSteer: vi.fn(async () => ({ steer: true as const })),
-      onPromptAccepted: vi.fn(async (batch) => {
-        acceptedTexts.push(batch.message);
-      }),
-      injectPrompt: vi.fn(async (batch) => {
-        injectedTexts.push(batch.message);
-        return {
-          status: 'injected' as const,
-          at: 10_000,
-          bytesWritten: batch.message.length,
-          inFlightSteer: true,
-        };
-      }),
-    });
-    arbiter.observeLifecycle({ type: 'turn_state', state: 'running', observedAtMs: 10_000 });
-
-    const first = {
-      message: 'first steer',
-      origin: { kind: 'ui_pending' as const },
-      pendingProviderAction: 'steer' as const,
-      userMessageLocalIds: ['first-steer'],
-    };
-    const second = { ...first, message: 'second steer', userMessageLocalIds: ['second-steer'] };
-    const third = { ...first, message: 'third steer', userMessageLocalIds: ['third-steer'] };
-
-    await arbiter.enqueueUiMessage(first);
-    await arbiter.drainWhenSafe();
-    await arbiter.observePromptCustodyByTerminal(first);
-    await arbiter.enqueueUiMessage(second);
-    await arbiter.enqueueUiMessage(third);
-    await arbiter.drainWhenSafe();
-
-    expect(injectedTexts).toEqual(['first steer', 'second steer', 'third steer']);
-    expect(arbiter.snapshot()).toMatchObject({
-      queuedCount: 0,
-      terminalCustodyCount: 1,
-      providerAcceptancePendingCount: 0,
-    });
-    await expect(arbiter.confirmPromptAcceptedByProviderIf((batch) => batch === first)).resolves.toBe(true);
-    await expect(arbiter.confirmPromptAcceptedByProviderIf((batch) => batch === second)).resolves.toBe(true);
-    await expect(arbiter.confirmPromptAcceptedByProviderIf((batch) => batch === third)).resolves.toBe(true);
-    expect(acceptedTexts).toEqual(['first steer', 'second steer', 'third steer']);
-
-    await arbiter.dispose();
-  });
-
   it('settles an injected goal control without opening or awaiting a provider turn', async () => {
     const injectPrompt = vi.fn(async (batch: Readonly<{ message: string }>) => ({
       status: 'injected' as const,

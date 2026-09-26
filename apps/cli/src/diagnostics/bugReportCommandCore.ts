@@ -304,7 +304,7 @@ export async function runBugReportCommand(
   }
 
   let existingIssueNumber: number | undefined = parsed.existingIssueNumber ?? undefined;
-  if (providerUrl && !existingIssueNumber && interactive && !parsed.skipSimilarIssues) {
+  if (!existingIssueNumber && interactive && !parsed.skipSimilarIssues) {
     const query = [title, summary, currentBehavior ?? '', expectedBehavior ?? '']
       .map((part) => String(part).trim())
       .filter(Boolean)
@@ -384,15 +384,10 @@ export async function runBugReportCommand(
     };
   }
 
-  const submitProviderUrl = providerUrl;
-  if (!submitProviderUrl) {
-    return buildFallback('feature-disabled', null);
-  }
-
   let submitted: { reportId: string; issueNumber: number; issueUrl: string };
   try {
     submitted = await deps.submitBugReport({
-      providerUrl: submitProviderUrl,
+      providerUrl,
       timeoutMs: feature.uploadTimeoutMs,
       form,
       artifacts: diagnostics.artifacts,

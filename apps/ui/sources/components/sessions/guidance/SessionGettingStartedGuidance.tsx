@@ -85,8 +85,6 @@ const stylesheet = StyleSheet.create((theme) => ({
     },
     contentContainerCentered: {
         justifyContent: 'center',
-        paddingTop: 20,
-        paddingBottom: 32,
     },
     logo: {
         height: 44,
@@ -384,8 +382,7 @@ function SessionGettingStartedGuidanceViewImpl(props: SessionGettingStartedGuida
     const showLogo = props.variant === 'primaryPane' || props.variant === 'newSessionBlocking';
     const showSetupPrimaryCard = (model.kind === 'connect_machine' || model.kind === 'start_daemon') && Boolean(model.onOpenSetup);
     const [showManualSteps, setShowManualSteps] = React.useState(!showSetupPrimaryCard);
-    const shouldCenterContent = props.variant === 'primaryPane'
-        && (model.kind === 'select_session' || showSetupPrimaryCard);
+    const shouldCenterContent = props.variant === 'primaryPane' && model.kind === 'select_session';
     const shouldDeferCliFollowUp = DEFER_CLI_FOLLOW_UP_VARIANTS.has(props.variant) && !showSetupPrimaryCard;
     const deferredCliFollowUpKey = buildDeferredCliFollowUpKey({ variant: props.variant, model, showSetupPrimaryCard });
     const [deferredCliFollowUpState, setDeferredCliFollowUpState] = React.useState<DeferredCliFollowUpState>(() => ({

@@ -24,7 +24,6 @@ function formatTail(label: string, value: string): string {
 export type CommandCaptureResult =
   | Readonly<{ kind: 'exited'; status: number | null; signal: NodeJS.Signals | null; stdout: string; stderr: string }>
   | Readonly<{ kind: 'timed-out'; timeoutMs: number; stdout: string; stderr: string }>
-  | Readonly<{ kind: 'aborted'; error: unknown }>
   | Readonly<{ kind: 'spawn-failed'; message: string; error: unknown }>;
 
 /**
@@ -32,8 +31,7 @@ export type CommandCaptureResult =
  * without blocking the event loop and resolves with its outcome (never rejects).
  * `timeoutMs > 0` sends SIGTERM after that long and settles `timed-out` at once
  * with the output so far; `maxCapturedBytes` keeps only the output tail, otherwise
- * output is kept whole. An aborted signal sends SIGTERM and settles `aborted`;
- * cancellation stops this command, not any already-applied external service changes.
+ * output is kept whole.
  */
 export async function runCommandCapture(params: Readonly<{
   cmd: string;
@@ -41,14 +39,11 @@ export async function runCommandCapture(params: Readonly<{
   cwd?: string;
   env?: NodeJS.ProcessEnv;
   timeoutMs?: number;
-  signal?: AbortSignal;
   maxCapturedBytes?: number;
   resolveCommandOnPath?: boolean;
   /** Defaults to true (no console window for the child on Windows). */
   windowsHide?: boolean;
 }>): Promise<CommandCaptureResult> {
-  const abortError = () => params.signal?.reason ?? new DOMException('This operation was aborted', 'AbortError');
-  if (params.signal?.aborted) return { kind: 'aborted', error: abortError() };
   const cmd = String(params.cmd ?? '').trim();
   if (!cmd) {
     return { kind: 'spawn-failed', message: 'command is required', error: new Error('command is required') };
@@ -92,16 +87,8 @@ export async function runCommandCapture(params: Readonly<{
       if (settled) return;
       settled = true;
       if (timer) clearTimeout(timer);
-      params.signal?.removeEventListener('abort', onAbort);
       resolve(result);
     };
-    const onAbort = () => {
-      if (settled) return;
-      child.kill('SIGTERM');
-      settle({ kind: 'aborted', error: abortError() });
-    };
-    params.signal?.addEventListener('abort', onAbort, { once: true });
-    if (params.signal?.aborted) onAbort();
 
     // Decode per stream so a multi-byte character split across chunks stays intact.
     const stdoutDecoder = new StringDecoder('utf8');
@@ -146,7 +133,6 @@ export async function runCommandStreaming(params: Readonly<{
     maxCapturedBytes: Math.max(4 * 1024, Number(params.maxCapturedBytes ?? 32 * 1024)),
   });
   const context = params.context ? `[${params.context}] ` : '';
-  if (result.kind === 'aborted') throw result.error;
   if (result.kind === 'spawn-failed') {
     throw new Error(`${context}failed to start ${cmd}: ${result.message}`);
   }

@@ -10,7 +10,6 @@ import { Icon } from '@/components/ui/icons/Icon';
 
 const stylesheet = StyleSheet.create(() => ({
     container: {
-        alignItems: 'center',
         gap: 12,
     },
 }));
@@ -29,7 +28,6 @@ export const RelayDriftActionCard = React.memo(function RelayDriftActionCard(pro
         <View style={styles.container}>
             <ActionCard
                 testID="relay-drift-banner"
-                appearance="quiet"
                 title={props.banner.title}
                 description={description}
                 loading={props.banner.isRepairStarting}

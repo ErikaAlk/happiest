@@ -6,7 +6,6 @@ import { useDesktopUpdater } from '@/desktop/updates/useDesktopUpdater';
 import { useUpdates } from '@/hooks/inbox/useUpdates';
 import { useNativeUpdateStatus } from '@/hooks/ui/useNativeUpdate';
 import { t } from '@/text';
-import { isTauriDesktop } from '@/utils/platform/tauri';
 
 import { buildAppUpdateItem, type AppUpdateItemModel } from './items/buildAppUpdateItem';
 import { useWebUiDeploymentFreshness } from './useWebUiDeploymentFreshness';
@@ -39,7 +38,6 @@ export function useAppUpdateStatus(): AppUpdateStatus {
 
     const model = React.useMemo(() => buildAppUpdateItem({
         platformOs: Platform.OS,
-        desktopHost: isTauriDesktop(),
         title: t('updates.thisAppTitle'),
         native: { updateUrl: nativeUpdateUrl, required: nativeRequired },
         webUiUpdateAvailable: webUi.updateAvailable,

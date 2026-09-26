@@ -102,8 +102,7 @@ export function isCodexProviderCapacityFailure(value: unknown): boolean {
   const evidence = value instanceof Error
     ? { message: value.message }
     : readCodexProviderErrorRecord(value) ?? value;
-  if (classifyProviderLimitEvidence(evidence) === 'capacity') return true;
-  return /\bapplication\s+network\s+permission\s+was\s+revoked\b/i.test(readErrorText(value));
+  return classifyProviderLimitEvidence(evidence) === 'capacity';
 }
 
 function isStructuredUsageLimitCode(value: string | null): boolean {

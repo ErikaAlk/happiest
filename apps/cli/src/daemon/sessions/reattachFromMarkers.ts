@@ -1,5 +1,4 @@
 import { logger } from '@/ui/logger';
-import { daemonProcessMatchesCurrentScope } from '../ownership/daemonProcessScopeIdentity';
 import type { Credentials } from '@/persistence';
 import { parseOptionalBooleanEnv } from '@happier-dev/protocol';
 import { readProcessInstanceFingerprintSync } from '@happier-dev/cli-common/processInstance';
@@ -193,7 +192,13 @@ function readConnectedServiceRestartIntent(marker: DaemonSessionMarker): Readonl
 }
 
 async function recoverMarkerlessDaemonSpawnedSessions(params: Readonly<{
-  happyProcesses: ReadonlyArray<HappyProcessInfo>;
+  happyProcesses: ReadonlyArray<{
+    pid: number;
+    command: string;
+    type: string;
+    cwd?: string;
+    environmentVariables?: Record<string, string>;
+  }>;
   incompleteMarkerByPid: ReadonlyMap<number, Readonly<{
     happySessionId: string;
     startedBy?: string;
@@ -214,7 +219,6 @@ async function recoverMarkerlessDaemonSpawnedSessions(params: Readonly<{
       continue;
     }
     const incompleteMarker = incompleteMarkerByPid.get(processInfo.pid);
-    if (!daemonProcessMatchesCurrentScope(processInfo, { requireScopeIdentity: !incompleteMarker })) continue;
     const isGenericHappySession = processInfo.type === 'user-session' || processInfo.type === 'dev-session';
     const liveExistingSessionId = extractExistingSessionIdFromCommand(processInfo.command);
     const incompleteMarkerSessionId =

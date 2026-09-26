@@ -187,7 +187,6 @@ const DEFAULT_DAEMON_READY_POLL_MS = 500;
  */
 export type LocalHappierCliInvocation = SetupCapableLocalHappierCli & Readonly<{
   processEnv?: NodeJS.ProcessEnv;
-  signal?: AbortSignal;
 }>;
 
 /**
@@ -237,9 +236,8 @@ function clearInheritedRelaySelectors(processEnv: NodeJS.ProcessEnv): NodeJS.Pro
 export function createSelectedCliInvocation(params: Readonly<{
   cli: SetupCapableLocalHappierCli;
   processEnv: NodeJS.ProcessEnv;
-  signal?: AbortSignal;
 }>): LocalHappierCliInvocation {
-  return { ...params.cli, processEnv: clearInheritedRelaySelectors(params.processEnv), ...(params.signal ? { signal: params.signal } : {}) };
+  return { ...params.cli, processEnv: clearInheritedRelaySelectors(params.processEnv) };
 }
 
 /**
@@ -260,10 +258,9 @@ export function createSetupCliScope(params: Readonly<{
   cli: SetupCapableLocalHappierCli;
   target: RelayProfileTarget;
   processEnv: NodeJS.ProcessEnv;
-  signal?: AbortSignal;
 }>): SetupCliScope {
   return {
-    target: { ...params.cli, processEnv: scopeProcessEnvToTargetRelay(params.target, params.processEnv), ...(params.signal ? { signal: params.signal } : {}) },
+    target: { ...params.cli, processEnv: scopeProcessEnvToTargetRelay(params.target, params.processEnv) },
     selected: createSelectedCliInvocation(params),
   };
 }
@@ -283,7 +280,6 @@ async function runInvocationJsonCommand(params: Readonly<{
     releaseRing: params.releaseRing,
     ...(params.invocation ? { cli: params.invocation } : {}),
     processEnv: params.invocation?.processEnv ?? clearInheritedRelaySelectors(process.env),
-    signal: params.invocation?.signal,
     ...(params.allowJsonFailure ? { allowJsonFailure: true } : {}),
   });
 }
