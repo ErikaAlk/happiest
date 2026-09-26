@@ -32,7 +32,9 @@ describe('accepted steer hook settlement', () => {
       });
       await arbiter.drainWhenSafe();
       expect(accepted).toEqual(turnState === 'idle' ? ['early hook prompt'] : []);
-      expect(arbiter.snapshot().providerAcceptancePendingCount).toBe(turnState === 'idle' ? 0 : 1);
+      // A submitted steer is tracked for transcript correlation but no longer blocks the pending
+      // queue pump; Claude can accept more native queued steers before consuming this one.
+      expect(arbiter.snapshot().providerAcceptancePendingCount).toBe(0);
     } finally {
       bridge.dispose();
       await arbiter.dispose();

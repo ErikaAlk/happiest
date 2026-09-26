@@ -272,7 +272,7 @@ export function createClaudeUnifiedInputArbiter<Mode = unknown>(opts: Readonly<{
 
   const snapshot = (): ClaudeUnifiedInputArbiterSnapshot => ({
     pendingQueuePumpStateVersion,
-    queuedCount: queue.length,
+    queuedCount: queue.length + submittedSteerAcceptances.length,
     pendingInjectionCount: pendingInjectionCount(),
     terminalCustodyCount: terminalCustody.length,
     providerAcceptancePendingCount: providerAcceptancePendingCount(),
@@ -724,6 +724,7 @@ export function createClaudeUnifiedInputArbiter<Mode = unknown>(opts: Readonly<{
       if (submittedIndex >= 0) {
         const submitted = submittedSteerAcceptances[submittedIndex];
         if (!submitted) return false;
+        if (!canAccept(submitted)) return false;
         await acceptSubmittedSteer(submitted);
         return true;
       }
@@ -783,30 +784,45 @@ export function createClaudeUnifiedInputArbiter<Mode = unknown>(opts: Readonly<{
   async function observePendingProviderAcceptanceTerminalFailure(): Promise<boolean> {
     if (disposed) return false;
     const failedAcceptance = pendingProviderAcceptance;
-    if (!failedAcceptance || queue[0] !== failedAcceptance.batch) return false;
-
-    const { batch } = failedAcceptance;
-    const result = buildObservedProviderAcceptanceTerminalFailureResult();
-    if (pendingProviderAcceptance?.batch === batch) {
-      pendingProviderAcceptance = null;
-      clearPendingSteerArming();
+    if (failedAcceptance && queue[0] === failedAcceptance.batch) {
+      const { batch } = failedAcceptance;
+      const result = buildObservedProviderAcceptanceTerminalFailureResult();
+      if (pendingProviderAcceptance?.batch === batch) {
+        pendingProviderAcceptance = null;
+        clearPendingSteerArming();
+      }
+      pendingAcceptanceCompletedCompaction = false;
+      if (queue[0] === batch) {
+        queue.shift();
+        terminalCustody.push(failedAcceptance);
+      }
+      lastFailureReason = result.reason;
+      headInputState = queue.length > 0 ? 'waiting_for_readiness' : 'terminal_custody';
+      const handling = await notifyInjectionFailure({
+        batch,
+        result,
+        failureState: 'failed_ambiguous',
+      });
+      if (isClaimedPendingDeliveryHandling(handling) && dropClaimedPendingDeliveryBatch(batch)) {
+        scheduleRetryDrain(0);
+      }
+      return isHandledInjectionFailure(handling);
     }
-    pendingAcceptanceCompletedCompaction = false;
-    if (queue[0] === batch) {
-      queue.shift();
-      terminalCustody.push(failedAcceptance);
+    if (submittedSteerAcceptances.length === 0) return false;
+
+    const result = buildObservedProviderAcceptanceTerminalFailureResult();
+    const submitted = submittedSteerAcceptances.splice(0, submittedSteerAcceptances.length);
+    for (const acceptance of submitted) {
+      terminalCustody.push(acceptance);
+      await notifyInjectionFailure({
+        batch: acceptance.batch,
+        result,
+        failureState: 'failed_ambiguous',
+      });
     }
     lastFailureReason = result.reason;
-    headInputState = queue.length > 0 ? 'waiting_for_readiness' : 'terminal_custody';
-    const handling = await notifyInjectionFailure({
-      batch,
-      result,
-      failureState: 'failed_ambiguous',
-    });
-    if (isClaimedPendingDeliveryHandling(handling) && dropClaimedPendingDeliveryBatch(batch)) {
-      scheduleRetryDrain(0);
-    }
-    return isHandledInjectionFailure(handling);
+    headInputState = terminalCustody.length > 0 ? 'terminal_custody' : null;
+    return true;
   }
 
   const runDrain = async (): Promise<void> => {
