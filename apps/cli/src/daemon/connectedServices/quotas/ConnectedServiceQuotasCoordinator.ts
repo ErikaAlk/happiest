@@ -2702,8 +2702,12 @@ export class ConnectedServiceQuotasCoordinator {
         this.failureStateByBindingKey.delete(bindingKey);
         return 'connected';
       }
+      const providerStatus = isRecord(input.error) ? input.error.status : undefined;
       const inconclusiveRefreshProbeCount = (existingFailureState?.inconclusiveRefreshProbeCount ?? 0) + 1;
-      if (inconclusiveRefreshProbeCount >= QUOTA_AUTH_FAILURE_INCONCLUSIVE_PROBE_LIMIT) {
+      if (
+        providerStatus !== 403
+        && inconclusiveRefreshProbeCount >= QUOTA_AUTH_FAILURE_INCONCLUSIVE_PROBE_LIMIT
+      ) {
         const reconnectHealth: ConnectedServiceCredentialHealthV1 = {
           ...health,
           status: 'needs_reauth',
