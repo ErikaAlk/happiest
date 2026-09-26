@@ -6476,9 +6476,9 @@ function SessionViewLoaded({
     const contentPaddingBottom = resolveSessionViewContentBottomSpacing({
         chatBottomSpacing,
         // AgentContentView's keyboard scaffold owns the native safe-area inset for
-        // the composer and transcript. Keeping it out of this outer layout avoids
-        // lifting the composer twice in classic/no-cockpit sessions.
-        safeAreaBottomPx: 0,
+        // the composer and transcript. Keeping the native inset out of this outer
+        // layout avoids lifting the composer twice in classic/no-cockpit sessions.
+        safeAreaBottomPx: Platform.OS === 'web' ? safeArea.bottom : 0,
         availableWidthPx: resolveSessionViewAvailableWidth({
             measuredContentWidthPx: measuredContentWidth,
             windowWidthPx: windowWidth,
