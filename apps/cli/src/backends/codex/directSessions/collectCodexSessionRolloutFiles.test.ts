@@ -88,4 +88,30 @@ describe('collectCodexSessionRolloutFiles', () => {
 
     expect(files.map((file) => file.filePath)).toEqual([target]);
   });
+
+  it('collects a rollout by its metadata id when the filename uses an opaque suffix', async () => {
+    const codexHome = await mkdtemp(join(tmpdir(), 'happier-codex-rollout-metadata-id-'));
+    const metadataId = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+    const sessionsDir = join(codexHome, 'sessions', 'custom');
+    await mkdir(sessionsDir, { recursive: true });
+    const target = join(sessionsDir, 'rollout-2026-02-14T08-28-05-legacy-session-id.jsonl');
+    await writeFile(target, JSON.stringify({ type: 'session_meta', payload: { id: metadataId } }) + '\n{"event":"target"}\n', 'utf8');
+
+    const files = await collectCodexSessionRolloutFiles({ codexHome, remoteSessionId: metadataId });
+
+    expect(files.map((file) => file.filePath)).toEqual([target]);
+  });
+
+  it('matches UUID rollout identities case-insensitively', async () => {
+    const codexHome = await mkdtemp(join(tmpdir(), 'happier-codex-rollout-uuid-case-'));
+    const metadataId = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
+    const sessionsDir = join(codexHome, 'sessions');
+    await mkdir(sessionsDir, { recursive: true });
+    const target = join(sessionsDir, `rollout-2026-02-14T08-28-05-${metadataId}.jsonl`);
+    await writeFile(target, '{"event":"target"}\n', 'utf8');
+
+    const files = await collectCodexSessionRolloutFiles({ codexHome, remoteSessionId: metadataId.toUpperCase() });
+
+    expect(files.map((file) => file.filePath)).toEqual([target]);
+  });
 });

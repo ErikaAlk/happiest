@@ -35,7 +35,18 @@ export function parseCodexRolloutFilename(filePath: string): CodexRolloutFilenam
 export function isMatchingCodexRolloutFileName(name: string, vendorResumeId: string): boolean {
   if (!name.startsWith('rollout-')) return false;
   const parsed = parseCodexRolloutFilename(name);
-  return parsed?.sessionId === vendorResumeId || parsed?.threadId === vendorResumeId;
+  return isMatchingCodexRolloutIdentity(parsed?.sessionId, vendorResumeId)
+    || isMatchingCodexRolloutIdentity(parsed?.threadId, vendorResumeId);
+}
+
+/** Matches discovered rollout identities while preserving exact boundaries for opaque IDs. */
+export function isMatchingCodexRolloutIdentity(candidateId: string | undefined, requestedId: string): boolean {
+  return candidateId === requestedId
+    || (isUuid(candidateId) && isUuid(requestedId) && candidateId.toLowerCase() === requestedId.toLowerCase());
+}
+
+function isUuid(value: string | undefined): value is string {
+  return typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 }
 
 /**
