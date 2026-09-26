@@ -158,7 +158,6 @@ export const TranscriptRowShell = React.memo(function TranscriptRowShell(props: 
     // measured while a local body is open are not recorded: a remount resets that local state to
     // collapsed, so only collapsed-state measurements may seed its reservation.
     const [hasRowLocalLayoutMutation, setHasRowLocalLayoutMutation] = React.useState(false);
-    const openRowLocalBodiesRef = React.useRef(0);
     const latestSignatureRef = React.useRef(props.signature);
     latestSignatureRef.current = props.signature;
     const reservedMinHeight = hasRowLocalLayoutMutation ? undefined : reservation?.minHeight;
@@ -170,7 +169,7 @@ export const TranscriptRowShell = React.memo(function TranscriptRowShell(props: 
         const height = event?.nativeEvent?.layout?.height;
         if (typeof height === 'number' && Number.isFinite(height)) {
             const heightPx = Math.max(1, Math.trunc(height));
-            if (openRowLocalBodiesRef.current === 0) {
+            if (!hasRowLocalLayoutMutation) {
                 props.reconciler.recordMeasuredHeight({ signature: props.signature, heightPx });
             }
             props.onRowMeasured?.({
@@ -179,7 +178,7 @@ export const TranscriptRowShell = React.memo(function TranscriptRowShell(props: 
                 heightPx,
             });
         }
-    }, [props.reconciler, props.itemId, props.onRowMeasured, props.signature]);
+    }, [hasRowLocalLayoutMutation, props.reconciler, props.itemId, props.onRowMeasured, props.signature]);
 
     React.useLayoutEffect(() => {
         if (lastSignatureKeyRef.current === signatureKey) return;
@@ -204,15 +203,13 @@ export const TranscriptRowShell = React.memo(function TranscriptRowShell(props: 
         });
     }, [props.onRowLayoutMutation, props.reconciler, props.itemId, signatureKey, props.signature]);
     const handleChildRowLayoutMutation = React.useCallback((mutation: TranscriptRowLayoutMutation) => {
-        if (mutation.reason === 'expand') {
-            openRowLocalBodiesRef.current += 1;
-        } else if (mutation.reason === 'collapse') {
+        if (mutation.reason === 'collapse') {
             // A body mounted open (default-expanded) collapses without a prior expand notification.
-            openRowLocalBodiesRef.current = Math.max(0, openRowLocalBodiesRef.current - 1);
             // Drop the growth floor recorded while it was open; the next onLayout re-seeds it.
             props.reconciler.resetReservationForStructuralChange({
                 itemId: props.itemId,
                 signature: latestSignatureRef.current,
+                invalidateExact: !hasRowLocalLayoutMutation,
             });
         }
         setHasRowLocalLayoutMutation(true);
@@ -221,7 +218,7 @@ export const TranscriptRowShell = React.memo(function TranscriptRowShell(props: 
             mutation,
             rowKind: props.signature.kind,
         });
-    }, [props.itemId, props.onRowLayoutMutation, props.reconciler, props.signature.kind]);
+    }, [hasRowLocalLayoutMutation, props.itemId, props.onRowLayoutMutation, props.reconciler, props.signature.kind]);
 
     return (
         <TranscriptRowLayoutMutationProvider value={handleChildRowLayoutMutation}>

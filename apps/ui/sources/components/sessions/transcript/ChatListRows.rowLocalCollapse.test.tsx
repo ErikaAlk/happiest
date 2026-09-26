@@ -89,4 +89,32 @@ describe('TranscriptRowShell row-local collapse', () => {
 
         expect(reservedMinHeight(screen)).toBe(40);
     });
+
+    it('does not record the intermediate animated-collapse height before remounting', async () => {
+        const { row, notify } = setup();
+        const screen = await renderScreen(row(0));
+        await layout(screen, 40);
+        await notify('expand');
+        await layout(screen, 400);
+        await notify('collapse');
+        // The animated body is still mounted while its height is shrinking.
+        await layout(screen, 300);
+
+        await act(async () => screen.update(<></>));
+        await act(async () => screen.update(row(2)));
+
+        expect(reservedMinHeight(screen)).toBe(40);
+    });
+
+    it('invalidates a stable exact measurement when an initially open body collapses', async () => {
+        const { row, notify } = setup();
+        const screen = await renderScreen(row(0));
+        await layout(screen, 400);
+        await notify('collapse');
+
+        await act(async () => screen.update(<></>));
+        await act(async () => screen.update(row(1)));
+
+        expect(reservedMinHeight(screen)).toBeUndefined();
+    });
 });
