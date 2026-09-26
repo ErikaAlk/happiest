@@ -1028,6 +1028,7 @@ export function createClaudeUnifiedInputArbiter<Mode = unknown>(opts: Readonly<{
           // consumed transcript evidence may retire an entry from that ledger.
           pendingProviderAcceptance = null;
           clearPendingSteerArming();
+          queue.shift();
           submittedSteerAcceptances.push(injectionAcceptance);
           headInputState = queue.length > 0 ? 'waiting_for_readiness' : 'terminal_custody';
           if (queue.length > 0) continue;
