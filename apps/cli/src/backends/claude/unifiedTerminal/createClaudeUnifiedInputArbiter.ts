@@ -166,6 +166,11 @@ export function createClaudeUnifiedInputArbiter<Mode = unknown>(opts: Readonly<{
   let retryDrainTimer: ReturnType<typeof setTimeout> | null = null;
   let retryAttempt = 0;
   let pendingProviderAcceptance: PendingProviderAcceptance<Mode> | null = null;
+  // Claude's TUI accepts more than one in-flight steer before consuming any of them. Keep each
+  // submitted steer correlated in FIFO order while leaving the queue free to fill Claude's native
+  // queue. Terminal custody moves entries out of this ledger once the queued-message banner proves
+  // Claude owns their bytes; provider acceptance still requires exact consumed transcript evidence.
+  const submittedSteerAcceptances = new Array<PendingProviderAcceptance<Mode>>();
   let injectingProviderAcceptance: PendingProviderAcceptance<Mode> | null = null;
   let providerAcceptanceObservedDuringInjection: PendingProviderAcceptance<Mode> | null = null;
   let pendingAcceptanceCompletedCompaction = false;
@@ -406,6 +411,13 @@ export function createClaudeUnifiedInputArbiter<Mode = unknown>(opts: Readonly<{
     }
   }
 
+  function removeSubmittedSteerAcceptance(batch: ClaudeUnifiedPromptBatch<Mode>): PendingProviderAcceptance<Mode> | null {
+    const index = submittedSteerAcceptances.findIndex((entry) => entry.batch === batch);
+    if (index < 0) return null;
+    const [removed] = submittedSteerAcceptances.splice(index, 1);
+    return removed ?? null;
+  }
+
   function clearProviderAcceptanceObservedDuringInjection(acceptance: PendingProviderAcceptance<Mode>): void {
     if (providerAcceptanceObservedDuringInjection === acceptance) {
       providerAcceptanceObservedDuringInjection = null;
@@ -424,6 +436,7 @@ export function createClaudeUnifiedInputArbiter<Mode = unknown>(opts: Readonly<{
     }
     providerAcceptanceByBatch.delete(batch);
     clearInjectionAcceptanceForBatch(batch);
+    removeSubmittedSteerAcceptance(batch);
     pendingAcceptanceCompletedCompaction = false;
     lastFailureReason = null;
     retryAttempt = 0;
@@ -557,6 +570,7 @@ export function createClaudeUnifiedInputArbiter<Mode = unknown>(opts: Readonly<{
     if (terminalCustodyIndex >= 0) {
       terminalCustody.splice(terminalCustodyIndex, 1);
     }
+    removeSubmittedSteerAcceptance(batch);
     if (lastInjectedNotifiedBatch === batch) {
       lastInjectedNotifiedBatch = null;
     }
@@ -581,6 +595,13 @@ export function createClaudeUnifiedInputArbiter<Mode = unknown>(opts: Readonly<{
     if (!pendingProviderAcceptance && queue.length === 0) {
       headInputState = terminalCustody.length > 0 ? 'terminal_custody' : 'submitted';
     }
+  }
+
+  async function acceptSubmittedSteer(submitted: PendingProviderAcceptance<Mode>): Promise<void> {
+    removeSubmittedSteerAcceptance(submitted.batch);
+    providerAcceptanceByBatch.delete(submitted.batch);
+    clearInjectionAcceptanceForBatch(submitted.batch);
+    await opts.onPromptAccepted?.(submitted.batch, submitted.acceptance);
   }
 
   function resolveQueueHeadKnownProviderDeliveryAcceptance(): ClaudeUnifiedPromptAcceptance | null {
@@ -665,6 +686,11 @@ export function createClaudeUnifiedInputArbiter<Mode = unknown>(opts: Readonly<{
       for (const entry of terminalCustody) {
         if (matcher(entry.batch)) matchingBatches.add(entry.batch);
       }
+      if (optsOverride.evidence !== 'prompt_submit') {
+        for (const entry of submittedSteerAcceptances) {
+          if (matcher(entry.batch)) matchingBatches.add(entry.batch);
+        }
+      }
       for (const batch of queue) {
         if (matcher(batch)) matchingBatches.add(batch);
       }
@@ -680,6 +706,13 @@ export function createClaudeUnifiedInputArbiter<Mode = unknown>(opts: Readonly<{
         const [confirmedCustody] = terminalCustody.splice(terminalCustodyIndex, 1);
         if (!confirmedCustody) return false;
         await acceptTerminalCustody(confirmedCustody);
+        return true;
+      }
+      const submittedIndex = submittedSteerAcceptances.findIndex((entry) => entry.batch === matchingBatch);
+      if (submittedIndex >= 0) {
+        const submitted = submittedSteerAcceptances[submittedIndex];
+        if (!submitted) return false;
+        await acceptSubmittedSteer(submitted);
         return true;
       }
     }
@@ -708,14 +741,19 @@ export function createClaudeUnifiedInputArbiter<Mode = unknown>(opts: Readonly<{
   }
 
   async function observePromptCustodyByTerminal(batch: ClaudeUnifiedPromptBatch<Mode>): Promise<boolean> {
-    if (disposed || queue[0] !== batch) return false;
-    const currentAcceptance = pendingProviderAcceptance;
-    if (!currentAcceptance || currentAcceptance.batch !== batch) return false;
+    if (disposed) return false;
+    const currentAcceptance = pendingProviderAcceptance?.batch === batch
+      ? pendingProviderAcceptance
+      : submittedSteerAcceptances.find((entry) => entry.batch === batch) ?? null;
+    if (!currentAcceptance) return false;
 
-    queue.shift();
     if (pendingProviderAcceptance?.batch === batch) {
+      if (queue[0] !== batch) return false;
+      queue.shift();
       pendingProviderAcceptance = null;
       clearPendingSteerArming();
+    } else {
+      removeSubmittedSteerAcceptance(batch);
     }
     pendingAcceptanceCompletedCompaction = false;
     lastFailureReason = null;
@@ -973,10 +1011,14 @@ export function createClaudeUnifiedInputArbiter<Mode = unknown>(opts: Readonly<{
           return;
         }
         if (acceptance.acceptedAs === 'in_flight_steer') {
-          // The fallback wake observes independent lifecycle/screen evidence;
-          // elapsed time alone never manufactures a provider outcome.
-          steerAcceptanceAwaitingTurnEnd = true;
-          scheduleSteerTurnEndFallbackWake();
+          // Claude can retain several steers in its native queue. Move this submitted steer into
+          // the ordered correlation ledger and immediately continue draining the next one; only
+          // consumed transcript evidence may retire an entry from that ledger.
+          pendingProviderAcceptance = null;
+          clearPendingSteerArming();
+          submittedSteerAcceptances.push(injectionAcceptance);
+          headInputState = queue.length > 0 ? 'waiting_for_readiness' : 'terminal_custody';
+          if (queue.length > 0) continue;
         }
         return;
       }
@@ -1184,6 +1226,7 @@ export function createClaudeUnifiedInputArbiter<Mode = unknown>(opts: Readonly<{
       pendingProviderAcceptance = null;
       pendingAcceptanceCompletedCompaction = false;
       terminalCustody.length = 0;
+      submittedSteerAcceptances.length = 0;
       providerAcceptanceByBatch.clear();
       clearCurrentHeadBlocker();
       injectingProviderAcceptance = null;
