@@ -1607,13 +1607,13 @@ export async function runDaemonServiceCliCommand(params: Readonly<{
         shouldTakeOverManualOwner: takeoverDecision.kind === 'manual-owner-takeover',
         action: 'install',
         run: async () => {
-          await stopCurrentWindowsServiceOwnerIfNeeded({
-            platform: installRuntime.platform,
-            ownership,
-            expectedServiceLabel: paths.label,
-            action: 'install',
-          });
           await installDaemonService({
+            beforeApply: () => stopCurrentWindowsServiceOwnerIfNeeded({
+              platform: installRuntime.platform,
+              ownership,
+              expectedServiceLabel: paths.label,
+              action: 'install',
+            }),
             platform: installRuntime.platform,
             uid: installRuntime.uid ?? undefined,
             userHomeDir: installRuntime.userHomeDir,
@@ -1624,6 +1624,7 @@ export async function runDaemonServiceCliCommand(params: Readonly<{
             targetMode: installRuntime.targetMode,
             autostart: effectiveAutostart,
             darwinInstallMode: shouldKickstartCurrentDarwinInstall ? 'kickstart' : undefined,
+            restartRunningDaemon: isOwnServiceDaemonOnAnotherCli(ownership, paths.label),
             instanceId: installRuntime.instanceId,
             activeServerId: installRuntime.activeServerId,
             serverUrl: installRuntime.serverUrl,

@@ -143,6 +143,7 @@ export async function previewDaemonServiceInstall(options: Readonly<{
    */
   autostart?: DaemonServiceAutostartMode;
   darwinInstallMode?: 'rebootstrap' | 'kickstart';
+  restartRunningDaemon?: boolean;
   instanceId?: string;
   activeServerId?: string;
   strategy?: DaemonServiceInstallStrategy;
@@ -217,7 +218,11 @@ export async function previewDaemonServiceInstall(options: Readonly<{
     ? readInstalledDaemonServiceAutostartMode({ platform, path: installedTargetService.path })
     : null;
   const autostart: DaemonServiceAutostartMode = options.autostart ?? installedAutostart ?? 'at-login';
-  const buildPlan = (planAutostart: DaemonServiceAutostartMode, autostartTriggerChangeOnly = false) => planDaemonServiceInstall({
+  const buildPlan = (
+    planAutostart: DaemonServiceAutostartMode,
+    autostartTriggerChangeOnly = false,
+    darwinInstallMode = options.darwinInstallMode,
+  ) => planDaemonServiceInstall({
     platform,
     mode: options.mode,
     systemUser: options.systemUser,
@@ -225,7 +230,7 @@ export async function previewDaemonServiceInstall(options: Readonly<{
     targetMode,
     autostart: planAutostart,
     autostartTriggerChangeOnly,
-    darwinInstallMode: options.darwinInstallMode,
+    darwinInstallMode,
     instanceId,
     activeServerId,
     uid,
@@ -252,7 +257,7 @@ export async function previewDaemonServiceInstall(options: Readonly<{
       expectedContents: installedModeExpectedFile.content,
     }),
   );
-  const plan = buildPlan(autostart, autostartTriggerChangeOnly);
+  let plan = buildPlan(autostart, autostartTriggerChangeOnly);
   const expectedInstalledFile = previewPlanFileForTarget({
     plan,
   });
@@ -277,6 +282,13 @@ export async function previewDaemonServiceInstall(options: Readonly<{
         isManagedCliLauncher: (launcher) => isManagedCliDaemonServiceLauncher(launcher, process.env),
       })
     : null;
+
+  // kickstart uses launchd's already loaded definition. A rewritten command or environment
+  // must be loaded again before restarting, including a consented managed/own CLI switch.
+  if (platform === 'darwin' && options.darwinInstallMode === 'kickstart'
+    && (!exactTargetMatchesExpectedDefinition || exactTargetRuntimeReplacement || options.restartRunningDaemon === true)) {
+    plan = buildPlan(autostart, autostartTriggerChangeOnly, 'rebootstrap');
+  }
 
   return {
     exactTargetExists: conflictPlan.exactTargetExists,
@@ -347,6 +359,7 @@ export async function installDaemonService(options: Readonly<{
    */
   autostart?: DaemonServiceAutostartMode;
   darwinInstallMode?: 'rebootstrap' | 'kickstart';
+  restartRunningDaemon?: boolean;
   instanceId?: string;
   activeServerId?: string;
   strategy?: DaemonServiceInstallStrategy;
@@ -356,6 +369,8 @@ export async function installDaemonService(options: Readonly<{
   nodePath?: string;
   entryPath?: string;
   runCommands?: boolean;
+  /** Prepare the current owner only when installation will actually change its definition. */
+  beforeApply?: () => Promise<void>;
   commandFailureMode?: DaemonServiceCommandFailureMode;
 }> = {}): Promise<void> {
   const platformInput = options.platform ?? process.platform;
@@ -398,9 +413,11 @@ export async function installDaemonService(options: Readonly<{
 
   // A runtime replacement is a real change even where the definition comparator treats launchers
   // as equivalent (darwin), so the consented switch is written rather than skipped.
-  if (preview.exactTargetIsConverged && preview.exactTargetMatchesExpectedDefinition && !preview.exactTargetRuntimeReplacement) {
+  if (preview.exactTargetIsConverged && preview.exactTargetMatchesExpectedDefinition
+    && !preview.exactTargetRuntimeReplacement && options.restartRunningDaemon !== true) {
     return;
   }
+  await options.beforeApply?.();
   await applyDaemonServiceInstallPlan(preview.plan, {
     runCommands: options.runCommands,
     commandFailureMode: options.commandFailureMode,

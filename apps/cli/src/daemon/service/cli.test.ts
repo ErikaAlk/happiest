@@ -1668,7 +1668,10 @@ describe('runDaemonServiceCliCommand', () => {
     });
   });
 
-  it('restarts the linux service on start when its own running daemon is not the installed CLI version', async () => {
+  it.each([
+    ['start', ['start', '--json']],
+    ['install', ['install', '--takeover', '--yes', '--json']],
+  ])('restarts the linux service on %s when its own running daemon is not the installed CLI version', async (_action, argv) => {
     await withTempDir('happier-service-start-stale-version-owner-', async (homeDir) => {
       const spawnedCommands: Array<{ command: string; args: readonly string[] }> = [];
       const happierHomeDir = `${homeDir}/.happier`;
@@ -1755,7 +1758,7 @@ describe('runDaemonServiceCliCommand', () => {
 
       const output = captureStdoutJsonOutput<{ ok: boolean; platform: string }>();
       try {
-        await runDaemonServiceCliCommand({ argv: ['start', '--json'] });
+        await runDaemonServiceCliCommand({ argv });
         const payload = output.json();
         expect(payload.ok).toBe(true);
         expect(spawnedCommands.some((entry) => entry.command === 'systemctl' && entry.args.includes('restart'))).toBe(true);
@@ -1950,7 +1953,7 @@ describe('runDaemonServiceCliCommand', () => {
     });
   });
 
-  it('stops the current Windows service owner before reinstalling the same service label', async () => {
+  it('preserves a running Windows service across install and retry', async () => {
     await withTempDir('happier-service-install-win32-same-owner-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       const lifecycleEvents: string[] = [];
@@ -2050,6 +2053,16 @@ describe('runDaemonServiceCliCommand', () => {
       expect(stopIndex).toBeGreaterThanOrEqual(0);
       expect(createIndex).toBeGreaterThan(stopIndex);
       expect(runIndex).toBeGreaterThan(createIndex);
+
+      const repeated = captureStdoutJsonOutput<{ ok: boolean }>();
+      try {
+        await runDaemonServiceCliCommand({ argv: ['install', '--yes', '--json'] });
+        expect(repeated.json().ok).toBe(true);
+        const { readDaemonState } = await import('@/persistence');
+        expect(await readDaemonState()).toMatchObject({ runtimeId: 'runtime-win32-install' });
+      } finally {
+        repeated.restore();
+      }
     });
   });
 
