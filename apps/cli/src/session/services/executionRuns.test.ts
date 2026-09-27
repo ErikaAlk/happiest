@@ -765,6 +765,33 @@ describe('getExecutionRun', () => {
         });
     });
 
+    it('fails closed when the authoritative get rpc is unavailable instead of exposing fallback projections', async () => {
+        callSessionRpc.mockRejectedValueOnce(new Error('RPC method not available'));
+        listExecutionRunMarkers.mockResolvedValueOnce([
+            createMarker({ runId: 'run-projection', status: 'succeeded', startedAtMs: 10 }),
+        ]);
+        readRawSessionHistoryRows.mockResolvedValueOnce(createTranscriptRows({
+            runId: 'run-projection',
+            status: 'succeeded',
+            startedAtMs: 10,
+        }));
+
+        const result = await getExecutionRun({
+            token: 'token',
+            sessionId: 'sess-1',
+            ctx: { encryptionKey: new Uint8Array([1, 2, 3, 4]), encryptionVariant: 'legacy' },
+            request: { runId: 'run-projection' },
+        });
+
+        expect(result).toEqual({
+            ok: false,
+            code: 'execution_run_protocol_unsupported',
+            message: 'RPC method not available',
+        });
+        expect(listExecutionRunMarkers).not.toHaveBeenCalled();
+        expect(readRawSessionHistoryRows).not.toHaveBeenCalled();
+    });
+
     it('preserves the original rpc app-level error when transcript fallback lookup fails', async () => {
         callSessionRpc.mockResolvedValueOnce({
             ok: false,
@@ -785,145 +812,6 @@ describe('getExecutionRun', () => {
             ok: false,
             code: 'execution_run_not_found',
             message: 'Not found',
-        });
-    });
-
-    it('falls back to transcript-backed execution run state when rpc is unavailable and no markers remain', async () => {
-        callSessionRpc.mockRejectedValueOnce(new Error('RPC method not available'));
-        listExecutionRunMarkers.mockResolvedValueOnce([]);
-        readRawSessionHistoryRows.mockResolvedValueOnce([
-            {
-                id: '1',
-                createdAt: 10,
-                role: 'agent',
-                raw: {
-                    role: 'agent',
-                    content: {
-                        type: 'acp',
-                        provider: 'claude',
-                        data: {
-                            type: 'tool-call',
-                            callId: 'call_hist_1',
-                            name: 'SubAgentRun',
-                            input: {
-                                runId: 'run_hist_1',
-                                callId: 'call_hist_1',
-                                sidechainId: 'call_hist_1',
-                                intent: 'plan',
-                                backendTarget: { kind: 'builtInAgent', agentId: 'claude' },
-                                permissionMode: 'workspace_write',
-                                retentionPolicy: 'ephemeral',
-                                runClass: 'bounded',
-                                ioMode: 'request_response',
-                            },
-                        },
-                    },
-                },
-            },
-            {
-                id: '2',
-                createdAt: 20,
-                role: 'agent',
-                raw: {
-                    role: 'agent',
-                    content: {
-                        type: 'acp',
-                        provider: 'claude',
-                        data: {
-                            type: 'tool-result',
-                            callId: 'call_hist_1',
-                            output: {
-                                _happier: {
-                                    canonicalToolName: 'SubAgentRun',
-                                },
-                                runId: 'run_hist_1',
-                                callId: 'call_hist_1',
-                                sidechainId: 'call_hist_1',
-                                backendId: 'claude',
-                                intent: 'plan',
-                                permissionMode: 'workspace_write',
-                                retentionPolicy: 'ephemeral',
-                                runClass: 'bounded',
-                                ioMode: 'request_response',
-                                status: 'succeeded',
-                                startedAtMs: 10,
-                                finishedAtMs: 20,
-                            },
-                        },
-                    },
-                },
-            },
-        ]);
-
-        const result = await getExecutionRun({
-            token: 'token',
-            sessionId: 'sess-1',
-            ctx: { encryptionKey: new Uint8Array([1, 2, 3, 4]), encryptionVariant: 'legacy' },
-            request: { runId: 'run_hist_1' },
-        });
-
-        expect(result).toEqual({
-            ok: true,
-            data: {
-                run: {
-                    runId: 'run_hist_1',
-                    callId: 'call_hist_1',
-                    sidechainId: 'call_hist_1',
-                    intent: 'plan',
-                    backendTarget: { kind: 'builtInAgent', agentId: 'claude' },
-                    permissionMode: 'workspace_write',
-                    retentionPolicy: 'ephemeral',
-                    runClass: 'bounded',
-                    ioMode: 'request_response',
-                    status: 'succeeded',
-                    startedAtMs: 10,
-                    finishedAtMs: 20,
-                },
-            },
-        });
-    });
-
-    it('prefers transcript-backed execution run state over stale marker state during get fallback', async () => {
-        callSessionRpc.mockResolvedValueOnce({
-            ok: false,
-            errorCode: 'execution_run_not_found',
-            error: 'Not found',
-        });
-        listExecutionRunMarkers.mockResolvedValueOnce([
-            createMarker({ runId: 'run_hist_1', status: 'running', startedAtMs: 10 }),
-        ]);
-        readRawSessionHistoryRows.mockResolvedValueOnce(createTranscriptRows({
-            runId: 'run_hist_1',
-            callId: 'call_hist_1',
-            status: 'succeeded',
-            startedAtMs: 10,
-        }));
-
-        const result = await getExecutionRun({
-            token: 'token',
-            sessionId: 'sess-1',
-            ctx: { encryptionKey: new Uint8Array([1, 2, 3, 4]), encryptionVariant: 'legacy' },
-            request: { runId: 'run_hist_1' },
-        });
-
-        expect(result).toEqual({
-            ok: true,
-            data: {
-                run: {
-                    runId: 'run_hist_1',
-                    callId: 'call_hist_1',
-                    sidechainId: 'call_hist_1',
-                    intent: 'plan',
-                    backendTarget: { kind: 'builtInAgent', agentId: 'claude' },
-                    permissionMode: 'workspace_write',
-                    retentionPolicy: 'ephemeral',
-                    runClass: 'bounded',
-                    ioMode: 'request_response',
-                    status: 'succeeded',
-                    startedAtMs: 10,
-                    finishedAtMs: 20,
-                },
-            },
         });
     });
 
