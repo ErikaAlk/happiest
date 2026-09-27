@@ -69,8 +69,8 @@ describe('openBugReportFallbackIssueUrl', () => {
         );
 
         expect(opened).toBe(false);
-        expect(buttons.map((button) => button.text)).toContain('Copy');
-        buttons.find((button) => button.text === 'Copy')?.onPress?.();
+        expect(buttons.map((button) => button.text)).toContain('common.copy');
+        buttons.find((button) => button.text === 'common.copy')?.onPress?.();
         await Promise.resolve();
         expect(copyUrl).toHaveBeenCalledWith('https://github.com/happier-dev/happier/issues/new?title=report');
     });
@@ -102,6 +102,7 @@ describe('openBugReportFallbackIssueUrl', () => {
         let modalType: string | null = null;
         Modal.setFunctions((config) => {
             modalType = config.type;
+            queueMicrotask(() => Modal.resolveAlert('alert-1'));
             return 'alert-1';
         }, () => {}, () => {});
 

@@ -53,7 +53,7 @@ export function useBugReportDiagnosticsPreview(input: {
         } catch (error) {
           await Modal.alert(
             t('common.error'),
-            error instanceof Error ? error.message : 'Diagnostics export failed.',
+            error instanceof Error ? error.message : t('common.error'),
           );
         }
       };

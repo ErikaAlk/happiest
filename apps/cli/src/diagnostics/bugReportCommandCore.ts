@@ -310,7 +310,8 @@ export async function runBugReportCommand(
       .filter(Boolean)
       .join('\n')
       .slice(0, 1200);
-    try {
+    if (providerUrl) {
+      try {
         const similar = await deps.searchSimilarIssues({
           providerUrl,
           owner: BUG_REPORT_DEFAULT_ISSUE_OWNER,
@@ -318,18 +319,19 @@ export async function runBugReportCommand(
           query,
           limit: 8,
         });
-      if (similar.issues.length > 0) {
-        const answer = (await deps.promptInput(formatSimilarIssuesPrompt(similar.issues))).trim();
-        if (answer) {
-          const selected = Number(answer);
-          if (!Number.isFinite(selected) || !Number.isInteger(selected) || selected <= 0) {
-            throw new Error(`Invalid issue number: ${answer}`);
+        if (similar.issues.length > 0) {
+          const answer = (await deps.promptInput(formatSimilarIssuesPrompt(similar.issues))).trim();
+          if (answer) {
+            const selected = Number(answer);
+            if (!Number.isFinite(selected) || !Number.isInteger(selected) || selected <= 0) {
+              throw new Error(`Invalid issue number: ${answer}`);
+            }
+            existingIssueNumber = selected;
           }
-          existingIssueNumber = selected;
         }
+      } catch {
+        // If search fails, proceed without blocking bug report submission.
       }
-    } catch {
-      // If search fails, proceed without blocking bug report submission.
     }
   }
 
@@ -384,10 +386,15 @@ export async function runBugReportCommand(
     };
   }
 
+  const submitProviderUrl = providerUrl;
+  if (!submitProviderUrl) {
+    return buildFallback('feature-disabled', null);
+  }
+
   let submitted: { reportId: string; issueNumber: number; issueUrl: string };
   try {
     submitted = await deps.submitBugReport({
-      providerUrl,
+      providerUrl: submitProviderUrl,
       timeoutMs: feature.uploadTimeoutMs,
       form,
       artifacts: diagnostics.artifacts,

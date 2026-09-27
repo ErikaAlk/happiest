@@ -251,7 +251,7 @@ export async function listCodexDirectSessionCandidatesViaRollouts(params: Readon
     );
   }
 
-  if (searchTerm && canSearchRolloutFilename(searchTerm) && params.searchMode === 'fast') {
+  if (searchTerm && canSearchRolloutFilename(searchTerm) && (params.searchMode === 'fast' || isCanonicalCodexThreadId(searchTerm))) {
     const filenameMatches = await collectGroupedCandidates(searchTerm);
     if (filenameMatches.length > 0) {
       const pageEntries = filenameMatches.slice(offset, offset + requestedLimit);

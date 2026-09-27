@@ -34,11 +34,15 @@ const {
   inspectDaemonRunningStateMock: vi.fn<() => Promise<DaemonRunningInspection>>(async () => ({ status: 'not-running' as const })),
 }));
 
-vi.mock('./installer', () => ({
-  installDaemonService: installDaemonServiceMock,
-  previewDaemonServiceInstall: previewDaemonServiceInstallMock,
-  uninstallDaemonService: vi.fn(async () => undefined),
-}));
+vi.mock('./installer', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./installer')>();
+  return {
+    ...actual,
+    installDaemonService: installDaemonServiceMock,
+    previewDaemonServiceInstall: previewDaemonServiceInstallMock,
+    uninstallDaemonService: vi.fn(async () => undefined),
+  };
+});
 
 vi.mock('./resolveDaemonServiceInstallRuntimeTarget', () => ({
   resolveDaemonServiceInstallRuntimeTarget: resolveDaemonServiceInstallRuntimeTargetMock,
@@ -215,7 +219,7 @@ describe('runDaemonServiceCliCommand install conflict preflight', () => {
         httpPort: 43122,
         startedAt: Date.now(),
         startedWithCliVersion: '0.0.0-other',
-        startedWithPublicReleaseChannel: 'publicdev',
+        startedWithPublicReleaseChannel: 'dev',
         startupSource: 'background-service',
         serviceLabel: paths.label,
       },
