@@ -1,0 +1,14 @@
+Generated an empty chunk: "backends/codex/happyMcpStdioBridge".
+Generated an empty chunk: "index".
+Generated an empty chunk: "mcp/bridges/remoteMcpStdioBridge".
+Generated an empty chunk: "backends/codex/happyMcpStdioBridge".
+Generated an empty chunk: "index".
+Generated an empty chunk: "mcp/bridges/remoteMcpStdioBridge".
+Circular dependency: ../../node_modules/@happier-dev/protocol/dist/sessionControl/contract.js -> ../../node_modules/@happier-dev/protocol/dist/actions/index.js -> ../../node_modules/@happier-dev/protocol/dist/actions/actionExecutor.js -> ../../node_modules/@happier-dev/protocol/dist/sessionControl/contract.js
+Circular dependency: ../../node_modules/@happier-dev/cli-common/dist/systemTasks/interactiveTaskKinds.js -> ../../node_modules/@happier-dev/cli-common/dist/systemTasks/runSystemTask.js -> ../../node_modules/@happier-dev/cli-common/dist/systemTasks/interactiveTaskKinds.js
+Export "createActionExecutor" of module "../../node_modules/@happier-dev/protocol/dist/actions/actionExecutor.js" was reexported through module "../../node_modules/@happier-dev/protocol/dist/actions/index.js" while both modules are dependencies of each other and will end up in different chunks by current Rollup settings. This scenario is not well supported at the moment as it will produce a circular dependency between chunks and will likely lead to broken execution order.
+Either change the import in "../src/session/actions/createCliActionExecutorHarness.ts" to point directly to the exporting module or reconfigure "output.manualChunks" to ensure these modules end up in the same chunk.
+Circular dependency: ../../node_modules/@happier-dev/protocol/dist/sessionControl/contract.js -> ../../node_modules/@happier-dev/protocol/dist/actions/index.js -> ../../node_modules/@happier-dev/protocol/dist/actions/actionExecutor.js -> ../../node_modules/@happier-dev/protocol/dist/sessionControl/contract.js
+Circular dependency: ../../node_modules/@happier-dev/cli-common/dist/systemTasks/interactiveTaskKinds.js -> ../../node_modules/@happier-dev/cli-common/dist/systemTasks/runSystemTask.js -> ../../node_modules/@happier-dev/cli-common/dist/systemTasks/interactiveTaskKinds.js
+Export "createActionExecutor" of module "../../node_modules/@happier-dev/protocol/dist/actions/actionExecutor.js" was reexported through module "../../node_modules/@happier-dev/protocol/dist/actions/index.js" while both modules are dependencies of each other and will end up in different chunks by current Rollup settings. This scenario is not well supported at the moment as it will produce a circular dependency between chunks and will likely lead to broken execution order.
+Either change the import in "../src/session/actions/createCliActionExecutorHarness.ts" to point directly to the exporting module or reconfigure "output.manualChunks" to ensure these modules end up in the same chunk.

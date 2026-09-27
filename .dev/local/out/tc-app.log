@@ -1,0 +1,6 @@
+yarn workspace v1.22.22
+yarn run v1.22.22
+$ node scripts/ensureWorkspacePackagesBuilt.mjs && node ../../scripts/workspaces/runTypeScriptCli.mjs -p tsconfig.json --noEmit
+Done in 12.27s.
+Done in 12.52s.
+exit 0

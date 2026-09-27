@@ -1,0 +1,21 @@
+fix(direct-sessions): stop a Claude process still running the session before Happier continues it
+
+Taking over a Claude session that Claude Desktop or a terminal still had open
+resumed it in a second Claude process, and both wrote turns into the same
+conversation.
+
+- Claude direct-session activity now reads Claude Code's session records
+  (<config dir>/sessions/<pid>.json) and reports the live processes holding the
+  session, verified against the OS by creation time on Windows and by process
+  name elsewhere. Process info gains the parent PID on Windows, Linux and macOS.
+- status.get reports externalProcessActive for processes outside this session's
+  own runner, reusing verified identities while those processes live so the
+  250 ms status poll does not start PowerShell each time.
+- takeover and takeover-persist verify anew, require forceStop while such a
+  process runs, and end it before continuing.
+- The Claude runner re-checks before resuming and rejects the prompt before
+  effect when another process still holds the session.
+- The app asks "This session is still running on the computer" before sending
+  or taking over, including when Happier's runner already hosts the session.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>

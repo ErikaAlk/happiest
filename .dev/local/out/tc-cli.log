@@ -1,0 +1,7 @@
+yarn workspace v1.22.22
+yarn run v1.22.22
+$ yarn -s prepare:declarations
+$ node ../../scripts/workspaces/runTypeScriptCli.mjs --noEmit
+Done in 8.94s.
+Done in 9.19s.
+exit 0

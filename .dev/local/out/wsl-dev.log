@@ -1,0 +1,716 @@
+Already up to date.
+15bd21f9 fix(direct-sessions): stop a Claude process still running the session before Happier contwarning bare-fs@4.5.5: The engine "bare" appears to be invalid.
+warning bare-os@3.7.1: The engine "bare" appears to be invalid.
+warning " > @elevenlabs/react@1.2.1" has unmet peer dependency "react@>=16.8.0".
+warning " > @elevenlabs/react-native@1.1.3" has unmet peer dependency "@livekit/react-native@^2.9.2".
+warning " > @elevenlabs/react-native@1.1.3" has unmet peer dependency "@livekit/react-native-w[4/4] Building fresh packages...
+$ node scripts/pipeline/expo/eas-postinstall.mjs
+1.22.22
+$ tsx --tsconfig ./tsconfig.json ./scripts/migrate.deploy.ts
+[server] $ tsx --tsconfig ./tsconfig.json ./scripts/dev.light.ts
+[server] {"happierStackTransition":"migration_started"}
+[server] {"happierStackTransition":"migration_completed"}
+✓ server: ready at http://127.0.0.1:52854
+
+Terminal usage
+To run happier against this stack (and have sessions appear in the UI), use the stack-aware wrapper:
+export HAPPIER_STACK_STACK="repo-happiest-99451da13d"
+hstack happier auth status --json
+hstack happier
+
+Low-level env fallback (if you need the raw CLI env directly):
+export HAPPIER_SERVER_URL="http://127.0.0.1:52854"
+export HAPPIER_HOME_DIR="/home/erika/.happier/stacks/repo-happiest-99451da13d/cli"
+export HAPPIER_WEBAPP_URL="http://localhost:52854"
+export HAPPIER_ACTIVE_SERVER_ID="stack_repo-happiest-99451da13d__id_default"
+
+Sanity check (should be ok:true):
+HAPPIER_STACK_STACK="repo-happiest-99451da13d" hstack happier auth status --json
+
+Then run:
+hstack happier
+
+One-liner (no exports):
+HAPPIER_STACK_STACK="repo-happiest-99451da13d" HAPPIER_SERVER_URL="http://127.0.0.1:52854" HAPPIER_HOME_DIR="/home/erika/.happier/stacks/repo-happiest-99451da13d/cli" HAPPIER_WEBAPP_URL="http://localhost:52854" HAPPIER_ACTIVE_SERVER_ID="stack_repo-happiest-99451da13d__id_default" hstack happier
+
+Note: keep HAPPIER_HOME_DIR as shown to use this stack/sandbox account and credentials if you bypass the wrapper.
+[local] watch: reload coordinator disabled.
+[local] expo: starting Expo (dev-client+web, metro port=18930, host=lan)
+[expo] Starting project at /home/erika/happiest/apps/ui
+[expo] Starting Metro Bundler
+[expo] warning: Bundler cache is empty, rebuilding (this may take a minute)
+[local] ui: open http://happier-repo-happiest-99451da13d.localhost:18930/?server=http%3A%2F%2Flocalhost%3A52854
+[local] mobile: metro http://happier-repo-happiest-99451da13d.localhost:18930
+[expo] Waiting on http://localhost:18930
+[expo] Logs for your project will appear below.
+[expo] Web apps/ui/index.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web apps/ui/index.ts ▓▓▓▓▓▓░░░░░░░░░░ 40.1% ( 699/1773)
+[expo] | Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
+[expo] |   npx update-browserslist-db@latest
+[expo] |   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[expo] Web apps/ui/index.ts ▓▓▓▓▓▓░░░░░░░░░░ 40.1% (2068/3894)
+[expo]  WARN  Attempted to import the module "/home/erika/happiest/node_modules/@noble/hashes/crypto.js" which is not listed in the "exports" of "/home/erika/happiest/node_modules/@noble/hashes" under the requested subpath "./crypto.js". Falling back to file-based resolution. Consider updating the call site or asking the package maintainer(s) to expose this API.
+[expo] Web apps/ui/index.ts ▓▓▓▓▓▓▓░░░░░░░░░ 49.1% (3826/5761)
+[expo] Web apps/ui/index.ts ▓▓▓▓▓▓▓▓▓░░░░░░░ 56.5% (5315/8044)
+[expo] Web apps/ui/index.ts ▓▓▓▓▓▓▓▓▓░░░░░░░ 61.0% ( 8037/10294)
+[expo] | Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
+[expo] |   npx update-browserslist-db@latest
+[expo] |   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[expo] Web apps/ui/index.ts ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 92.8% (10450/10845)
+[expo] | Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
+[expo] |   npx update-browserslist-db@latest
+[expo] |   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[expo] Web apps/ui/index.ts ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (11308/11309)
+[expo] Web Bundled 26443ms apps/ui/index.ts (11309 modules)
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo] Web apps/ui/node_modules/expo-notifications/build/index.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 67.8% (112/136)
+[expo] Web Bundled 321ms apps/ui/node_modules/expo-notifications/build/index.js (254 modules)
+[expo] Web Bundled 1225ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 1238ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 1283ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 1409ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web apps/ui/sources/sync/domains/state/storage.ts ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 82.4% (2453/2703)
+[expo] Web apps/ui/sources/sync/store/settingsWriters.ts ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 85.2% (4332/6009)
+[expo] Web node_modules/@shikijs/langs/dist/jsx.mjs ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web node_modules/@shikijs/langs/dist/json.mjs ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web node_modules/@shikijs/langs/dist/markdown.mjs ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 1867ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 1886ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 787ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web Bundled 6593ms apps/ui/sources/sync/store/settingsWriters.ts (6848 modules)
+[expo] Web apps/ui/sources/sync/domains/state/storage.ts ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 97.3% (6495/6601)
+[expo] Web apps/ui/sources/sync/store/settingsWriters.ts ▓▓▓▓▓▓▓▓▓�[server] exited (code=1, sig=null)
+48)
+[expo] Web Bundled 7483ms apps/ui/sources/sync/domains/state/storage.ts (6848 modules)
+[expo] Web apps/ui/node_modules/react-native-enriched-markdown/lib/module/index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 196ms apps/ui/node_modules/react-native-enriched-markdown/lib/module/index.web.js (26 modules)
+[expo] Web apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx ▓▓▓░░░░░░░░░░░░░ 19.3% ( 618/1406)
+[expo] Web Bundled 4060ms apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx (8093 modules)
+[expo] Web apps/ui/index.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 591ms apps/ui/index.ts (1 module)
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo] Web Bundled 31ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Web Bundled 220ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Web Bundled 270ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Web Bundled 17ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 25ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 12ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 40ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web Bundled 16ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 14ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 28ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 252ms apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx (1 module)
+[expo] Web apps/ui/index.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 523ms apps/ui/index.ts (1 module)
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo] Web Bundled 31ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Web Bundled 200ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Web Bundled 263ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Web Bundled 16ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 23ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 12ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 30ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web Bundled 12ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 15ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 33ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 439ms apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx (1 module)
+[expo] Web apps/ui/index.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 507ms apps/ui/index.ts (1 module)
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo] Web Bundled 21ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Web Bundled 14ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 21ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 12ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 22ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web Bundled 12ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 12ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 217ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Web Bundled 259ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Web Bundled 18ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web Bundled 18ms apps/ui/node_modules/react-native-enriched-markdown/lib/module/index.web.js (1 module)
+[expo] Web Bundled 266ms apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx (1 module)
+[expo] Web apps/ui/index.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 751ms apps/ui/index.ts (1 module)
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo] Web Bundled 20ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Web Bundled 269ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Web Bundled 313ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Web Bundled 17ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 23ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 14ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 40ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web Bundled 12ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 47ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 28ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web apps/ui/index.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 393ms apps/ui/index.ts (1 module)
+[expo] Web Bundled 19ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo] Web Bundled 232ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Web Bundled 267ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Web Bundled 443ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 15ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 21ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web Bundled 75ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 12ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 11ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 23ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web node_modules/shiki/dist/wasm.mjs ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 285ms apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx (1 module)
+[expo] Web apps/ui/index.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 621ms apps/ui/index.ts (1 module)
+[expo] Web Bundled 20ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo] Web Bundled 20ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 26ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 15ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 26ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web Bundled 15ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 16ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 230ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Web Bundled 256ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Web Bundled 396ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web apps/ui/index.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 687ms apps/ui/index.ts (1 module)
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo] Web Bundled 21ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Web Bundled 221ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Web Bundled 238ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Web Bundled 20ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 24ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 13ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 62ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web Bundled 12ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 17ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 23ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 318ms apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx (1 module)
+[expo] Web apps/ui/node_modules/react-native-enriched-markdown/lib/module/index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 55ms apps/ui/node_modules/react-native-enriched-markdown/lib/module/index.web.js (1 module)
+[expo] Web node_modules/@tauri-apps/api/core.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 1382ms apps/ui/index.ts (1 module)
+[expo] Web node_modules/@tauri-apps/api/core.js ░░░░░░░░░░░░░░░░  1.0% (1/2)
+[expo] Web node_modules/@tauri-apps/api/core.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 1264ms apps/ui/index.ts (1 module)
+[expo] Web Bundled 691ms apps/ui/index.ts (1 module)
+[expo] Web Bundled 8059ms node_modules/@tauri-apps/api/core.js (2 modules)
+[expo] Web Bundled 7123ms node_modules/@tauri-apps/api/core.js (1 module)
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo] Web Bundled 40ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Web Bundled 16ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 25ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 12ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 24ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web Bundled 24ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 13ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 28ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Web Bundled 20ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Web Bundled 423ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Web Bundled 482ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Web Bundled 33ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web Bundled 28ms apps/ui/node_modules/react-native-enriched-markdown/lib/module/index.web.js (1 module)
+[expo] Web Bundled 262ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Web Bundled 632ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Web Bundled 32ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 70ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 26ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 78ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web Bundled 16ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 13ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 252ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Web Bundled 679ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Web Bundled 757ms apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx (1 module)
+[expo] Web Bundled 13ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 132ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 24ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 226ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web Bundled 16ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 14ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 59ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web Bundled 19ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 620ms apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx (1 module)
+[expo] Android apps/ui/index.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Android apps/ui/index.ts ▓▓▓▓▓▓░░░░░░░░░░ 38.1% (1048/1903)
+[expo] Android apps/ui/index.ts ▓▓▓▓▓▓░░░░░░░░░░ 41.0% (2135/3585)
+[expo] Android apps/ui/index.ts ▓▓▓▓▓▓░░░░░░░░░░ 41.0% (2501/4314)
+[expo]  WARN  Attempted to import the module "/home/erika/happiest/node_modules/@noble/hashes/crypto.js" which is not listed in the "exports" of "/home/erika/happiest/node_modules/@noble/hashes" under the requested subpath "./crypto.js". Falling back to file-based resolution. Consider updating the call site or asking the package maintainer(s) to expose this API.
+[expo] Android apps/ui/index.ts ▓▓▓▓▓▓▓▓░░░░░░░░ 50.7% (3850/5407)
+[expo] Android apps/ui/index.ts ▓▓▓▓▓▓▓▓▓░░░░░░░ 62.2% (4667/6291)
+[expo] Android apps/ui/index.ts ▓▓▓▓▓▓▓▓▓░░░░░░░ 62.2% (5319/8376)
+[expo] Android apps/ui/index.ts ▓▓▓▓▓▓▓▓▓░░░░░░░ 62.2% (7480/9869)
+[expo] Android apps/ui/index.ts ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 71.2% ( 9436/11183)
+[expo] Android apps/ui/index.ts ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90.4% (11126/11702)
+[expo] Android apps/ui/index.ts ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 97.5% (11977/12128)
+[expo] Android apps/ui/index.ts ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.0% (12163/12224)
+[expo] Android apps/ui/index.ts ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.1% (12166/12224)
+[expo] Android apps/ui/index.ts ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.1% (12167/12224)
+[expo] Android Bundled 50766ms apps/ui/index.ts (12269 modules)
+[expo] Android apps/ui/node_modules/expo-notifications/build/index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo]  LOG  [loadAppConfig] Loaded from ExponentConstants: ["variant", "identityVariant"]
+[expo] Android Bundled 622ms apps/ui/node_modules/expo-notifications/build/index.js (845 modules)
+[expo]  LOG  [loadAppConfig] Loaded from Constants.expoConfig: ["variant", "identityVariant"]
+[expo]  LOG  [loadAppConfig] Override serverUrl from EXPO_PUBLIC_HAPPIER_SERVER_URL/EXPO_PUBLIC_HAPPY_SERVER_URL/EXPO_PUBLIC_SERVER_URL
+[expo]  LOG  [serverFetch] active server snapshot: serverId=192.168.29.105-52854, serverUrl=http://192.168.29.105:52854, generation=0
+[expo]  LOG  [serverFetch] runtimeFetch failed: GET http://192.168.29.105:52854/v1/features (activeServer=http://192.168.29.105:52854, serverId=srv_xbtvRCrmJWHPW9XCgfG1NAAgGPEr1KNY) AbortError: Aborted
+[expo]  LOG  [serverFetch] runtimeFetch failed: GET http://localhost:52854/v1/features (activeServer=http://localhost:52854, serverId=localhost-52854) AbortError: Aborted
+[expo]  LOG  [serverFetch] hint: active server URL is loopback (localhost:52854); a physical device cannot reach your computer via localhost. Use a LAN/Tailscale URL.
+[expo] Android apps/ui/sources/sync/store/settingsWriters.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Android Bundled 76ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo]  LOG  📦 fetchArtifactsList: Starting artifact sync
+[expo]  LOG  📦 fetchArtifactsList: Fetching artifacts from server
+[expo]  LOG  🖥️ fetchMachines completed - rendered 0 machine display rows before selective hydration
+[expo]  LOG  📦 fetchArtifactsList: Received 0 artifacts from server
+[expo]  LOG  📦 fetchArtifactsList: Successfully decrypted 0 artifacts
+[expo]  LOG  📦 fetchArtifactsList: Artifacts applied to storage
+[expo]  LOG  📝 Fetching todos...
+[expo]  LOG  👥 fetchFriendRequests called - now handled by fetchFriends
+[expo]  LOG  📰 Fetching feed...
+[expo]  LOG  📰 Fetching feed: /v1/feed?limit=100
+[expo]  LOG  📝 Todos loaded
+[expo]  LOG  📰 Fetching feed: /v1/feed?limit=100
+[expo]  LOG  📰 fetchFeed completed - loaded 0 compatible items (0 filtered)
+[expo] Android apps/ui/sources/sync/store/settingsWriters.ts ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 80.8% (2177/2422)
+[expo] Android apps/ui/sources/sync/domains/state/storage.ts ▓▓▓▓▓▓▓▓▓▓░░░░░░ 67.6% (1464/1780)
+[expo] Android apps/ui/sources/sync/store/settingsWriters.ts ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 85.2% (5796/6686)
+[expo] Android apps/ui/sources/sync/domains/state/storage.ts ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 84.8% (4924/6598)
+[expo] Android Bundled 9561ms apps/ui/sources/sync/store/settingsWriters.ts (7535 modules)
+[expo] Android Bundled 10578ms apps/ui/sources/sync/domains/state/storage.ts (7552 modules)
+[expo]  LOG  📋 Settings synced from server (v2, version 1)
+[expo]  LOG  🖥️ New machine update received
+[expo]  LOG  ℹ️ native crypto worker routing kept a batch on JS: operation=decryptDataKeyEnvelopeV1 reason=below_min_payload_bytes items=1 payloadBytes=505 occurrences=1 threshold=512
+[expo]  LOG  🖥️ fetchMachines completed - rendered 1 machine display rows before selective hydration
+[expo]  LOG  🆕 New session update received
+[expo] Android apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Android apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx ▓▓▓▓▓▓▓▓░░░░░░░░ 56.0% (4960/7015)
+[expo] Android Bundled 6138ms apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx (8627 modules)
+[expo]  LOG  🖥️ fetchMachines completed - rendered 1 machine display rows before selective hydration
+[expo]  LOG  🆕 New session update received
+[expo]  WARN  LegendList bootstrap initial scroll aborted after exceeding convergence bounds.
+[expo]  LOG  ℹ️ native crypto worker routing kept a batch on JS: operation=decryptAesGcmJson reason=below_min_payload_bytes items=1 payloadBytes=494 occurrences=7 threshold=512
+[expo] Web apps/ui/sources/components/sessions/fork/openSessionForkStrategyFlow.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo]  WARN  Attempted to import the module "/home/erika/happiest/node_modules/@noble/hashes/crypto.js" which is not listed in the "exports" of "/home/erika/happiest/node_modules/@noble/hashes" under the requested subpath "./crypto.js". Falling back to file-based resolution. Consider updating the call site or asking the package maintainer(s) to expose this API.
+[expo] Web apps/ui/sources/components/sessions/fork/openSessionForkStrategyFlow.ts ▓▓▓▓▓▓▓▓░░░░░░░░ 56.2% (1321/1762)
+[expo] Web apps/ui/sources/components/sessions/fork/openSessionForkStrategyFlow.ts ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 97.8% (6793/6868)
+[expo] Web Bundled 8008ms apps/ui/sources/components/sessions/fork/openSessionForkStrategyFlow.ts (6891 modules)
+[expo] Android apps/ui/index.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Android Bundled 4294ms apps/ui/index.ts (1 module)
+[expo] Android apps/ui/index.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Android apps/ui/node_modules/expo-notifications/build/index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Android Bundled 474ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo]  LOG  [loadAppConfig] Loaded from ExponentConstants: ["variant", "identityVariant"]
+[expo]  LOG  [loadAppConfig] Loaded from Constants.expoConfig: ["variant", "identityVariant"]
+[expo]  LOG  [loadAppConfig] Override serverUrl from EXPO_PUBLIC_HAPPIER_SERVER_URL/EXPO_PUBLIC_HAPPY_SERVER_URL/EXPO_PUBLIC_SERVER_URL
+[expo]  LOG  [serverFetch] active server snapshot: serverId=srv_xbtvRCrmJWHPW9XCgfG1NAAgGPEr1KNY, serverUrl=http://localhost:52854, generation=0
+[expo] Android apps/ui/node_modules/expo-notifications/build/index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Android Bundled 72ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Android Bundled 1161ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Android Bundled 931ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo]  LOG  📦 fetchArtifactsList: Starting artifact sync
+[expo]  LOG  📦 fetchArtifactsList: Fetching artifacts from server
+[expo]  LOG  ℹ️ native crypto worker routing kept a batch on JS: operation=decryptDataKeyEnvelopeV1 reason=below_min_payload_bytes items=1 payloadBytes=505 occurrences=1 threshold=512
+[expo]  LOG  🖥️ fetchMachines completed - rendered 1 machine display rows before selective hydration
+[expo]  LOG  📦 fetchArtifactsList: Received 0 artifacts from server
+[expo]  LOG  📦 fetchArtifactsList: Successfully decrypted 0 artifacts
+[expo]  LOG  📦 fetchArtifactsList: Artifacts applied to storage
+[expo]  LOG  📝 Fetching todos...
+[expo]  LOG  👥 fetchFriendRequests called - now handled by fetchFriends
+[expo]  LOG  📰 Fetching feed...
+[expo]  LOG  📰 Fetching feed: /v1/feed?limit=100
+[expo]  LOG  📝 Todos loaded
+[expo]  LOG  📰 Fetching feed: /v1/feed?limit=100
+[expo]  LOG  📰 fetchFeed completed - loaded 0 compatible items (0 filtered)
+[expo] Android apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Android Bundled 2301ms apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx (1 module)
+[expo]  LOG  🆕 New session update received
+[expo]  WARN  LegendList bootstrap initial scroll aborted after exceeding convergence bounds.
+[expo]  LOG  ℹ️ native crypto worker routing kept a batch on JS: operation=decryptAesGcmJson reason=below_min_payload_bytes items=1 payloadBytes=494 occurrences=5 threshold=512
+[expo]  WARN  [legend-list] No unused container available, so creating one on demand. This can be a minor performance issue and is likely caused by the estimatedItemSize being too large. Consider decreasing estimatedItemSize. {"debugInfo": {"numContainers": 6, "numContainersPooled": 6, "numNeeded": 2, "stillNeeded": 1}}
+[expo] Web apps/ui/index.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 2187ms apps/ui/index.ts (1 module)
+[expo] Web Bundled 711ms apps/ui/index.ts (1 module)
+[expo] Web Bundled 1042ms apps/ui/index.ts (1 module)
+[expo] Android Bundled 1838ms apps/ui/index.ts (1 module)
+[expo] Android apps/ui/index.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo] Web Bundled 100ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Web Bundled 39ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 37ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 17ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 35ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web Bundled 16ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 16ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 40ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Web Bundled 15ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 13ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 38ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 15ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web Bundled 31ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 15ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 40ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Web Bundled 26ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web Bundled 14ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 35ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 13ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 33ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web Bundled 15ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 14ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 36ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web Bundled 905ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Web apps/ui/sources/sync/domains/state/storage.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 15ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web Bundled 5367ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Web Bundled 1192ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Web apps/ui/sources/sync/store/settingsWriters.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Android Bundled 87ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Web Bundled 1259ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo]  LOG  [loadAppConfig] Loaded from ExponentConstants: ["variant", "identityVariant"]
+[expo]  LOG  [loadAppConfig] Loaded from Constants.expoConfig: ["variant", "identityVariant"]
+[expo]  LOG  [loadAppConfig] Override serverUrl from EXPO_PUBLIC_HAPPIER_SERVER_URL/EXPO_PUBLIC_HAPPY_SERVER_URL/EXPO_PUBLIC_SERVER_URL
+[expo]  LOG  [serverFetch] active server snapshot: serverId=srv_xbtvRCrmJWHPW9XCgfG1NAAgGPEr1KNY, serverUrl=http://localhost:52854, generation=0
+[expo]  LOG  📦 fetchArtifactsList: Starting artifact sync
+[expo]  LOG  📦 fetchArtifactsList: Fetching artifacts from server
+[expo]  LOG  ℹ️ native crypto worker routing kept a batch on JS: operation=decryptDataKeyEnvelopeV1 reason=below_min_payload_bytes items=1 payloadBytes=505 occurrences=1 threshold=512
+[expo]  LOG  🖥️ fetchMachines completed - rendered 1 machine display rows before selective hydration
+[expo]  LOG  📦 fetchArtifactsList: Received 0 artifacts from server
+[expo]  LOG  📦 fetchArtifactsList: Successfully decrypted 0 artifacts
+[expo]  LOG  📦 fetchArtifactsList: Artifacts applied to storage
+[expo]  LOG  📝 Fetching todos...
+[expo]  LOG  👥 fetchFriendRequests called - now handled by fetchFriends
+[expo]  LOG  📰 Fetching feed...
+[expo]  LOG  📰 Fetching feed: /v1/feed?limit=100
+[expo]  LOG  📝 Todos loaded
+[expo]  LOG  📰 Fetching feed: /v1/feed?limit=100
+[expo]  LOG  📰 fetchFeed completed - loaded 0 compatible items (0 filtered)
+[expo] Web Bundled 810ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Web Bundled 1167ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Web apps/ui/sources/sync/domains/state/storage.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Android Bundled 22ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Android Bundled 881ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Android Bundled 981ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Android apps/ui/sources/sync/store/settingsWriters.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 793ms apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx (1 module)
+[expo] Web Bundled 384ms apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx (1 module)
+[expo] Android apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Android Bundled 1083ms apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx (1 module)
+[expo] Web apps/ui/node_modules/react-native-enriched-markdown/lib/module/index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 240ms apps/ui/node_modules/react-native-enriched-markdown/lib/module/index.web.js (1 module)
+[expo]  ERROR  SyntaxError: /home/erika/happiest/apps/ui/sources/sync/sync.ts: Unexpected token (1:0)
+[expo] 
+[expo] > 1 | <<<<<<< Updated upstream
+[expo]     | ^
+[expo]   2 | import Constants from 'expo-constants';
+[expo]   3 | import { apiSocket } from '@/sync/api/session/apiSocket';
+[expo]   4 | import { ensureSessionRuntimeForPendingInput } from '@/sync/ops';
+[expo]     at constructor (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:365:19)
+[expo]     at TypeScriptParserMixin.raise (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:6599:19)
+[expo]     at TypeScriptParserMixin.unexpected (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:6619:16)
+[expo]     at TypeScriptParserMixin.parseExprAtom (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:11432:22)
+[expo]     at TypeScriptParserMixin.parseExprSubscripts (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:11071:23)
+[expo]     at TypeScriptParserMixin.parseUpdate (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:11056:21)
+[expo]     at TypeScriptParserMixin.parseMaybeUnary (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:11036:23)
+[expo]     at TypeScriptParserMixin.parseMaybeUnary (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:9827:18)
+[expo]     at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10889:61)
+[expo]     at TypeScriptParserMixin.parseExprOps (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10894:23)
+[expo]     at TypeScriptParserMixin.parseMaybeConditional (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10871:23)
+[expo]     at TypeScriptParserMixin.parseMaybeAssign (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10821:21)
+[expo]     at TypeScriptParserMixin.parseMaybeAssign (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:9776:20)
+[expo]     at TypeScriptParserMixin.parseExpressionBase (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10774:23)
+[expo]     at /home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10770:39
+[expo]     at TypeScriptParserMixin.allowInAnd (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12411:16)
+[expo]     at TypeScriptParserMixin.parseExpression (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10770:17)
+[expo]     at TypeScriptParserMixin.parseStatementContent (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12885:23)
+[expo]     at TypeScriptParserMixin.parseStatementContent (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:9508:18)
+[expo]     at TypeScriptParserMixin.parseStatementLike (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12757:17)
+[expo]     at TypeScriptParserMixin.parseModuleItem (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12734:17)
+[expo]     at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:13306:36)
+[expo]     at TypeScriptParserMixin.parseBlockBody (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:13299:10)
+[expo]     at TypeScriptParserMixin.parseProgram (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12612:10)
+[expo]     at TypeScriptParserMixin.parseTopLevel (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12602:25)
+[expo]     at TypeScriptParserMixin.parse (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:14478:25)
+[expo]     at TypeScriptParserMixin.parse (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10116:18)
+[expo]     at parse (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:14491:26)
+[expo]     at parser (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/parser/index.js:41:34)
+[expo]     at parser.next (<anonymous>)
+[expo]     at normalizeFile (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+[expo]     at normalizeFile.next (<anonymous>)
+[expo]     at run (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/transformation/index.js:22:50)
+[expo]     at run.next (<anonymous>)
+[expo]     at transform (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/transform.js:22:33)
+[expo]     at transform.next (<anonymous>)
+[expo]     at evaluateSync (/home/erika/happiest/apps/ui/node_modules/gensync/index.js:251:28)
+[expo]     at sync (/home/erika/happiest/apps/ui/node_modules/gensync/index.js:89:14)
+[expo]     at stopHiding - secret - don't use this - v1 (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/errors/rewrite-stack-trace.js:47:12)
+[expo]     at Object.transformSync (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/transform.js:40:76)
+[expo]     at parseWithBabel (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transformSync.js:75:18)
+[expo]     at transformSync (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transformSync.js:54:16)
+[expo]     at Object.transform (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/babel-transformer.js:127:58)
+[expo]     at transformJSWithBabel (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js:468:47)
+[expo]     at Object.transform (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js:583:12)
+[expo]     at Object.transform (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transform-worker/transform-worker.js:178:19)
+[expo]     at transformFile (/home/erika/happiest/node_modules/metro/src/DeltaBundler/Worker.flow.js:67:36)
+[expo]     at Object.transform (/home/erika/happiest/node_modules/metro/src/DeltaBundler/Worker.flow.js:42:10)
+[expo]     at execFunction (/home/erika/happiest/node_modules/jest-worker/build/workers/processChild.js:149:17)
+[expo]     at execHelper (/home/erika/happiest/node_modules/jest-worker/build/workers/processChild.js:137:5)
+[expo]  ERROR  SyntaxError: /home/erika/happiest/apps/ui/sources/sync/sync.ts: Unexpected token (1:0)
+[expo] 
+[expo] > 1 | <<<<<<< Updated upstream
+[expo]     | ^
+[expo]   2 | import Constants from 'expo-constants';
+[expo]   3 | import { apiSocket } from '@/sync/api/session/apiSocket';
+[expo]   4 | import { ensureSessionRuntimeForPendingInput } from '@/sync/ops';
+[expo]     at constructor (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:365:19)
+[expo]     at TypeScriptParserMixin.raise (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:6599:19)
+[expo]     at TypeScriptParserMixin.unexpected (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:6619:16)
+[expo]     at TypeScriptParserMixin.parseExprAtom (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:11432:22)
+[expo]     at TypeScriptParserMixin.parseExprSubscripts (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:11071:23)
+[expo]     at TypeScriptParserMixin.parseUpdate (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:11056:21)
+[expo]     at TypeScriptParserMixin.parseMaybeUnary (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:11036:23)
+[expo]     at TypeScriptParserMixin.parseMaybeUnary (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:9827:18)
+[expo]     at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10889:61)
+[expo]     at TypeScriptParserMixin.parseExprOps (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10894:23)
+[expo]     at TypeScriptParserMixin.parseMaybeConditional (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10871:23)
+[expo]     at TypeScriptParserMixin.parseMaybeAssign (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10821:21)
+[expo]     at TypeScriptParserMixin.parseMaybeAssign (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:9776:20)
+[expo]     at TypeScriptParserMixin.parseExpressionBase (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10774:23)
+[expo]     at /home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10770:39
+[expo]     at TypeScriptParserMixin.allowInAnd (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12411:16)
+[expo]     at TypeScriptParserMixin.parseExpression (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10770:17)
+[expo]     at TypeScriptParserMixin.parseStatementContent (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12885:23)
+[expo]     at TypeScriptParserMixin.parseStatementContent (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:9508:18)
+[expo]     at TypeScriptParserMixin.parseStatementLike (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12757:17)
+[expo]     at TypeScriptParserMixin.parseModuleItem (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12734:17)
+[expo]     at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:13306:36)
+[expo]     at TypeScriptParserMixin.parseBlockBody (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:13299:10)
+[expo]     at TypeScriptParserMixin.parseProgram (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12612:10)
+[expo]     at TypeScriptParserMixin.parseTopLevel (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12602:25)
+[expo]     at TypeScriptParserMixin.parse (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:14478:25)
+[expo]     at TypeScriptParserMixin.parse (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10116:18)
+[expo]     at parse (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:14491:26)
+[expo]     at parser (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/parser/index.js:41:34)
+[expo]     at parser.next (<anonymous>)
+[expo]     at normalizeFile (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+[expo]     at normalizeFile.next (<anonymous>)
+[expo]     at run (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/transformation/index.js:22:50)
+[expo]     at run.next (<anonymous>)
+[expo]     at transform (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/transform.js:22:33)
+[expo]     at transform.next (<anonymous>)
+[expo]     at evaluateSync (/home/erika/happiest/apps/ui/node_modules/gensync/index.js:251:28)
+[expo]     at sync (/home/erika/happiest/apps/ui/node_modules/gensync/index.js:89:14)
+[expo]     at stopHiding - secret - don't use this - v1 (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/errors/rewrite-stack-trace.js:47:12)
+[expo]     at Object.transformSync (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/transform.js:40:76)
+[expo]     at parseWithBabel (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transformSync.js:75:18)
+[expo]     at transformSync (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transformSync.js:54:16)
+[expo]     at Object.transform (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/babel-transformer.js:127:58)
+[expo]     at transformJSWithBabel (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js:468:47)
+[expo]     at Object.transform (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js:583:12)
+[expo]     at Object.transform (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transform-worker/transform-worker.js:178:19)
+[expo]     at transformFile (/home/erika/happiest/node_modules/metro/src/DeltaBundler/Worker.flow.js:67:36)
+[expo]     at Object.transform (/home/erika/happiest/node_modules/metro/src/DeltaBundler/Worker.flow.js:42:10)
+[expo]     at execFunction (/home/erika/happiest/node_modules/jest-worker/build/workers/processChild.js:149:17)
+[expo]     at execHelper (/home/erika/happiest/node_modules/jest-worker/build/workers/processChild.js:137:5)
+[expo]  ERROR  SyntaxError: /home/erika/happiest/apps/ui/sources/sync/sync.ts: Unexpected token (1:0)
+[expo] 
+[expo] > 1 | <<<<<<< Updated upstream
+[expo]     | ^
+[expo]   2 | import Constants from 'expo-constants';
+[expo]   3 | import { apiSocket } from '@/sync/api/session/apiSocket';
+[expo]   4 | import { ensureSessionRuntimeForPendingInput } from '@/sync/ops';
+[expo]     at constructor (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:365:19)
+[expo]     at TypeScriptParserMixin.raise (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:6599:19)
+[expo]     at TypeScriptParserMixin.unexpected (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:6619:16)
+[expo]     at TypeScriptParserMixin.parseExprAtom (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:11432:22)
+[expo]     at TypeScriptParserMixin.parseExprSubscripts (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:11071:23)
+[expo]     at TypeScriptParserMixin.parseUpdate (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:11056:21)
+[expo]     at TypeScriptParserMixin.parseMaybeUnary (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:11036:23)
+[expo]     at TypeScriptParserMixin.parseMaybeUnary (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:9827:18)
+[expo]     at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10889:61)
+[expo]     at TypeScriptParserMixin.parseExprOps (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10894:23)
+[expo]     at TypeScriptParserMixin.parseMaybeConditional (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10871:23)
+[expo]     at TypeScriptParserMixin.parseMaybeAssign (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10821:21)
+[expo]     at TypeScriptParserMixin.parseMaybeAssign (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:9776:20)
+[expo]     at TypeScriptParserMixin.parseExpressionBase (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10774:23)
+[expo]     at /home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10770:39
+[expo]     at TypeScriptParserMixin.allowInAnd (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12411:16)
+[expo]     at TypeScriptParserMixin.parseExpression (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10770:17)
+[expo]     at TypeScriptParserMixin.parseStatementContent (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12885:23)
+[expo]     at TypeScriptParserMixin.parseStatementContent (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:9508:18)
+[expo]     at TypeScriptParserMixin.parseStatementLike (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12757:17)
+[expo]     at TypeScriptParserMixin.parseModuleItem (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12734:17)
+[expo]     at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:13306:36)
+[expo]     at TypeScriptParserMixin.parseBlockBody (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:13299:10)
+[expo]     at TypeScriptParserMixin.parseProgram (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12612:10)
+[expo]     at TypeScriptParserMixin.parseTopLevel (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12602:25)
+[expo]     at TypeScriptParserMixin.parse (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:14478:25)
+[expo]     at TypeScriptParserMixin.parse (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10116:18)
+[expo]     at parse (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:14491:26)
+[expo]     at parser (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/parser/index.js:41:34)
+[expo]     at parser.next (<anonymous>)
+[expo]     at normalizeFile (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+[expo]     at normalizeFile.next (<anonymous>)
+[expo]     at run (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/transformation/index.js:22:50)
+[expo]     at run.next (<anonymous>)
+[expo]     at transform (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/transform.js:22:33)
+[expo]     at transform.next (<anonymous>)
+[expo]     at evaluateSync (/home/erika/happiest/apps/ui/node_modules/gensync/index.js:251:28)
+[expo]     at sync (/home/erika/happiest/apps/ui/node_modules/gensync/index.js:89:14)
+[expo]     at stopHiding - secret - don't use this - v1 (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/errors/rewrite-stack-trace.js:47:12)
+[expo]     at Object.transformSync (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/transform.js:40:76)
+[expo]     at parseWithBabel (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transformSync.js:75:18)
+[expo]     at transformSync (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transformSync.js:54:16)
+[expo]     at Object.transform (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/babel-transformer.js:127:58)
+[expo]     at transformJSWithBabel (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js:468:47)
+[expo]     at Object.transform (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js:583:12)
+[expo]     at Object.transform (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transform-worker/transform-worker.js:178:19)
+[expo]     at transformFile (/home/erika/happiest/node_modules/metro/src/DeltaBundler/Worker.flow.js:67:36)
+[expo]     at Object.transform (/home/erika/happiest/node_modules/metro/src/DeltaBundler/Worker.flow.js:42:10)
+[expo]     at execFunction (/home/erika/happiest/node_modules/jest-worker/build/workers/processChild.js:149:17)
+[expo]     at execHelper (/home/erika/happiest/node_modules/jest-worker/build/workers/processChild.js:137:5)
+[expo]  ERROR  SyntaxError: /home/erika/happiest/apps/ui/sources/sync/sync.ts: Unexpected token (1:0)
+[expo] 
+[expo] > 1 | <<<<<<< Updated upstream
+[expo]     | ^
+[expo]   2 | import Constants from 'expo-constants';
+[expo]   3 | import { apiSocket } from '@/sync/api/session/apiSocket';
+[expo]   4 | import { ensureSessionRuntimeForPendingInput } from '@/sync/ops';
+[expo]     at constructor (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:365:19)
+[expo]     at TypeScriptParserMixin.raise (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:6599:19)
+[expo]     at TypeScriptParserMixin.unexpected (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:6619:16)
+[expo]     at TypeScriptParserMixin.parseExprAtom (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:11432:22)
+[expo]     at TypeScriptParserMixin.parseExprSubscripts (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:11071:23)
+[expo]     at TypeScriptParserMixin.parseUpdate (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:11056:21)
+[expo]     at TypeScriptParserMixin.parseMaybeUnary (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:11036:23)
+[expo]     at TypeScriptParserMixin.parseMaybeUnary (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:9827:18)
+[expo]     at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10889:61)
+[expo]     at TypeScriptParserMixin.parseExprOps (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10894:23)
+[expo]     at TypeScriptParserMixin.parseMaybeConditional (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10871:23)
+[expo]     at TypeScriptParserMixin.parseMaybeAssign (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10821:21)
+[expo]     at TypeScriptParserMixin.parseMaybeAssign (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:9776:20)
+[expo]     at TypeScriptParserMixin.parseExpressionBase (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10774:23)
+[expo]     at /home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10770:39
+[expo]     at TypeScriptParserMixin.allowInAnd (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12411:16)
+[expo]     at TypeScriptParserMixin.parseExpression (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10770:17)
+[expo]     at TypeScriptParserMixin.parseStatementContent (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12885:23)
+[expo]     at TypeScriptParserMixin.parseStatementContent (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:9508:18)
+[expo]     at TypeScriptParserMixin.parseStatementLike (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12757:17)
+[expo]     at TypeScriptParserMixin.parseModuleItem (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12734:17)
+[expo]     at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:13306:36)
+[expo]     at TypeScriptParserMixin.parseBlockBody (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:13299:10)
+[expo]     at TypeScriptParserMixin.parseProgram (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12612:10)
+[expo]     at TypeScriptParserMixin.parseTopLevel (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:12602:25)
+[expo]     at TypeScriptParserMixin.parse (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:14478:25)
+[expo]     at TypeScriptParserMixin.parse (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:10116:18)
+[expo]     at parse (/home/erika/happiest/apps/ui/node_modules/@babel/parser/lib/index.js:14491:26)
+[expo]     at parser (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/parser/index.js:41:34)
+[expo]     at parser.next (<anonymous>)
+[expo]     at normalizeFile (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+[expo]     at normalizeFile.next (<anonymous>)
+[expo]     at run (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/transformation/index.js:22:50)
+[expo]     at run.next (<anonymous>)
+[expo]     at transform (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/transform.js:22:33)
+[expo]     at transform.next (<anonymous>)
+[expo]     at evaluateSync (/home/erika/happiest/apps/ui/node_modules/gensync/index.js:251:28)
+[expo]     at sync (/home/erika/happiest/apps/ui/node_modules/gensync/index.js:89:14)
+[expo]     at stopHiding - secret - don't use this - v1 (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/errors/rewrite-stack-trace.js:47:12)
+[expo]     at Object.transformSync (/home/erika/happiest/apps/ui/node_modules/@babel/core/lib/transform.js:40:76)
+[expo]     at parseWithBabel (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transformSync.js:75:18)
+[expo]     at transformSync (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transformSync.js:54:16)
+[expo]     at Object.transform (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/babel-transformer.js:127:58)
+[expo]     at transformJSWithBabel (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js:468:47)
+[expo]     at Object.transform (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js:583:12)
+[expo]     at Object.transform (/home/erika/happiest/apps/ui/node_modules/@expo/metro-config/build/transform-worker/transform-worker.js:178:19)
+[expo]     at transformFile (/home/erika/happiest/node_modules/metro/src/DeltaBundler/Worker.flow.js:67:36)
+[expo]     at Object.transform (/home/erika/happiest/node_modules/metro/src/DeltaBundler/Worker.flow.js:42:10)
+[expo]     at execFunction (/home/erika/happiest/node_modules/jest-worker/build/workers/processChild.js:149:17)
+[expo]     at execHelper (/home/erika/happiest/node_modules/jest-worker/build/workers/processChild.js:137:5)
+[expo] Web Bundled 49ms node_modules/@tauri-apps/api/core.js (1 module)
+[expo] Web Bundled 39ms node_modules/@tauri-apps/api/core.js (1 module)
+[expo] Web Bundled 59ms node_modules/@tauri-apps/api/core.js (1 module)
+[expo] Web apps/ui/index.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 1792ms apps/ui/index.ts (1 module)
+[expo] Web Bundled 5879ms apps/ui/index.ts (1 module)
+[expo] Web apps/ui/index.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 2421ms apps/ui/index.ts (1 module)
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo]  LOG  [web] Logs will appear in the browser console
+[expo] Web Bundled 66ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Web Bundled 24ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Web Bundled 46ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Web Bundled 497ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Web apps/ui/sources/sync/domains/state/storage.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 491ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Web Bundled 339ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Web Bundled 19ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 31ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 15ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 36ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web Bundled 728ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 338ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 376ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Web Bundled 31ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 728ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 416ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo] Web Bundled 767ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 18ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web Bundled 26ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 88ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 24ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web node_modules/shiki/dist/wasm.mjs ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 294ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Web Bundled 56ms node_modules/@shikijs/langs/dist/typescript.mjs (1 module)
+[expo] Web Bundled 13ms node_modules/@shikijs/langs/dist/javascript.mjs (1 module)
+[expo] Web Bundled 55ms node_modules/@shikijs/langs/dist/tsx.mjs (1 module)
+[expo] Web Bundled 13ms node_modules/@shikijs/langs/dist/jsx.mjs (1 module)
+[expo] Web Bundled 49ms node_modules/@shikijs/langs/dist/json.mjs (1 module)
+[expo] Web Bundled 37ms node_modules/@shikijs/langs/dist/markdown.mjs (1 module)
+[expo] Web Bundled 14ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web Bundled 68ms node_modules/shiki/dist/wasm.mjs (1 module)
+[expo] Web apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 464ms apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx (1 module)
+[expo] Web Bundled 1328ms apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx (1 module)
+[expo] Android apps/ui/index.ts ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Android Bundled 3121ms apps/ui/index.ts (1 module)
+[expo] Android apps/ui/node_modules/expo-notifications/build/index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Android Bundled 67ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo]  LOG  [loadAppConfig] Loaded from ExponentConstants: ["variant", "identityVariant"]
+[expo]  LOG  [loadAppConfig] Loaded from Constants.expoConfig: ["variant", "identityVariant"]
+[expo]  LOG  [loadAppConfig] Override serverUrl from EXPO_PUBLIC_HAPPIER_SERVER_URL/EXPO_PUBLIC_HAPPY_SERVER_URL/EXPO_PUBLIC_SERVER_URL
+[expo]  LOG  [serverFetch] active server snapshot: serverId=srv_xbtvRCrmJWHPW9XCgfG1NAAgGPEr1KNY, serverUrl=http://localhost:52854, generation=0
+[expo] Android Bundled 622ms apps/ui/sources/sync/store/settingsWriters.ts (1 module)
+[expo] Android Bundled 17ms apps/ui/node_modules/expo-notifications/build/index.js (1 module)
+[expo] Android Bundled 859ms apps/ui/sources/sync/domains/state/storage.ts (1 module)
+[expo]  LOG  📦 fetchArtifactsList: Starting artifact sync
+[expo]  LOG  📦 fetchArtifactsList: Fetching artifacts from server
+[expo]  LOG  ℹ️ native crypto worker routing kept a batch on JS: operation=decryptDataKeyEnvelopeV1 reason=below_min_payload_bytes items=1 payloadBytes=505 occurrences=1 threshold=512
+[expo]  LOG  🖥️ fetchMachines completed - rendered 1 machine display rows before selective hydration
+[expo]  LOG  📦 fetchArtifactsList: Received 0 artifacts from server
+[expo]  LOG  📦 fetchArtifactsList: Successfully decrypted 0 artifacts
+[expo]  LOG  📦 fetchArtifactsList: Artifacts applied to storage
+[expo]  LOG  📝 Fetching todos...
+[expo]  LOG  👥 fetchFriendRequests called - now handled by fetchFriends
+[expo]  LOG  📰 Fetching feed...
+[expo]  LOG  📰 Fetching feed: /v1/feed?limit=100
+[expo]  LOG  📝 Todos loaded
+[expo]  LOG  📰 Fetching feed: /v1/feed?limit=100
+[expo]  LOG  📰 fetchFeed completed - loaded 0 compatible items (0 filtered)
+[expo]  LOG  🖥️ fetchMachines completed - rendered 1 machine display rows before selective hydration
+[expo]  LOG  📋 Settings synced from server (v2, version 2)
+[expo]  LOG  📋 Settings synced from server (v2, version 3)
+[expo]  LOG  🖥️ fetchMachines completed - rendered 1 machine display rows before selective hydration
+[expo]  LOG  📋 Settings synced from server (v2, version 4)
+[expo]  LOG  🆕 New session update received
+[expo] Android apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Android Bundled 1246ms apps/ui/sources/components/sessions/agents/details/SessionSubagentDetailsView.tsx (1 module)
+[expo] Web apps/ui/node_modules/react-native-enriched-markdown/lib/module/index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo] Web Bundled 241ms apps/ui/node_modules/react-native-enriched-markdown/lib/module/index.web.js (1 module)
+[repo-happiest-99451da13d-server-proxy] stopped
+
+[local] shutting down...

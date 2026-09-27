@@ -1,0 +1,152 @@
+Already up to date.
+15bd21f9 fix(direct-sessions): stop a Claude process still running the session before Happier cont[relay-host] Port 3005 is already used by another channel's relay; installing preview on port 36991 (data is independent per channel).
+[relay-host] Port 3005 is already used by another channel's relay; installing preview on port 40891 (data is independent per channel).
+[relay-host] Port 3005 is already used by another channel's relay; installing preview on port 39785 (data is independent per channel).
+ms
+ ✓ src/firstPartyRuntime/relayRuntimeInstall.sequence.test.ts (16 tests) 444ms
+ ✓ src/service/manager.uninstallSemantics.test.ts (19 tests) 637ms
+ ✓ src/firstPartyRuntime/relayRuntime.test.ts (7 tests) 109ms
+ ✓ src/componentArtifacts/withCliDistBuildLock.test.ts (4 tests) 91ms
+ ✓ src/componentArtifacts/buildCliBinaryArtifactPayload.windowsRenameFallback.test.ts (1 test) 64ms
+stdout | src/componentArtifacts/buildCliOptionalComponentArtifactPayload.test.ts > builds only the requested linux difftastic executable and license through the real archive unpacker
+Unpacking tools for x64-linux...
+
+stdout | src/componentArtifacts/buildCliOptionalComponentArtifactPayload.test.ts > builds only the requested linux difftastic executable and license through the real archive unpacker
+Tools unpacked successfully to /tmp/happier-difftastic-payload-4HYpVs/unpacked
+
+stdout | src/componentArtifacts/buildCliOptionalComponentArtifactPayload.test.ts > builds only the requested windows difftastic executable and license through the real archive unpacker
+Unpacking tools for x64-win32...
+
+stdout | src/componentArtifacts/buildCliOptionalComponentArtifactPayload.test.ts > builds only the requested windows difftastic executable and license through the real archive unpacker
+Tools unpacked successfully to /tmp/happier-difftastic-payload-WJRxve/unpacked
+
+ ✓ src/firstPartyRuntime/relayRuntimeInstall.legacyRootMigration.stopBeforeRename.test.ts (3 tests) 76ms
+ ✓ src/componentArtifacts/buildCliOptionalComponentArtifactPayload.test.ts (3 tests) 89ms
+ ✓ src/firstPartyRuntime/prepareFirstPartyComponentPayloadFromGitHubRelease.test.ts (10 tests) 53ms
+ ✓ src/providers/managedPnpm.test.ts (10 tests) 965ms
+   ✓ managedPnpm bootstrap race protection > should handle concurrent first-run bootstrap without corruption  833ms
+child output
+ ✓ src/output/progress.test.ts (9 tests) 79ms
+ ✓ src/providers/pnpmRelease.test.ts (6 tests) 38ms
+ ✓ src/firstPartyRuntime/ensureHappierCliPathExposure.test.ts (21 tests) 86ms
+ ✓ src/update/cliUpdateCache.test.ts (3 tests) 11ms
+ ✓ src/tailscale/commandRunner.test.ts (14 tests) 37ms
+ ✓ src/componentArtifacts/cliRuntimeAssetManifest.test.ts (5 tests) 36ms
+ ✓ src/firstPartyRuntime/copyRuntimePayloadTree.retryRemoval.test.ts (1 test) 29ms
+ ✓ src/providers/extractGitHubReleaseAsset.test.ts (5 tests) 29ms
+ ✓ src/relayHost/buildRelayRuntimeHealthProbeCommand.test.ts (3 tests) 60ms
+ ✓ src/componentArtifacts/finalizeRuntimeArtifactPayload.test.ts (37 tests) 2121ms
+ ✓ scripts/verifyExports.test.mjs (6 tests) 27ms
+ ✓ src/firstPartyRuntime/restoreInstalledPayloadState.test.ts (1 test) 31ms
+ ✓ src/firstPartyRuntime/withFirstPartyPayloadMutationLock.test.ts (1 test) 12ms
+ ✓ src/process/windows/resolveWindowsCommandInvocation.test.ts (6 tests) 13ms
+ ✓ src/firstPartyRuntime/syncInstalledFirstPartyShims.defaultReleaseChannel.test.ts (1 test) 38ms
+ ✓ src/firstPartyRuntime/syncInstalledFirstPartyShims.windowsHardLink.test.ts (1 test) 19ms
+ ✓ src/relayHost/relayHostEngine.remoteControl.launchd.test.ts (1 test) 3950ms
+   ✓ RelayHostEngine (remote launchd control) > uses the remote uid when restarting a user launchd relay over ssh  3949ms
+ ✓ src/firstPartyRuntime/promoteVersionedPayload.pointerFailureRollback.test.ts (1 test) 3972ms
+   ✓ promoteVersionedPayload pointer swap atomicity > fails closed without breaking the existing current pointer when symlink creation fails  3971ms
+ ✓ src/firstPartyRuntime/syncInstalledFirstPartyShims.windowsCopyFallback.test.ts (1 test) 3880ms
+   ✓ syncInstalledFirstPartyShims Windows copy fallback > falls back to copyFile when Windows hard-link creation fails  3880ms
+ ✓ src/firstPartyRuntime/promoteVersionedPayload.windowsCopyFallback.test.ts (2 tests) 50ms
+ ✓ src/firstPartyRuntime/happierCliChoice.test.ts (10 tests) 46ms
+ ✓ src/firstPartyRuntime/runManagedCliUpdate.pruneFailure.test.ts (2 tests) 83ms
+ ✓ src/systemTasks/kinds/remoteFirstPartyPayloadInstaller.test.ts (6 tests) 107ms
+ ✓ src/componentArtifacts/buildCliBinaryArtifactPayload.workspaceSync.test.ts (1 test) 3869ms
+   ✓ buildCliBinaryArtifactPayload bundled workspace sync > rebuilds a stale-version cli dist and forwards the exact release version  3868ms
+ ✓ src/firstPartyRuntime/installVersionedPayload.defaultReleaseChannel.test.ts (5 tests) 133ms
+ ✓ src/firstPartyRuntime/installVersionedPayload.windowsLockedPrune.test.ts (1 test) 4127ms
+   ✓ installVersionedPayload Windows locked-version pruning > keeps the new preview install active when pruning an older locked version fails  4127ms
+ ✓ src/componentArtifacts/shouldReuseCliDistSnapshot.test.ts (3 tests) 34ms
+ ✓ src/firstPartyRuntime/copyRuntimePayloadTree.test.ts (1 test) 19ms
+ ✓ src/firstPartyRuntime/uiDeploymentIdentity.test.ts (1 test) 25ms
+ ✓ src/componentArtifacts/commands.test.ts (9 tests) 11ms
+ ✓ src/providers/managedJavaScriptRuntime.bootstrap.test.ts (2 tests) 21ms
+ ✓ src/firstPartyRuntime/serverRuntimeArtifactLayout.test.ts (2 tests) 10ms
+ ✓ src/firstPartyRuntime/resolveNonCollidingRelayPort.test.ts (5 tests) 16ms
+ ✓ src/firstPartyRuntime/runManagedCliUpdate.test.ts (13 tests) 368ms
+ ✓ src/firstPartyRuntime/promoteVersionedPayload.test.ts (2 tests) 22ms
+ ✓ src/output/planet.test.ts (8 tests) 11ms
+ ✓ src/firstPartyRuntime/resolveJunctionFreeCurrentPath.test.ts (3 tests) 14ms
+ ✓ src/firstPartyRuntime/selfHostServerEnv.test.ts (25 tests) 8ms
+ ✓ src/process/runCommandStreaming.test.ts (1 test) 17ms
+ ✓ src/fs/windowsProtectedAcl.test.ts (10 tests | 1 skipped) 12ms
+ ✓ src/service/manager.buildServiceCommandEnv.test.ts (1 test) 2ms
+ ✓ src/firstPartyRuntime/resolveManagedCliReleaseChannel.test.ts (5 tests) 8ms
+ ✓ src/service/manager.schtasksInstall.test.ts (2 tests) 5ms
+ ✓ src/tailscale/serveStatus.test.ts (10 tests) 6ms
+ ✓ src/tailscale/statusSnapshot.test.ts (16 tests) 7ms
+ ✓ src/componentArtifacts/ensureBundledWorkspacePackagesBuilt.test.ts (2 tests) 5ms
+ ✓ src/service/manager.restartPolicy.test.ts (5 tests) 6ms
+ ✓ src/service/windows.test.ts (4 tests) 4ms
+ ✓ src/providers/resolveHappyHomeDir.test.ts (7 tests) 3ms
+ ✓ src/firstPartyRuntime/componentCatalog.test.ts (2 tests) 4ms
+ ✓ src/systemTasks/kinds/sshHostTrust.test.ts (2 tests) 4ms
+ ✓ src/tailscale/taskContract.test.ts (2 tests) 3ms
+ ✓ src/path/expandHomeDirPath.test.ts (6 tests) 3ms
+ ✓ scripts/rmDist.test.mjs (1 test) 3ms
+ ✓ src/firstPartyRuntime/copyRuntimePayloadTree.windowsLongPathPrefix.test.ts (3 tests) 3ms
+ ✓ src/providers/resolution.providerCliPathRequiresJavaScriptRuntime.test.ts (1 test) 5243ms
+   ✓ providerCliPathRequiresJavaScriptRuntime > detects unix node shebang without calling readFileSync on the full file  5242ms
+ ✓ src/providers/install.update.test.ts (3 tests) 23ms
+ ✓ src/providers/update.test.ts (7 tests) 30ms
+ ✓ src/providers/install.gating.test.ts (7 tests) 249ms
+ ✓ src/relayHost/relayHostEngine.localLegacyUnit.ownershipGuard.test.ts (2 tests) 5577ms
+   ✓ RelayHostEngine (local legacy systemd unit ownership guard) > does not control the legacy unsuffixed unit when it is not owned by the requested channel install root  3952ms
+   ✓ RelayHostEngine (local legacy systemd unit ownership guard) > does not uninstall the legacy unsuffixed unit when it is not owned by the requested channel install root  1623ms
+ ✓ src/providers/install.promotion.test.ts (9 tests) 435ms
+ ✓ src/systemTasks/kinds/remoteSshBootstrapMachineKind.test.ts (7 tests) 13ms
+ ✓ src/firstPartyRuntime/promoteVersionedPayload.windowsJunction.test.ts (1 test) 24ms
+ ✓ src/providers/resolution.cursor.test.ts (5 tests) 18ms
+ ✓ src/systemTasks/runSystemTask.test.ts (8 tests) 11ms
+ ✓ src/providers/resolution.test.ts (7 tests) 9ms
+ ✓ src/systemTasks/interactiveTaskKinds.test.ts (2 tests) 5ms
+ ✓ src/relayHost/relayHostEngine.remoteDelegation.test.ts (5 tests) 11ms
+ ✓ src/systemTasks/kinds/relayRuntimeKinds.test.ts (4 tests) 3ms
+ ✓ src/providers/managedJavaScriptRuntime.systemNodeFallback.test.ts (7 tests) 5ms
+ ✓ src/relayHost/relayHostEngine.localUninstallCleanup.test.ts (5 tests) 7474ms
+   ✓ RelayHostEngine (local uninstall cleanup) > preserves relay data and persistent configuration during uninstall  3948ms
+   ✓ RelayHostEngine (local uninstall cleanup) > does not recursively remove the install root that contains persistent data  1592ms
+   ✓ RelayHostEngine (local uninstall cleanup) > removes the self-host state file explicitly during uninstall  935ms
+   ✓ RelayHostEngine (local uninstall cleanup) > uninstalls the legacy unsuffixed launchd service when the preview lane still owns that install root  543ms
+   ✓ RelayHostEngine (local uninstall cleanup) > uninstalls the legacy unsuffixed scheduled task when the preview lane still owns that install root  455ms
+ ✓ src/relayHost/relayHostEngine.localLegacyUnit.test.ts (6 tests) 7899ms
+   ✓ RelayHostEngine (local legacy service name compatibility) > falls back to the legacy unsuffixed systemd unit when the channel-suffixed unit is missing  3963ms
+   ✓ RelayHostEngine (local legacy service name compatibility) > controls the legacy unsuffixed systemd unit when the channel-suffixed unit is missing  1567ms
+   ✓ RelayHostEngine (local legacy service name compatibility) > falls back to the legacy unsuffixed launchd label when the channel-suffixed label is missing  925ms
+   ✓ RelayHostEngine (local legacy service name compatibility) > controls the legacy unsuffixed launchd label when the channel-suffixed label is missing  545ms
+   ✓ RelayHostEngine (local legacy service name compatibility) > falls back to the legacy unsuffixed scheduled task when the channel-suffixed task is missing  451ms
+   ✓ RelayHostEngine (local legacy service name compatibility) > controls the legacy unsuffixed scheduled task when the channel-suffixed task is missing  446ms
+ ✓ src/relayHost/relayHostEngine.installLocal.legacyUnitName.test.ts (7 tests) 8398ms
+   ✓ RelayHostEngine (installOrUpdate local legacy unit name) > migrates the legacy unsuffixed unit to the suffixed unit when the suffixed unit is missing  3973ms
+   ✓ RelayHostEngine (installOrUpdate local legacy unit name) > removes the legacy unsuffixed unit when both legacy and suffixed units exist for the same install root  1556ms
+   ✓ RelayHostEngine (installOrUpdate local legacy unit name) > migrates the legacy unsuffixed launchd plist to the suffixed plist on macOS  939ms
+   ✓ RelayHostEngine (installOrUpdate local legacy unit name) > ignores and removes the legacy unsuffixed Windows wrapper when it is owned by the preview install root  552ms
+   ✓ RelayHostEngine (installOrUpdate local legacy unit name) > migrates an owned custom legacy root into the canonical preview install root  476ms
+   ✓ RelayHostEngine (installOrUpdate local legacy unit name) > migrates an owned custom suffixed preview unit root into the canonical preview install root  465ms
+   ✓ RelayHostEngine (installOrUpdate local legacy unit name) > fails closed when a legacy preview root with a different data secret remains beside the canonical preview root  435ms
+ ✓ src/relayHost/relayHostEngine.localControl.health.test.ts (7 tests) 9609ms
+   ✓ RelayHostEngine (local health control) > treats localized Windows scheduled-task status as active when the task is running  3869ms
+   ✓ RelayHostEngine (local health control) > reports the local relay as unhealthy when the service is active but the health probe fails  3066ms
+   ✓ RelayHostEngine (local health control) > waits for the local relay health probe after starting the service  499ms
+   ✓ RelayHostEngine (local health control) > retries the local relay health probe during start until the relay becomes healthy  526ms
+   ✓ RelayHostEngine (local health control) > uses the long default local relay health timeout during restart  465ms
+   ✓ RelayHostEngine (local health control) > rejects local restart when the relay never becomes healthy again  758ms
+   ✓ RelayHostEngine (local health control) > translates local systemd user bus failures into an actionable error  425ms
+ ✓ src/relayHost/relayHostEngine.localHealth.test.ts (9 tests) 11290ms
+   ✓ RelayHostEngine (local health) > marks a local relay unhealthy when the service is active but the health endpoint is unreachable  5369ms
+   ✓ RelayHostEngine (local health) > reports a warning when older legacy relay state with a different data secret remains beside the canonical preview root  2522ms
+   ✓ RelayHostEngine (local health) > waits for local start to become healthy before returning  571ms
+   ✓ RelayHostEngine (local health) > waits for local restart to become healthy before returning  657ms
+   ✓ RelayHostEngine (local health) > fails closed when another relay lane is explicitly pinned to the same URL via env override  465ms
+   ✓ RelayHostEngine (local health) > auto-assigns a free port when another relay lane is already on the default port  463ms
+   ✓ RelayHostEngine (local health) > migrates an active legacy unsuffixed unit with a custom root into the canonical preview install root  437ms
+   ✓ RelayHostEngine (local health) > migrates legacy unsuffixed self-host installs when preview lane is requested and stable payload state is missing  400ms
+   ✓ RelayHostEngine (local health) > migrates legacy unsuffixed self-host installs when their state already records the preview lane  406ms
+
+ Test Files  89 passed (89)
+      Tests  518 passed | 1 skipped (519)
+   Start at  21:14:47
+   Duration  11.81s (transform 6.33s, setup 0ms, collect 57.67s, tests 83.76s, environment 12ms, prepare 5.10s)
+
+CLI_COMMON_EXIT=0

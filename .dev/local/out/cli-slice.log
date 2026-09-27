@@ -1,0 +1,1444 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mC:/Users/Thinkbook-16p/Workspace/code/Happiest/.dev/worktree/happiest-experience/apps/cli[39m
+
+ [32m✓[39m src/backends/claude/remote/claudeRemoteAgentSdk.streamEvents.test.ts [2m([22m[2m38 tests[22m[2m)[22m[33m 425[2mms[22m[39m
+ [31m❯[39m src/backends/claude/remote/claudeRemoteAgentSdk.optionsAndHooks.test.ts [2m([22m[2m58 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[33m 749[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mdoes not treat model-owned SubagentStop assistant text as provider auth evidence[32m 18[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22myields stream-json user messages as objects (Agent SDK stringifies them)[32m 6[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mdoes not set allowedTools when the mode does not provide an allowlist override[32m 6[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mpasses debug and verbose flags via extraArgs when enabled[32m 5[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mpasses effort when the mode specifies a reasoningEffort[32m 5[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mpasses ultracode through the --settings extraArg for xhigh-capable models[32m 4[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22momits the ultracode settings extraArg for models without xhigh support[32m 8[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mpasses a [1m]-suffixed model id unmutated while still resolving effort[32m 8[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mexposes a turn interrupt handler that stops the active task via query.stopTask()[32m 6[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mnever targets another session's task with stopTask(), and interrupts this turn instead[32m 13[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mdoes not emit duplicate assistant text after stopTask interrupt when streamed text already covered it[32m 16[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mdoes not emit buffered assistant text on AgentSdkAbortError when streamed transcript writer is present[32m 6[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mdoes not re-emit result assistant text when assistant text was already published this turn (even without durable flush)[32m 6[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mdoes not emit result assistant text when the streamed transcript writer durably flushed the turn[32m 6[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mstill emits the root result assistant text when only sidechain assistant text durably flushed[32m 5[2mms[22m[39m
+   [33m[2m✓[22m[39m claudeRemoteAgentSdk options and hooks[2m > [22mrepairs transcript on turn interrupt even when sessionId is discovered at runtime [33m 315[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22momits effort when the mode specifies reasoningEffort=high (provider default)[32m 4[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22muses the resolved JavaScript runtime path instead of a raw node default[32m 4[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mpasses all settingSources by default (Agent SDK defaults to an empty list when unset)[32m 5[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mforwards settingSources when explicitly set on the mode[32m 4[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mkeeps settingSources fail-closed when the legacy mode explicitly selects none[32m 5[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22msets resumeSessionAt when resuming and caller provides an anchor uuid[32m 20[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22minjects Happier MCP servers when provided[32m 6[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mmerges --mcp-config mcpServers into injected MCP servers when using the Agent SDK runner[32m 5[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mforwards explicit GUI/profile env keys into the Claude subprocess env even when not allowlisted[32m 5[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mremoves an inherited managed session id when the supplied id is unusable ("")[32m 5[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mremoves an inherited managed session id when the supplied id is unusable ("   ")[32m 4[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mremoves an inherited managed session id when the supplied id is unusable ("offline-local-session")[32m 5[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mdoes not forward Claude OAuth refresh material into the normal subprocess env allowlist[32m 5[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mdoes not forward Claude OAuth refresh material even when explicitly requested for subprocess env[32m 5[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mlogs redacted Claude runtime auth diagnostics for the runner and subprocess env[32m 9[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mpasses a Claude subscription OAuth refresh callback that delegates forced refresh to the daemon bridge[32m 11[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22muses the explicit Claude subscription refresh binding instead of rereading ambient runner env[32m 15[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mdoes not derive getOAuthToken from ambient runner env without an explicit connected-service binding[32m 14[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mdoes not provide getOAuthToken for native Claude sessions[32m 12[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mapplies live setModel, setPermissionMode, and setMaxThinkingTokens before the next queued message[32m 13[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mforwards the resolved Claude config dir override to the Claude subprocess env[32m 4[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22minjects isolated XDG dirs so Claude Code does not contend with global version locks[32m 11[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22minjects Claude Code experimental Agent Teams env var when enabled on the mode[32m 5[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22malways sets allowDangerouslySkipPermissions so permission mode can escalate to bypassPermissions at runtime[32m 14[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22muses the Agent SDK omit sentinel when Happier resolves to default, but passes non-default modes[32m 19[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mprefers CLI model overrides over mode.model[32m 6[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mdoes not crash when remote settings updates fail[32m 17[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mdoes not redundantly apply runtime settings when mode is unchanged[32m 8[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mswitches a follow-up read-only turn into dontAsk before sending it to the running SDK session[32m 4[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22muses SessionStart hook to publish sessionId + transcript path[32m 6[2mms[22m[39m
+[31m   [31m×[31m claudeRemoteAgentSdk options and hooks[2m > [22mderives a transcript path when SessionStart hook omits transcript_path/transcriptPath[39m[32m 8[2mms[22m[39m
+[31m     → expected "spy" to be called with arguments: [ 'sess_999', ObjectContaining{…} ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    "sess_999",[22m
+[32m-   ObjectContaining {[90m
+[32m-     "transcript_path": "/tmp/claude_cfg/projects/C--tmp/sess_999.jsonl",[90m
+[31m+   {[90m
+[31m+     "hook_event_name": "SessionStart",[90m
+[31m+     "transcriptPath": "\\tmp\\claude_cfg\\projects\\C--tmp\\sess_999.jsonl",[90m
+[31m+     "transcript_path": "\\tmp\\claude_cfg\\projects\\C--tmp\\sess_999.jsonl",[90m
+[2m    },[22m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+[31m   [31m×[31m claudeRemoteAgentSdk options and hooks[2m > [22msupports SessionStart hook sessionId (camelCase) when publishing transcript path[39m[32m 6[2mms[22m[39m
+[31m     → expected "spy" to be called with arguments: [ 'sess_abc', ObjectContaining{…} ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    "sess_abc",[22m
+[32m-   ObjectContaining {[90m
+[32m-     "transcript_path": "/tmp/claude_cfg/projects/C--tmp/sess_abc.jsonl",[90m
+[31m+   {[90m
+[31m+     "hook_event_name": "SessionStart",[90m
+[31m+     "transcriptPath": "\\tmp\\claude_cfg\\projects\\C--tmp\\sess_abc.jsonl",[90m
+[31m+     "transcript_path": "\\tmp\\claude_cfg\\projects\\C--tmp\\sess_abc.jsonl",[90m
+[2m    },[22m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22msupports SessionStart hook transcriptPath (camelCase) when publishing transcript path[32m 6[2mms[22m[39m
+[31m   [31m×[31m claudeRemoteAgentSdk options and hooks[2m > [22mpublishes a derived transcript path when system init provides session_id without SessionStart hook data[39m[32m 7[2mms[22m[39m
+[31m     → expected "spy" to be called with arguments: [ 'sess_init', ObjectContaining{…} ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    "sess_init",[22m
+[32m-   ObjectContaining {[90m
+[32m-     "transcript_path": "/tmp/claude_cfg/projects/C--tmp/sess_init.jsonl",[90m
+[31m+   {[90m
+[31m+     "transcriptPath": "\\tmp\\claude_cfg\\projects\\C--tmp\\sess_init.jsonl",[90m
+[31m+     "transcript_path": "\\tmp\\claude_cfg\\projects\\C--tmp\\sess_init.jsonl",[90m
+[2m    },[22m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mmaps claudeRemoteSettingSourcesV2 into Agent SDK settingSources[32m 6[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mpasses all settingSources when claudeRemoteSettingSourcesV2 selects all sources[32m 4[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mkeeps settingSources fail-closed when claudeRemoteSettingSourcesV2 explicitly selects no sources[32m 4[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mpublishes supportedCommands to callback without blocking the loop[32m 5[2mms[22m[39m
+[31m   [31m×[31m claudeRemoteAgentSdk options and hooks[2m > [22mapplies allowlisted advanced options JSON without allowing control-plane overrides[39m[32m 6[2mms[22m[39m
+[31m     → expected '\tmp\happier-claude-debug-artifacts\c…' to match /^\/tmp\/happier-claude-debug-arti…/tmp\[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22momits debugFile and stderr when subprocess artifacts are disabled[32m 4[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mforwards unresolved Agent SDK permission requests through hooks without installing a prompt tool[32m 5[2mms[22m[39m
+   [32m✓[39m claudeRemoteAgentSdk options and hooks[2m > [22mdoes not register a PreToolUse hook that rewrites Bash commands[32m 4[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/sidechains/claudeRemoteSubagentFileCollector.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1156[2mms[22m[39m
+   [33m[2m✓[22m[39m ClaudeRemoteSubagentFileCollector[2m > [22mfinal-drains and stops Task sidechain followers after completion grace [33m 1022[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/claudeRemoteAgentSdk.abortRepair.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 1414[2mms[22m[39m
+   [33m[2m✓[22m[39m claudeRemoteAgentSdk abort repair[2m > [22mappends an interrupted tool_result when aborting a turn mid-tool [33m 345[2mms[22m[39m
+   [33m[2m✓[22m[39m claudeRemoteAgentSdk abort repair[2m > [22mrepairs missing tool_result on best-effort interrupt even when the Agent SDK does not throw AbortError [33m 329[2mms[22m[39m
+   [33m[2m✓[22m[39m claudeRemoteAgentSdk abort repair[2m > [22mrepairs the transcript even when transcriptPath is missing (derive from CLAUDE_CONFIG_DIR + cwd) [33m 326[2mms[22m[39m
+   [33m[2m✓[22m[39m claudeRemoteAgentSdk abort repair[2m > [22mrepairs only after the query is closed when the transcript is still being written until close() [33m 326[2mms[22m[39m
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mnormalizes empty modelId to undefined when spawning a session
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mforwards account settings version hints when spawning a session
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'claude'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mexpands ~/ in session directories before forwarding spawn requests to the daemon
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'claude'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mnormalizes whitespace-only modelId to undefined when resuming a session
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'resume-session'[39m,
+  sessionId: [32m'sess_old'[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'claude'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mpasses through environmentVariables when resuming a session
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'resume-session'[39m,
+  sessionId: [32m'sess_old'[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'opencode'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mdoes not forward machine rpc auth token into daemon spawn options
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'opencode'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mnormalizes legacy experimentalCodexAcp spawn requests onto canonical codexBackendMode
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'codex'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mpasses through mcpSelection when spawning a session
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mpasses through sessionConfigOptionOverrides when spawning a session
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mpasses canonical spawn fields through when spawning a session
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [32m'spawn-nonce-1'[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mmaps duplicate in-flight daemon spawn nonce envelopes to a retryable spawn timeout error
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [32m'spawn-nonce-pending'[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mpreserves async spawn acceptance on the provider-safe RPC when the daemon session id is still pending
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [32m'spawn-nonce-pending-ack'[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mresolves accepted spawn identity before returning success on the released legacy RPC
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [32m'spawn-nonce-legacy-pending'[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mpreserves structured connected-service error details from daemon spawn envelopes
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [32m'spawn-nonce-error'[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mpasses canonical spawn fields through when resuming a session and preserves sessionId aliasing
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'resume-session'[39m,
+  sessionId: [32m'sess_old'[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [32m'resume-nonce-1'[39m,
+  terminal: { mode: [32m'tmux'[39m, tmux: { sessionName: [32m'happy'[39m, isolated: [33mtrue[39m } },
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'codex'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mnormalizes legacy experimentalCodexAcp resume requests onto canonical codexBackendMode
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'resume-session'[39m,
+  sessionId: [32m'sess_old'[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'codex'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mpreserves cursor-bound user execution authorization through the production resume adapter
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'resume-session'[39m,
+  sessionId: [32m'sess-paused'[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'codex'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mpasses agentRuntimeDescriptorV1 through resume requests and derives codexBackendMode from canonical providerExtra affinity
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'resume-session'[39m,
+  sessionId: [32m'sess_old'[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'codex'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mpasses configured ACP backend backend targets through when resuming a session
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'resume-session'[39m,
+  sessionId: [32m'sess_old'[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'configuredAcpBackend'[39m, backendId: [32m'custom-kiro'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mnormalizes invalid permissionMode to undefined when spawning a session
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mpasses through valid permissionMode values when spawning a session
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.test.ts[2m > [22m[2mregisterMachineRpcHandlers[2m > [22m[2mdoes not use metadata.summary.text as replay summary fallback for fork replay
+[22m[39mSpawning Claude Code process: C:\Users\Thinkbook-16p\.local\bin\claude.EXE --output-format stream-json --verbose --permission-prompt-tool stdio --permission-mode default --settings \tmp\happier-test-active-server\isolation\claude\execution_run\run_claude_1790654853991\claude\settings.json --input-format stream-json (using normal env)
+
+ [32m✓[39m src/backends/claude/remote/claudeRemoteAgentSdk.postResultStreaming.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 678[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/claudeRemoteDispatch.test.ts [2m([22m[2m23 tests[22m[2m)[22m[33m 337[2mms[22m[39m
+   [33m[2m✓[22m[39m claudeRemoteDispatch[2m > [22mrepairs interrupted tool calls before invoking the runner (preflight) [33m 315[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/claudeRemoteAgentSdk.checkpoints.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 74[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/agentSdk/repairClaudeTranscriptAfterInterrupt.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 3576[2mms[22m[39m
+   [33m[2m✓[22m[39m repairClaudeTranscriptAfterInterrupt[2m > [22mrepairs transcripts without relying on full-file reads (tail-read) [33m 957[2mms[22m[39m
+   [33m[2m✓[22m[39m repairClaudeTranscriptAfterInterrupt[2m > [22mwaits briefly for an in-flight tool_result to land and avoids appending a duplicate interrupted tool_result [33m 595[2mms[22m[39m
+   [33m[2m✓[22m[39m repairClaudeTranscriptAfterInterrupt[2m > [22mwaits briefly for an in-flight trailing JSONL line to settle before truncating [33m 621[2mms[22m[39m
+   [33m[2m✓[22m[39m repairClaudeTranscriptAfterInterrupt[2m > [22mdoes not write to an explicit transcriptPath outside the Claude project directory [33m 587[2mms[22m[39m
+   [33m[2m✓[22m[39m repairClaudeTranscriptAfterInterrupt[2m > [22mskips repair when the transcript is still actively being written (requires a settled file) [33m 809[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/claudeRemoteAgentSdk.workState.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 102[2mms[22m[39m
+ [31m❯[39m src/api/directSessions/takeover/resolveDirectTakeoverSpawnOptions.test.ts [2m([22m[2m11 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[33m 522[2mms[22m[39m
+[31m   [31m×[31m resolveDirectTakeoverSpawnOptions[2m > [22mlets direct Codex takeovers inherit the default backend mode instead of forcing ACP[39m[32m 247[2mms[22m[39m
+[31m     → expected { …(7) } to deeply equal { …(7) }[39m
+[31m   [31m×[31m resolveDirectTakeoverSpawnOptions[2m > [22mkeeps app-server codex backend affinity during direct takeover[39m[32m 4[2mms[22m[39m
+[31m     → expected { …(8) } to deeply equal { …(8) }[39m
+   [32m✓[39m resolveDirectTakeoverSpawnOptions[2m > [22mrefuses ambiguous connected-service Codex takeovers when the source does not identify an exact profile/home[32m 2[2mms[22m[39m
+   [32m✓[39m resolveDirectTakeoverSpawnOptions[2m > [22mrefuses connected-service Codex takeovers when an exact homePath belongs to a different service[32m 1[2mms[22m[39m
+   [32m✓[39m resolveDirectTakeoverSpawnOptions[2m > [22mrefuses connected-service Codex takeovers when homePath points below codex-home instead of the exact home[32m 0[2mms[22m[39m
+   [32m✓[39m resolveDirectTakeoverSpawnOptions[2m > [22mrefuses connected-service Codex takeovers when homePath is a symlink escape[32m 10[2mms[22m[39m
+[31m   [31m×[31m resolveDirectTakeoverSpawnOptions[2m > [22mkeeps ACP codex backend affinity backward compatible during direct takeover[39m[32m 3[2mms[22m[39m
+[31m     → expected { …(8) } to deeply equal { …(8) }[39m
+[31m   [31m×[31m resolveDirectTakeoverSpawnOptions[2m > [22muses app-server thread cwd when an app-server-linked codex session has no stored path or rollout metadata[39m[32m 160[2mms[22m[39m
+[31m     → expected { …(8) } to deeply equal { …(8) }[39m
+   [32m✓[39m resolveDirectTakeoverSpawnOptions[2m > [22mmarks direct OpenCode server takeovers as explicit server affinity[32m 92[2mms[22m[39m
+   [32m✓[39m resolveDirectTakeoverSpawnOptions[2m > [22mcarries connected-service auth bindings into direct OpenCode server takeovers[32m 1[2mms[22m[39m
+   [32m✓[39m resolveDirectTakeoverSpawnOptions[2m > [22mrecovers OpenCode connected-service auth bindings from the tracked runtime marker during direct takeover[32m 1[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/modeHash.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/createClaudeRemoteStreamedTranscriptSession.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/claudeRemoteMetaState.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/claudeRemoteAgentSdk.exitPlanModeTransition.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [31m❯[39m src/api/machine/rpcHandlers.memory.status.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 68[2mms[22m[39m
+[31m   [31m×[31m rpcHandlers.memory (status)[2m > [22mreturns db paths and sizes when available[39m[32m 12[2mms[22m[39m
+[31m     → EBUSY: resource busy or locked, unlink 'C:\Users\Thinkbook-16p\AppData\Local\Temp\happier-rpc-memory-status-crZ2Qb\deep.sqlite'[39m
+   [32m✓[39m rpcHandlers.memory (status)[2m > [22mpopulates content, queue, worker, last run, and searchable readiness from memory databases[32m 54[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/sidechains/resolveClaudeSubagentJsonlPath.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/agentSdk/buildClaudeAgentSdkHooks.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+(node:62392) [DEP0187] DeprecationWarning: Passing invalid argument types to fs.existsSync is deprecated
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ [32m✓[39m src/backends/claude/remote/sidechains/claudeTaskOutputSidechainImporter.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/runtimeActivityEvidence.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 249[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/sidechains/claudeRemoteTaskOutputCollector.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [31m❯[39m src/api/directSessions/security/validateDirectMachineSource.test.ts [2m([22m[2m15 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 10[2mms[22m[39m
+   [32m✓[39m validateDirectMachineSource[2m > [22maccepts the generic ACP session-list source for declared provider auggie[32m 1[2mms[22m[39m
+   [32m✓[39m validateDirectMachineSource[2m > [22maccepts the generic ACP session-list source for declared provider qwen[32m 0[2mms[22m[39m
+   [32m✓[39m validateDirectMachineSource[2m > [22maccepts the generic ACP session-list source for declared provider kilo[32m 0[2mms[22m[39m
+   [32m✓[39m validateDirectMachineSource[2m > [22maccepts the generic ACP session-list source for declared provider devin[32m 0[2mms[22m[39m
+   [32m✓[39m validateDirectMachineSource[2m > [22maccepts the generic ACP session-list source for declared provider kimi[32m 0[2mms[22m[39m
+   [32m✓[39m validateDirectMachineSource[2m > [22maccepts the generic ACP session-list source for declared provider copilot[32m 0[2mms[22m[39m
+   [32m✓[39m validateDirectMachineSource[2m > [22maccepts the generic ACP session-list source for declared provider fx[32m 0[2mms[22m[39m
+   [32m✓[39m validateDirectMachineSource[2m > [22mrejects the generic ACP session-list source for provider agy without an upstream listing contract[32m 0[2mms[22m[39m
+   [32m✓[39m validateDirectMachineSource[2m > [22mrejects the generic ACP session-list source for provider droid without an upstream listing contract[32m 0[2mms[22m[39m
+   [32m✓[39m validateDirectMachineSource[2m > [22mrejects Codex connectedService source ids with path traversal segments[32m 0[2mms[22m[39m
+   [32m✓[39m validateDirectMachineSource[2m > [22maccepts safe Codex connectedService source ids[32m 0[2mms[22m[39m
+[31m   [31m×[31m validateDirectMachineSource[2m > [22mnormalizes Claude configDir against env HOME before validating the source[39m[32m 6[2mms[22m[39m
+[31m     → expected { ok: true, source: { …(2) } } to deeply equal { ok: true, source: { …(2) } }[39m
+[31m   [31m×[31m validateDirectMachineSource[2m > [22maccepts a pi piAgentDir source and resolves the agentDir from PI_CODING_AGENT_DIR[39m[32m 1[2mms[22m[39m
+[31m     → expected { ok: true, source: { …(2) } } to deeply equal { ok: true, source: { …(2) } }[39m
+   [32m✓[39m validateDirectMachineSource[2m > [22mrejects a pi agentDir override that does not match the daemon-configured dir[32m 0[2mms[22m[39m
+   [32m✓[39m validateDirectMachineSource[2m > [22mrejects a pi provider with a mismatched source kind[32m 0[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/claudeRemoteAgentSdk.logTail.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/sidechains/resolveClaudeSubagentJsonlPathForRemoteSession.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [31m❯[39m src/api/machine/resolveMachineRpcWorkingDirectory.test.ts [2m([22m[2m6 tests[22m[2m | [22m[31m5 failed[39m[2m)[22m[32m 7[2mms[22m[39m
+[31m   [31m×[31m resolveMachineRpcWorkingDirectory[2m > [22muses the daemon home as the default relative-path base even when restricted roots are configured[39m[32m 5[2mms[22m[39m
+[31m     → expected 'C:\home\user' to be '/home/user' // Object.is equality[39m
+[31m   [31m×[31m resolveMachineRpcWorkingDirectory[2m > [22mdefaults to homedir when env var is not set[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C:\home\user' to be '/home/user' // Object.is equality[39m
+[31m   [31m×[31m resolveMachineRpcWorkingDirectory[2m > [22mdefaults to env HOME when provided[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C:\scoped\home' to be '/scoped/home' // Object.is equality[39m
+   [32m✓[39m resolveMachineRpcWorkingDirectory[2m > [22muses USERPROFILE as the Windows default relative-path base when validating Windows paths[32m 0[2mms[22m[39m
+[31m   [31m×[31m resolveMachineRpcWorkingDirectory[2m > [22mdoes not use HAPPIER_MACHINE_RPC_WORKING_DIRECTORY as the default directory[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C:\scoped\home' to be '/scoped/home' // Object.is equality[39m
+[31m   [31m×[31m resolveMachineRpcWorkingDirectory[2m > [22mfalls back to cwd when homedir is not absolute[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C:\work\project' to be '/work/project' // Object.is equality[39m
+ [32m✓[39m src/backends/claude/remote/teamInbox/claudeRemoteTeamInboxBridge.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.directSessions.test.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 11801[2mms[22m[39m
+   [33m[2m✓[22m[39m registerMachineDirectSessionsRpcHandlers[2m > [22mClaude sessions still running outside Happier (live processes)[2m > [22mreports a Claude session still running in a process outside Happier as externally active [33m 3183[2mms[22m[39m
+   [33m[2m✓[22m[39m registerMachineDirectSessionsRpcHandlers[2m > [22mClaude sessions still running outside Happier (live processes)[2m > [22mdoes not report the Claude process of the Happier runner of the same session as external [33m 3111[2mms[22m[39m
+   [33m[2m✓[22m[39m registerMachineDirectSessionsRpcHandlers[2m > [22mClaude sessions still running outside Happier (live processes)[2m > [22mtakes over a session still running outside Happier only after an explicit force stop, which ends that process [33m 4647[2mms[22m[39m
+ [32m✓[39m src/api/machine/ensureMachineRegistered.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 13030[2mms[22m[39m
+   [33m[2m✓[22m[39m ensureMachineRegistered[2m > [22muses the provided recovery logger instead of the shared UI logger [33m 1953[2mms[22m[39m
+   [33m[2m✓[22m[39m ensureMachineRegistered[2m > [22mrotates machine id and retries once on machine_id_conflict [33m 1875[2mms[22m[39m
+   [33m[2m✓[22m[39m ensureMachineRegistered[2m > [22mrecords the previous machine id as a rotation replacement candidate before retrying registration [33m 1838[2mms[22m[39m
+   [33m[2m✓[22m[39m ensureMachineRegistered[2m > [22mdoes not rotate again if another process already rotated the active server machine id [33m 1877[2mms[22m[39m
+   [33m[2m✓[22m[39m ensureMachineRegistered[2m > [22mrotates machine id and retries once on machine_revoked [33m 1889[2mms[22m[39m
+   [33m[2m✓[22m[39m ensureMachineRegistered[2m > [22madopts the server replacement machine id when the persisted machine id was replaced [33m 1814[2mms[22m[39m
+   [33m[2m✓[22m[39m ensureMachineRegistered[2m > [22mpersists the rotated machine id under the active account id when provided [33m 1784[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.sessionHandoff.asyncPrepare.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 9810[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff async prepare)[2m > [22muses a durable lease so only one daemon instance restarts a persisted non-terminal prepare-target job (no double-import across processes) [33m 1683[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff async prepare)[2m > [22mrestarts a persisted non-terminal prepare-target job when called again after daemon restart (no hanging pending job with missing runner) [33m 1236[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff async prepare)[2m > [22mrestarts a persisted non-terminal prepare-target job when callers keep polling result-get after daemon restart (no hanging pending job requiring a second PREPARE_TARGET call) [33m 994[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff async prepare)[2m > [22mreturns awaiting_recovery instead of pending when a persisted prepare-target job has already been marked stranded after daemon restart [33m 846[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff async prepare)[2m > [22mrestarts a persisted non-terminal prepare-target job when the current daemon lease is present but the runner marker is missing [33m 1149[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff async prepare)[2m > [22mmarks a stranded pending prepare-target job awaiting_recovery on status_get after daemon restart [33m 879[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff async prepare)[2m > [22mmarks a stranded in_progress prepare-target job awaiting_recovery on status_get after daemon restart [33m 851[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff async prepare)[2m > [22mreturns a prepare ack with a durable job id and exposes the final result through result-get [33m 1088[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff async prepare)[2m > [22maborts a pending prepare job before session import when cancellation is requested mid-flight [33m 1083[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/sidechains/claudeTaskOutputSidechainImporter.limits.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 957[2mms[22m[39m
+   [33m[2m✓[22m[39m ClaudeTaskOutputSidechainImporter (limits)[2m > [22mbounds pending TaskOutput records per agent when configured [33m 956[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.mcpServers.savedSecretRefresh.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 7364[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers.mcpServers (saved secret refresh)[2m > [22mforces a fresh settings fetch so draft tests can resolve newly saved secrets [33m 7363[2mms[22m[39m
+ [31m❯[39m src/backends/claude/directSessions/resolveClaudeConfigDir.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 5[2mms[22m[39m
+[31m   [31m×[31m resolveClaudeConfigDirForDirectSessions[2m > [22muses env HOME for the default Claude config dir[39m[32m 4[2mms[22m[39m
+[31m     → expected '\Users\tester\.claude' to be '/Users/tester/.claude' // Object.is equality[39m
+[31m   [31m×[31m resolveClaudeConfigDirForDirectSessions[2m > [22mexpands ~/ source configDir against env HOME[39m[32m 0[2mms[22m[39m
+[31m     → expected '\Users\tester\team-claude' to be '/Users/tester/team-claude' // Object.is equality[39m
+ [31m❯[39m src/api/machine/rpcHandlers.test.ts [2m([22m[2m90 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 49102[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpreserves the canonical Stop result 'stopped' at the machine RPC boundary[32m 7[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpreserves the canonical Stop result 'requested' at the machine RPC boundary[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpreserves the canonical Stop result 'not_found' at the machine RPC boundary[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpreserves the canonical Stop result 'incomplete' at the machine RPC boundary[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22memits ONE attribution info line per spawn/resume request carrying caller-source fields, never secrets (WAVE-E-F01)[32m 3[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mnormalizes empty modelId to undefined when spawning a session[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mregisters the connected-service auth switch machine RPC and forwards the daemon control contract[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mregisters session-runner restart machine RPCs and forwards daemon control contracts[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mforwards account settings version hints when spawning a session[32m 2[2mms[22m[39m
+[31m   [31m×[31m registerMachineRpcHandlers[2m > [22mexpands ~/ in session directories before forwarding spawn requests to the daemon[39m[32m 11[2mms[22m[39m
+[31m     → expected "spy" to be called with arguments: [ ObjectContaining{…} ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[32m-   ObjectContaining {[90m
+[32m-     "directory": "/Users/tester/workspace",[90m
+[31m+   {[90m
+[31m+     "accountSettingsVersionHint": undefined,[90m
+[31m+     "agentModeId": undefined,[90m
+[31m+     "agentModeUpdatedAt": undefined,[90m
+[31m+     "approvedNewDirectoryCreation": undefined,[90m
+[31m+     "attachMetadataIdentityPolicy": undefined,[90m
+[31m+     "backendTarget": {[90m
+[31m+       "agentId": "claude",[90m
+[31m+       "kind": "builtInAgent",[90m
+[31m+     },[90m
+[31m+     "connectedServices": undefined,[90m
+[31m+     "connectedServicesUpdatedAt": undefined,[90m
+[31m+     "directory": "C:\\Users\\Thinkbook-16p\\workspace",[90m
+[31m+     "environmentVariables": undefined,[90m
+[31m+     "executionAuthorization": undefined,[90m
+[31m+     "initialGoal": undefined,[90m
+[31m+     "initialTranscriptAfterSeq": undefined,[90m
+[31m+     "machineId": undefined,[90m
+[31m+     "mcpSelection": undefined,[90m
+[31m+     "modelId": undefined,[90m
+[31m+     "modelUpdatedAt": undefined,[90m
+[31m+     "pendingFirstInput": undefined,[90m
+[31m+     "permissionMode": undefined,[90m
+[31m+     "permissionModeUpdatedAt": undefined,[90m
+[31m+     "profileId": undefined,[90m
+[31m+     "resume": undefined,[90m
+[31m+     "sessionConfigOptionOverrides": undefined,[90m
+[31m+     "sessionId": undefined,[90m
+[31m+     "spawnNonce": undefined,[90m
+[31m+     "terminal": undefined,[90m
+[31m+     "transcriptStorage": undefined,[90m
+[31m+     "windowsRemoteSessionConsole": undefined,[90m
+[31m+     "windowsRemoteSessionLaunchMode": undefined,[90m
+[2m    },[22m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mnormalizes whitespace-only modelId to undefined when resuming a session[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpasses through environmentVariables when resuming a session[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mdoes not forward machine rpc auth token into daemon spawn options[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mnormalizes legacy experimentalCodexAcp spawn requests onto canonical codexBackendMode[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpasses through mcpSelection when spawning a session[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpasses through sessionConfigOptionOverrides when spawning a session[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpasses canonical spawn fields through when spawning a session[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mmaps duplicate in-flight daemon spawn nonce envelopes to a retryable spawn timeout error[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpreserves async spawn acceptance on the provider-safe RPC when the daemon session id is still pending[32m 6[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mresolves accepted spawn identity before returning success on the released legacy RPC[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpreserves structured connected-service error details from daemon spawn envelopes[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mexposes optional spawn nonce resolution through machine rpc[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mreports spawn nonce resolution as unsupported when the resolver is unavailable[32m 0[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mexposes only a typed completed spawn-abandon result through machine rpc[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpasses canonical spawn fields through when resuming a session and preserves sessionId aliasing[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mnormalizes legacy experimentalCodexAcp resume requests onto canonical codexBackendMode[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpreserves cursor-bound user execution authorization through the production resume adapter[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpasses agentRuntimeDescriptorV1 through resume requests and derives codexBackendMode from canonical providerExtra affinity[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpasses configured ACP backend backend targets through when resuming a session[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mnormalizes invalid permissionMode to undefined when spawning a session[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpasses through valid permissionMode values when spawning a session[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mregisters bug report diagnostics handlers[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mregisters session log tail handler (machine-scoped)[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mreads session log tails from paths under happyHomeDir[32m 5[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mrejects session log tail reads for paths outside happyHomeDir[32m 3[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mregisters daemon terminal handlers (disabled when explicitly configured off)[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mregisters daemon execution run listing handler[32m 14[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mcontinues a session by spawning a new one and storing a Happier replay seed in child metadata[32m 21[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mretains a replay-seeded session when the spawn outcome may have admitted the child[32m 7[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpropagates replay session creation auth failures from continue-with-replay RPC[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mkeeps non-auth replay session creation failures generic for continue-with-replay RPC[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mcontinues a session with a generous default replay recentMessagesCount when not provided[32m 8[2mms[22m[39m
+[31m   [31m×[31m registerMachineRpcHandlers[2m > [22mcontinues a session with an on-demand summary when summary_plus_recent has no cached summary[39m[32m 9[2mms[22m[39m
+[31m     → expected { dialogCount: 2, …(2) } to match object { backendId: 'claude', …(2) }[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mresolves a pending provider-native fork spawn through nonce resolution instead of degrading to replay[32m 289[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mfails the fork instead of degrading to replay when a pending provider-native spawn reaches terminal failure[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mforks a session with an on-demand summary when no cached summary exists[32m 4[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mforks a session by replaying transcript context and storing forkV1/replaySeedV1 in child metadata[32m 9[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mforks connected-service replay children with a fresh child materialization identity[32m 3[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mrejects message-level fork requests with an uncommitted seq (<= 0)[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mdoes not use metadata.summary.text as replay summary fallback for fork replay[32m 53[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mdoes not use metadata.summary.text as replay summary fallback for continueWithReplay[32m 8[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mincludes session synopsis artifacts in replay seed when replay summary is requested[32m 4[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mdoes not include session synopsis artifacts in replay seed when replay summary is not requested[32m 3[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mforks latest session via ACP session/fork when supported and parent metadata indicates ACP transport (no replay seed)[32m 11[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mresolves the generic native fork intent through the existing ACP-native policy and never degrades to replay[32m 5[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpropagates ACP child session fetch auth failures instead of returning a generic fork error[32m 8[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpropagates ACP child metadata update auth failures instead of returning a generic fork error[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpropagates ACP fork auth failures instead of falling back to replay[32m 9[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mshapes OpenCode ACP fork continuation through provider metadata when latest fork uses ACP session/fork[32m 3[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22muses canonical Codex ACP runtime metadata for latest-fork eligibility[32m 4[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mfalls back to replay fork when parent metadata does not indicate ACP transport (even if provider has a vendor session id)[32m 5[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mincludes fork-chain ancestor transcript in replaySeedV1 when forking a forked session[32m 10[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mforks an OpenCode session via provider-native server fork when backendMode is server[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpropagates provider-native child session fetch auth failures instead of retrying to a generic fork error[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpropagates provider-native child metadata update auth failures instead of returning a generic fork error[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mforks a Codex app-server session via provider-native conversation fork[32m 3[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mdoes not replay or dispose a Codex app-server fork after an indeterminate dispatched request[32m 3[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22msurfaces a Codex initialization failure for the auto strategy instead of replaying it[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22msurfaces a Codex initialization failure for the provider_native strategy instead of replaying it[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22maccepts legacy codex flavor aliases when resolving provider-native fork support[32m 2[2mms[22m[39m
+   [33m[2m✓[22m[39m registerMachineRpcHandlers[2m > [22mfails when provider-native fork cannot load the child session metadata after spawning [33m 1684[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mfails closed when session metadata does not identify a provider[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mreturns the actual spawn error when explicit provider-native fork support exists but spawning fails[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22muses provider-native OpenCode fork for message-level forks while preserving branch-and-edit semantics for user messages[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpropagates fork cutoff auth failures instead of falling back to a default cutoff[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpropagates parent session fetch auth failures from fork RPC[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpropagates replay session creation auth failures from fork RPC[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mkeeps non-auth replay session creation failures generic for fork RPC[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mdoes not apply branch-and-edit exclusive cutoff when forking from the first user message[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mpreserves OpenCode backend mode when replay-forking an ACP-backed OpenCode session[32m 3[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mdoes not inherit non-explicit OpenCode server affinity during replay forks[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mrejects unknown replay agent ids (fail closed)[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mdoes not inject replay seeds as initial prompts (seed is stored in metadata)[32m 6[2mms[22m[39m
+   [33m[2m✓[22m[39m registerMachineRpcHandlers[2m > [22mincludes stack diagnostics context for bug report collection when stack env is set [33m 12028[2mms[22m[39m
+   [33m[2m✓[22m[39m registerMachineRpcHandlers[2m > [22mrejects bug report log tail reads for paths outside diagnostics candidates [33m 12139[2mms[22m[39m
+   [33m[2m✓[22m[39m registerMachineRpcHandlers[2m > [22mbounds UTF-8 log tails by maxBytes for allowed log paths [33m 11497[2mms[22m[39m
+   [33m[2m✓[22m[39m registerMachineRpcHandlers[2m > [22mignores stack runtime runner paths outside stack logs directory [33m 11135[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mregisters daemon memory handlers when memory worker is provided[32m 2[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mregisters direct sessions handlers[32m 1[2mms[22m[39m
+   [32m✓[39m registerMachineRpcHandlers[2m > [22mregisters session handoff handlers[32m 1[2mms[22m[39m
+ [32m✓[39m src/backends/claude/directSessions/providerOps.liveClaudeProcess.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 6380[2mms[22m[39m
+   [33m[2m✓[22m[39m claudeDirectSessionProviderOps.getActivity (live Claude processes)[2m > [22mreports a session as running while the Claude process recorded for it is alive [33m 3077[2mms[22m[39m
+   [33m[2m✓[22m[39m claudeDirectSessionProviderOps.getActivity (live Claude processes)[2m > [22mdoes not report a session as running when its process id now belongs to a later process [33m 3206[2mms[22m[39m
+ [32m✓[39m src/daemon/doctor.processInfo.liveProcess.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 1524[2mms[22m[39m
+   [33m[2m✓[22m[39m readProcessInfoByPid (live processes)[2m > [22mreports the parent process of a live process [33m 1524[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/claudeRemoteAgentSdk.externalSessionProcess.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 6335[2mms[22m[39m
+   [33m[2m✓[22m[39m claudeRemoteAgentSdk resuming a Claude session that has a live Claude process on this computer[2m > [22mdoes not resume the session and rejects the prompt before it has any effect when another program runs it [33m 3182[2mms[22m[39m
+   [33m[2m✓[22m[39m claudeRemoteAgentSdk resuming a Claude session that has a live Claude process on this computer[2m > [22mresumes the session when the live process is the Claude process this runner started [33m 3152[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.connectedServiceQuotas.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 1045[2mms[22m[39m
+   [33m[2m✓[22m[39m registerMachineConnectedServiceQuotaRpcHandlers[2m > [22mdispatches recovery-credit consume requests to the daemon control path [33m 1043[2mms[22m[39m
+ [32m✓[39m src/backends/claude/directSessions/findLiveClaudeSessionProcesses.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 4605[2mms[22m[39m
+   [33m[2m✓[22m[39m findLiveClaudeSessionProcesses[2m > [22mreuses a verified process while it lives only when the caller asks to [33m 4604[2mms[22m[39m
+ [32m✓[39m src/backends/claude/directSessions/pageClaudeTranscript.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 1136[2mms[22m[39m
+   [33m[2m✓[22m[39m pageClaudeTranscript[2m > [22mfails observably when the existing oversized-line budget cannot establish a safe tail [33m 1102[2mms[22m[39m
+ [32m✓[39m src/api/machine/connection/createMachineSocketTransport.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 739[2mms[22m[39m
+   [33m[2m✓[22m[39m createMachineSocketTransport[2m > [22mincludes installation identity fields in machine-scoped socket auth when provided [33m 738[2mms[22m[39m
+[90mstdout[2m | src/api/machine/rpcHandlers.memory.deepSearch.test.ts[2m > [22m[2mrpcHandlers.memory (deep search routing)[2m > [22m[2mfalls back to fts-only deep search when embeddings initialization fails
+[22m[39m [memoryWorker] Embeddings unavailable; using keyword-search fallback {
+  providerKind: [32m'local_transformers'[39m,
+  modelId: [32m'Xenova/all-MiniLM-L6-v2'[39m,
+  message: [32m'[vitest] There was an error when mocking a module. If you are using "vi.mock" factory, make sure there are no top level variables inside, since this call is hoisted to top of the file. Read more: https://vitest.dev/api/vi.html#vi-mock'[39m
+}
+
+ [32m✓[39m src/api/machine/rpcHandlers.memory.deepSearch.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 736[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers.memory (deep search routing)[2m > [22mfalls back to fts-only deep search when embeddings initialization fails [33m 706[2mms[22m[39m
+ [32m✓[39m src/api/directSessions/backgroundFollow/createPollingDirectSessionFollowLease.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 252[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.sessionHandoff.directPeerFallback.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 1003[2mms[22m[39m
+ [32m✓[39m src/api/directSessions/import/adoptDirectSessionMediaForImport.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 107[2mms[22m[39m
+ [32m✓[39m src/daemon/doctor.win32ProcessDiscovery.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m src/backends/claude/directSessions/readAfterClaudeTranscript.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+ [32m✓[39m src/daemon/doctor.findAllHappyProcesses.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/daemon/doctor.posixProcessDiscovery.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.forkReplayDelegation.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 91[2mms[22m[39m
+ [31m❯[39m src/api/machine/rpcHandlers.sessionHandoff.test.ts [2m([22m[2m77 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[33m 68193[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mkeeps direct-peer publish input canonical inside the handoff RPC layer[32m 1[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mregisters daemon.sessionHandoff.* handlers[32m 3[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mfails closed when the persisted prepare-target job record is missing (resultGet uses job store only) [33m 1062[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mreturns not_found from resultGet when prepare-target is still in progress (status should be read via status_get) [33m 940[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mrecovers a missing-runner v2 prepare-target job through status polling [33m 1110[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mreturns a final v2 terminal record unchanged through status and result polling [33m 953[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mkeeps the registered v1 prepare runner from mutating a v2 job [33m 921[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mpropagates handoff abort to the underlying workspace replication engine job (cancelRequestedAtMs) [33m 1066[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mclassifies abort of a legacy ready target job as cleanup unavailable without stopping the target [33m 1063[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22maborts a v2 not-attempted target job without stopping an unowned session [33m 834[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mclaims abort, stops an owned attempted target, and proves absence before allowing source restart [33m 885[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mdurably claims exact target ownership before the canonical runner launch and survives a lost spawn result[32m 99[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mclassifies a preexisting target as permanently unowned without invoking the acceptance hook[32m 68[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mretries target artifact cleanup after a durable v2 commit survives a daemon restart [33m 1010[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mpersists terminal abort/commit status when only a persisted source-export exists (no prepare job) [33m 906[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22muses the configured activeServerDir in the default handoff exporter [33m 734[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mpublishes provider bundle + workspace replication transfers without a transferred-bundles handshake transfer when workspace replication metadata is present (V2 handoff start) [33m 910[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mreturns missing_handoff_metadata_v2 for direct-peer prepare payloads that omit handoffMetadataV2 (no transferred-bundles fallback)[32m 4[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mprefers live local runtime metadata without overwriting newer portable remote metadata when starting a handoff back[32m 15[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mstops an active source session before exporting handoff state[32m 20[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22macknowledges workspace handoff start (pending) without waiting for source stop/export when negotiatedTransportStrategy is omitted and server-routed fallback is available [33m 825[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22macknowledges workspace handoff start (pending) without waiting for workspace scan when negotiatedTransportStrategy is direct_peer and server-routed fallback is disabled[32m 53[2mms[22m[39m
+[31m   [31m×[31m rpcHandlers (session handoff)[2m > [22macknowledges workspace handoff start (pending) with direct-peer endpoint candidates when server-routed fallback exists and the deferred export finishes within the fast-path budget[39m[32m 62[2mms[22m[39m
+[31m     → EBUSY: resource busy or locked, rmdir 'C:\Users\Thinkbook-16p\AppData\Local\Temp\happier-session-handoff-direct-peer-fast-path-source-3KhuHZ'[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mpersists published direct-peer endpoint candidates into the durable source-export record during deferred start [33m 942[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mkeeps direct-peer prepare-target on the direct-peer path when the source export already persisted endpoint candidates [33m 1295[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mfails closed when stopping the active source session for handoff cutover fails[32m 1[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mdurably preserves exact late source-start failure codes on both sides of the fast-path result shape [33m 2494[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mreturns recovery-capable start failure details when export fails after the active source session has already been stopped[32m 1[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mtracks handoff lifecycle state durably across handlers (status_get survives a daemon restart) [33m 1833[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22msurfaces workspaceReplicationHandoffBackTargetRootPath when session metadata indicates a sync_changes handoff back to the prior source machine [33m 868[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mfails closed when commit is called before the target is ready for cutover (no premature completion/disposal while prepare is pending) [33m 1176[2mms[22m[39m
+[31m   [31m×[31m rpcHandlers (session handoff)[2m > [22mpersists a reverse-direction workspace replication baseline on source_cleanup commit (enables handoff back sync_changes)[39m[33m 1029[2mms[22m[39m
+[31m     → expected null not to be null[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mstops the source session during source_cleanup commit (prevents late source metadata overwrites) [33m 914[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mdoes not leave prepare-target stuck when another instance held the lease and later releases it [33m 1086[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22msurfaces workspace replication engine progress in status_get while prepare-target is pending [33m 1131[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mmaps workspace replication checkpoint blob_transfer_completed to the handoff stage_target checkpoint in status_get (timeline parity) [33m 816[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mdoes not mark a pending prepare-target job as awaiting_recovery when a live lease exists [33m 888[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mkeeps polling missing-runner proof through the v1 recovery transition [33m 1047[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mreuses stored source-export payload sources when preparing on the same daemon (no inline payloads)[32m 140[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mdelegates source-side workspace transfer preparation to the adapter seam when starting a handoff [33m 631[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mdelegates target-side workspace preparation to the adapter seam during prepare-target [33m 834[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mnormalizes prepare-target targetPath onto the local machine home when the request carries an absolute /.happier/ path from another machine [33m 817[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mpersists canonical workspace replication artifacts across repeated target preparation retries[32m 146[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mreturns invalid_request for malformed payloads[32m 1[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mreturns direct_peer_transfer_unavailable for direct-peer prepare payloads that omit endpoint candidates[32m 102[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22momits inline bundles from the start response when server-routed transport is already negotiated[32m 9[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mkeeps start responses canonical when direct-peer transport is negotiated but unavailable locally[32m 9[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mkeeps codex start responses canonical without inline payloads[32m 10[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mrejects workspace transfer from an unsafe source path before exporting bundles[32m 1[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mrejects workspace transfer from an unsafe source path before exporting bundles when session metadata is missing homeDir [33m 755[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mstarts handoff successfully when handoff requests the sync-changes workspace strategy[32m 10[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mrejects workspace transfer before exporting bundles when ignored globs are provided without include_selected mode[32m 1[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mpublishes provider bundle + workspace replication transfers without inline workspace blobs when workspace transfer is enabled (V2 start) [33m 872[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mapplies server-routed workspace sync through the replication engine when workspace transfer is enabled [33m 2153[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mserves server-routed workspace blob packs after a daemon restart (no in-memory source state) [33m 2364[2mms[22m[39m
+[31m   [31m×[31m rpcHandlers (session handoff)[2m > [22macknowledges server-routed workspace handoff start before a large workspace export finishes and lets prepare wait for it[39m[33m 3168[2mms[22m[39m
+[31m     → expected '/repo-target' to be 'C:\Users\Thinkbook-16p\AppData\Local\…' // Object.is equality[39m
+[31m   [31m×[31m rpcHandlers (session handoff)[2m > [22mkeeps deferred direct-peer prepare-target on direct-peer when server-routed fallback exists[39m[33m 11965[2mms[22m[39m
+[31m     → prepare-target result not ready (awaiting_recovery)[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mpasses the prepare-time transfer timeout through direct-peer provider-bundle and manifest requests [33m 954[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mdoes not wait for a target-local source-export record before issuing direct-peer prepare requests when request metadata already includes endpoint candidates [33m 2963[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mreturns pending and then awaiting_recovery when the server-routed transfer is unavailable during prepare [33m 1769[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mreturns pending and then awaiting_recovery when the provider bundle fetch stalls during server-routed prepare [33m 1733[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mreturns invalid_request for legacy inline prepare-target transfer fields[32m 1[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mfails closed when server-routed prepare receives a malformed transfer payload[32m 173[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mfails closed when the server-routed transfer payload does not satisfy the canonical handoff schemas[32m 169[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mfails closed when the server-routed workspace replication manifest payload uses the legacy non-streaming format[32m 231[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mpublishes direct-peer endpoint candidates on start and reuses same-daemon payload sources before re-requesting them[32m 200[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mfails closed when a source export leaks a legacy codex backend field instead of canonical affinity[32m 1[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mfails closed when the direct-peer provider bundle payload is malformed [33m 340[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mkeeps a received binary provider bundle available until the target importer consumes its file slices [33m 1040[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mfails closed when the direct-peer provider bundle payload fails schema validation[32m 127[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mfails closed when direct-peer transfer fails and fallback is forbidden[32m 125[2mms[22m[39m
+   [32m✓[39m rpcHandlers (session handoff)[2m > [22mrejects deterministically unavailable direct-peer prepare before persisting an accepted job[32m 15[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mfails closed when the persisted source-export record is corrupted (no silent transfer_not_found) [33m 838[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22msurfaces deferred source-export terminal failures as a structured machine transfer abort (no misleading transfer_not_found) [33m 876[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22maborts server-routed workspace blob-pack transfers with workspace_replication_source_error when the persisted manifest cannot be loaded [33m 819[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22maborts server-routed workspace blob-pack transfers with workspace_replication_source_error when the source workspace root cannot supply required blobs [33m 890[2mms[22m[39m
+   [33m[2m✓[22m[39m rpcHandlers (session handoff)[2m > [22mwaits for a deferred source-export record before serving the server-routed provider-bundle transfer (avoids transfer_not_found) [33m 1874[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.promptAssetTransfers.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 58[2mms[22m[39m
+ [32m✓[39m src/backends/claude/directSessions/listClaudeSessionCandidates.lazyTitlePage.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.promptAssets.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 58[2mms[22m[39m
+ [32m✓[39m src/backends/claude/directSessions/readClaudeSessionTitle.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/buildClaudeSessionModelsMetadataWithCurrentModelId.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/api/directSessions/filePaging/jsonlForwardReader.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32m✓[39m src/backends/claude/directSessions/listClaudeSessionCandidates.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.mcpServers.byId.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 7[2mms[22m[39m
+[90mstdout[2m | src/api/machine/rpcHandlers.sourceContextSpawn.test.ts[2m > [22m[2mSPAWN_HAPPY_SESSION sourceContext ingress[2m > [22m[2mcreates a child whose persisted lineage names the requested source and cutoff
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'claude'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.sourceContextSpawn.test.ts[2m > [22m[2mSPAWN_HAPPY_SESSION sourceContext ingress[2m > [22m[2mrefuses a shared sourceContext before it creates a child Session
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'claude'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.sourceContextSpawn.test.ts[2m > [22m[2mSPAWN_HAPPY_SESSION sourceContext ingress[2m > [22m[2mrefuses a recipe on a resume request rather than discarding it
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'resume-session'[39m,
+  sessionId: [32m'sess_existing'[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'claude'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.sourceContextSpawn.test.ts[2m > [22m[2mSPAWN_HAPPY_SESSION sourceContext ingress[2m > [22m[2mcreates no child when the source transcript cannot be hydrated
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'claude'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.sourceContextSpawn.test.ts[2m > [22m[2mSPAWN_HAPPY_SESSION sourceContext ingress[2m > [22m[2msettles the orphaned row once when the launch is rejected
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'claude'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.sourceContextSpawn.test.ts[2m > [22m[2mSPAWN_HAPPY_SESSION sourceContext ingress[2m > [22m[2mrejoins a stable latest attempt before resolving the source again after a lost response
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [32m'latest-lost-response-attempt'[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'claude'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.sourceContextSpawn.test.ts[2m > [22m[2mSPAWN_HAPPY_SESSION sourceContext ingress[2m > [22m[2mrejoins a stable latest attempt before resolving the source again after a lost response
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [32m'latest-lost-response-attempt'[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'claude'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.sourceContextSpawn.test.ts[2m > [22m[2mSPAWN_HAPPY_SESSION sourceContext ingress[2m > [22m[2muses raw latest intent when atomic create-or-rejoin finds the child
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [32m'unregistered-latest-race'[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'claude'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.sourceContextSpawn.test.ts[2m > [22m[2mSPAWN_HAPPY_SESSION sourceContext ingress[2m > [22m[2mrefuses a resolved nonce whose child lineage contradicts the requested source context
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [32m'conflicting-source-retry'[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'claude'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+[90mstdout[2m | src/api/machine/rpcHandlers.sourceContextSpawn.test.ts[2m > [22m[2mSPAWN_HAPPY_SESSION sourceContext ingress[2m > [22m[2mleaves an ordinary spawn without a recipe on the plain creation path
+[22m[39m [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'claude'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+ [32m✓[39m src/api/machine/rpcHandlers.sourceContextSpawn.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.pets.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.terminal.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m src/api/machine/transfers/registerMachineDownloadTransferRpcHandlers.lifecycle.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32m✓[39m src/api/directSessions/linking/ensureDirectSessionLink.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/api/directSessions/filePaging/jsonlBackwardPager.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.mcpServers.detect.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.sessionGoals.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/api/directSessions/takeover/loadLinkedDirectSession.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/sessionStartPlan.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/backends/claude/claudeRemoteLauncher.metadataRuntimeControl.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.sessionRunners.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/providerPromptAcceptance.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/claudeRemoteProviderInputOutcome.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/backends/claude/claudeRemoteLauncher.readyPushPolicy.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/api/directSessions/leases/createDirectSessionFollowLeaseManager.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/sidechains/createWorkflowAgentTranscriptRegistrar.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.mcpServers.redaction.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/resolveInitialClaudeRemoteMetaState.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/backends/claude/claudeRemoteLauncher.terminationErrorDisposition.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/api/directSessions/backgroundFollow/createManagedDirectSessionFollowLease.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.serverWork.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.memory.window.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/api/directSessions/backgroundFollow/directSessionBackgroundFollowMetadata.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.mcpServers.preview.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.mcpServers.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/backends/claude/directSessions/mapClaudeJsonlLineToDirectMessages.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/sdkFlagOverrides.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.terminal.windows.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.sessionHandoff.architecture.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/api/directSessions/import/loadDirectSessionTranscriptItems.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/daemon/doctor.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/api/directSessions/takeover/findTrustedDirectSessionOwner.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/sidechains/_shared.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/backends/claude/remote/sidechains/extractAgentIdFromTaskResult.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/api/machine/rpcHandlers.bundleStability.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/api/machine/projectMachineRpcTransportAcknowledgement.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/api/machine/machineRpcAuthorization.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 24 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/api/machine/resolveMachineRpcWorkingDirectory.test.ts[2m > [22mresolveMachineRpcWorkingDirectory[2m > [22muses the daemon home as the default relative-path base even when restricted roots are configured
+[31m[1mAssertionError[22m: expected 'C:\home\user' to be '/home/user' // Object.is equality[39m
+
+Expected: [32m"[7m/[27mhome[7m/[27muser"[39m
+Received: [31m"[7mC:\[27mhome[7m\[27muser"[39m
+
+[36m [2m❯[22m src/api/machine/resolveMachineRpcWorkingDirectory.test.ts:[2m12:7[22m[39m
+    [90m 10| [39m        cwd[33m:[39m () [33m=>[39m [32m'/work/project'[39m[33m,[39m
+    [90m 11| [39m      })[33m,[39m
+    [90m 12| [39m    )[33m.[39m[34mtoBe[39m([32m'/home/user'[39m)[33m;[39m
+    [90m   | [39m      [31m^[39m
+    [90m 13| [39m  })[33m;[39m
+    [90m 14| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/machine/resolveMachineRpcWorkingDirectory.test.ts[2m > [22mresolveMachineRpcWorkingDirectory[2m > [22mdefaults to homedir when env var is not set
+[31m[1mAssertionError[22m: expected 'C:\home\user' to be '/home/user' // Object.is equality[39m
+
+Expected: [32m"[7m/[27mhome[7m/[27muser"[39m
+Received: [31m"[7mC:\[27mhome[7m\[27muser"[39m
+
+[36m [2m❯[22m src/api/machine/resolveMachineRpcWorkingDirectory.test.ts:[2m22:7[22m[39m
+    [90m 20| [39m        cwd[33m:[39m () [33m=>[39m [32m'/work/project'[39m[33m,[39m
+    [90m 21| [39m      })[33m,[39m
+    [90m 22| [39m    )[33m.[39m[34mtoBe[39m([32m'/home/user'[39m)[33m;[39m
+    [90m   | [39m      [31m^[39m
+    [90m 23| [39m  })[33m;[39m
+    [90m 24| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/machine/resolveMachineRpcWorkingDirectory.test.ts[2m > [22mresolveMachineRpcWorkingDirectory[2m > [22mdefaults to env HOME when provided
+[31m[1mAssertionError[22m: expected 'C:\scoped\home' to be '/scoped/home' // Object.is equality[39m
+
+Expected: [32m"[7m/[27mscoped[7m/[27mhome"[39m
+Received: [31m"[7mC:\[27mscoped[7m\[27mhome"[39m
+
+[36m [2m❯[22m src/api/machine/resolveMachineRpcWorkingDirectory.test.ts:[2m32:7[22m[39m
+    [90m 30| [39m        cwd[33m:[39m () [33m=>[39m [32m'/work/project'[39m[33m,[39m
+    [90m 31| [39m      })[33m,[39m
+    [90m 32| [39m    )[33m.[39m[34mtoBe[39m([32m'/scoped/home'[39m)[33m;[39m
+    [90m   | [39m      [31m^[39m
+    [90m 33| [39m  })[33m;[39m
+    [90m 34| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/machine/resolveMachineRpcWorkingDirectory.test.ts[2m > [22mresolveMachineRpcWorkingDirectory[2m > [22mdoes not use HAPPIER_MACHINE_RPC_WORKING_DIRECTORY as the default directory
+[31m[1mAssertionError[22m: expected 'C:\scoped\home' to be '/scoped/home' // Object.is equality[39m
+
+Expected: [32m"[7m/[27mscoped[7m/[27mhome"[39m
+Received: [31m"[7mC:\[27mscoped[7m\[27mhome"[39m
+
+[36m [2m❯[22m src/api/machine/resolveMachineRpcWorkingDirectory.test.ts:[2m59:7[22m[39m
+    [90m 57| [39m        cwd[33m:[39m () [33m=>[39m [32m'/work/project'[39m[33m,[39m
+    [90m 58| [39m      })[33m,[39m
+    [90m 59| [39m    )[33m.[39m[34mtoBe[39m([32m'/scoped/home'[39m)[33m;[39m
+    [90m   | [39m      [31m^[39m
+    [90m 60| [39m  })[33m;[39m
+    [90m 61| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/machine/resolveMachineRpcWorkingDirectory.test.ts[2m > [22mresolveMachineRpcWorkingDirectory[2m > [22mfalls back to cwd when homedir is not absolute
+[31m[1mAssertionError[22m: expected 'C:\work\project' to be '/work/project' // Object.is equality[39m
+
+Expected: [32m"[7m/[27mwork[7m/[27mproject"[39m
+Received: [31m"[7mC:\[27mwork[7m\[27mproject"[39m
+
+[36m [2m❯[22m src/api/machine/resolveMachineRpcWorkingDirectory.test.ts:[2m69:7[22m[39m
+    [90m 67| [39m        cwd[33m:[39m () [33m=>[39m [32m'/work/project'[39m[33m,[39m
+    [90m 68| [39m      })[33m,[39m
+    [90m 69| [39m    )[33m.[39m[34mtoBe[39m([32m'/work/project'[39m)[33m;[39m
+    [90m   | [39m      [31m^[39m
+    [90m 70| [39m  })[33m;[39m
+    [90m 71| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/machine/rpcHandlers.memory.status.test.ts[2m > [22mrpcHandlers.memory (status)[2m > [22mreturns db paths and sizes when available
+[31m[1mError[22m: EBUSY: resource busy or locked, unlink 'C:\Users\Thinkbook-16p\AppData\Local\Temp\happier-rpc-memory-status-crZ2Qb\deep.sqlite'[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/machine/rpcHandlers.sessionHandoff.test.ts[2m > [22mrpcHandlers (session handoff)[2m > [22macknowledges workspace handoff start (pending) with direct-peer endpoint candidates when server-routed fallback exists and the deferred export finishes within the fast-path budget
+[31m[1mError[22m: EBUSY: resource busy or locked, rmdir 'C:\Users\Thinkbook-16p\AppData\Local\Temp\happier-session-handoff-direct-peer-fast-path-source-3KhuHZ'[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/machine/rpcHandlers.sessionHandoff.test.ts[2m > [22mrpcHandlers (session handoff)[2m > [22mpersists a reverse-direction workspace replication baseline on source_cleanup commit (enables handoff back sync_changes)
+[31m[1mAssertionError[22m: expected null not to be null[39m
+[36m [2m❯[22m src/api/machine/rpcHandlers.sessionHandoff.test.ts:[2m3071:28[22m[39m
+    [90m3069| [39m      });
+    [90m3070| [39m
+    [90m3071| [39m      expect(baseline).not.toBeNull();
+    [90m   | [39m                           [31m^[39m
+    [90m3072| [39m      expect(baseline).toMatchObject({
+    [90m3073| [39m        manifest: {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/machine/rpcHandlers.sessionHandoff.test.ts[2m > [22mrpcHandlers (session handoff)[2m > [22macknowledges server-routed workspace handoff start before a large workspace export finishes and lets prepare wait for it
+[31m[1mAssertionError[22m: expected '/repo-target' to be 'C:\Users\Thinkbook-16p\AppData\Local\…' // Object.is equality[39m
+
+Expected: [32m"[7mC:\Users\Thinkbook-16p\AppData\Local\Temp\happier-session-handoff-server-routed-deferred-home-1rzFQL\[27mrepo-target"[39m
+Received: [31m"[7m/[27mrepo-target"[39m
+
+[36m [2m❯[22m src/api/machine/rpcHandlers.sessionHandoff.test.ts:[2m5789:33[22m[39m
+    [90m5787| [39m      });
+    [90m5788| [39m      const importedDirectory = ready.resume.directory;
+    [90m5789| [39m      expect(importedDirectory).toBe(join(isolatedHome.homeDir, 'repo-…
+    [90m   | [39m                                [31m^[39m
+    [90m5790| [39m      expect(importSessionBundle).toHaveBeenCalledWith(
+    [90m5791| [39m        {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/machine/rpcHandlers.sessionHandoff.test.ts[2m > [22mrpcHandlers (session handoff)[2m > [22mkeeps deferred direct-peer prepare-target on direct-peer when server-routed fallback exists
+[31m[1mError[22m: prepare-target result not ready (awaiting_recovery)[39m
+[36m [2m❯[22m vi.waitFor.timeout src/api/machine/rpcHandlers.sessionHandoff.test.ts:[2m6030:17[22m[39m
+    [90m6028| [39m        const next = await resultGet!({ handoffId: started.handoffId }…
+    [90m6029| [39m        if (next && typeof next === 'object' && 'ok' in next && next.o…
+    [90m6030| [39m          throw new Error(`prepare-target result not ready (${String((…
+    [90m   | [39m                [31m^[39m
+    [90m6031| [39m        }
+    [90m6032| [39m        ready = next;
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/machine/rpcHandlers.test.ts[2m > [22mregisterMachineRpcHandlers[2m > [22mexpands ~/ in session directories before forwarding spawn requests to the daemon
+[31m[1mAssertionError[22m: expected "spy" to be called with arguments: [ ObjectContaining{…} ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[32m-   ObjectContaining {[90m
+[32m-     "directory": "/Users/tester/workspace",[90m
+[31m+   {[90m
+[31m+     "accountSettingsVersionHint": undefined,[90m
+[31m+     "agentModeId": undefined,[90m
+[31m+     "agentModeUpdatedAt": undefined,[90m
+[31m+     "approvedNewDirectoryCreation": undefined,[90m
+[31m+     "attachMetadataIdentityPolicy": undefined,[90m
+[31m+     "backendTarget": {[90m
+[31m+       "agentId": "claude",[90m
+[31m+       "kind": "builtInAgent",[90m
+[31m+     },[90m
+[31m+     "connectedServices": undefined,[90m
+[31m+     "connectedServicesUpdatedAt": undefined,[90m
+[31m+     "directory": "C:\\Users\\Thinkbook-16p\\workspace",[90m
+[31m+     "environmentVariables": undefined,[90m
+[31m+     "executionAuthorization": undefined,[90m
+[31m+     "initialGoal": undefined,[90m
+[31m+     "initialTranscriptAfterSeq": undefined,[90m
+[31m+     "machineId": undefined,[90m
+[31m+     "mcpSelection": undefined,[90m
+[31m+     "modelId": undefined,[90m
+[31m+     "modelUpdatedAt": undefined,[90m
+[31m+     "pendingFirstInput": undefined,[90m
+[31m+     "permissionMode": undefined,[90m
+[31m+     "permissionModeUpdatedAt": undefined,[90m
+[31m+     "profileId": undefined,[90m
+[31m+     "resume": undefined,[90m
+[31m+     "sessionConfigOptionOverrides": undefined,[90m
+[31m+     "sessionId": undefined,[90m
+[31m+     "spawnNonce": undefined,[90m
+[31m+     "terminal": undefined,[90m
+[31m+     "transcriptStorage": undefined,[90m
+[31m+     "windowsRemoteSessionConsole": undefined,[90m
+[31m+     "windowsRemoteSessionLaunchMode": undefined,[90m
+[2m    },[22m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+[36m [2m❯[22m src/api/machine/rpcHandlers.test.ts:[2m568:28[22m[39m
+    [90m566| [39m      });
+    [90m567| [39m
+    [90m568| [39m      expect(spawnSession).toHaveBeenCalledWith(expect.objectContainin…
+    [90m   | [39m                           [31m^[39m
+    [90m569| [39m        directory: '/Users/tester/workspace',
+    [90m570| [39m      }));
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/machine/rpcHandlers.test.ts[2m > [22mregisterMachineRpcHandlers[2m > [22mcontinues a session with an on-demand summary when summary_plus_recent has no cached summary
+[31m[1mAssertionError[22m: expected { dialogCount: 2, …(2) } to match object { backendId: 'claude', …(2) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "backendId": "claude",[22m
+[32m-   "cwd": "/Users/tester/repo",[39m
+[31m+   "cwd": "C:\\Users\\Thinkbook-16p\\repo",[39m
+[2m    "dialogCount": 2,[22m
+[2m  }[22m
+
+[36m [2m❯[22m src/api/machine/rpcHandlers.test.ts:[2m2353:37[22m[39m
+    [90m2351| [39m      expect(result).toMatchObject({ type: 'success', sessionId: 'sess…
+    [90m2352| [39m      expect(replaySummaryCalls.length).toBe(1);
+    [90m2353| [39m      expect(replaySummaryCalls[0]).toMatchObject({
+    [90m   | [39m                                    [31m^[39m
+    [90m2354| [39m        backendId: 'claude',
+    [90m2355| [39m        dialogCount: 2,
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/directSessions/security/validateDirectMachineSource.test.ts[2m > [22mvalidateDirectMachineSource[2m > [22mnormalizes Claude configDir against env HOME before validating the source
+[31m[1mAssertionError[22m: expected { ok: true, source: { …(2) } } to deeply equal { ok: true, source: { …(2) } }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "ok": true,[22m
+[2m    "source": {[22m
+[32m-     "configDir": "/Users/tester/.claude",[39m
+[31m+     "configDir": "C:\\Users\\tester\\.claude",[39m
+[2m      "kind": "claudeConfig",[22m
+[2m    },[22m
+[2m  }[22m
+
+[36m [2m❯[22m src/api/directSessions/security/validateDirectMachineSource.test.ts:[2m80:7[22m[39m
+    [90m 78| [39m        }[33m,[39m
+    [90m 79| [39m      })[33m,[39m
+    [90m 80| [39m    )[33m.[39m[34mtoEqual[39m({
+    [90m   | [39m      [31m^[39m
+    [90m 81| [39m      ok[33m:[39m [35mtrue[39m[33m,[39m
+    [90m 82| [39m      source[33m:[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/directSessions/security/validateDirectMachineSource.test.ts[2m > [22mvalidateDirectMachineSource[2m > [22maccepts a pi piAgentDir source and resolves the agentDir from PI_CODING_AGENT_DIR
+[31m[1mAssertionError[22m: expected { ok: true, source: { …(2) } } to deeply equal { ok: true, source: { …(2) } }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "ok": true,[22m
+[2m    "source": {[22m
+[32m-     "agentDir": "/Users/tester/.pi/agent",[39m
+[31m+     "agentDir": "C:\\Users\\tester\\.pi\\agent",[39m
+[2m      "kind": "piAgentDir",[22m
+[2m    },[22m
+[2m  }[22m
+
+[36m [2m❯[22m src/api/directSessions/security/validateDirectMachineSource.test.ts:[2m99:7[22m[39m
+    [90m 97| [39m        }[33m,[39m
+    [90m 98| [39m      })[33m,[39m
+    [90m 99| [39m    )[33m.[39m[34mtoEqual[39m({
+    [90m   | [39m      [31m^[39m
+    [90m100| [39m      ok[33m:[39m [35mtrue[39m[33m,[39m
+    [90m101| [39m      source[33m:[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/directSessions/takeover/resolveDirectTakeoverSpawnOptions.test.ts[2m > [22mresolveDirectTakeoverSpawnOptions[2m > [22mlets direct Codex takeovers inherit the default backend mode instead of forcing ACP
+[31m[1mAssertionError[22m: expected { …(7) } to deeply equal { …(7) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -5,11 +5,11 @@[39m
+[2m      "kind": "builtInAgent",[22m
+[2m    },[22m
+[2m    "directory": "/tmp/direct-codex-takeover-project",[22m
+[2m    "environmentVariables": {[22m
+[2m      "CODEX_HOME": "C:\\Users\\Thinkbook-16p\\AppData\\Local\\Temp\\happier-direct-takeover-codex-0RceEi\\.codex",[22m
+[32m-     "CODEX_SQLITE_HOME": "/tmp/happier-test-codex-state",[39m
+[31m+     "CODEX_SQLITE_HOME": "C:\\tmp\\happier-test-codex-state",[39m
+[2m    },[22m
+[2m    "existingSessionId": "sess_happy_direct_codex",[22m
+[2m    "resume": "11111111-1111-1111-1111-111111111111",[22m
+[2m    "transcriptStorage": "direct",[22m
+[2m  }[22m
+
+[36m [2m❯[22m src/api/directSessions/takeover/resolveDirectTakeoverSpawnOptions.test.ts:[2m122:26[22m[39m
+    [90m120| [39m    })[33m;[39m
+    [90m121| [39m
+    [90m122| [39m    [34mexpect[39m(spawnOptions)[33m.[39m[34mtoEqual[39m({
+    [90m   | [39m                         [31m^[39m
+    [90m123| [39m      directory[33m:[39m [32m'/tmp/direct-codex-takeover-project'[39m[33m,[39m
+    [90m124| [39m      backendTarget[33m:[39m { kind[33m:[39m [32m'builtInAgent'[39m[33m,[39m agentId[33m:[39m [32m'codex'[39m }[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/directSessions/takeover/resolveDirectTakeoverSpawnOptions.test.ts[2m > [22mresolveDirectTakeoverSpawnOptions[2m > [22mkeeps app-server codex backend affinity during direct takeover
+[31m[1mAssertionError[22m: expected { …(8) } to deeply equal { …(8) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -6,11 +6,11 @@[39m
+[2m    },[22m
+[2m    "codexBackendMode": "appServer",[22m
+[2m    "directory": "/tmp/direct-codex-app-server-project",[22m
+[2m    "environmentVariables": {[22m
+[2m      "CODEX_HOME": "C:\\Users\\Thinkbook-16p\\AppData\\Local\\Temp\\happier-direct-takeover-codex-app-server-mG1Rcd\\.codex",[22m
+[32m-     "CODEX_SQLITE_HOME": "/tmp/happier-test-codex-state",[39m
+[31m+     "CODEX_SQLITE_HOME": "C:\\tmp\\happier-test-codex-state",[39m
+[2m    },[22m
+[2m    "existingSessionId": "sess_happy_direct_codex",[22m
+[2m    "resume": "11111111-1111-1111-1111-111111111111",[22m
+[2m    "transcriptStorage": "direct",[22m
+[2m  }[22m
+
+[36m [2m❯[22m src/api/directSessions/takeover/resolveDirectTakeoverSpawnOptions.test.ts:[2m152:26[22m[39m
+    [90m150| [39m    })[33m;[39m
+    [90m151| [39m
+    [90m152| [39m    [34mexpect[39m(spawnOptions)[33m.[39m[34mtoEqual[39m({
+    [90m   | [39m                         [31m^[39m
+    [90m153| [39m      directory[33m:[39m [32m'/tmp/direct-codex-app-server-project'[39m[33m,[39m
+    [90m154| [39m      backendTarget[33m:[39m { kind[33m:[39m [32m'builtInAgent'[39m[33m,[39m agentId[33m:[39m [32m'codex'[39m }[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/directSessions/takeover/resolveDirectTakeoverSpawnOptions.test.ts[2m > [22mresolveDirectTakeoverSpawnOptions[2m > [22mkeeps ACP codex backend affinity backward compatible during direct takeover
+[31m[1mAssertionError[22m: expected { …(8) } to deeply equal { …(8) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -6,11 +6,11 @@[39m
+[2m    },[22m
+[2m    "codexBackendMode": "acp",[22m
+[2m    "directory": "/tmp/direct-codex-acp-project",[22m
+[2m    "environmentVariables": {[22m
+[2m      "CODEX_HOME": "C:\\Users\\Thinkbook-16p\\AppData\\Local\\Temp\\happier-direct-takeover-codex-acp-RldebA\\.codex",[22m
+[32m-     "CODEX_SQLITE_HOME": "/tmp/happier-test-codex-state",[39m
+[31m+     "CODEX_SQLITE_HOME": "C:\\tmp\\happier-test-codex-state",[39m
+[2m    },[22m
+[2m    "existingSessionId": "sess_happy_direct_codex_acp",[22m
+[2m    "resume": "acp-thread-1",[22m
+[2m    "transcriptStorage": "direct",[22m
+[2m  }[22m
+
+[36m [2m❯[22m src/api/directSessions/takeover/resolveDirectTakeoverSpawnOptions.test.ts:[2m274:26[22m[39m
+    [90m272| [39m    })[33m;[39m
+    [90m273| [39m
+    [90m274| [39m    [34mexpect[39m(spawnOptions)[33m.[39m[34mtoEqual[39m({
+    [90m   | [39m                         [31m^[39m
+    [90m275| [39m      directory[33m:[39m [32m'/tmp/direct-codex-acp-project'[39m[33m,[39m
+    [90m276| [39m      backendTarget[33m:[39m { kind[33m:[39m [32m'builtInAgent'[39m[33m,[39m agentId[33m:[39m [32m'codex'[39m }[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/api/directSessions/takeover/resolveDirectTakeoverSpawnOptions.test.ts[2m > [22mresolveDirectTakeoverSpawnOptions[2m > [22muses app-server thread cwd when an app-server-linked codex session has no stored path or rollout metadata
+[31m[1mAssertionError[22m: expected { …(8) } to deeply equal { …(8) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -6,11 +6,11 @@[39m
+[2m    },[22m
+[2m    "codexBackendMode": "appServer",[22m
+[2m    "directory": "/tmp/direct-codex-app-server-cwd-project",[22m
+[2m    "environmentVariables": {[22m
+[2m      "CODEX_HOME": "C:\\Users\\Thinkbook-16p\\AppData\\Local\\Temp\\happier-direct-takeover-codex-app-server-cwd-ZOZEcG\\.codex",[22m
+[32m-     "CODEX_SQLITE_HOME": "/tmp/happier-test-codex-state",[39m
+[31m+     "CODEX_SQLITE_HOME": "C:\\tmp\\happier-test-codex-state",[39m
+[2m    },[22m
+[2m    "existingSessionId": "sess_happy_direct_codex_app_server_cwd",[22m
+[2m    "resume": "22222222-2222-2222-2222-222222222222",[22m
+[2m    "transcriptStorage": "direct",[22m
+[2m  }[22m
+
+[36m [2m❯[22m src/api/directSessions/takeover/resolveDirectTakeoverSpawnOptions.test.ts:[2m313:26[22m[39m
+    [90m311| [39m    })[33m;[39m
+    [90m312| [39m
+    [90m313| [39m    [34mexpect[39m(spawnOptions)[33m.[39m[34mtoEqual[39m({
+    [90m   | [39m                         [31m^[39m
+    [90m314| [39m      directory[33m:[39m [32m'/tmp/direct-codex-app-server-cwd-project'[39m[33m,[39m
+    [90m315| [39m      backendTarget[33m:[39m { kind[33m:[39m [32m'builtInAgent'[39m[33m,[39m agentId[33m:[39m [32m'codex'[39m }[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/backends/claude/directSessions/resolveClaudeConfigDir.test.ts[2m > [22mresolveClaudeConfigDirForDirectSessions[2m > [22muses env HOME for the default Claude config dir
+[31m[1mAssertionError[22m: expected '\Users\tester\.claude' to be '/Users/tester/.claude' // Object.is equality[39m
+
+Expected: [32m"[7m/[27mUsers[7m/[27mtester[7m/[27m.claude"[39m
+Received: [31m"[7m\[27mUsers[7m\[27mtester[7m\[27m.claude"[39m
+
+[36m [2m❯[22m src/backends/claude/directSessions/resolveClaudeConfigDir.test.ts:[2m11:9[22m[39m
+    [90m  9| [39m        [33mHOME[39m[33m:[39m [32m'/Users/tester'[39m[33m,[39m
+    [90m 10| [39m      } satisfies [33mNodeJS[39m[33m.[39m[33mProcessEnv[39m[33m,[39m
+    [90m 11| [39m    }))[33m.[39m[34mtoBe[39m([32m'/Users/tester/.claude'[39m)[33m;[39m
+    [90m   | [39m        [31m^[39m
+    [90m 12| [39m  })[33m;[39m
+    [90m 13| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/backends/claude/directSessions/resolveClaudeConfigDir.test.ts[2m > [22mresolveClaudeConfigDirForDirectSessions[2m > [22mexpands ~/ source configDir against env HOME
+[31m[1mAssertionError[22m: expected '\Users\tester\team-claude' to be '/Users/tester/team-claude' // Object.is equality[39m
+
+Expected: [32m"[7m/[27mUsers[7m/[27mtester[7m/[27mteam-claude"[39m
+Received: [31m"[7m\[27mUsers[7m\[27mtester[7m\[27mteam-claude"[39m
+
+[36m [2m❯[22m src/backends/claude/directSessions/resolveClaudeConfigDir.test.ts:[2m23:9[22m[39m
+    [90m 21| [39m        [33mHOME[39m[33m:[39m [32m'/Users/tester'[39m[33m,[39m
+    [90m 22| [39m      } satisfies [33mNodeJS[39m[33m.[39m[33mProcessEnv[39m[33m,[39m
+    [90m 23| [39m    }))[33m.[39m[34mtoBe[39m([32m'/Users/tester/team-claude'[39m)[33m;[39m
+    [90m   | [39m        [31m^[39m
+    [90m 24| [39m  })[33m;[39m
+    [90m 25| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/backends/claude/remote/claudeRemoteAgentSdk.optionsAndHooks.test.ts[2m > [22mclaudeRemoteAgentSdk options and hooks[2m > [22mderives a transcript path when SessionStart hook omits transcript_path/transcriptPath
+[31m[1mAssertionError[22m: expected "spy" to be called with arguments: [ 'sess_999', ObjectContaining{…} ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    "sess_999",[22m
+[32m-   ObjectContaining {[90m
+[32m-     "transcript_path": "/tmp/claude_cfg/projects/C--tmp/sess_999.jsonl",[90m
+[31m+   {[90m
+[31m+     "hook_event_name": "SessionStart",[90m
+[31m+     "transcriptPath": "\\tmp\\claude_cfg\\projects\\C--tmp\\sess_999.jsonl",[90m
+[31m+     "transcript_path": "\\tmp\\claude_cfg\\projects\\C--tmp\\sess_999.jsonl",[90m
+[2m    },[22m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+[36m [2m❯[22m src/backends/claude/remote/claudeRemoteAgentSdk.optionsAndHooks.test.ts:[2m2830:32[22m[39m
+    [90m2828| [39m        );
+    [90m2829| [39m
+    [90m2830| [39m        expect(onSessionFound).toHaveBeenCalledWith(
+    [90m   | [39m                               [31m^[39m
+    [90m2831| [39m            'sess_999',
+    [90m2832| [39m            expect.objectContaining({
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/backends/claude/remote/claudeRemoteAgentSdk.optionsAndHooks.test.ts[2m > [22mclaudeRemoteAgentSdk options and hooks[2m > [22msupports SessionStart hook sessionId (camelCase) when publishing transcript path
+[31m[1mAssertionError[22m: expected "spy" to be called with arguments: [ 'sess_abc', ObjectContaining{…} ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    "sess_abc",[22m
+[32m-   ObjectContaining {[90m
+[32m-     "transcript_path": "/tmp/claude_cfg/projects/C--tmp/sess_abc.jsonl",[90m
+[31m+   {[90m
+[31m+     "hook_event_name": "SessionStart",[90m
+[31m+     "transcriptPath": "\\tmp\\claude_cfg\\projects\\C--tmp\\sess_abc.jsonl",[90m
+[31m+     "transcript_path": "\\tmp\\claude_cfg\\projects\\C--tmp\\sess_abc.jsonl",[90m
+[2m    },[22m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+[36m [2m❯[22m src/backends/claude/remote/claudeRemoteAgentSdk.optionsAndHooks.test.ts:[2m2894:32[22m[39m
+    [90m2892| [39m        );
+    [90m2893| [39m
+    [90m2894| [39m        expect(onSessionFound).toHaveBeenCalledWith(
+    [90m   | [39m                               [31m^[39m
+    [90m2895| [39m            'sess_abc',
+    [90m2896| [39m            expect.objectContaining({
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/backends/claude/remote/claudeRemoteAgentSdk.optionsAndHooks.test.ts[2m > [22mclaudeRemoteAgentSdk options and hooks[2m > [22mpublishes a derived transcript path when system init provides session_id without SessionStart hook data
+[31m[1mAssertionError[22m: expected "spy" to be called with arguments: [ 'sess_init', ObjectContaining{…} ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    "sess_init",[22m
+[32m-   ObjectContaining {[90m
+[32m-     "transcript_path": "/tmp/claude_cfg/projects/C--tmp/sess_init.jsonl",[90m
+[31m+   {[90m
+[31m+     "transcriptPath": "\\tmp\\claude_cfg\\projects\\C--tmp\\sess_init.jsonl",[90m
+[31m+     "transcript_path": "\\tmp\\claude_cfg\\projects\\C--tmp\\sess_init.jsonl",[90m
+[2m    },[22m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+[36m [2m❯[22m src/backends/claude/remote/claudeRemoteAgentSdk.optionsAndHooks.test.ts:[2m3002:32[22m[39m
+    [90m3000| [39m        } as any);
+    [90m3001| [39m
+    [90m3002| [39m        expect(onSessionFound).toHaveBeenCalledWith(
+    [90m   | [39m                               [31m^[39m
+    [90m3003| [39m            'sess_init',
+    [90m3004| [39m            expect.objectContaining({
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/24]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/backends/claude/remote/claudeRemoteAgentSdk.optionsAndHooks.test.ts[2m > [22mclaudeRemoteAgentSdk options and hooks[2m > [22mapplies allowlisted advanced options JSON without allowing control-plane overrides
+[31m[1mAssertionError[22m: expected '\tmp\happier-claude-debug-artifacts\c…' to match /^\/tmp\/happier-claude-debug-arti…/tmp\[39m
+
+[32m- Expected:[39m 
+/^\/tmp\/happier-claude-debug-artifacts\//
+
+[31m+ Received:[39m 
+"\\tmp\\happier-claude-debug-artifacts\\claude-code-debug-1790654849155-pid-56500.log"
+
+[36m [2m❯[22m src/backends/claude/remote/claudeRemoteAgentSdk.optionsAndHooks.test.ts:[2m3216:48[22m[39m
+    [90m3214| [39m            expect(capturedOptions?.hooks?.SessionStart?.[0]?.hooks?.l…
+    [90m3215| [39m            expect(typeof capturedOptions?.debugFile).toBe('string');
+    [90m3216| [39m            expect(capturedOptions?.debugFile).toMatch(/^\/tmp\/happie…
+    [90m   | [39m                                               [31m^[39m
+    [90m3217| [39m            expect(typeof capturedOptions?.stderr).toBe('function');
+    [90m3218| [39m        } finally {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/24]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m8 failed[39m[22m[2m | [22m[1m[32m87 passed[39m[22m[90m (95)[39m
+[2m      Tests [22m [1m[31m24 failed[39m[22m[2m | [22m[1m[32m723 passed[39m[22m[90m (747)[39m
+[2m   Start at [22m 21:07:19
+[2m   Duration [22m 90.58s[2m (transform 10.39s, setup 626ms, collect 143.77s, tests 194.44s, environment 10ms, prepare 5.47s)[22m
+

@@ -1,0 +1,24 @@
+ FAIL  src/api/directSessions/security/validateDirectMachineSource.test.ts > validateDirectMachineSource > accepts a pi piAgentDir source and resolves the agentDir from PI_CODING_AGENT_DIR
+ FAIL  src/api/directSessions/security/validateDirectMachineSource.test.ts > validateDirectMachineSource > normalizes Claude configDir against env HOME before validating the source
+ FAIL  src/api/directSessions/takeover/resolveDirectTakeoverSpawnOptions.test.ts > resolveDirectTakeoverSpawnOptions > keeps ACP codex backend affinity backward compatible during direct takeover
+ FAIL  src/api/directSessions/takeover/resolveDirectTakeoverSpawnOptions.test.ts > resolveDirectTakeoverSpawnOptions > keeps app-server codex backend affinity during direct takeover
+ FAIL  src/api/directSessions/takeover/resolveDirectTakeoverSpawnOptions.test.ts > resolveDirectTakeoverSpawnOptions > lets direct Codex takeovers inherit the default backend mode instead of forcing ACP
+ FAIL  src/api/directSessions/takeover/resolveDirectTakeoverSpawnOptions.test.ts > resolveDirectTakeoverSpawnOptions > uses app-server thread cwd when an app-server-linked codex session has no stored path or rollout metadata
+ FAIL  src/api/machine/resolveMachineRpcWorkingDirectory.test.ts > resolveMachineRpcWorkingDirectory > defaults to env HOME when provided
+ FAIL  src/api/machine/resolveMachineRpcWorkingDirectory.test.ts > resolveMachineRpcWorkingDirectory > defaults to homedir when env var is not set
+ FAIL  src/api/machine/resolveMachineRpcWorkingDirectory.test.ts > resolveMachineRpcWorkingDirectory > does not use HAPPIER_MACHINE_RPC_WORKING_DIRECTORY as the default directory
+ FAIL  src/api/machine/resolveMachineRpcWorkingDirectory.test.ts > resolveMachineRpcWorkingDirectory > falls back to cwd when homedir is not absolute
+ FAIL  src/api/machine/resolveMachineRpcWorkingDirectory.test.ts > resolveMachineRpcWorkingDirectory > uses the daemon home as the default relative-path base even when restricted roots are configured
+ FAIL  src/api/machine/rpcHandlers.memory.status.test.ts > rpcHandlers.memory (status) > returns db paths and sizes when available
+ FAIL  src/api/machine/rpcHandlers.sessionHandoff.test.ts > rpcHandlers (session handoff) > acknowledges server-routed workspace handoff start before a large workspace export finishes and lets prepare wait for it
+ FAIL  src/api/machine/rpcHandlers.sessionHandoff.test.ts > rpcHandlers (session handoff) > acknowledges workspace handoff start (pending) with direct-peer endpoint candidates when server-routed fallback exists and the deferred export finishes within the fast-path budget
+ FAIL  src/api/machine/rpcHandlers.sessionHandoff.test.ts > rpcHandlers (session handoff) > keeps deferred direct-peer prepare-target on direct-peer when server-routed fallback exists
+ FAIL  src/api/machine/rpcHandlers.sessionHandoff.test.ts > rpcHandlers (session handoff) > persists a reverse-direction workspace replication baseline on source_cleanup commit (enables handoff back sync_changes)
+ FAIL  src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > continues a session with an on-demand summary when summary_plus_recent has no cached summary
+ FAIL  src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > expands ~/ in session directories before forwarding spawn requests to the daemon
+ FAIL  src/backends/claude/directSessions/resolveClaudeConfigDir.test.ts > resolveClaudeConfigDirForDirectSessions > expands ~/ source configDir against env HOME
+ FAIL  src/backends/claude/directSessions/resolveClaudeConfigDir.test.ts > resolveClaudeConfigDirForDirectSessions > uses env HOME for the default Claude config dir
+ FAIL  src/backends/claude/remote/claudeRemoteAgentSdk.optionsAndHooks.test.ts > claudeRemoteAgentSdk options and hooks > applies allowlisted advanced options JSON without allowing control-plane overrides
+ FAIL  src/backends/claude/remote/claudeRemoteAgentSdk.optionsAndHooks.test.ts > claudeRemoteAgentSdk options and hooks > derives a transcript path when SessionStart hook omits transcript_path/transcriptPath
+ FAIL  src/backends/claude/remote/claudeRemoteAgentSdk.optionsAndHooks.test.ts > claudeRemoteAgentSdk options and hooks > publishes a derived transcript path when system init provides session_id without SessionStart hook data
+ FAIL  src/backends/claude/remote/claudeRemoteAgentSdk.optionsAndHooks.test.ts > claudeRemoteAgentSdk options and hooks > supports SessionStart hook sessionId (camelCase) when publishing transcript path

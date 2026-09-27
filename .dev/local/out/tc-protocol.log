@@ -1,0 +1,7 @@
+yarn workspace v1.22.22
+yarn run v1.22.22
+$ node scripts/generate-embedded-feature-policies.mjs
+$ node ../../scripts/workspaces/runTypeScriptCli.mjs -p tsconfig.json --noEmit
+Done in 0.46s.
+Done in 0.71s.
+exit 0

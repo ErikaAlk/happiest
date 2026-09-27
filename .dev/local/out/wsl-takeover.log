@@ -1,0 +1,383 @@
+Updating 4194d6b1..15bd21f9
+Fast-forward
+ .../takeover/externalDirectSessionProcesses.ts     |  47 +++++++
+ .../api/machine/rpcHandlers.directSessions.test.ts | 136 +++++++++++++++++-
+ .../src/api/mach(node:119477) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ 154 +++++++++++++++++++++
+ .../providerOps.liveClaudeProcess.test.ts          |  86 ++++++++++++
+ .../backends/claude/directSessions/providerOps.ts  |  15 +-
+ ...deRemoteAgentSdk.externalSessionProcess.test.ts | 125 +++++++++++++++++
+ .../backends/claude/remote/claudeRemoteAgentSdk.ts |  21 +++
+ .../backends/codex/directSessions/providerOps.ts   |   1 +
+ .../cli/src/backends/directSessions/providerOps.ts |   9 ++
+ .../opencode/directSessions/providerOps.ts         |   1 +
+ .../src/backends/pi/directSessions/providerOps.ts  |   1 +
+ .../daemon/doctor.posixProcessDiscovery.test.ts    |   4 +-
+ .../daemon/doctor.processInfo.liveProcess.test.ts  |  24 ++++
+ apps/cli/src/daemon/doctor.ts                      |  25 +++-
+ .../src/testkit/backends/claudeSessionRecord.ts    |  67 +++++++++
+ .../content/docs/sessions/continuing-a-session.mdx |  12 ++
+ .../takeover/showDirectSessionTakeoverDialog.tsx   |  16 ++-
+ .../model/useDirectSessionTakeover.test.tsx        |  64 ++++++++-
+ .../sessions/model/useDirectSessionTakeover.ts     |  35 +++--
+ apps/ui/sources/text/translations/ca.ts            |   3 +
+ apps/ui/sources/text/translations/de.ts            |   3 +
+ apps/ui/sources/text/translations/en.ts            |   3 +
+ apps/ui/sources/text/translations/es.ts            |   3 +
+ apps/ui/sources/text/translations/fr.ts            |   3 +
+ apps/ui/sources/text/translations/it.ts            |   3 +
+ apps/ui/sources/text/translations/ja.ts            |   3 +
+ apps/ui/sources/text/translations/pl.ts            |   3 +
+ apps/ui/sources/text/translations/pt.ts            |   3 +
+ apps/ui/sources/text/translations/ru.ts            |   3 +
+ apps/ui/sources/text/translations/zh-Hans.ts       |   3 +
+ apps/ui/sources/text/translations/zh-Hant.ts       |   3 +
+ docs/claude-feature-matrix.md                      |   1 +
+ packages/cli-common/processInstance.d.mts          |   8 ++
+ packages/cli-common/processInstance.mjs            |  25 +++-
+ .../protocol/src/directSessions/daemonRpcV1.ts     |   2 +
+ 37 files changed, 1002 insertions(+), 31 deletions(-)
+ create mode 100644 apps/cli/src/api/directSessions/takeover/externalDirectSessionProcesses.ts
+ create mode 100644 apps/cli/src/backends/claude/directSessions/findLiveClaudeSessionProcesses.test.ts
+ create mode 100644 apps/cli/src/backends/claude/directSessions/findLiveClaudeSessionProcesses.ts
+ create mode 100644 apps/cli/src/backends/claude/directSessions/providerOps.liveClaudeProcess.test.ts
+ create mode 100644 apps/cli/src/backends/claude/remote/claudeRemoteAgentSdk.externalSessionProcess.test.ts
+ create mode 100644 apps/cli/src/daemon/doctor.processInfo.liveProcess.test.ts
+ create mode 100644 apps/cli/src/testkit/backends/claudeSessionRecord.ts
+15bd21f9 fix(direct-sessions): stop a Claude process still running the session before Happier continues it
+1.22.22
+
+ RUN  v3.2.4 /home/erika/happiest/apps/cli
+
+ ✓ src/backends/claude/remote/agentSdk/repairClaudeTranscriptAfterInterrupt.test.ts (6 tests) 3707ms
+   ✓ repairClaudeTranscriptAfterInterrupt > repairs transcripts without relying on full-file reads (tail-read)  1141ms
+   ✓ repairClaudeTranscriptAfterInterrupt > waits briefly for an in-flight tool_result to land and avoids appending a duplicate interrupted tool_result  628ms
+   ✓ repairClaudeTranscriptAfterInterrupt > waits briefly for an in-flight trailing JSONL line to settle before truncating  591ms
+   ✓ repairClaudeTranscriptAfterInterrupt > does not write to an explicit transcriptPath outside the Claude project directory  566ms
+   ✓ repairClaudeTranscriptAfterInterrupt > skips repair when the transcript is still actively being written (requires a settled file)  777ms
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > normalizes empty modelId to undefined when spawning a session
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > forwards account settings version hints when spawning a session
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'claude'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > expands ~/ in session directories before forwarding spawn requests to the daemon
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'claude'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > normalizes whitespace-only modelId to undefined when resuming a session
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'resume-session'[39m,
+  sessionId: [32m'sess_old'[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'claude'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > passes through environmentVariables when resuming a session
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'resume-session'[39m,
+  sessionId: [32m'sess_old'[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'opencode'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > does not forward machine rpc auth token into daemon spawn options
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'opencode'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > normalizes legacy experimentalCodexAcp spawn requests onto canonical codexBackendMode
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'codex'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > passes through mcpSelection when spawning a session
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > passes through sessionConfigOptionOverrides when spawning a session
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > passes canonical spawn fields through when spawning a session
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [32m'spawn-nonce-1'[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > maps duplicate in-flight daemon spawn nonce envelopes to a retryable spawn timeout error
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [32m'spawn-nonce-pending'[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > preserves async spawn acceptance on the provider-safe RPC when the daemon session id is still pending
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [32m'spawn-nonce-pending-ack'[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > resolves accepted spawn identity before returning success on the released legacy RPC
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [32m'spawn-nonce-legacy-pending'[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > preserves structured connected-service error details from daemon spawn envelopes
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [32m'spawn-nonce-error'[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > passes canonical spawn fields through when resuming a session and preserves sessionId aliasing
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'resume-session'[39m,
+  sessionId: [32m'sess_old'[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [32m'resume-nonce-1'[39m,
+  terminal: { mode: [32m'tmux'[39m, tmux: { sessionName: [32m'happy'[39m, isolated: [33mtrue[39m } },
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'codex'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > normalizes legacy experimentalCodexAcp resume requests onto canonical codexBackendMode
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'resume-session'[39m,
+  sessionId: [32m'sess_old'[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'codex'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > preserves cursor-bound user execution authorization through the production resume adapter
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'resume-session'[39m,
+  sessionId: [32m'sess-paused'[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'codex'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > passes agentRuntimeDescriptorV1 through resume requests and derives codexBackendMode from canonical providerExtra affinity
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'resume-session'[39m,
+  sessionId: [32m'sess_old'[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'builtInAgent'[39m, agentId: [32m'codex'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > passes configured ACP backend backend targets through when resuming a session
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'resume-session'[39m,
+  sessionId: [32m'sess_old'[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: { kind: [32m'configuredAcpBackend'[39m, backendId: [32m'custom-kiro'[39m },
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > normalizes invalid permissionMode to undefined when spawning a session
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+stdout | src/api/machine/rpcHandlers.test.ts > registerMachineRpcHandlers > passes through valid permissionMode values when spawning a session
+ [API MACHINE] spawn/resume request received {
+  requestType: [32m'spawn'[39m,
+  sessionId: [90mundefined[39m,
+  machineId: [90mundefined[39m,
+  spawnNonce: [90mundefined[39m,
+  terminal: [90mundefined[39m,
+  backendTarget: [90mundefined[39m,
+  hasResume: [33mfalse[39m,
+  requestOrigin: [90mundefined[39m
+}
+
+ ✓ src/backends/claude/remote/claudeRemoteAgentSdk.abortRepair.test.ts (8 tests) 1202ms
+ ✓ src/api/machine/rpcHandlers.test.ts (90 tests) 2211ms
+   ✓ registerMachineRpcHandlers > fails when provider-native fork cannot load the child session metadata after spawning  1268ms
+ ✓ src/backends/claude/remote/sidechains/claudeRemoteSubagentFileCollector.test.ts (16 tests) 1087ms
+   ✓ ClaudeRemoteSubagentFileCollector > final-drains and stops Task sidechain followers after completion grace  1007ms
+ ✓ src/backends/claude/remote/sidechains/claudeTaskOutputSidechainImporter.limits.test.ts (1 test) 770ms
+   ✓ ClaudeTaskOutputSidechainImporter (limits) > bounds pending TaskOutput records per agent when configured  770ms
+ ✓ src/backends/claude/directSessions/pageClaudeTranscript.test.ts (6 tests) 975ms
+   ✓ pageClaudeTranscript > fails observably when the existing oversized-line budget cannot establish a safe tail  962ms
+ ✓ src/api/machine/rpcHandlers.directSessions.test.ts (26 tests) 703ms
+ ✓ src/backends/claude/remote/claudeRemoteAgentSdk.postResultStreaming.test.ts (8 tests) 570ms
+ ✓ src/api/directSessions/takeover/resolveDirectTakeoverSpawnOptions.test.ts (11 tests) 138ms
+ ✓ src/backends/claude/remote/claudeRemoteAgentSdk.optionsAndHooks.test.ts (58 tests) 493ms
+ ✓ src/backends/claude/remote/claudeRemoteAgentSdk.streamEvents.test.ts (38 tests) 312ms
+ ✓ src/api/directSessions/backgroundFollow/createPollingDirectSessionFollowLease.test.ts (4 tests) 210ms
+ ✓ src/backends/claude/remote/claudeRemoteDispatch.test.ts (23 tests) 304ms
+ ✓ src/backends/claude/remote/runtimeActivityEvidence.test.ts (3 tests) 208ms
+ ✓ src/api/directSessions/import/adoptDirectSessionMediaForImport.test.ts (2 tests) 112ms
+ ✓ src/backends/claude/remote/claudeRemoteAgentSdk.workState.test.ts (13 tests) 50ms
+ ✓ src/api/directSessions/filePaging/jsonlForwardReader.test.ts (6 tests) 20ms
+ ✓ src/backends/claude/remote/claudeRemoteAgentSdk.checkpoints.test.ts (7 tests) 37ms
+ ✓ src/backends/claude/remote/claudeRemoteAgentSdk.logTail.test.ts (1 test) 16ms
+ ✓ src/daemon/doctor.win32ProcessDiscovery.test.ts (3 tests) 17ms
+ ✓ src/backends/claude/remote/claudeRemoteAgentSdk.exitPlanModeTransition.test.ts (2 tests) 21ms
+ ✓ src/backends/claude/directSessions/readAfterClaudeTranscript.test.ts (8 tests) 20ms
+ ✓ src/backends/claude/remote/sidechains/resolveClaudeSubagentJsonlPath.test.ts (4 tests) 12ms
+ ✓ src/api/machine/rpcHandlers.memory.status.test.ts (2 tests) 12ms
+ ✓ src/api/directSessions/filePaging/jsonlBackwardPager.test.ts (6 tests) 11ms
+ ✓ src/api/directSessions/linking/ensureDirectSessionLink.test.ts (13 tests) 11ms
+ ✓ src/api/directSessions/leases/createDirectSessionFollowLeaseManager.test.ts (5 tests) 7ms
+ ✓ src/api/directSessions/backgroundFollow/createManagedDirectSessionFollowLease.test.ts (7 tests) 8ms
+ ✓ src/backends/claude/remote/teamInbox/claudeRemoteTeamInboxBridge.test.ts (1 test) 7ms
+ ✓ src/backends/claude/remote/sidechains/resolveClaudeSubagentJsonlPathForRemoteSession.test.ts (2 tests) 9ms
+ ✓ src/backends/claude/remote/modeHash.test.ts (23 tests) 5ms
+ ✓ src/backends/claude/remote/agentSdk/buildClaudeAgentSdkHooks.test.ts (5 tests) 5ms
+ ✓ src/backends/claude/remote/createClaudeRemoteStreamedTranscriptSession.test.ts (6 tests) 6ms
+ ✓ src/api/directSessions/takeover/loadLinkedDirectSession.test.ts (3 tests) 5ms
+ ✓ src/api/directSessions/import/loadDirectSessionTranscriptItems.test.ts (5 tests) 4ms
+ ✓ src/backends/claude/remote/sessionStartPlan.test.ts (6 tests) 3ms
+ ✓ src/backends/claude/remote/claudeRemoteProviderInputOutcome.test.ts (2 tests) 3ms
+ ✓ src/daemon/doctor.findAllHappyProcesses.test.ts (1 test) 13ms
+ ✓ src/backends/claude/directSessions/findLiveClaudeSessionProcesses.test.ts (1 test) 14ms
+ ✓ src/backends/claude/directSessions/listClaudeSessionCandidates.lazyTitlePage.test.ts (3 tests) 11ms
+ ✓ src/backends/claude/directSessions/readClaudeSessionTitle.test.ts (5 tests) 11ms
+ ✓ src/daemon/doctor.posixProcessDiscovery.test.ts (1 test) 11ms
+ ✓ src/backends/claude/remote/claudeRemoteAgentSdk.externalSessionProcess.test.ts (2 tests) 55ms
+ ✓ src/backends/claude/directSessions/listClaudeSessionCandidates.test.ts (2 tests) 10ms
+ ✓ src/backends/claude/remote/sidechains/claudeTaskOutputSidechainImporter.test.ts (4 tests) 5ms
+ ✓ src/backends/claude/remote/sidechains/claudeRemoteTaskOutputCollector.test.ts (2 tests) 4ms
+ ✓ src/daemon/doctor.test.ts (12 tests) 3ms
+ ✓ src/backends/claude/remote/providerPromptAcceptance.test.ts (4 tests) 4ms
+ ✓ src/backends/claude/remote/claudeRemoteMetaState.test.ts (15 tests) 3ms
+ ✓ src/api/directSessions/security/validateDirectMachineSource.test.ts (15 tests) 4ms
+ ✓ src/backends/claude/remote/buildClaudeSessionModelsMetadataWithCurrentModelId.test.ts (7 tests) 3ms
+ ✓ src/api/directSessions/backgroundFollow/directSessionBackgroundFollowMetadata.test.ts (3 tests) 3ms
+ ✓ src/backends/claude/remote/sidechains/createWorkflowAgentTranscriptRegistrar.test.ts (3 tests) 3ms
+ ✓ src/backends/claude/directSessions/mapClaudeJsonlLineToDirectMessages.test.ts (3 tests) 4ms
+ ✓ src/backends/claude/remote/sdkFlagOverrides.test.ts (3 tests) 2ms
+ ✓ src/backends/claude/directSessions/providerOps.liveClaudeProcess.test.ts (3 tests | 1 skipped) 31ms
+ ✓ src/backends/claude/remote/sidechains/extractAgentIdFromTaskResult.test.ts (2 tests) 2ms
+ ✓ src/api/machine/resolveMachineRpcWorkingDirectory.test.ts (6 tests) 2ms
+ ✓ src/daemon/doctor.processInfo.liveProcess.test.ts (1 test) 5ms
+ ✓ src/backends/claude/remote/resolveInitialClaudeRemoteMetaState.test.ts (2 tests) 2ms
+ ✓ src/backends/claude/remote/sidechains/_shared.test.ts (1 test) 1ms
+ ✓ src/api/directSessions/takeover/findTrustedDirectSessionOwner.test.ts (1 test) 1ms
+ ✓ src/backends/claude/directSessions/resolveClaudeConfigDir.test.ts (2 tests) 1ms
+
+ Test Files  63 passed (63)
+      Tests  533 passed | 1 skipped (534)
+   Start at  21:13:38
+   Duration  36.49s (transform 7.22s, setup 151ms, collect 50.08s, tests 13.50s, environment 6ms, prepare 1.99s)
+
+VITEST_EXIT=0
