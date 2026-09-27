@@ -30,6 +30,7 @@ import { readRpcRequestDisposition } from '@/session/transport/rpc/rpcRequestDis
 import { isSocketRpcDisconnectBeforeAcknowledgementError } from '@/session/transport/rpc/socketRpcDisconnectGuard';
 import { applyExecutionRunListRequest } from './applyExecutionRunListRequest';
 import {
+    findExecutionRunPublicStateInHistoryRows,
     listExecutionRunPublicStatesFromHistoryRows,
 } from './deriveExecutionRunPublicStatesFromHistory';
 import { readRawSessionHistoryRows } from './getSessionHistory';
@@ -238,6 +239,11 @@ async function listMarkerBackedExecutionRuns(params: Readonly<{ sessionId: strin
     return runs;
 }
 
+async function getMarkerBackedExecutionRun(params: Readonly<{ sessionId: string; runId: string }>): Promise<ExecutionRunPublicState | null> {
+    const runs = await listMarkerBackedExecutionRuns({ sessionId: params.sessionId });
+    return runs.find((run) => run.runId === params.runId) ?? null;
+}
+
 function mergeExecutionRunLists(params: Readonly<{
     primaryRuns: readonly ExecutionRunPublicState[];
     markerRuns: readonly ExecutionRunPublicState[];
@@ -278,6 +284,18 @@ async function listTranscriptBackedExecutionRuns(
     return listExecutionRunPublicStatesFromHistoryRows(rows);
 }
 
+async function getTranscriptBackedExecutionRun(
+    params: ExecutionRunRpcContext & Readonly<{ runId: string }>,
+): Promise<ExecutionRunPublicState | null> {
+    const rows = await readRawSessionHistoryRows({
+        token: params.token,
+        sessionId: params.sessionId,
+        ctx: params.ctx,
+        limit: configuration.memoryMaxTranscriptWindowMessages,
+    });
+    return findExecutionRunPublicStateInHistoryRows(rows, params.runId);
+}
+
 async function tryListTranscriptBackedExecutionRuns(
     params: ExecutionRunRpcContext,
 ): Promise<Readonly<{ ok: true; runs: readonly ExecutionRunPublicState[] }> | Readonly<{ ok: false }>> {
@@ -288,6 +306,16 @@ async function tryListTranscriptBackedExecutionRuns(
         };
     } catch {
         return { ok: false };
+    }
+}
+
+async function tryGetTranscriptBackedExecutionRun(
+    params: ExecutionRunRpcContext & Readonly<{ runId: string }>,
+): Promise<ExecutionRunPublicState | null> {
+    try {
+        return await getTranscriptBackedExecutionRun(params);
+    } catch {
+        return null;
     }
 }
 
@@ -308,6 +336,20 @@ async function buildExecutionRunListFallbackRuns(
     return {
         runs: applyExecutionRunListRequest(combinedRuns, params.request),
     };
+}
+
+async function buildExecutionRunGetFallbackRun(
+    params: ExecutionRunRpcContext & Readonly<{ runId: string }>,
+): Promise<ExecutionRunPublicState | null> {
+    const transcriptRun = await tryGetTranscriptBackedExecutionRun(params);
+    if (transcriptRun) {
+        return transcriptRun;
+    }
+
+    return await getMarkerBackedExecutionRun({
+        sessionId: params.sessionId,
+        runId: params.runId,
+    });
 }
 
 export function normalizeExecutionRunRpcPayload<T>(payload: unknown): ExecutionRunServiceResult<T> {
@@ -521,7 +563,7 @@ export async function listExecutionRuns(
 export async function getExecutionRun(
     params: ExecutionRunRpcContext & Readonly<{ request: unknown }>,
 ): Promise<ExecutionRunServiceResult<unknown>> {
-    ExecutionRunGetRequestSchema.parse(params.request);
+    const runId = ExecutionRunGetRequestSchema.parse(params.request).runId;
 
     try {
         const result = await callExecutionRunRpc({
@@ -545,23 +587,40 @@ export async function getExecutionRun(
         if (!isFallbackSafeExecutionRunServiceError(result)) {
             return result;
         }
-        if (result.code === 'execution_run_not_found') {
-            return result;
+
+        const fallbackRun = await buildExecutionRunGetFallbackRun({
+            ...params,
+            runId,
+        });
+        if (!fallbackRun) {
+            const fallbackExhaustedCode = classifyExecutionRunServiceFallback(result);
+            return fallbackExhaustedCode
+                ? toExecutionRunFallbackExhaustedError(result.message, fallbackExhaustedCode)
+                : result;
         }
-        // `get` is the exact-read authority for a run. Transcript rows and daemon
-        // markers are mutable projections used by list/history recovery; returning
-        // either here would let a stale or caller-influenced projection authorize a
-        // terminal result when the run owner is unavailable.
-        return toExecutionRunFallbackExhaustedError(
-            result.message,
-            classifyExecutionRunServiceFallback(result) ?? 'execution_run_target_unavailable',
-        );
+
+        return {
+            ok: true,
+            data: ExecutionRunGetResponseSchema.parse({ run: fallbackRun }),
+        };
     } catch (error) {
         const fallbackExhaustedCode = classifyExecutionRunRpcFallback(error);
         if (!fallbackExhaustedCode) {
             throw error;
         }
-        return toExecutionRunFallbackExhaustedError(error, fallbackExhaustedCode);
+
+        const fallbackRun = await buildExecutionRunGetFallbackRun({
+            ...params,
+            runId,
+        });
+        if (!fallbackRun) {
+            return toExecutionRunFallbackExhaustedError(error, fallbackExhaustedCode);
+        }
+
+        return {
+            ok: true,
+            data: ExecutionRunGetResponseSchema.parse({ run: fallbackRun }),
+        };
     }
 }
 
