@@ -22,6 +22,7 @@ type MarkdownViewRendererProps = Readonly<{
     markdown: string;
     onOptionPress?: (option: Option) => void;
     onOptionLongPress?: OptionLongPressHandler;
+    optionSubmittingTitle?: string | null;
     onLinkPress?: (url: string) => boolean | void;
     textStyle?: StyleProp<TextStyle>;
     selectable: boolean;
@@ -162,6 +163,7 @@ export const MarkdownViewRenderer = React.memo((props: MarkdownViewRendererProps
                         selectable={props.selectable}
                         onOptionPress={props.onOptionPress}
                         onOptionLongPress={props.onOptionLongPress}
+                        optionSubmittingTitle={props.optionSubmittingTitle}
                         onLinkPress={props.onLinkPress}
                         textStyle={props.textStyle}
                         profile={props.profile}

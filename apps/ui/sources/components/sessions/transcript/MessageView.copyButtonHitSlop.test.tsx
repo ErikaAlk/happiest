@@ -191,11 +191,9 @@ describe('MessageView (copy button hitSlop)', () => {
         },
     );
 
-    it('copies a markdown option on long press without submitting the option as a message', async () => {
+    it('renders options inside a user message as read-only content', async () => {
         platformState.os = 'ios';
         vi.resetModules();
-        const Clipboard = await import('expo-clipboard');
-        const { sync } = await import('@/sync/sync');
         const { MessageView } = await import('./MessageView');
         const { TranscriptMessageSelectionProvider } = await import('./messageSelection/TranscriptMessageSelectionContext');
 
@@ -217,15 +215,8 @@ describe('MessageView (copy button hitSlop)', () => {
         );
 
         const markdownView = screen.findByType('MarkdownView' as any);
-        expect(typeof markdownView.props.onOptionLongPress).toBe('function');
-
-        let copied = false;
-        await act(async () => {
-            copied = await markdownView.props.onOptionLongPress({ title: 'Run command' });
-        });
-
-        expect(copied).toBe(true);
-        expect(Clipboard.setStringAsync).toHaveBeenCalledWith('Run command');
-        expect(sync.submitMessage).not.toHaveBeenCalled();
+        expect(markdownView.props.onOptionPress).toBeUndefined();
+        expect(markdownView.props.onOptionLongPress).toBeUndefined();
+        expect(markdownView.props.selectable).toBe(true);
     });
 });

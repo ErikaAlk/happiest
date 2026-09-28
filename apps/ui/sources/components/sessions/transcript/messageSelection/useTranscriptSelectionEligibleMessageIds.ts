@@ -2,13 +2,14 @@ import * as React from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { parseSessionMediaMessageMeta } from '@/sync/domains/sessionMedia/sessionMediaMessageMeta';
+import { isAgentTextMessageStreaming } from '@/sync/domains/messages/agentTextStreaming';
 import type { Message } from '@/sync/domains/messages/messageTypes';
 import { compareTranscriptMessagesOldestFirst } from '@/sync/domains/messages/transcriptOrdering';
 import { storage, useSetting } from '@/sync/domains/state/storage';
 import type { Metadata } from '@/sync/domains/state/storageTypes';
 import { useSessionDebugInformationEnabled } from '@/sync/runtime/useSessionDebugInformationEnabled';
 
-import { isAgentTextMessageActivelyStreamingForSelection, resolveSelectableMessageText } from './resolveSelectableMessageText';
+import { resolveSelectableMessageText } from './resolveSelectableMessageText';
 import {
     isTranscriptSelectionHiddenUnsupportedContent,
     normalizeTranscriptSelectionThinkingVisibility,
@@ -60,7 +61,7 @@ function resolveMessageEligibility(message: Message, discarded: boolean, hiddenT
             debugInformationEnabled,
         })) {
             token = `${message.id}:${message.kind}:thinking-hidden`;
-        } else if (isAgentTextMessageActivelyStreamingForSelection(message)) {
+        } else if (isAgentTextMessageStreaming(message)) {
             // Active assistant segments change text very frequently. Their selection eligibility cannot
             // change until the segment leaves the streaming state, so keep this token independent of text.
             token = `${message.id}:${message.kind}:streaming`;

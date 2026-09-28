@@ -296,6 +296,7 @@ import { submitSessionUserMessage } from './domains/session/input/submitSessionU
 import type {
     SessionMessageCallerSurface,
     SessionSubmitPort,
+    SubmitSessionUserMessageOptions,
 } from './domains/session/input/types';
 import type { SavedSecret } from './domains/settings/savedSecretTypes';
 import type { PermissionMode } from './domains/permissions/permissionTypes';
@@ -3254,6 +3255,7 @@ class Sync {
         options?: Readonly<{
             callerSurface?: SessionMessageCallerSurface | null;
             forceImmediate?: boolean;
+            onOutboundHandoff?: SubmitSessionUserMessageOptions['onOutboundHandoff'];
         }>,
     ): Promise<void> {
         let state = storage.getState();
@@ -3297,9 +3299,13 @@ class Sync {
                 }
                 : {}),
             callerSurface: options?.callerSurface ?? 'sync_submit_message',
+            ...(options?.onOutboundHandoff ? { onOutboundHandoff: options.onOutboundHandoff } : {}),
         });
 
-        if (result.type === 'send_failed' || result.type === 'rejected' || result.type === 'wake_failed') {
+        // Only an input the session never took custody of is a failure. A `wake_failed` input is
+        // already in the pending queue, which presents the waiting runtime; reporting it as failed
+        // invites the user to send it again.
+        if (result.persistence === 'none') {
             throw createSessionMessageSubmitFailureError(
                 result.errorCode,
                 result.errorMessage,

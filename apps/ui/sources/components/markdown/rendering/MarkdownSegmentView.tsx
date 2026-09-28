@@ -16,6 +16,7 @@ type MarkdownSegmentViewProps = Readonly<{
     selectable: boolean;
     onOptionPress?: (option: Option) => void;
     onOptionLongPress?: OptionLongPressHandler;
+    optionSubmittingTitle?: string | null;
     onLinkPress?: (url: string) => boolean | void;
     textStyle?: StyleProp<TextStyle>;
     profile: MarkdownRenderingProfile;
@@ -66,6 +67,7 @@ export const MarkdownSegmentView = React.memo((props: MarkdownSegmentViewProps) 
             selectable={props.selectable}
             onOptionPress={props.onOptionPress}
             onOptionLongPress={props.onOptionLongPress}
+            optionSubmittingTitle={props.optionSubmittingTitle}
             onLinkPress={props.onLinkPress}
             textStyle={props.textStyle}
             profile={props.profile}

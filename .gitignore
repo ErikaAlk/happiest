@@ -69,6 +69,7 @@ packages/protocol/src/features/embeddedFeaturePolicies.generated.ts
 CLAUDE.local.md
 
 .dev/worktree/*
+.dev/local/
 .project/
 
 # Development planning notes (keep local, don't commit)

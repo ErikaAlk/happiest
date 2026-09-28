@@ -31,6 +31,8 @@ export const MarkdownView = React.memo((props: {
     markdown: string;
     onOptionPress?: (option: Option) => void;
     onOptionLongPress?: OptionLongPressHandler;
+    /** Option whose submission is in flight; the options render locked with this one marked. */
+    optionSubmittingTitle?: string | null;
     onLinkPress?: (url: string) => boolean | void;
     textStyle?: StyleProp<TextStyle>;
     selectable?: boolean;
@@ -59,6 +61,7 @@ export const MarkdownView = React.memo((props: {
             markdown={props.markdown}
             onOptionPress={props.onOptionPress}
             onOptionLongPress={props.onOptionLongPress}
+            optionSubmittingTitle={props.optionSubmittingTitle}
             onLinkPress={props.onLinkPress}
             textStyle={props.textStyle}
             selectable={selectable}

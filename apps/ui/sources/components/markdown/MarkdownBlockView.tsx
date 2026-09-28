@@ -1,8 +1,8 @@
 import type { MarkdownBlock, MarkdownSpan, MarkdownTableAlignment } from './parseMarkdown';
 import * as React from 'react';
 import type { StyleProp, TextStyle } from 'react-native';
-import { Pressable, View, Platform } from 'react-native';
-import { StyleSheet } from 'react-native-unistyles';
+import { ActivityIndicator, Pressable, View, Platform } from 'react-native';
+import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { Text } from '../ui/text/Text';
 import { HorizontalOverflowScrollView } from '../ui/scroll/HorizontalOverflowScrollView';
 import { Typography } from '@/constants/Typography';
@@ -30,6 +30,7 @@ type MarkdownBlockViewProps = {
     selectable: boolean;
     onOptionPress?: (option: Option) => void;
     onOptionLongPress?: OptionLongPressHandler;
+    optionSubmittingTitle?: string | null;
     onLinkPress?: (url: string) => boolean | void;
     textStyle?: StyleProp<TextStyle>;
     profile: MarkdownRenderingProfile;
@@ -46,6 +47,7 @@ function areMarkdownBlockViewPropsEqual(prev: MarkdownBlockViewProps, next: Mark
         && prev.selectable === next.selectable
         && prev.onOptionPress === next.onOptionPress
         && prev.onOptionLongPress === next.onOptionLongPress
+        && prev.optionSubmittingTitle === next.optionSubmittingTitle
         && prev.onLinkPress === next.onLinkPress
         && prev.textStyle === next.textStyle
         && prev.profile === next.profile
@@ -75,7 +77,7 @@ export const MarkdownBlockView = React.memo((props: MarkdownBlockViewProps) => {
     } else if (block.type === 'mermaid') {
         return <MermaidRenderer content={block.content} />;
     } else if (block.type === 'options') {
-        return <RenderOptionsBlock items={block.items} first={props.first} last={props.last} selectable={props.selectable} onOptionPress={props.onOptionPress} onOptionLongPress={props.onOptionLongPress} textStyle={props.textStyle} />;
+        return <RenderOptionsBlock items={block.items} first={props.first} last={props.last} selectable={props.selectable} onOptionPress={props.onOptionPress} onOptionLongPress={props.onOptionLongPress} submittingTitle={props.optionSubmittingTitle ?? null} textStyle={props.textStyle} />;
     } else if (block.type === 'table') {
         return (
             <RenderTableBlock
@@ -222,6 +224,19 @@ function RenderThinkingCodeBlock(props: { content: string, language: string | nu
     );
 }
 
+/**
+ * `interactive`: the group may submit. `submitting` / `locked`: a choice from this group is in
+ * flight; the chosen item and the others. `readOnly`: the question is answered, retired, or not
+ * the reader's to answer.
+ */
+type MarkdownOptionItemMode = 'interactive' | 'submitting' | 'locked' | 'readOnly';
+
+function resolveOptionItemMode(item: string, interactive: boolean, submittingTitle: string | null): MarkdownOptionItemMode {
+    if (interactive) return 'interactive';
+    if (submittingTitle === null) return 'readOnly';
+    return submittingTitle === item ? 'submitting' : 'locked';
+}
+
 function RenderOptionsBlock(props: {
     items: string[],
     first: boolean,
@@ -229,77 +244,100 @@ function RenderOptionsBlock(props: {
     selectable: boolean,
     onOptionPress?: (option: Option) => void,
     onOptionLongPress?: OptionLongPressHandler,
+    submittingTitle: string | null,
     textStyle?: StyleProp<TextStyle>,
 }) {
-    const optionTextStyle = [style.optionText, props.textStyle];
+    const interactive = props.onOptionPress !== undefined;
     return (
         <View style={[style.optionsContainer, props.first && style.first, props.last && style.last]}>
-            {props.items.map((item, index) => {
-                if (props.onOptionPress) {
-                    return (
-                        <MarkdownOptionButton
-                            key={index}
-                            item={item}
-                            index={index}
-                            selectable={props.selectable}
-                            textStyle={optionTextStyle}
-                            onOptionPress={props.onOptionPress}
-                            onOptionLongPress={props.onOptionLongPress}
-                        />
-                    );
-                } else {
-                    return (
-                        <View key={index} style={style.optionItem}>
-                            <Text selectable={props.selectable} style={optionTextStyle}>{item}</Text>
-                        </View>
-                    );
-                }
-            })}
+            {props.items.map((item, index) => (
+                <MarkdownOptionItem
+                    key={index}
+                    item={item}
+                    index={index}
+                    mode={resolveOptionItemMode(item, interactive, props.submittingTitle)}
+                    selectable={props.selectable}
+                    textStyle={props.textStyle}
+                    onOptionPress={props.onOptionPress}
+                    onOptionLongPress={props.onOptionLongPress}
+                />
+            ))}
         </View>
     );
 }
 
-function MarkdownOptionButton(props: {
+// One element type for every mode: switching between a Pressable and a View would remount the
+// item on each state change. A disabled Pressable claims no touch responder, so read-only text
+// stays selectable and a scroll that starts on it belongs to the list.
+function MarkdownOptionItem(props: {
     item: string,
     index: number,
+    mode: MarkdownOptionItemMode,
     selectable: boolean,
-    textStyle: StyleProp<TextStyle>,
-    onOptionPress: (option: Option) => void,
+    textStyle?: StyleProp<TextStyle>,
+    onOptionPress?: (option: Option) => void,
     onOptionLongPress?: OptionLongPressHandler,
 }) {
+    const { theme } = useUnistyles();
     const feedback = useTemporaryCopyFeedback();
     const feedbackKey = String(props.index);
     const longPressConsumedRef = React.useRef(false);
     const option = React.useMemo<Option>(() => ({ title: props.item }), [props.item]);
+    const onOptionPress = props.mode === 'interactive' ? props.onOptionPress : undefined;
+    const onOptionLongPress = onOptionPress ? props.onOptionLongPress : undefined;
     const handlePress = React.useCallback(() => {
         if (longPressConsumedRef.current) {
             longPressConsumedRef.current = false;
             return;
         }
-
-        props.onOptionPress(option);
-    }, [option, props.onOptionPress]);
+        onOptionPress?.(option);
+    }, [option, onOptionPress]);
     const handleLongPress = React.useCallback(() => {
-        if (!props.onOptionLongPress) return;
+        if (!onOptionLongPress) return;
 
         longPressConsumedRef.current = true;
-        void Promise.resolve(props.onOptionLongPress(option)).then((copied) => {
+        void Promise.resolve(onOptionLongPress(option)).then((copied) => {
             if (copied === true) {
                 feedback.markCopied(feedbackKey);
             }
         });
-    }, [feedback, feedbackKey, option, props.onOptionLongPress]);
+    }, [feedback, feedbackKey, option, onOptionLongPress]);
+    const muted = props.mode === 'locked' || props.mode === 'readOnly';
 
     return (
         <Pressable
+            testID={`markdown-option:${props.index}`}
+            accessibilityRole={props.mode === 'readOnly' ? undefined : 'button'}
+            accessibilityState={{
+                disabled: onOptionPress === undefined,
+                busy: props.mode === 'submitting',
+                selected: props.mode === 'submitting',
+            }}
+            disabled={onOptionPress === undefined}
             style={({ pressed }) => [
                 style.optionItem,
-                pressed && style.optionItemPressed,
+                props.mode === 'readOnly' && style.optionItemReadOnly,
+                props.mode === 'submitting' && style.optionItemSubmitting,
+                props.mode === 'locked' && style.optionItemLocked,
+                onOptionPress !== undefined && pressed && style.optionItemPressed,
             ]}
-            onPress={handlePress}
-            onLongPress={props.onOptionLongPress ? handleLongPress : undefined}
+            onPress={onOptionPress ? handlePress : undefined}
+            onLongPress={onOptionLongPress ? handleLongPress : undefined}
         >
-            <Text selectable={props.selectable && !props.onOptionLongPress} style={props.textStyle}>{props.item}</Text>
+            <Text
+                selectable={props.selectable && onOptionLongPress === undefined}
+                style={[style.optionText, props.textStyle, muted && style.optionTextMuted]}
+            >
+                {props.item}
+            </Text>
+            {props.mode === 'submitting' ? (
+                <ActivityIndicator
+                    testID={`markdown-option-submitting:${props.index}`}
+                    size="small"
+                    color={theme.colors.text.secondary}
+                    style={style.optionSubmittingIndicator}
+                />
+            ) : null}
             <CopiedPill
                 visible={feedback.isCopied(feedbackKey)}
                 testID={`markdown-option-copy-feedback:${props.index}`}
@@ -704,11 +742,32 @@ const style = StyleSheet.create((theme) => ({
         opacity: 0.7,
         backgroundColor: theme.colors.surface.inset,
     },
+    optionItemSubmitting: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: theme.colors.surface.selected,
+    },
+    optionItemLocked: {
+        opacity: 0.5,
+    },
+    optionItemReadOnly: {
+        backgroundColor: 'transparent',
+        borderWidth: 0,
+        paddingHorizontal: 0,
+        paddingVertical: 2,
+    },
     optionText: {
         ...Typography.default(),
         fontSize: 16,
         lineHeight: 24,
         color: theme.colors.text.primary,
+    },
+    optionTextMuted: {
+        color: theme.colors.text.secondary,
+    },
+    optionSubmittingIndicator: {
+        marginLeft: 'auto',
+        paddingLeft: 12,
     },
     optionCopyFeedback: {
         position: 'absolute',

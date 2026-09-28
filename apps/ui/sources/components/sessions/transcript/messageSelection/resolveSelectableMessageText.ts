@@ -1,8 +1,8 @@
 import { normalizeVoiceAgentTurnTranscriptText } from '@happier-dev/agents';
 
 import { parseHappierMetaEnvelope } from '@/components/sessions/transcript/structured/happierMetaEnvelope';
+import { isAgentTextMessageStreaming } from '@/sync/domains/messages/agentTextStreaming';
 import type { Message } from '@/sync/domains/messages/messageTypes';
-import { readStreamSegmentMetaV1 } from '@/sync/reducer/helpers/streamSegmentMeta';
 
 import type { TranscriptSelectableMessageText } from './_types';
 
@@ -39,14 +39,6 @@ function isVoiceAgentTurn(message: Message): boolean {
     return parseHappierMetaEnvelope(message.meta)?.kind === 'voice_agent_turn.v1';
 }
 
-export function isAgentTextMessageActivelyStreamingForSelection(message: Message): boolean {
-    if (message.kind !== 'agent-text') return false;
-    const streamSegmentMeta = readStreamSegmentMetaV1(message.meta);
-    if (!streamSegmentMeta) return false;
-    if (streamSegmentMeta.segmentState === 'streaming') return true;
-    return streamSegmentMeta.segmentKind === 'assistant' && streamSegmentMeta.segmentState === null;
-}
-
 function normalizeResolvedText(entry: TranscriptSelectableMessageText): TranscriptSelectableMessageText | null {
     if (!entry.text.trim()) return null;
     return entry;
@@ -74,7 +66,7 @@ export function resolveSelectableMessageText(input: {
     }
 
     if (message.kind === 'agent-text') {
-        if (isAgentTextMessageActivelyStreamingForSelection(message)) return null;
+        if (isAgentTextMessageStreaming(message)) return null;
         const baseText = input.isStructuredOnly
             ? message.text
             : isVoiceAgentTurn(message)

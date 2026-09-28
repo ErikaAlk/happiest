@@ -14,8 +14,8 @@ import { ToolTimelineRow } from '@/components/tools/shell/views/ToolTimelineRow'
 import { resolveToolStatusIndicatorKind } from '@/components/tools/shell/presentation/resolveToolStatusIndicatorKind';
 import { resolveInactiveSessionToolCallFailure } from '@/components/tools/shell/permissions/resolveInactiveSessionToolCallFailure';
 import { buildMessageRouteId, resolveMessageRouteIdForDisplay } from '@/sync/domains/messages/messageRouteIds';
-import { sync } from '@/sync/sync';
-import { Option, type OptionLongPressHandler } from '@/components/markdown/MarkdownView';
+import { type OptionLongPressHandler } from '@/components/markdown/MarkdownView';
+import { useMessageOptionGroup } from '@/components/sessions/transcript/options/useMessageOptionGroup';
 import { isCommittedMessageDiscarded } from "@/utils/sessions/discardedCommittedMessages";
 import { shouldShowTranscriptRowActions, shouldShowTranscriptRowPinAction } from '@/components/sessions/transcript/messageCopyVisibility';
 import { renderStructuredMessage, StructuredMessageBlock } from '@/components/sessions/transcript/structured/StructuredMessageBlock';
@@ -23,7 +23,6 @@ import type { StructuredMessageRendererParams } from '@/components/sessions/tran
 import { useRouter } from 'expo-router';
 import { buildScopedSessionRouteHref } from '@/hooks/session/sessionRouteServerScope';
 import { buildSessionFileDeepLink } from '@/utils/url/sessionFileDeepLink';
-import { fireAndForget } from '@/utils/system/fireAndForget';
 import { Text } from '@/components/ui/text/Text';
 import { useMessageStructuredReferences } from '@/components/sessions/transcript/references/messageStructuredReferences';
 import { StructuredReferencesRow } from '@/components/sessions/transcript/references/StructuredReferencesRow';
@@ -70,6 +69,7 @@ import { setClipboardStringSafe } from '@/utils/ui/clipboard';
 import { settingsDefaults } from '@/sync/domains/settings/settings';
 import { useStreamingTextSmoothing } from '@/components/sessions/transcript/streaming/useStreamingTextSmoothing';
 import { readStreamSegmentMetaV1 } from '@/sync/reducer/helpers/streamSegmentMeta';
+import { isAgentTextMessageStreaming } from '@/sync/domains/messages/agentTextStreaming';
 import {
   resolveTranscriptMarkdownFileLink,
 } from '@/components/sessions/transcript/resolveTranscriptMarkdownFileLink';
@@ -94,7 +94,6 @@ import {
 import { useSessionInteractionSource } from '@/sync/domains/state/storage';
 import { Icon } from '@/components/ui/icons/Icon';
 
-type StreamSegmentStateForRendering = 'streaming' | 'complete' | 'interrupted';
 const FAIL_CLOSED_TRANSCRIPT_INTERACTION = deriveTranscriptInteraction({ kind: 'public' });
 const TRANSCRIPT_SELECTION_CHECKBOX_ANCHOR_TOP = 0;
 const TRANSCRIPT_SELECTION_CHECKBOX_ANCHOR_RIGHT = 0;
@@ -133,28 +132,6 @@ function useStructuredMessageJumpHandler(
 
 function shouldEnableFallbackTextNativeSelection(platformOS: typeof Platform.OS): boolean {
   return platformOS !== 'ios';
-}
-
-function normalizeStreamSegmentStateForRendering(value: unknown): StreamSegmentStateForRendering | null {
-  return value === 'streaming' || value === 'complete' || value === 'interrupted' ? value : null;
-}
-
-function readStreamSegmentStateForRendering(params: {
-  messageMeta: unknown;
-  streamSegmentMeta: ReturnType<typeof readStreamSegmentMetaV1>;
-}): StreamSegmentStateForRendering | null {
-  if (params.streamSegmentMeta && 'segmentState' in params.streamSegmentMeta) {
-    return normalizeStreamSegmentStateForRendering(params.streamSegmentMeta.segmentState);
-  }
-
-  if (!params.messageMeta || typeof params.messageMeta !== 'object' || Array.isArray(params.messageMeta)) {
-    return null;
-  }
-  const segment = (params.messageMeta as Record<string, unknown>).happierStreamSegmentV1;
-  if (!segment || typeof segment !== 'object' || Array.isArray(segment)) {
-    return null;
-  }
-  return normalizeStreamSegmentStateForRendering((segment as Record<string, unknown>).segmentState);
 }
 
 function shouldHideVoiceAgentTurnMessage(message: Message): boolean {
@@ -579,30 +556,6 @@ function UserTextBlock(props: {
     text: renderedMarkdownText,
   });
 
-  const handleOptionPress = React.useCallback((option: Option) => {
-    fireAndForget((async () => {
-      try {
-        if (!props.canSendMessages) {
-          Modal.alert(t('session.sharing.viewOnly'), t('session.sharing.noEditPermission'));
-          return;
-        }
-        await sync.submitMessage(props.sessionId, option.title, undefined, undefined, {
-          callerSurface: 'message_option',
-        });
-      } catch (e) {
-        Modal.alert(t('common.error'), e instanceof Error ? e.message : t('errors.failedToSendMessage'));
-      }
-    })(), { tag: 'MessageView.handleOptionPress.userMessage' });
-  }, [props.canSendMessages, props.sessionId]);
-  const handleOptionLongPress = React.useCallback<OptionLongPressHandler>(async (option) => {
-    const ok = await setClipboardStringSafe(option.title);
-    if (!ok) {
-      Modal.alert(t('common.error'), t('items.failedToCopyToClipboard'));
-      return false;
-    }
-    return true;
-  }, []);
-
   const selectableMessage = isDiscarded ? null : (() => {
     const base = resolveSelectableMessageText({
       message: props.message,
@@ -843,7 +796,7 @@ function UserTextBlock(props: {
                 interaction={props.interaction}
                 onJumpToAnchor={handleJumpToAnchor}
               />
-              <MarkdownView markdown={renderedMarkdownText} onOptionPress={handleOptionPress} onOptionLongPress={handleOptionLongPress} onLinkPress={handleMarkdownLinkPress} selectable={true} profile="transcript" textStyle={styles.transcriptMarkdownText} />
+              <MarkdownView markdown={renderedMarkdownText} onLinkPress={handleMarkdownLinkPress} selectable={true} profile="transcript" textStyle={styles.transcriptMarkdownText} />
               {sessionMediaInlineImages.length > 0 ? (
                 <SessionMediaInlineImages
                   sessionId={props.sessionId}
@@ -1059,21 +1012,13 @@ function AgentTextBlock(props: {
   const selectionEnabled = props.messageDisplayCommon.transcriptMessageSelectionEnabled === true && selectableMessage != null;
   const copyText = selectableMessage?.text ?? (isStructuredOnly ? props.message.text : markdown);
 
-  const handleOptionPress = React.useCallback((option: Option) => {
-    fireAndForget((async () => {
-      try {
-        if (!props.canSendMessages) {
-          Modal.alert(t('session.sharing.viewOnly'), t('session.sharing.noEditPermission'));
-          return;
-        }
-        await sync.submitMessage(props.sessionId, option.title, undefined, undefined, {
-          callerSurface: 'message_option',
-        });
-      } catch (e) {
-        Modal.alert(t('common.error'), e instanceof Error ? e.message : t('errors.failedToSendMessage'));
-      }
-    })(), { tag: 'MessageView.handleOptionPress.agentMessage' });
-  }, [props.canSendMessages, props.sessionId]);
+  const optionGroup = useMessageOptionGroup({
+    sessionId: props.sessionId,
+    messageId: props.message.id,
+    canSendMessages: props.canSendMessages && props.historical !== true,
+    enabled: !isStructuredOnly && props.message.isThinking !== true && markdown.includes('<options>'),
+  });
+  const optionSubmittingTitle = optionGroup.state.kind === 'submitting' ? optionGroup.state.title : null;
   const handleOptionLongPress = React.useCallback<OptionLongPressHandler>(async (option) => {
     const ok = await setClipboardStringSafe(option.title);
     if (!ok) {
@@ -1175,14 +1120,8 @@ function AgentTextBlock(props: {
       : settingsDefaults.transcriptStreamingMarkdownRenderingEnabled;
 
   const streamSegmentMeta = readStreamSegmentMetaV1(props.message.meta);
-  const streamSegmentAssistantState =
-    streamSegmentMeta?.segmentKind === 'assistant'
-      ? readStreamSegmentStateForRendering({ messageMeta: props.message.meta, streamSegmentMeta })
-      : null;
   const streamSegmentAssistantStreaming =
-    streamSegmentMeta?.segmentKind === 'assistant'
-      ? streamSegmentAssistantState === 'streaming' || streamSegmentAssistantState === null
-      : false;
+    streamSegmentMeta?.segmentKind === 'assistant' && isAgentTextMessageStreaming(props.message);
   const streamingPlainEligible =
     props.historical !== true &&
     props.message.isThinking !== true &&
@@ -1317,8 +1256,6 @@ function AgentTextBlock(props: {
                     testID="transcript-thinking-body-markdown"
                     markdown={thinkingRenderMarkdown}
                     agentTexMath
-                    onOptionPress={handleOptionPress}
-                    onOptionLongPress={handleOptionLongPress}
                     onLinkPress={handleMarkdownLinkPress}
                     selectable={true}
                     profile="thinking"
@@ -1338,8 +1275,6 @@ function AgentTextBlock(props: {
                 <MarkdownView
                   markdown={streamingMarkdownText}
                   agentTexMath
-                  onOptionPress={handleOptionPress}
-                  onOptionLongPress={handleOptionLongPress}
                   onLinkPress={handleMarkdownLinkPress}
                   selectable={true}
                   profile="transcript"
@@ -1361,8 +1296,9 @@ function AgentTextBlock(props: {
                 <MarkdownView
                   markdown={markdown}
                   agentTexMath
-                  onOptionPress={handleOptionPress}
+                  onOptionPress={optionGroup.onOptionPress}
                   onOptionLongPress={handleOptionLongPress}
+                  optionSubmittingTitle={optionSubmittingTitle}
                   onLinkPress={handleMarkdownLinkPress}
                   selectable={true}
                   profile={props.message.isThinking ? 'thinking' : 'transcript'}
