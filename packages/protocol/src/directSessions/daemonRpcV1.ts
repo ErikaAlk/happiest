@@ -317,6 +317,8 @@ export const DirectSessionStatusGetResponseSchema = z.union([
       canTakeOverPersist: z.boolean(),
       canForceStop: z.boolean(),
       trustedPid: z.number().int().min(1).nullish(),
+      /** A provider process outside this session's own runner still holds the provider session. Absent from older daemons. */
+      externalProcessActive: z.boolean().optional(),
       lastKnownActivityAtMs: z.number().int().min(0).optional(),
     })
     .passthrough(),

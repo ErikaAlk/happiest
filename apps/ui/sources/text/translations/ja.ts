@@ -10866,6 +10866,9 @@ settingsSession: {
     directTakeoverForceStopConfirmTitle: "最初にローカル プロセスを停止しますか？",
     directTakeoverForceStopConfirmBody: "Happier はこの直接セッションに対応する信頼済みローカル プロセスを見つけました。ここで引き継ぐ前に停止しますか？",
     directTakeoverForceStopConfirmAction: "停止して引き継ぐ",
+    directSessionRunningOnComputerTitle: "このセッションはまだコンピューターで実行中です",
+    directSessionRunningOnComputerBody: "そのコンピューター上の別のプログラムが、まだこのセッションで作業しています。ここで続けると、そのプログラムを先に停止します（実行中の処理も中断されます）。以降は Happier だけがこのセッションに書き込みます。",
+    directSessionRunningOnComputerAction: "停止して続ける",
   },
 
     codex: {

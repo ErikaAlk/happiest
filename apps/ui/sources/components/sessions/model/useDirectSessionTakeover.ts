@@ -58,14 +58,23 @@ export function useDirectSessionTakeover(params: UseDirectSessionTakeoverParams)
 
         let forceStop = options?.forceStop === true;
         if (!forceStop && latestStatus.canForceStop && options?.promptForForceStop !== false) {
-            const confirmed = await Modal.confirm(
-                t('chatFooter.directTakeoverForceStopConfirmTitle'),
-                t('chatFooter.directTakeoverForceStopConfirmBody'),
-                {
-                    confirmText: t('chatFooter.directTakeoverForceStopConfirmAction'),
-                    cancelText: t('common.cancel'),
-                },
-            );
+            const confirmed = latestStatus.externalProcessActive === true
+                ? await Modal.confirm(
+                    t('chatFooter.directSessionRunningOnComputerTitle'),
+                    t('chatFooter.directSessionRunningOnComputerBody'),
+                    {
+                        confirmText: t('chatFooter.directSessionRunningOnComputerAction'),
+                        cancelText: t('common.cancel'),
+                    },
+                )
+                : await Modal.confirm(
+                    t('chatFooter.directTakeoverForceStopConfirmTitle'),
+                    t('chatFooter.directTakeoverForceStopConfirmBody'),
+                    {
+                        confirmText: t('chatFooter.directTakeoverForceStopConfirmAction'),
+                        cancelText: t('common.cancel'),
+                    },
+                );
             if (!confirmed) {
                 return false;
             }
@@ -114,25 +123,31 @@ export function useDirectSessionTakeover(params: UseDirectSessionTakeoverParams)
         if (!latestStatus) {
             return true;
         }
-        if (latestStatus.runnerActive) {
+        // Another program on the computer still writing this session would fork it; it has to stop first.
+        const externalProcessActive = latestStatus.externalProcessActive === true;
+        if (latestStatus.runnerActive && !externalProcessActive) {
             return true;
         }
         if (!latestStatus.machineOnline) {
             Modal.alert(t('common.error'), t('chatFooter.directSessionMachineOffline'));
             return false;
         }
+        if (latestStatus.runnerActive) {
+            return requestTakeover('direct');
+        }
 
         const resolution = await showDirectSessionTakeoverDialog({
             canTakeOverDirect: latestStatus.canTakeOverDirect,
             canTakeOverPersist: latestStatus.canTakeOverPersist,
             canForceStop: latestStatus.canForceStop,
+            externalProcessActive,
         });
         if (!resolution.action) {
             return false;
         }
 
         return requestTakeover(resolution.action, {
-            forceStop: resolution.forceStop,
+            forceStop: externalProcessActive || resolution.forceStop,
             promptForForceStop: false,
         });
     }, [params.directSessionRuntime, readLatestStatus, requestTakeover]);

@@ -30,6 +30,7 @@ export const piDirectSessionProviderOps: DirectSessionProviderOps = {
           : null,
       // No live process probe in the direct-session model; liveness is owned by the follow-lease.
       isRunning: false,
+      runningProcesses: [],
     };
   },
 

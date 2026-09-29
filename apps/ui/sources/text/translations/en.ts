@@ -9998,6 +9998,9 @@ settingsSession: {
         directTakeoverForceStopConfirmTitle: 'Stop the local process first?',
         directTakeoverForceStopConfirmBody: 'Happier found a trusted local process for this direct session. Stop it before taking over here?',
         directTakeoverForceStopConfirmAction: 'Stop and take over',
+        directSessionRunningOnComputerTitle: 'This session is still running on the computer',
+        directSessionRunningOnComputerBody: 'Another program on that computer is still working in this session. Continuing here stops that program first, including anything it is doing right now, so only Happier writes to the session.',
+        directSessionRunningOnComputerAction: 'Stop it and continue',
     },
 
     codex: {

@@ -9904,6 +9904,9 @@ settingsSession: {
         directTakeoverForceStopConfirmTitle: "Aturar primer el procés local?",
         directTakeoverForceStopConfirmBody: "Happier ha trobat un procés local de confiança per a aquesta sessió directa. Vols aturar-lo abans de prendre'n el control aquí?",
         directTakeoverForceStopConfirmAction: "Atura i pren el control",
+        directSessionRunningOnComputerTitle: "Aquesta sessió encara s'executa a l'ordinador",
+        directSessionRunningOnComputerBody: "Un altre programa d'aquell ordinador encara treballa en aquesta sessió. Si continues aquí, primer s'aturarà aquest programa, inclòs el que estigui fent ara mateix, perquè només Happier escrigui a la sessió.",
+        directSessionRunningOnComputerAction: "Atura'l i continua",
     },
 
       codex: {

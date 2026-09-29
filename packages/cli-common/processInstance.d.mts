@@ -7,6 +7,13 @@ export function readProcessInstanceFingerprintSync(
   }>,
 ): string | null;
 
+export function readLinuxProcessParentPid(
+  pid: number,
+  options?: Readonly<{
+    readFileImpl?: typeof import('node:fs/promises').readFile;
+  }>,
+): Promise<number | null>;
+
 export function readProcessInstanceFingerprint(
   pid: number,
   options?: Readonly<{
@@ -18,6 +25,7 @@ export function readProcessInstanceFingerprint(
 
 export type Win32ProcessRow = Readonly<{
   pid: number;
+  parentPid?: number;
   name?: string;
   commandLine?: string;
   processInstanceFingerprint?: string;

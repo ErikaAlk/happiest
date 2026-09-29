@@ -10259,6 +10259,9 @@ settingsSession: {
     directTakeoverForceStopConfirmTitle: "先停止本地进程？",
     directTakeoverForceStopConfirmBody: "Happier 找到了此直连会话对应的可信本地进程。要在这里接管前先停止它吗？",
     directTakeoverForceStopConfirmAction: "停止并接管",
+    directSessionRunningOnComputerTitle: "此会话正在电脑上运行",
+    directSessionRunningOnComputerBody: "那台电脑上还有另一个程序在运行此会话。在这里继续会先结束那个程序，它正在进行的操作也会中断，之后只由 Happier 写入此会话。",
+    directSessionRunningOnComputerAction: "结束并继续",
   },
 
     codex: {

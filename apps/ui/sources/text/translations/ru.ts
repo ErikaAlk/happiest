@@ -10534,6 +10534,9 @@ settingsSession: {
     directTakeoverForceStopConfirmTitle: "Сначала остановить локальный процесс?",
     directTakeoverForceStopConfirmBody: "Happier обнаружил доверенный локальный процесс для этой прямой сессии. Остановить его перед захватом здесь?",
     directTakeoverForceStopConfirmAction: "Остановить и взять под контроль",
+    directSessionRunningOnComputerTitle: "Эта сессия всё ещё работает на компьютере",
+    directSessionRunningOnComputerBody: "Другая программа на этом компьютере всё ещё работает в этой сессии. Если продолжить здесь, сначала она будет остановлена, включая то, что она делает прямо сейчас, чтобы в сессию писал только Happier.",
+    directSessionRunningOnComputerAction: "Остановить и продолжить",
   },
 
     codex: {

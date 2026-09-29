@@ -21,6 +21,8 @@ type DirectSessionTakeoverDialogProps = CustomModalInjectedProps & Readonly<{
     canTakeOverDirect: boolean;
     canTakeOverPersist: boolean;
     canForceStop: boolean;
+    /** Another program on the computer still runs the session, so taking over always stops it. */
+    externalProcessActive: boolean;
     onResolve: (result: DirectSessionTakeoverDialogResult) => void;
     onRequestClose?: () => void;
 }>;
@@ -94,6 +96,7 @@ export function DirectSessionTakeoverDialog(props: DirectSessionTakeoverDialogPr
     useUnistyles();
     const styles = stylesheet;
     const [forceStop, setForceStop] = React.useState(false);
+    const takeoverForceStop = props.externalProcessActive || (props.canForceStop && forceStop);
 
     const resolve = React.useCallback((result: DirectSessionTakeoverDialogResult) => {
         props.onResolve(result);
@@ -105,7 +108,7 @@ export function DirectSessionTakeoverDialog(props: DirectSessionTakeoverDialogPr
             {props.canTakeOverDirect ? (
                 <Pressable
                     testID="direct-session-takeover-dialog-direct"
-                    onPress={() => resolve({ action: 'direct', forceStop: props.canForceStop ? forceStop : false })}
+                    onPress={() => resolve({ action: 'direct', forceStop: takeoverForceStop })}
                     style={({ pressed }) => [styles.optionButton, { opacity: pressed ? 0.85 : 1 }]}
                 >
                     <Text style={styles.optionTitle}>{t('chatFooter.directTakeoverDialogDirectTitle')}</Text>
@@ -116,7 +119,7 @@ export function DirectSessionTakeoverDialog(props: DirectSessionTakeoverDialogPr
             {props.canTakeOverPersist ? (
                 <Pressable
                     testID="direct-session-takeover-dialog-persist"
-                    onPress={() => resolve({ action: 'persisted', forceStop: props.canForceStop ? forceStop : false })}
+                    onPress={() => resolve({ action: 'persisted', forceStop: takeoverForceStop })}
                     style={({ pressed }) => [styles.optionButton, { opacity: pressed ? 0.85 : 1 }]}
                 >
                     <Text style={styles.optionTitle}>{t('chatFooter.directTakeoverDialogPersistTitle')}</Text>
@@ -124,7 +127,12 @@ export function DirectSessionTakeoverDialog(props: DirectSessionTakeoverDialogPr
                 </Pressable>
             ) : null}
 
-            {props.canForceStop ? (
+            {props.externalProcessActive ? (
+                <View testID="direct-session-takeover-dialog-running-on-computer" style={styles.forceStopCard}>
+                    <Text style={styles.forceStopTitle}>{t('chatFooter.directSessionRunningOnComputerTitle')}</Text>
+                    <Text style={styles.forceStopBody}>{t('chatFooter.directSessionRunningOnComputerBody')}</Text>
+                </View>
+            ) : props.canForceStop ? (
                 <View style={styles.forceStopCard}>
                     <View style={styles.forceStopHeader}>
                         <Text style={styles.forceStopTitle}>{t('chatFooter.directTakeoverDialogForceStopTitle')}</Text>
@@ -153,6 +161,7 @@ export async function showDirectSessionTakeoverDialog(params: Readonly<{
     canTakeOverDirect: boolean;
     canTakeOverPersist: boolean;
     canForceStop: boolean;
+    externalProcessActive: boolean;
 }>): Promise<DirectSessionTakeoverDialogResult> {
     const deferred = createDeferredOnce<DirectSessionTakeoverDialogResult>();
     Modal.show({
@@ -161,6 +170,7 @@ export async function showDirectSessionTakeoverDialog(params: Readonly<{
             canTakeOverDirect: params.canTakeOverDirect,
             canTakeOverPersist: params.canTakeOverPersist,
             canForceStop: params.canForceStop,
+            externalProcessActive: params.externalProcessActive,
             onResolve: deferred.resolve,
         },
         onRequestClose: () => deferred.resolve({ action: null, forceStop: false }),

@@ -39,6 +39,11 @@ import { updateSessionMetadataWithDirectSessionFollowPolicy } from '@/api/direct
 import { createDirectSessionFollowLeaseManager } from '@/api/directSessions/leases/createDirectSessionFollowLeaseManager';
 import { ensureDirectSessionLink } from '@/api/directSessions/linking/ensureDirectSessionLink';
 import { validateDirectMachineSource } from '@/api/directSessions/security/validateDirectMachineSource';
+import {
+  readExternalDirectSessionProcesses,
+  selectExternalDirectSessionProcesses,
+  stopExternalDirectSessionProcesses,
+} from '@/api/directSessions/takeover/externalDirectSessionProcesses';
 import { findTrustedDirectSessionOwner } from '@/api/directSessions/takeover/findTrustedDirectSessionOwner';
 import { loadLinkedDirectSession } from '@/api/directSessions/takeover/loadLinkedDirectSession';
 import { resolveDirectTakeoverSpawnOptions } from '@/api/directSessions/takeover/resolveDirectTakeoverSpawnOptions';
@@ -458,11 +463,14 @@ export function registerMachineDirectSessionsRpcHandlers(params: Readonly<{
       }
     }
 
+    let externalProcessActive = false;
     try {
       const activityOps = await getDirectSessionProviderOps(parsed.data.providerId);
       const res = await requireProviderOp(activityOps.getActivity, parsed.data.providerId, 'activity')({
         source: validatedSource.source,
         remoteSessionId: parsed.data.remoteSessionId,
+        // Clients poll this status every 250 ms while a session runs; takeover verifies anew before stopping anything.
+        reuseVerifiedProcesses: true,
       });
       if (typeof res.lastActivityAtMs === 'number' && Number.isFinite(res.lastActivityAtMs) && res.lastActivityAtMs >= 0) {
         lastKnownActivityAtMs = res.lastActivityAtMs;
@@ -471,6 +479,14 @@ export function registerMachineDirectSessionsRpcHandlers(params: Readonly<{
       }
       if (res.isRunning) {
         activityValue = 'running';
+      }
+      externalProcessActive = selectExternalDirectSessionProcesses({
+        runningProcesses: res.runningProcesses,
+        liveMarkers,
+        sessionId: parsed.data.sessionId,
+      }).length > 0;
+      if (externalProcessActive) {
+        canForceStop = true;
       }
     } catch {
       activityValue = 'unknown';
@@ -514,6 +530,7 @@ export function registerMachineDirectSessionsRpcHandlers(params: Readonly<{
       canTakeOverPersist,
       canForceStop,
       trustedPid,
+      externalProcessActive,
       ...(lastKnownActivityAtMs !== undefined ? { lastKnownActivityAtMs } : {}),
     } satisfies DirectSessionStatusGetResponse;
   });
@@ -631,6 +648,20 @@ export function registerMachineDirectSessionsRpcHandlers(params: Readonly<{
       isPidAlive,
     });
 
+    const externalProcesses = await readExternalDirectSessionProcesses({
+      providerId: validatedLinkedSession.providerId,
+      source: validatedLinkedSession.source,
+      remoteSessionId: validatedLinkedSession.remoteSessionId,
+      sessionId: parsed.data.sessionId,
+      liveMarkers: markers.filter((m) => Number.isFinite(m.pid) && m.pid > 0 && isPidAlive(m.pid)),
+    });
+    if (externalProcesses.length > 0 && parsed.data.forceStop !== true) {
+      return err('invalid_request', 'force_stop_required') satisfies DirectSessionTakeoverResponse;
+    }
+    if (externalProcesses.length > 0) {
+      await stopExternalDirectSessionProcesses(externalProcesses);
+    }
+
     if (trustedOwner && trustedOwner.happySessionId === parsed.data.sessionId) {
       return { ok: true } satisfies DirectSessionTakeoverResponse;
     }
@@ -706,6 +737,20 @@ export function registerMachineDirectSessionsRpcHandlers(params: Readonly<{
       remoteSessionId: validatedLinkedSession.remoteSessionId,
       isPidAlive,
     });
+
+    const externalProcesses = await readExternalDirectSessionProcesses({
+      providerId: validatedLinkedSession.providerId,
+      source: validatedLinkedSession.source,
+      remoteSessionId: validatedLinkedSession.remoteSessionId,
+      sessionId: parsed.data.sessionId,
+      liveMarkers: markers.filter((m) => Number.isFinite(m.pid) && m.pid > 0 && isPidAlive(m.pid)),
+    });
+    if (externalProcesses.length > 0 && parsed.data.forceStop !== true) {
+      return err('invalid_request', 'force_stop_required') satisfies DirectSessionTakeoverPersistResponse;
+    }
+    if (externalProcesses.length > 0) {
+      await stopExternalDirectSessionProcesses(externalProcesses);
+    }
 
     if (trustedOwner && trustedOwner.happySessionId !== parsed.data.sessionId && parsed.data.forceStop !== true) {
       return err('invalid_request', 'force_stop_required') satisfies DirectSessionTakeoverPersistResponse;

@@ -25,6 +25,8 @@ import { getClaudeRemoteSystemPrompt } from '@/backends/claude/utils/remoteSyste
 import { parseClaudeSdkFlagOverridesFromArgs } from '@/backends/claude/remote/sdkFlagOverrides';
 import { resolveClaudeRemoteSessionStartPlan } from '@/backends/claude/remote/sessionStartPlan';
 import { resolveClaudeConfigDirOverride } from '@/backends/claude/utils/resolveClaudeConfigDirOverride';
+import { resolveConfiguredClaudeConfigDir } from '@/backends/claude/utils/resolveConfiguredClaudeConfigDir';
+import { findLiveClaudeSessionProcesses } from '@/backends/claude/directSessions/findLiveClaudeSessionProcesses';
 import { resolveClaudeCodeExperimentalEnvOverlay } from '@/backends/claude/spawn/resolveClaudeCodeExperimentalEnvOverlay';
 import { buildClaudeSubprocessEnv } from '@/backends/claude/spawn/buildClaudeSubprocessEnv';
 import { logClaudeRuntimeAuthEnvDiagnostic } from '@/backends/claude/spawn/logClaudeRuntimeAuthEnvDiagnostic';
@@ -345,6 +347,25 @@ export async function claudeRemoteAgentSdk(opts: {
         opts.onSessionReset?.();
         promptSettlements.accept(initial);
         return;
+    }
+
+    if (startFrom) {
+        // Claude Code started by this runner is its direct child; any other live process recorded
+        // for the session means resuming here would start a second writer of the same conversation.
+        const heldElsewhere = (await findLiveClaudeSessionProcesses({
+            configDir: resolveConfiguredClaudeConfigDir({ env: process.env }),
+            remoteSessionId: startFrom,
+        })).filter((running) => running.parentPid !== process.pid);
+        if (heldElsewhere.length > 0) {
+            logger.debug('[claudeRemoteAgentSdk] Not resuming a Claude session that is still running elsewhere', {
+                pids: heldElsewhere.map((running) => running.pid),
+            });
+            opts.onCompletionEvent?.(
+                'This Claude session is still running on this computer outside Happier. Take it over from Happier to stop that process and continue here.',
+            );
+            promptSettlements.rejectBeforeEffect(initial);
+            return;
+        }
     }
 
 	    let isCompactCommand = false;

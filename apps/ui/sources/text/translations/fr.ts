@@ -9955,6 +9955,9 @@ settingsSession: {
         directTakeoverForceStopConfirmTitle: 'Arrêter d’abord le processus local ?',
         directTakeoverForceStopConfirmBody: 'Happier a trouvé un processus local de confiance pour cette session directe. L’arrêter avant de reprendre ici ?',
         directTakeoverForceStopConfirmAction: 'Arrêter et reprendre',
+        directSessionRunningOnComputerTitle: 'Cette session tourne encore sur l’ordinateur',
+        directSessionRunningOnComputerBody: 'Un autre programme de cet ordinateur travaille encore dans cette session. Continuer ici arrête d’abord ce programme, y compris ce qu’il est en train de faire, afin que seul Happier écrive dans la session.',
+        directSessionRunningOnComputerAction: 'L’arrêter et continuer',
     },
 
     codex: {

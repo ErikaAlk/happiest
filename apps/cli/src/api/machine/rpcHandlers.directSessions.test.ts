@@ -1,11 +1,13 @@
+import type { ChildProcess } from 'node:child_process';
 import { appendFile, mkdir, mkdtemp, realpath, rm, stat, writeFile } from 'node:fs/promises';
 import { createServer, type Server } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { RPC_METHODS } from '@happier-dev/protocol/rpc';
+import { recordLiveClaudeSession, spawnClaudeStandInProcess } from '@/testkit/backends/claudeSessionRecord';
 import { writeFakeCodexAppServerThreadListScript } from '@/backends/codex/appServer/testkit/fakeCodexAppServer';
 import type { SpawnSessionOptions, SpawnSessionResult } from '@/rpc/handlers/registerSessionHandlers';
 import type { RpcHandlerRegistrar } from '@/api/rpc/types';
@@ -1451,5 +1453,137 @@ describe('registerMachineDirectSessionsRpcHandlers', () => {
     } finally {
       await rm(markerPath, { force: true });
     }
+  });
+
+  describe('Claude sessions still running outside Happier (live processes)', () => {
+    const children: ChildProcess[] = [];
+    const cleanups: Array<() => Promise<void>> = [];
+
+    afterEach(async () => {
+      for (const child of children.splice(0)) child.kill();
+      while (cleanups.length > 0) await cleanups.pop()!();
+    });
+
+    async function createLinkedClaudeSession(remoteSessionId: string) {
+      const root = await mkdtemp(join(tmpdir(), 'happier-directSessions-live-owner-'));
+      cleanups.push(async () => await rm(root, { recursive: true, force: true }));
+      const configDir = join(root, '.claude');
+      await mkdir(join(configDir, 'projects', 'proj-live'), { recursive: true });
+      await writeFile(
+        join(configDir, 'projects', 'proj-live', `${remoteSessionId}.jsonl`),
+        jsonlLine({ type: 'user', uuid: 'u1', cwd: '/tmp/direct-claude-live-worktree', message: { content: 'hello' } }),
+        'utf8',
+      );
+      vi.stubEnv('HAPPIER_CLAUDE_CONFIG_DIR', configDir);
+      const child = spawnClaudeStandInProcess();
+      children.push(child);
+      await recordLiveClaudeSession({ configDir, pid: child.pid!, sessionId: remoteSessionId });
+      return { configDir, child };
+    }
+
+    function registerHandlers(extra: Partial<Parameters<typeof registerMachineDirectSessionsRpcHandlers>[0]> = {}) {
+      const registered = new Map<string, (params: unknown) => Promise<any>>();
+      const rpcHandlerManager: RpcHandlerRegistrar = {
+        registerHandler: (method, handler) => {
+          registered.set(method, async (params) => handler(params as never));
+        },
+      };
+      registerMachineDirectSessionsRpcHandlers({ rpcHandlerManager, ...extra });
+      return registered;
+    }
+
+    it('reports a Claude session still running in a process outside Happier as externally active', async () => {
+      const { configDir } = await createLinkedClaudeSession('remote-live-elsewhere');
+
+      const res = await registerHandlers().get(RPC_METHODS.DAEMON_DIRECT_SESSION_STATUS_GET)!({
+        machineId: 'm1',
+        sessionId: 'sess_happy_live_elsewhere',
+        providerId: 'claude',
+        remoteSessionId: 'remote-live-elsewhere',
+        source: { kind: 'claudeConfig', configDir, projectId: null },
+      });
+
+      expect(res).toEqual(expect.objectContaining({
+        ok: true,
+        runnerActive: false,
+        activity: 'running',
+        canForceStop: true,
+        externalProcessActive: true,
+      }));
+    }, 60_000);
+
+    it('does not report the Claude process of the Happier runner of the same session as external', async () => {
+      const { configDir } = await createLinkedClaudeSession('remote-own-runner');
+      // This test process plays the Happier runner: the recorded Claude process is its child.
+      const markerDir = join('/tmp/happier-test-home', 'tmp', 'daemon-sessions');
+      const markerPath = join(markerDir, `pid-${process.pid}.json`);
+      await mkdir(markerDir, { recursive: true });
+      await writeFile(markerPath, JSON.stringify({
+        pid: process.pid,
+        happySessionId: 'sess_happy_own_runner',
+        happyHomeDir: '/tmp/happier-test-home',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        flavor: 'claude',
+        metadata: { flavor: 'claude', claudeSessionId: 'remote-own-runner' },
+      }), 'utf8');
+      cleanups.push(async () => await rm(markerPath, { force: true }));
+
+      const res = await registerHandlers().get(RPC_METHODS.DAEMON_DIRECT_SESSION_STATUS_GET)!({
+        machineId: 'm1',
+        sessionId: 'sess_happy_own_runner',
+        providerId: 'claude',
+        remoteSessionId: 'remote-own-runner',
+        source: { kind: 'claudeConfig', configDir, projectId: null },
+      });
+
+      expect(res).toEqual(expect.objectContaining({ ok: true, runnerActive: true, externalProcessActive: false }));
+    }, 60_000);
+
+    it('takes over a session still running outside Happier only after an explicit force stop, which ends that process', async () => {
+      const { configDir, child } = await createLinkedClaudeSession('remote-force-external');
+      const linkedSession = {
+        id: 'sess_happy_force_external',
+        metadataVersion: 1,
+        encryptionMode: 'plain',
+        metadata: JSON.stringify({
+          path: '',
+          machineId: 'm1',
+          flavor: 'claude',
+          claudeSessionId: 'remote-force-external',
+          directSessionV1: {
+            v: 1,
+            providerId: 'claude',
+            machineId: 'm1',
+            remoteSessionId: 'remote-force-external',
+            source: { kind: 'claudeConfig', configDir, projectId: 'proj-live' },
+            linkedAtMs: Date.now(),
+          },
+        }),
+      };
+      const credentials = { token: 'token-direct', encryption: { type: 'legacy', secret: new Uint8Array([1, 2, 3]) } };
+      readCredentialsMock.mockResolvedValue(credentials);
+      fetchSessionByIdMock.mockResolvedValue(linkedSession);
+      const spawnSession = vi.fn(async (_options: SpawnSessionOptions): Promise<SpawnSessionResult> => ({
+        type: 'success',
+        sessionId: 'sess_happy_force_external',
+      }));
+      const stopSession = vi.fn(async () => true);
+      const takeover = registerHandlers({ spawnSession, stopSession }).get(RPC_METHODS.DAEMON_DIRECT_SESSION_TAKEOVER)!;
+
+      const refused = await takeover({ machineId: 'm1', sessionId: 'sess_happy_force_external' });
+
+      expect(refused).toEqual(expect.objectContaining({ ok: false, errorCode: 'invalid_request', error: 'force_stop_required' }));
+      expect(child.exitCode).toBeNull();
+      expect(spawnSession).not.toHaveBeenCalled();
+
+      const exited = new Promise((resolve) => child.once('exit', resolve));
+      const forced = await takeover({ machineId: 'm1', sessionId: 'sess_happy_force_external', forceStop: true });
+
+      expect(forced).toEqual({ ok: true });
+      await exited;
+      expect(spawnSession).toHaveBeenCalledWith(expect.objectContaining({ resume: 'remote-force-external' }));
+      expect(stopSession).not.toHaveBeenCalled();
+    }, 60_000);
   });
 });

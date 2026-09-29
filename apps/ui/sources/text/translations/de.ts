@@ -9968,6 +9968,9 @@ settingsSession: {
         directTakeoverForceStopConfirmTitle: 'Zuerst den lokalen Prozess stoppen?',
         directTakeoverForceStopConfirmBody: 'Happier hat einen vertrauenswürdigen lokalen Prozess für diese direkte Session gefunden. Vor der Übernahme hier stoppen?',
         directTakeoverForceStopConfirmAction: 'Stoppen und übernehmen',
+        directSessionRunningOnComputerTitle: 'Diese Session läuft noch auf dem Computer',
+        directSessionRunningOnComputerBody: 'Ein anderes Programm auf diesem Computer arbeitet noch in dieser Session. Wenn du hier fortfährst, wird dieses Programm zuerst gestoppt, auch mitten in dem, was es gerade tut, damit nur Happier in die Session schreibt.',
+        directSessionRunningOnComputerAction: 'Stoppen und fortfahren',
     },
 
     codex: {

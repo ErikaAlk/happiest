@@ -10648,6 +10648,9 @@ settingsSession: {
     directTakeoverForceStopConfirmTitle: "¿Detener primero el proceso local?",
     directTakeoverForceStopConfirmBody: "Happier encontró un proceso local de confianza para esta sesión directa. ¿Detenerlo antes de tomar el control aquí?",
     directTakeoverForceStopConfirmAction: "Detener y tomar control",
+    directSessionRunningOnComputerTitle: "Esta sesión sigue ejecutándose en el ordenador",
+    directSessionRunningOnComputerBody: "Otro programa de ese ordenador sigue trabajando en esta sesión. Si continúas aquí, primero se detendrá ese programa, incluido lo que esté haciendo ahora mismo, para que solo Happier escriba en la sesión.",
+    directSessionRunningOnComputerAction: "Detenerlo y continuar",
   },
 
     codex: {

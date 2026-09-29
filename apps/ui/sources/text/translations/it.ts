@@ -10963,6 +10963,9 @@ settingsSession: {
     directTakeoverForceStopConfirmTitle: "Fermare prima il processo locale?",
     directTakeoverForceStopConfirmBody: "Happier ha trovato un processo locale attendibile per questa sessione diretta. Fermarlo prima di prendere il controllo qui?",
     directTakeoverForceStopConfirmAction: "Ferma e prendi in carico",
+    directSessionRunningOnComputerTitle: "Questa sessione è ancora in esecuzione sul computer",
+    directSessionRunningOnComputerBody: "Un altro programma su quel computer sta ancora lavorando in questa sessione. Continuando qui, quel programma viene prima fermato, compreso ciò che sta facendo in questo momento, così solo Happier scrive nella sessione.",
+    directSessionRunningOnComputerAction: "Fermalo e continua",
   },
 
     codex: {

@@ -68,6 +68,18 @@ the local process first**, confirmed with **Stop and take over**. That is the
 one to reach for when a terminal somewhere is still holding the conversation and
 your takeover would otherwise be fighting it.
 
+A Claude Code session can also still be open in another program on that
+computer, such as Claude Desktop or a terminal. Two programs continuing one
+conversation would each write their own turns into it, so Happier says **This
+session is still running on the computer** and continues only after stopping
+that program. Taking over and sending a message both ask first; stopping it also
+interrupts whatever it is doing at that moment. When Happier already controls
+the session and you open it again elsewhere, your next message asks the same
+question. This is in development source only and needs both an updated app and
+an updated daemon. With an older app, the updated daemon still refuses to start
+a second Claude process for the session: the message stays undelivered and the
+session explains why.
+
 Choosing between the first two is really a question about where you want the
 history to live afterwards. Import when you want the session on your phone
 tomorrow; keep it direct when the agent's own logs are the record you care about.

@@ -13,13 +13,26 @@ function normalizePid(pid) {
   return Number.isInteger(value) && value > 1 ? value : null;
 }
 
-function parseLinuxProcStatFingerprint(stat) {
+// Fields of /proc/<pid>/stat after the parenthesised command name, which may itself contain
+// spaces and parentheses: index 0 is the state, 1 the parent PID, 19 the start time in ticks.
+function readLinuxProcStatFieldsAfterCommand(stat) {
   const closingParen = stat.lastIndexOf(')');
-  const fieldsAfterCommand = closingParen >= 0
+  return closingParen >= 0
     ? stat.slice(closingParen + 1).trim().split(/\s+/)
     : [];
-  const startTimeTicks = fieldsAfterCommand[19];
+}
+
+function parseLinuxProcStatFingerprint(stat) {
+  const startTimeTicks = readLinuxProcStatFieldsAfterCommand(stat)[19];
   return /^\d+$/.test(String(startTimeTicks ?? '')) ? `linux-proc:${startTimeTicks}` : null;
+}
+
+export async function readLinuxProcessParentPid(pid, { readFileImpl = readFile } = {}) {
+  const normalizedPid = normalizePid(pid);
+  if (!normalizedPid) return null;
+  const stat = await readFileImpl(`/proc/${normalizedPid}/stat`, 'utf8').catch(() => null);
+  if (stat === null) return null;
+  return parsePositiveInt(readLinuxProcStatFieldsAfterCommand(String(stat))[1]);
 }
 
 function runProbe(command, args, { spawnSyncImpl }) {
@@ -95,8 +108,10 @@ function parseWin32ProcessRows(output) {
     const name = typeof row.Name === 'string' && row.Name.trim() ? row.Name : undefined;
     const commandLine = typeof row.CommandLine === 'string' && row.CommandLine.trim() ? row.CommandLine.trim() : undefined;
     const creationUtc = typeof row.CreationUtc === 'string' && row.CreationUtc.trim() ? row.CreationUtc.trim() : undefined;
+    const parentPid = parsePositiveInt(row.ParentProcessId);
     rows.set(pid, {
       pid,
+      ...(parentPid ? { parentPid } : {}),
       ...(name ? { name } : {}),
       ...(commandLine ? { commandLine } : {}),
       ...(creationUtc ? { processInstanceFingerprint: `${WIN32_FINGERPRINT_PREFIX}${creationUtc}` } : {}),
@@ -106,7 +121,7 @@ function parseWin32ProcessRows(output) {
 }
 
 /**
- * Reads name, command line and process-instance fingerprint of Windows processes with one
+ * Reads parent PID, name, command line and process-instance fingerprint of Windows processes with one
  * non-blocking PowerShell/CIM query. `pids === null` reads every process. Resolves an empty map
  * when the query fails; callers treat a missing row as unknown identity.
  */
@@ -119,7 +134,7 @@ export async function readWin32ProcessRows(pids, { execFileImpl = execFile } = {
     ? ''
     : ` -Filter "${uniquePids.map((pid) => `ProcessId=${pid}`).join(' OR ')}"`;
   const script = [
-    `$rows = Get-CimInstance Win32_Process${filter} | Select-Object ProcessId, Name, CommandLine, @{ Name = 'CreationUtc'; Expression = { $_${WIN32_CREATION_UTC_MEMBER} } }`,
+    `$rows = Get-CimInstance Win32_Process${filter} | Select-Object ProcessId, ParentProcessId, Name, CommandLine, @{ Name = 'CreationUtc'; Expression = { $_${WIN32_CREATION_UTC_MEMBER} } }`,
     'if ($null -eq $rows) { return }',
     '$rows | ConvertTo-Json -Compress',
   ].join('; ');

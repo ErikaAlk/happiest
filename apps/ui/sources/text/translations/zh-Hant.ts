@@ -8599,6 +8599,9 @@ settingsSession: {
         directTakeoverForceStopConfirmTitle: "先停止本機程序？",
         directTakeoverForceStopConfirmBody: "Happier 找到了此直接工作階段對應的可信本機程序。要在這裡接管前先停止它嗎？",
         directTakeoverForceStopConfirmAction: "停止並接管",
+        directSessionRunningOnComputerTitle: "此工作階段仍在電腦上執行",
+        directSessionRunningOnComputerBody: "那台電腦上還有另一個程式在執行此工作階段。在這裡繼續會先結束那個程式，它正在進行的操作也會中斷，之後只由 Happier 寫入此工作階段。",
+        directSessionRunningOnComputerAction: "結束並繼續",
     },
 
       codex: {

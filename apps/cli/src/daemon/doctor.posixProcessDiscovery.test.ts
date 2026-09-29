@@ -51,8 +51,8 @@ describe('doctor POSIX process discovery', () => {
       if (projection === 'stat=,comm=,command=') {
         return `Ss   /Users/alice/.l ${command}`;
       }
-      if (projection === 'stat=,ucomm=,command=') {
-        return `Ss   node ${command}`;
+      if (projection === 'stat=,ppid=,ucomm=,command=') {
+        return `Ss   1 node ${command}`;
       }
       return '';
     });

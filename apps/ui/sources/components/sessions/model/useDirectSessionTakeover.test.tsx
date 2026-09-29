@@ -15,6 +15,7 @@ const showDirectSessionTakeoverDialogSpy = vi.hoisted(() =>
   vi.fn<() => Promise<{ action: 'direct' | 'persisted' | null; forceStop: boolean }>>(async () => ({ action: null, forceStop: false })),
 );
 const modalAlertSpy = vi.hoisted(() => vi.fn());
+const modalConfirmSpy = vi.hoisted(() => vi.fn(async (_title: string, _body: string, _options?: unknown) => false));
 const resolvePreferredServerIdForSessionIdSpy = vi.hoisted(() => vi.fn());
 
 let activeServerId = 'server-1';
@@ -27,7 +28,7 @@ vi.mock('@/modal', async () => {
     return createModalModuleMock({
         spies: {
             alert: modalAlertSpy,
-            confirm: vi.fn(async () => false),
+            confirm: modalConfirmSpy,
         },
     }).module;
 });
@@ -103,6 +104,8 @@ describe('useDirectSessionTakeover', () => {
     showDirectSessionTakeoverDialogSpy.mockReset();
     showDirectSessionTakeoverDialogSpy.mockResolvedValue({ action: null, forceStop: false });
     modalAlertSpy.mockReset();
+    modalConfirmSpy.mockReset();
+    modalConfirmSpy.mockResolvedValue(false);
   });
 
   afterEach(() => {
@@ -159,6 +162,7 @@ describe('useDirectSessionTakeover', () => {
       canTakeOverDirect: true,
       canTakeOverPersist: true,
       canForceStop: false,
+      externalProcessActive: false,
     });
     expect(machineDirectSessionTakeoverSpy).toHaveBeenCalledWith(
       { machineId: 'machine-1', sessionId: 's1' },
@@ -185,5 +189,63 @@ describe('useDirectSessionTakeover', () => {
     expect(showDirectSessionTakeoverDialogSpy).not.toHaveBeenCalled();
     expect(machineDirectSessionTakeoverSpy).not.toHaveBeenCalled();
     await harness.unmount();
+  });
+
+  describe('when another program on the computer still runs the session', () => {
+    const runningElsewhere = { ...status, canForceStop: true, externalProcessActive: true };
+
+    it('asks before sending even while Happier runs the session, then stops that program', async () => {
+      const refreshNow = vi.fn(async () => ({ ...runningElsewhere, runnerActive: true }));
+      modalConfirmSpy.mockResolvedValue(true);
+      const harness = await renderHarness({ directSessionLink, status, refreshNow });
+
+      let ready = false;
+      await act(async () => {
+        ready = await harness.getCurrent().ensureReadyForSend();
+      });
+
+      expect(ready).toBe(true);
+      expect(modalConfirmSpy).toHaveBeenCalledTimes(1);
+      expect(modalConfirmSpy.mock.calls[0]?.[0]).toBe('chatFooter.directSessionRunningOnComputerTitle');
+      expect(machineDirectSessionTakeoverSpy).toHaveBeenCalledWith(
+        { machineId: 'machine-1', sessionId: 's1', forceStop: true },
+        { serverId: 'server-owned' },
+      );
+      await harness.unmount();
+    });
+
+    it('does not send when the user keeps that program running', async () => {
+      const refreshNow = vi.fn(async () => ({ ...runningElsewhere, runnerActive: true }));
+      const harness = await renderHarness({ directSessionLink, status, refreshNow });
+
+      let ready = true;
+      await act(async () => {
+        ready = await harness.getCurrent().ensureReadyForSend();
+      });
+
+      expect(ready).toBe(false);
+      expect(modalConfirmSpy).toHaveBeenCalledTimes(1);
+      expect(machineDirectSessionTakeoverSpy).not.toHaveBeenCalled();
+      await harness.unmount();
+    });
+
+    it('stops that program as part of whichever takeover the user picks', async () => {
+      const refreshNow = vi.fn(async () => runningElsewhere);
+      showDirectSessionTakeoverDialogSpy.mockResolvedValueOnce({ action: 'persisted', forceStop: false });
+      const harness = await renderHarness({ directSessionLink, status, refreshNow });
+
+      let ready = false;
+      await act(async () => {
+        ready = await harness.getCurrent().ensureReadyForSend();
+      });
+
+      expect(ready).toBe(true);
+      expect(showDirectSessionTakeoverDialogSpy).toHaveBeenCalledWith(expect.objectContaining({ externalProcessActive: true }));
+      expect(machineDirectSessionTakeoverPersistSpy).toHaveBeenCalledWith(
+        { machineId: 'machine-1', sessionId: 's1', forceStop: true },
+        { serverId: 'server-owned' },
+      );
+      await harness.unmount();
+    });
   });
 });

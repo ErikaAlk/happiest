@@ -9,7 +9,7 @@ import spawn from 'cross-spawn';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { readFile, readlink } from 'node:fs/promises';
-import { readWin32ProcessRows } from '@happier-dev/cli-common/processInstance';
+import { readLinuxProcessParentPid, readWin32ProcessRows } from '@happier-dev/cli-common/processInstance';
 import { listProcessSnapshot } from './processSnapshotCache';
 
 const SAFE_RESPAWN_ENVIRONMENT_VARIABLE_KEYS = ['CLAUDE_CONFIG_DIR', 'CODEX_HOME', 'CODEX_SQLITE_HOME'] as const;
@@ -41,6 +41,7 @@ export type HappyProcessInfo = {
 
 export type ProcessInfoByPid = {
   pid: number;
+  parentPid?: number;
   stat?: string;
   name?: string;
   cmd?: string;
@@ -150,7 +151,16 @@ async function getProcessInfoByPidProcfs(
     const daemonOwnershipEnvironmentVariables = environmentPairs
       ? pickEnvironmentVariables(environmentPairs, DAEMON_OWNERSHIP_ENVIRONMENT_VARIABLE_KEYS)
       : undefined;
-    return { pid, name, cmd, cwd, environmentVariables, daemonOwnershipEnvironmentVariables };
+    const parentPid = await readLinuxProcessParentPid(pid);
+    return {
+      pid,
+      ...(parentPid ? { parentPid } : {}),
+      name,
+      cmd,
+      cwd,
+      environmentVariables,
+      daemonOwnershipEnvironmentVariables,
+    };
   } catch {
     return null;
   }
@@ -171,6 +181,7 @@ async function readWindowsProcessInfos(pids: readonly number[] | null): Promise<
   for (const row of (await readWin32ProcessRows(pids)).values()) {
     infos.set(row.pid, {
       pid: row.pid,
+      ...(row.parentPid ? { parentPid: row.parentPid } : {}),
       ...(row.name ? { name: row.name } : {}),
       ...(row.commandLine ? { cmd: row.commandLine } : {}),
       ...(row.processInstanceFingerprint ? { processInstanceFingerprint: row.processInstanceFingerprint } : {}),
@@ -183,7 +194,7 @@ function getProcessInfoByPidPosix(pid: number): RawProcessInfo | null {
   if (process.platform === 'linux' || process.platform === 'win32') return null;
 
   try {
-    const output = execFileSync('ps', ['-o', 'stat=,ucomm=,command=', '-p', String(pid)], {
+    const output = execFileSync('ps', ['-o', 'stat=,ppid=,ucomm=,command=', '-p', String(pid)], {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
     }).trim();
@@ -193,17 +204,19 @@ function getProcessInfoByPidPosix(pid: number): RawProcessInfo | null {
       .find((entry) => entry.length > 0);
     if (!line) return null;
 
-    const match = /^(\S+)\s+(\S+)\s+(.*)$/.exec(line) ?? /^(\S+)\s+(\S+)$/.exec(line);
+    const match = /^(\S+)\s+(\d+)\s+(\S+)\s+(.*)$/.exec(line) ?? /^(\S+)\s+(\d+)\s+(\S+)$/.exec(line);
     if (!match) return null;
 
     const stat = match[1]?.trim() ?? '';
-    const name = match[2]?.trim() ?? '';
-    const cmd = match[3]?.trim() || name;
+    const parentPid = Number.parseInt(match[2] ?? '', 10);
+    const name = match[3]?.trim() ?? '';
+    const cmd = match[4]?.trim() || name;
 
     if (!stat || (!name && !cmd)) return null;
     const daemonOwnershipEnvironmentVariables = readDaemonOwnershipEnvironmentVariablesFromPosixPs(pid);
     return {
       pid,
+      ...(Number.isInteger(parentPid) && parentPid > 0 ? { parentPid } : {}),
       stat,
       ...(name ? { name } : {}),
       ...(cmd ? { cmd } : {}),

@@ -21,9 +21,16 @@ export type DirectSessionCandidatesPage = Readonly<{
   }>;
 }>;
 
+export type DirectSessionRunningProcess = Readonly<{
+  pid: number;
+  parentPid: number | null;
+}>;
+
 export type DirectSessionActivitySample = Readonly<{
   lastActivityAtMs: number | null;
   isRunning: boolean;
+  /** Local provider processes currently holding the session; empty when the provider cannot observe them. */
+  runningProcesses: readonly DirectSessionRunningProcess[];
 }>;
 
 export type DirectSessionTranscriptPage = Readonly<{
@@ -73,6 +80,8 @@ export type DirectSessionProviderOps = Readonly<{
   getActivity?: (params: Readonly<{
     source: DirectSessionsSource;
     remoteSessionId: string;
+    /** Observation only: may reuse process identities verified by earlier calls while those processes live. */
+    reuseVerifiedProcesses?: boolean;
   }>) => Promise<DirectSessionActivitySample>;
   pageTranscript?: (params: Readonly<{
     source: DirectSessionsSource;

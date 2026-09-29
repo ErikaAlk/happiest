@@ -1,3 +1,4 @@
+import { findLiveClaudeSessionProcesses } from './findLiveClaudeSessionProcesses';
 import { getClaudeDirectSessionActivity } from './getClaudeDirectSessionActivity';
 import { getClaudeDirectSessionWorkingDirectory } from './getClaudeDirectSessionWorkingDirectory';
 import { listClaudeSessionCandidates } from './listClaudeSessionCandidates';
@@ -16,11 +17,19 @@ export const claudeDirectSessionProviderOps: DirectSessionProviderOps = {
     const res = await listClaudeSessionCandidates({ source, cursor, limit, searchTerm, searchMode });
     return { candidates: res.candidates, nextCursor: res.nextCursor ?? null, ...(res.searchIncomplete ? { searchIncomplete: true } : {}) };
   },
-  getActivity: async ({ source, remoteSessionId }) => {
-    const res = await getClaudeDirectSessionActivity({ source, remoteSessionId });
+  getActivity: async ({ source, remoteSessionId, reuseVerifiedProcesses }) => {
+    const [res, runningProcesses] = await Promise.all([
+      getClaudeDirectSessionActivity({ source, remoteSessionId }),
+      findLiveClaudeSessionProcesses({
+        configDir: resolveClaudeConfigDirForDirectSessions({ source, env: process.env }),
+        remoteSessionId,
+        reuseVerifiedProcesses,
+      }),
+    ]);
     return {
       lastActivityAtMs: typeof res.lastActivityAtMs === 'number' && Number.isFinite(res.lastActivityAtMs) ? res.lastActivityAtMs : null,
-      isRunning: false,
+      isRunning: runningProcesses.length > 0,
+      runningProcesses,
     };
   },
   pageTranscript: async ({ source, remoteSessionId, direction, cursor, maxBytes, maxItems }) => {

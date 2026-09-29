@@ -10753,6 +10753,9 @@ settingsSession: {
     directTakeoverForceStopConfirmTitle: "Parar primeiro o processo local?",
     directTakeoverForceStopConfirmBody: "O Happier encontrou um processo local confiável para esta sessão direta. Pará-lo antes de assumir o controle aqui?",
     directTakeoverForceStopConfirmAction: "Parar e assumir o controle",
+    directSessionRunningOnComputerTitle: "Esta sessão ainda está em execução no computador",
+    directSessionRunningOnComputerBody: "Outro programa nesse computador ainda está trabalhando nesta sessão. Continuar aqui para esse programa primeiro, incluindo o que ele estiver fazendo agora, para que só o Happier escreva na sessão.",
+    directSessionRunningOnComputerAction: "Parar e continuar",
   },
 
     codex: {
