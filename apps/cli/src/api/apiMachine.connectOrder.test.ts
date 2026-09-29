@@ -98,10 +98,6 @@ vi.mock('@/configuration', () => ({
   },
 }));
 
-vi.mock('@/utils/proxy/socketIoProxy', () => ({
-  getSocketIoProxyOptions: () => ({}),
-}));
-
 vi.mock('@/rpc/handlers/registerSessionHandlers', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/rpc/handlers/registerSessionHandlers')>()),
   registerSessionHandlers: () => ({ dispose: async () => {} }),

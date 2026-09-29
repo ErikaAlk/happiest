@@ -17,10 +17,6 @@ vi.mock('@/configuration', () => ({
   },
 }));
 
-vi.mock('@/utils/proxy/socketIoProxy', () => ({
-  getSocketIoProxyOptions: () => ({}),
-}));
-
 vi.mock('@/ui/logger', () => ({
   logger: {
     debug: () => undefined,

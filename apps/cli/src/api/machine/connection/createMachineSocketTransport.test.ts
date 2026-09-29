@@ -8,10 +8,6 @@ vi.mock('socket.io-client', () => ({
   io: ioMock,
 }));
 
-vi.mock('@/utils/proxy/socketIoProxy', () => ({
-  getSocketIoProxyOptions: () => ({}),
-}));
-
 describe('createMachineSocketTransport', () => {
   beforeEach(() => {
     ioMock.mockClear();

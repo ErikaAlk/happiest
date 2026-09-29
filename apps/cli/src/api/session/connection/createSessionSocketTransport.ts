@@ -6,7 +6,7 @@ import type { ClientToServerEvents, ServerToClientEvents } from '@/api/types';
 import { createSocketTransportAdapter } from '@/api/connection/createSocketTransportAdapter';
 import { configuration } from '@/configuration';
 import { ensureSessionMachineAccessKeyBinding } from '@/api/session/ensureSessionMachineAccessKeyBinding';
-import { getSocketIoProxyOptions } from '@/utils/proxy/socketIoProxy';
+import { getSocketIoAgentOptions } from '@/utils/proxy/socketIoAgent';
 import { normalizeServerHttpBaseUrl, resolveServerHttpBaseUrl } from '@/session/transport/http/serverHttpBaseUrl';
 import { resolveSessionControlSocketConnectTimeoutMs } from '@/session/transport/shared/sessionTimeouts';
 
@@ -39,7 +39,7 @@ export function createSessionSocketTransport(params: Readonly<{
         reconnection: false,
         withCredentials: true,
         autoConnect: false,
-        ...getSocketIoProxyOptions({ targetUrl: serverUrl, env }),
+        ...getSocketIoAgentOptions({ targetUrl: serverUrl, env }),
     });
 
     const socketTransport = createSocketTransportAdapter(socket, {

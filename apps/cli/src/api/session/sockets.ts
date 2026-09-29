@@ -1,7 +1,7 @@
 import { configuration } from '@/configuration';
 import type { ClientToServerEvents, ServerToClientEvents } from '../types';
 import { io, Socket } from 'socket.io-client'
-import { getSocketIoProxyOptions } from '@/utils/proxy/socketIoProxy';
+import { getSocketIoAgentOptions } from '@/utils/proxy/socketIoAgent';
 import { resolveServerHttpBaseUrl } from '@/session/transport/http/serverHttpBaseUrl';
 
 export function createSessionScopedSocket(opts: { token: string; sessionId: string; machineId?: string }): Socket<ServerToClientEvents, ClientToServerEvents> {
@@ -19,7 +19,7 @@ export function createSessionScopedSocket(opts: { token: string; sessionId: stri
         ...(transports ? { transports } : null),
         withCredentials: true,
         autoConnect: false,
-        ...getSocketIoProxyOptions({ targetUrl: serverUrl, env: process.env }),
+        ...getSocketIoAgentOptions({ targetUrl: serverUrl, env: process.env }),
     });
 }
 
@@ -36,6 +36,6 @@ export function createUserScopedSocket(opts: { token: string }): Socket<ServerTo
         ...(transports ? { transports } : null),
         withCredentials: true,
         autoConnect: false,
-        ...getSocketIoProxyOptions({ targetUrl: serverUrl, env: process.env }),
+        ...getSocketIoAgentOptions({ targetUrl: serverUrl, env: process.env }),
     });
 }
