@@ -16,6 +16,7 @@ import type { HappyProcessInfo } from '../doctor';
 import type { TrackedSession } from '../types';
 import type { Credentials } from '@/persistence';
 import type { TerminalHostAdapter, TerminalHostHandle } from '@/integrations/terminalHost/_types';
+import { measureMaxEventLoopLagMs } from '@/testkit/process/eventLoopLag';
 import {
   removeTerminalAttachmentInfo,
   type TerminalAttachmentInfo,
@@ -882,6 +883,35 @@ describe('reattachTrackedSessionsFromMarkers', () => {
         },
       },
     });
+  });
+
+  it('heals a markerless session with the process identity observed during discovery', async () => {
+    const command =
+      '/home/guest/.happier/cli-preview/current/happier claude --happy-starting-mode remote --started-by daemon --existing-session session-observed';
+    const observedFingerprint = 'win32-cim:2026-09-28T10:00:00.0000000Z';
+    vi.mocked(listSessionMarkers).mockResolvedValue([]);
+    mockHappyProcessesForDiscovery([
+      {
+        pid: 12346,
+        type: 'daemon-spawned-session',
+        cwd: '/tmp/project',
+        command,
+        processInstanceFingerprint: observedFingerprint,
+      } as HappyProcessInfo,
+    ]);
+    vi.spyOn(process, 'kill').mockImplementation(() => true);
+
+    const pidToTrackedSession = new Map<number, TrackedSession>();
+    const { maxLagMs } = await measureMaxEventLoopLagMs(() =>
+      reattachTrackedSessionsFromMarkers({ pidToTrackedSession }));
+
+    // Daemon startup must not start a blocking process probe per recovered runner.
+    expect(maxLagMs).toBeLessThan(250);
+    expect(pidToTrackedSession.get(12346)?.processInstanceFingerprint).toBe(observedFingerprint);
+    expect(writeSessionMarker).toHaveBeenCalledWith(expect.objectContaining({
+      pid: 12346,
+      processInstanceFingerprint: observedFingerprint,
+    }));
   });
 
   it('does not probe a dead-runner terminal attachment during cold startup', async () => {

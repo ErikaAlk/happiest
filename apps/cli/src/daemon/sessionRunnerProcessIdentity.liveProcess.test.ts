@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { readProcessInstanceFingerprintSync } from '@happier-dev/cli-common/processInstance';
 
+import { measureMaxEventLoopLagMs } from '@/testkit/process/eventLoopLag';
 import { readSessionRunnerProcessIdentity } from './sessionRunnerProcessIdentity';
 
 const children: ChildProcess[] = [];
@@ -11,29 +12,6 @@ function spawnIdleProcess(): ChildProcess {
   const child = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000)'], { stdio: 'ignore', windowsHide: true });
   children.push(child);
   return child;
-}
-
-/**
- * Longest stretch in which the event loop could not run a timer. The final stretch counts too:
- * a fully synchronous `work` never lets the timer fire at all.
- */
-async function measureMaxEventLoopLagMs<T>(work: () => Promise<T>): Promise<Readonly<{ result: T; maxLagMs: number }>> {
-  const tickMs = 20;
-  let maxLagMs = 0;
-  let lastTurnAt = performance.now();
-  const recordTurn = () => {
-    const now = performance.now();
-    maxLagMs = Math.max(maxLagMs, now - lastTurnAt - tickMs);
-    lastTurnAt = now;
-  };
-  const timer = setInterval(recordTurn, tickMs);
-  try {
-    const result = await work();
-    recordTurn();
-    return { result, maxLagMs };
-  } finally {
-    clearInterval(timer);
-  }
 }
 
 afterEach(() => {

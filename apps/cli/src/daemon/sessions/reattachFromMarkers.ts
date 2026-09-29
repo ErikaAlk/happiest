@@ -1,7 +1,7 @@
 import { logger } from '@/ui/logger';
 import type { Credentials } from '@/persistence';
 import { parseOptionalBooleanEnv } from '@happier-dev/protocol';
-import { readProcessInstanceFingerprintSync } from '@happier-dev/cli-common/processInstance';
+import { readProcessInstanceFingerprint } from '@happier-dev/cli-common/processInstance';
 import {
   resolveTerminalAttachmentControlDescriptorStatusThroughCatalog,
   resolveCatalogAgentIdForCliSubcommand,
@@ -198,6 +198,7 @@ async function recoverMarkerlessDaemonSpawnedSessions(params: Readonly<{
     type: string;
     cwd?: string;
     environmentVariables?: Record<string, string>;
+    processInstanceFingerprint?: string;
   }>;
   incompleteMarkerByPid: ReadonlyMap<number, Readonly<{
     happySessionId: string;
@@ -295,7 +296,10 @@ async function recoverMarkerlessDaemonSpawnedSessions(params: Readonly<{
       metadata: incompleteMarker?.metadata,
       vendorResumeId,
     });
-    const processInstanceFingerprint = readProcessInstanceFingerprintSync(processInfo.pid) ?? undefined;
+    // Windows discovery snapshots already carry the fingerprint from the same CIM query.
+    const processInstanceFingerprint = processInfo.processInstanceFingerprint
+      ?? (await readProcessInstanceFingerprint(processInfo.pid))
+      ?? undefined;
     const trackedSession: TrackedSession = {
       startedBy: 'daemon',
       happySessionId,

@@ -66,7 +66,6 @@ import {
   notifyTerminalAttachmentRetiredThroughCatalog,
 } from '@/backends/catalog';
 import { CATALOG_AGENT_IDS } from '@/backends/types';
-import { readProcessInstanceFingerprintSync } from '@happier-dev/cli-common/processInstance';
 import {
   writeDaemonStateIfLockOwned,
   writeConnectedServiceBrokerState,
@@ -176,10 +175,8 @@ import {
   createSessionRunnerRespawnManager,
   type SessionRunnerRespawnTerminalReason,
 } from './processSupervision/sessionRunnerRespawn';
-import {
-  buildSessionRunnerRespawnDescriptorV1FromSpawnOptions,
-  buildTrackedSessionRespawnEnvironmentVariables,
-} from './processSupervision/sessionRunnerRespawnDescriptor';
+import { buildTrackedSessionRespawnEnvironmentVariables } from './processSupervision/sessionRunnerRespawnDescriptor';
+import { persistAcceptedSpawnMarker } from './sessions/acceptedSpawnMarker';
 import { getSessionNotificationTitle } from '@/agent/runtime/readyNotificationContext';
 import { publishShutdownStateBestEffort } from './lifecycle/publishShutdownState';
 import type { SessionHandoffLocalMetadataSource } from '@/session/handoff/metadata/runtimeLocalSessionHandoffMetadata';
@@ -224,7 +221,6 @@ import {
   readSessionMarkerForPid,
   refreshSessionMarkerRespawn,
   removeSessionMarker,
-  writeSessionMarker,
 } from './sessionRegistry';
 import {
   HAPPIER_DAEMON_PENDING_FIRST_INPUT_ENV_KEY,
@@ -2867,35 +2863,6 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
           }
           return null;
         };
-        const persistAcceptedSpawnMarker = async (params: Readonly<{
-          pid: number;
-          spawnOptions: SpawnSessionOptions;
-          directory: string;
-          existingSessionId?: string;
-        }>): Promise<void> => {
-          const respawn = buildSessionRunnerRespawnDescriptorV1FromSpawnOptions(
-            {
-              ...params.spawnOptions,
-              directory: params.directory,
-            },
-            { encryptionMaterial: credentials.encryption },
-          );
-          if (!respawn) {
-            throw new Error(`Could not persist accepted spawn custody for PID ${params.pid}`);
-          }
-          const existingSessionId = typeof params.existingSessionId === 'string'
-            ? params.existingSessionId.trim()
-            : '';
-          const processInstanceFingerprint = readProcessInstanceFingerprintSync(params.pid) ?? undefined;
-          await writeSessionMarker({
-            pid: params.pid,
-            happySessionId: existingSessionId || `PID-${params.pid}`,
-            startedBy: 'daemon',
-            cwd: params.directory,
-            ...(processInstanceFingerprint ? { processInstanceFingerprint } : {}),
-            respawn,
-          });
-        };
 
             // Spawn a new session (sessionId reserved for future Happy session resume; vendor resume uses options.resume).
                 const spawnSession = async (
@@ -3869,6 +3836,7 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
                 spawnOptions: trackedSpawnOptions,
                 directory: resolvedDirectory,
                 existingSessionId: normalizedExistingSessionId,
+                encryptionMaterial: credentials.encryption,
               });
               if (connectedServiceAuth && effectiveConnectedServicesBindings) {
                 registerConnectedServiceRuntimeTargetForDaemon({
@@ -4037,6 +4005,7 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
                   spawnOptions: trackedSpawnOptions,
                   directory: resolvedDirectory,
                   existingSessionId: normalizedExistingSessionId,
+                  encryptionMaterial: credentials.encryption,
                 });
                 if (connectedServiceAuth && effectiveConnectedServicesBindings) {
                   registerConnectedServiceRuntimeTargetForDaemon({
@@ -4340,6 +4309,7 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
             spawnOptions: trackedSpawnOptions,
             directory: resolvedDirectory,
             existingSessionId: normalizedExistingSessionId,
+            encryptionMaterial: credentials.encryption,
           });
           // Clear any stale stop request on an explicit (re)spawn/resume of this session, so a later
           // GENUINE crash of a resumed-after-stop session can respawn. The per-session stop flag is

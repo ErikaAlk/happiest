@@ -7,7 +7,7 @@ import {
   resolveProviderSessionIdForBackendTarget,
   resolveVendorResumeIdFromSessionMetadata,
 } from '@happier-dev/agents';
-import { readProcessInstanceFingerprintSync } from '@happier-dev/cli-common/processInstance';
+import { readProcessInstanceFingerprint } from '@happier-dev/cli-common/processInstance';
 import { execFileSync } from 'node:child_process';
 import { expandHomeDirPath } from '@/utils/path/expandHomeDirPath';
 import { readCredentials } from '@/persistence';
@@ -374,7 +374,9 @@ export function createOnHappySessionWebhook(params: Readonly<{
           : undefined;
       const processCommand = discoveredProcessCommand ?? trackedProcessCommand ?? daemonChildSpawnArgsCommand;
       const processCommandHash = processCommand ? hashProcessCommand(processCommand) : undefined;
-      const processInstanceFingerprint = readProcessInstanceFingerprintSync(pid)
+      // Windows process snapshots already carry the fingerprint from the same CIM query.
+      const processInstanceFingerprint = proc?.processInstanceFingerprint
+        ?? (await readProcessInstanceFingerprint(pid))
         ?? trackedForPid?.processInstanceFingerprint;
       if (processCommandHash) {
         // Store on the tracked session too so stopSession can require a match.

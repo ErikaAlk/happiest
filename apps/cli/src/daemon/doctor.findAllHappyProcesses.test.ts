@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const { execFileSyncMock, psListMock } = vi.hoisted(() => ({
-  execFileSyncMock: vi.fn(() => ''),
+  execFileSyncMock: vi.fn((_command: string, _args: readonly string[], _options: unknown): string => ''),
   psListMock: vi.fn(),
 }));
 
