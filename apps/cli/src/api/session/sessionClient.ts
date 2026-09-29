@@ -640,6 +640,9 @@ export class ApiSessionClient extends EventEmitter {
     private readonly providerInputUncertainLocalIds = new Set<string>();
     private readonly acceptedCanonicalPendingDeliveryResolutionWrites = new Set<Promise<void>>();
     private readonly acceptedCanonicalPendingDeliveryResolutionLocalIdsInFlight = new Set<string>();
+    // Pending version observed when each accepted row last started settlement; a parked row is
+    // offered again only after queued input changed behind it.
+    private readonly acceptedCanonicalPendingDeliverySettlementPendingVersionByLocalId = new Map<string, number | null>();
     private readonly acceptedCanonicalPendingDeliveryOperationAbortController = new AbortController();
     private readonly committedLocalIdCleanupTimers = new Map<string, ReturnType<typeof setTimeout>>();
     private readonly agentQueueEchoSuppressedLocalIdCleanupTimers = new Map<string, ReturnType<typeof setTimeout>>();
@@ -1560,6 +1563,7 @@ export class ApiSessionClient extends EventEmitter {
         localId: string,
     ): boolean {
         let didClear = false;
+        this.acceptedCanonicalPendingDeliverySettlementPendingVersionByLocalId.delete(localId);
         if (this.canonicalPendingDeliveryByLocalId.delete(localId)) didClear = true;
         if (this.serverBlockedCanonicalPendingDeliveryLocalIds.delete(localId)) didClear = true;
         if (this.providerInputTerminalOutcomeByLocalId.delete(localId)) didClear = true;
@@ -1637,6 +1641,7 @@ export class ApiSessionClient extends EventEmitter {
     ): Promise<void> {
         if (this.acceptedCanonicalPendingDeliveryResolutionLocalIdsInFlight.has(localId)) return;
         this.acceptedCanonicalPendingDeliveryResolutionLocalIdsInFlight.add(localId);
+        this.acceptedCanonicalPendingDeliverySettlementPendingVersionByLocalId.set(localId, this.readKnownPendingVersion());
         try {
             for (let attempt = 0; attempt < 2; attempt += 1) {
                 if (
@@ -1666,7 +1671,8 @@ export class ApiSessionClient extends EventEmitter {
                     && typeof result.message.seq === 'number';
                 if (result.didResolve !== true && !hasExactCommittedReplay) {
                     // A live no-op cannot prove that this exact accepted row committed. Keep its
-                    // claim visible for reconciliation; unrelated wakes must not become retry authority.
+                    // claim visible for reconciliation; only a reconnect or queued input that changes
+                    // behind it offers the settlement again.
                     logger.infoFile('[pendingQueue] accepted provider delivery remains unresolved', {
                         sessionId: this.sessionId,
                         localId,
@@ -1725,6 +1731,10 @@ export class ApiSessionClient extends EventEmitter {
         }
         } finally {
             this.acceptedCanonicalPendingDeliveryResolutionLocalIdsInFlight.delete(localId);
+            // Server state returned by an unresolved attempt is not new input behind the row.
+            if (this.canonicalPendingDeliveryByLocalId.has(localId)) {
+                this.acceptedCanonicalPendingDeliverySettlementPendingVersionByLocalId.set(localId, this.readKnownPendingVersion());
+            }
         }
     }
 
@@ -1947,7 +1957,10 @@ export class ApiSessionClient extends EventEmitter {
                 // than an absent/archived Pending projection. Once that operation finishes, the
                 // ordinary terminal reconciliation may retire a genuinely stale claim.
                 if (this.acceptedCanonicalPendingDeliveryResolutionLocalIdsInFlight.has(localId)) continue;
-                if (status !== undefined && status !== 'discarded') continue;
+                if (status !== undefined && status !== 'discarded') {
+                    this.reofferParkedAcceptedCanonicalPendingDelivery(localId);
+                    continue;
+                }
                 if (!this.canonicalPendingDeliveryByLocalId.has(localId)) continue;
                 logger.debug('[pendingQueue] exact terminal server truth retired local provider custody', {
                     sessionId: this.sessionId,
@@ -1969,6 +1982,33 @@ export class ApiSessionClient extends EventEmitter {
         }
 
         return !this.hasMaterializationBlockingCanonicalPendingDelivery();
+    }
+
+    private readKnownPendingVersion(): number | null {
+        return this.pendingQueueState.known ? this.pendingQueueState.pendingVersion : null;
+    }
+
+    // An accepted row whose settlement ended unresolved keeps its claim and blocks every later
+    // row. The server settlement is idempotent, so once queued input changes behind the parked row
+    // (new or edited messages), reconciliation offers its exact settlement once more. Settlement
+    // attempts that end unresolved do not change the pending version, so they cannot re-trigger it.
+    private reofferParkedAcceptedCanonicalPendingDelivery(localId: string): void {
+        if (this.providerInputTerminalOutcomeByLocalId.get(localId) !== 'accepted') return;
+        const pendingVersion = this.readKnownPendingVersion();
+        if (pendingVersion === null) return;
+        if (!this.acceptedCanonicalPendingDeliverySettlementPendingVersionByLocalId.has(localId)) return;
+        if (this.acceptedCanonicalPendingDeliverySettlementPendingVersionByLocalId.get(localId) === pendingVersion) return;
+        const authority = this.captureAcceptedCanonicalPendingDeliveryOperationAuthority();
+        if (!authority) return;
+        logger.infoFile('[pendingQueue] re-offering parked accepted provider delivery', {
+            sessionId: this.sessionId,
+            localId,
+            pendingVersion,
+        });
+        this.trackAcceptedCanonicalPendingDeliveryResolution(
+            localId,
+            this.resolveAcceptedCanonicalPendingDelivery(localId, authority),
+        );
     }
 
     private hasMaterializationBlockingCanonicalPendingDelivery(): boolean {

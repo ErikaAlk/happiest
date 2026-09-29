@@ -78,6 +78,31 @@ async function withLocalAckDeadline<T>(params: Readonly<{
     }
 }
 
+// socket.io-client 4.8 rejects a timed ack with these uncoded errors (Socket#_registerAckCallback
+// and Socket#_clearAcks). Its timer starts before the local deadline and wins the race.
+const SOCKET_IO_ACK_TIMEOUT_MESSAGE = 'operation has timed out';
+const SOCKET_IO_ACK_DISCONNECTED_MESSAGE = 'socket has been disconnected';
+
+function normalizeSocketIoAckError(error: unknown, event: string, timeoutMs: number): unknown {
+    if (!(error instanceof Error) || 'code' in error) return error;
+    if (error.message === SOCKET_IO_ACK_TIMEOUT_MESSAGE) {
+        return createSocketAckError({
+            code: 'socket_ack_timeout',
+            event,
+            message: `${event} ack timed out after ${timeoutMs}ms`,
+            timeoutMs,
+        });
+    }
+    if (error.message === SOCKET_IO_ACK_DISCONNECTED_MESSAGE) {
+        return createSocketAckError({
+            code: 'socket_not_connected',
+            event,
+            message: `${event} socket disconnected before the ack`,
+        });
+    }
+    return error;
+}
+
 export async function emitSocketWithAck<T = unknown>(params: Readonly<{
     socket: EmitWithAckSocket;
     event: string;
@@ -90,7 +115,13 @@ export async function emitSocketWithAck<T = unknown>(params: Readonly<{
     return await withLocalAckDeadline({
         event: params.event,
         timeoutMs,
-        operation: async () => await socketWithTimeout.emitWithAck(params.event, params.payload) as T,
+        operation: async () => {
+            try {
+                return await socketWithTimeout.emitWithAck(params.event, params.payload) as T;
+            } catch (error) {
+                throw normalizeSocketIoAckError(error, params.event, timeoutMs);
+            }
+        },
     });
 }
 

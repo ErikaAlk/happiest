@@ -55,6 +55,17 @@ not-found responses without exact committed proof, and unexpected resolution
 crashes. The diagnostic is present at the default session file log level and
 does not write to the provider's interactive terminal.
 
+The unresolved row keeps its claim, and that claim blocks every later row.
+Settlement is offered again on reconnect, and while the session stays connected,
+when the Pending version changes behind the parked row (a message is queued or
+edited) and the server still holds the row. The server settlement is idempotent.
+An attempt that ends unresolved records the Pending version it left behind, so
+state returned by the attempt itself never re-triggers settlement; there is no
+timer or polling. The socket acknowledgement helper reports socket.io's own ack
+timeout and disconnect as retryable `socket_ack_timeout` and
+`socket_not_connected`, so a lost settlement response also rejoins the same
+operation once.
+
 ## Live runner wake-up recovery (development)
 
 The session client owns pending-input wake subscriptions. A transient socket

@@ -2466,6 +2466,52 @@ describe('ApiSessionClient pending-queue turn-end drain', () => {
     expect(materializeNextMock).toHaveBeenCalledTimes(1);
   });
 
+  it('re-offers a parked accepted settlement once when new queued input waits behind it', async () => {
+    const client = await createClient({
+      latestTurnStatus: 'completed',
+      pendingCount: 1,
+      pendingVersion: 1,
+      metadata: { deliveredUserMessageSeqV1: 0 },
+    });
+    await waitForCurrentPendingInputContract(client);
+    materializeNextMock.mockResolvedValueOnce(createProviderDeliveryMaterializeResult('parked-local'));
+    listDeliveryStatusesMock.mockResolvedValue([{ localId: 'parked-local', status: 'delivering' }]);
+    resolveAcceptedPendingDeliveryMock
+      .mockRejectedValueOnce(new PendingQueueAcceptedSettlementError('internal', undefined, 'req-parked'))
+      .mockResolvedValueOnce({
+        didResolve: true,
+        pendingQueueState: { known: true, pendingCount: 1, pendingBlockedCount: 0, pendingVersion: 4 },
+      });
+
+    await client.materializeNextPendingMessageSafely({ reconcileWhenEmpty: 'force' });
+    confirmProviderInputAccepted(client, 'parked-local');
+    await waitUntil(() => resolveAcceptedPendingDeliveryMock.mock.calls.length === 1);
+    await waitUntil(() => (client as any).acceptedCanonicalPendingDeliveryResolutionLocalIdsInFlight.size === 0);
+
+    // Reconciling without new input keeps the parked claim: a failed settlement is not retried in a loop.
+    await client.reconcilePendingQueueState({ force: true });
+    expect(resolveAcceptedPendingDeliveryMock).toHaveBeenCalledTimes(1);
+    expect(client.shouldAttemptPendingMaterialization()).toBe(false);
+
+    // The user queues another message behind the parked row; the consumer's blocked preflight reconciles.
+    if (!userSocketStub) throw new Error('missing user socket');
+    userSocketStub.trigger('update', {
+      id: 'queued-behind-parked-settlement',
+      createdAt: Date.now(),
+      body: { t: 'pending-changed', sid: 's1', pendingCount: 2, pendingBlockedCount: 0, pendingVersion: 3 },
+    });
+    await client.reconcilePendingQueueState({ force: true });
+
+    await waitUntil(() => !(client as any).canonicalPendingDeliveryByLocalId.has('parked-local'));
+    expect(resolveAcceptedPendingDeliveryMock).toHaveBeenCalledTimes(2);
+    expect(resolveAcceptedPendingDeliveryMock).toHaveBeenLastCalledWith({
+      socket: sessionSocketStub,
+      sessionId: 's1',
+      localId: 'parked-local',
+    });
+    expect(client.shouldAttemptPendingMaterialization()).toBe(true);
+  });
+
   it('parks a generic accepted-settlement 500 with default file diagnostics and no terminal output or socket teardown', async () => {
     const { logger } = await import('@/ui/logger');
     const debugSpy = vi.spyOn(logger, 'debug').mockImplementation(() => {});
