@@ -27,10 +27,9 @@ export type MessageOptionGroupStateInput = Readonly<{
 const SELECTABLE: MessageOptionGroupState = Object.freeze({ kind: 'selectable' });
 const READ_ONLY: MessageOptionGroupState = Object.freeze({ kind: 'readOnly' });
 
+/** A row being cancelled still counts: until the cancel is confirmed, the answer may have been delivered. */
 function hasQueuedUserInput(pendingMessages: readonly PendingMessage[]): boolean {
-    return pendingMessages.some((pending) =>
-        pending.messageRole !== 'non_user'
-        && pending.pendingOutboxOperation !== 'cancel');
+    return pendingMessages.some((pending) => pending.messageRole !== 'non_user');
 }
 
 /**

@@ -73,11 +73,14 @@ describe('resolveMessageOptionGroupState', () => {
         expect(resolve({ messages: [agentText('agent-1')], pendingMessages })).toEqual({ kind: 'readOnly' });
     });
 
-    it('ignores queued rows that are being cancelled or are not user input', () => {
-        const pendingMessages = [
-            createPendingMessageFixture({ id: 'p-1', pendingOutboxOperation: 'cancel' }),
-            createPendingMessageFixture({ id: 'p-2', messageRole: 'non_user' }),
-        ];
+    it('stays read-only while a queued answer is being cancelled', () => {
+        // Until the server confirms the cancel, the queued answer may already have reached the agent.
+        const pendingMessages = [createPendingMessageFixture({ id: 'p-1', pendingOutboxOperation: 'cancel' })];
+        expect(resolve({ messages: [agentText('agent-1')], pendingMessages })).toEqual({ kind: 'readOnly' });
+    });
+
+    it('ignores queued rows that are not user input', () => {
+        const pendingMessages = [createPendingMessageFixture({ id: 'p-2', messageRole: 'non_user' })];
         expect(resolve({ messages: [agentText('agent-1')], pendingMessages })).toEqual({ kind: 'selectable' });
     });
 
