@@ -37,6 +37,8 @@ export function createSessionActionTarget(params: Readonly<{
     attentionStandingEnabled?: boolean;
     attentionStanding?: boolean;
     resumeCapabilityOptions?: ResumeCapabilityOptions;
+    /** False where no session screen is mounted to run a resume (session info opened on its own). */
+    canRequestResume?: boolean;
 }>): SessionActionTarget {
     const session = params.session;
     const sessionOwnerId = typeof session.owner === 'string' ? session.owner : null;
@@ -76,6 +78,7 @@ export function createSessionActionTarget(params: Readonly<{
         metadata: fullMetadata,
         canReopen: canStop
             && hasWriteAccess
+            && params.canRequestResume !== false
             && canResumeSessionWithOptions(resumeMetadata, params.resumeCapabilityOptions),
     }).kind === 'reopen_in_windows_terminal';
 

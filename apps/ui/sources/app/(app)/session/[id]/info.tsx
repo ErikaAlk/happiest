@@ -84,7 +84,7 @@ import {
     resolveSessionReadStateActionId,
 } from '@/components/sessions/actions/sessionActionAvailability';
 import { createSessionActionInfoItemProps } from '@/components/sessions/actions/sessionActionPresentation';
-import { emitSessionResumeRequest } from '@/components/sessions/model/sessionResumeRequests';
+import { emitSessionResumeRequest, useHasSessionResumeRequestListener } from '@/components/sessions/model/sessionResumeRequests';
 import { getTagsForSession, sessionTagKey } from '@/components/sessions/shell/sessionTagUtils';
 import { useSessionListMoveSheet } from '@/components/sessions/shell/move-sheet/useSessionListMoveSheet';
 import type { SessionListMoveSheetTarget } from '@/components/sessions/shell/move-sheet/buildSessionListMoveSheetTargets';
@@ -692,6 +692,7 @@ function SessionInfoContent({ session, sessionServerId, sourceMachineIdForHandof
     const attentionStandingEnabled = attentionStanding.actionEnabled && sessionSettingsKey != null;
     const isAttentionStandingSession = sessionSettingsKey != null
         && resolveSessionAttentionStanding(attentionStanding.policy, sessionSettingsKey);
+    const canRequestResume = useHasSessionResumeRequestListener(session.id);
     const sessionActionTarget = React.useMemo(
         () => createSessionActionTarget({
             session,
@@ -701,9 +702,11 @@ function SessionInfoContent({ session, sessionServerId, sourceMachineIdForHandof
             isPinned: isPinnedSession,
             attentionStandingEnabled,
             attentionStanding: isAttentionStandingSession,
+            canRequestResume,
         }),
         [
             attentionStandingEnabled,
+            canRequestResume,
             isAttentionStandingSession,
             isPinnedSession,
             scopedMutationServerId,

@@ -9,6 +9,26 @@ export type SessionResumeRequestOptions = Readonly<{
 export type SessionResumeRequestListener = (options?: SessionResumeRequestOptions) => Promise<boolean>;
 
 const listenersBySessionId = new Map<string, Set<SessionResumeRequestListener>>();
+const presenceSubscribers = new Set<() => void>();
+
+function notifyPresenceSubscribers(): void {
+    for (const subscriber of presenceSubscribers) subscriber();
+}
+
+function subscribeToListenerPresence(onChange: () => void): () => void {
+    presenceSubscribers.add(onChange);
+    return () => {
+        presenceSubscribers.delete(onChange);
+    };
+}
+
+/** Whether a mounted session screen can run a resume requested for `sessionId`. */
+export function useHasSessionResumeRequestListener(sessionId: string): boolean {
+    return React.useSyncExternalStore(
+        subscribeToListenerPresence,
+        () => (listenersBySessionId.get(sessionId)?.size ?? 0) > 0,
+    );
+}
 
 export async function emitSessionResumeRequest(sessionId: string, options?: SessionResumeRequestOptions): Promise<boolean> {
     const listeners = listenersBySessionId.get(sessionId);
@@ -28,10 +48,12 @@ export function useSessionResumeRequestListener(
         const listeners = listenersBySessionId.get(sessionId) ?? new Set<SessionResumeRequestListener>();
         listeners.add(listener);
         listenersBySessionId.set(sessionId, listeners);
+        if (listeners.size === 1) notifyPresenceSubscribers();
         return () => {
             listeners.delete(listener);
             if (listeners.size === 0) {
                 listenersBySessionId.delete(sessionId);
+                notifyPresenceSubscribers();
             }
         };
     }, [listener, sessionId]);

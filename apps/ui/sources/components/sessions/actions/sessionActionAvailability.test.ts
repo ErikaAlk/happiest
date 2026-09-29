@@ -115,6 +115,18 @@ describe('session action availability', () => {
             expect(listVisibleSessionActionIds({ target: viewOnly, surface })).not.toContain(SESSION_ACTION_CONTINUE_IN_TERMINAL_ID);
         }
         expect(listVisibleSessionActionIds({ target: activeHidden, surface: 'rowMenu' })).not.toContain(SESSION_ACTION_CONTINUE_IN_TERMINAL_ID);
+
+        // Session info opened on its own has no session screen to run the resume; the action would
+        // stop the runner and then fail.
+        const withoutResumeRequester = createSessionActionTarget({
+            session: createOwnedRawSession({ active: true, metadata: hiddenWindowsMetadata }),
+            currentUserId: 'current_user',
+            isConnected: true,
+            resumeCapabilityOptions: { accountSettings: {} },
+            canRequestResume: false,
+        });
+        expect(listVisibleSessionActionIds({ target: withoutResumeRequester, surface: 'sessionInfo' }))
+            .not.toContain(SESSION_ACTION_CONTINUE_IN_TERMINAL_ID);
     });
 
     it('offers exactly one attention standing action while placement standing is reachable', () => {
