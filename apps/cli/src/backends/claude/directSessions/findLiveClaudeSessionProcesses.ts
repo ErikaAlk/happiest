@@ -1,10 +1,12 @@
+import { execFile } from 'node:child_process';
 import { readdir, readFile } from 'node:fs/promises';
 import { hostname } from 'node:os';
 import { join } from 'node:path';
 
 import { z } from 'zod';
 
-import { readProcessInfosByPid, type ProcessInfoByPid } from '@/daemon/doctor';
+import { readProcessInfosByPid } from '@/daemon/doctor';
+import { readDaemonHeartbeatIntervalMs } from '@/daemon/lifecycle/heartbeatInterval';
 import { isPidAliveBySignal } from '@/daemon/processRunState';
 import type { DirectSessionRunningProcess } from '@/backends/directSessions/providerOps';
 import { logger } from '@/ui/logger';
@@ -12,17 +14,17 @@ import { logger } from '@/ui/logger';
 /**
  * Claude Code (observed with 2.1.283 and 2.1.284) records every running session in
  * `<config dir>/sessions/<pid>.json`. The file outlives a crashed process, so a record only counts
- * while its process is alive and is provably the process that wrote it:
+ * while its process is alive and started at the recorded `procStart`:
  * - on Windows `procStart` is the creation time as a FILETIME (100 ns ticks since 1601-01-01),
  *   compared with the CIM creation time, which carries microsecond precision;
- * - elsewhere the record's format is not verified, so the live process must be a Claude process.
- *   A PID reused by another Claude process rewrites the same `<pid>.json`, and a PID reused by
- *   anything else fails the command check.
+ * - elsewhere it is the output of `ps -o lstart= -p <pid>` with `LC_ALL=C` and `TZ=UTC`
+ *   (for example `Mon Sep 29 07:38:55 2026`), read here the same way.
+ * A record without `procStart` cannot be tied to its process and does not count.
  */
 const ClaudeSessionRecordSchema = z.object({
   pid: z.number().int().positive(),
   sessionId: z.string().min(1),
-  procStart: z.string().regex(/^\d+$/).optional(),
+  procStart: z.string().min(1).optional(),
   pidDomain: z.string().min(1).optional(),
 });
 
@@ -44,12 +46,49 @@ function cimFingerprintToMicrosecondKey(fingerprint: string | undefined): string
   return match ? `${match[1]}.${match[2]}` : null;
 }
 
-function isRecordedProcess(record: ClaudeSessionRecord, info: ProcessInfoByPid, platform: NodeJS.Platform): boolean {
-  if (platform === 'win32') {
-    if (!record.procStart) return false;
-    return cimFingerprintToMicrosecondKey(info.processInstanceFingerprint) === filetimeToMicrosecondKey(record.procStart);
+/** The live process at a PID: its parent and its start time, comparable with a recorded `procStart`. */
+export type LiveProcessStart = Readonly<{ parentPid: number | null; procStart: string }>;
+
+function readRecordedStartKey(procStart: string, platform: NodeJS.Platform): string | null {
+  if (platform === 'win32') return /^\d+$/.test(procStart) ? filetimeToMicrosecondKey(procStart) : null;
+  return procStart.trim();
+}
+
+async function readWin32ProcessStarts(pids: readonly number[]): Promise<Map<number, LiveProcessStart>> {
+  const starts = new Map<number, LiveProcessStart>();
+  for (const [pid, info] of await readProcessInfosByPid(pids)) {
+    const startKey = cimFingerprintToMicrosecondKey(info.processInstanceFingerprint);
+    if (startKey) starts.set(pid, { parentPid: info.parentPid ?? null, procStart: startKey });
   }
-  return /claude/i.test(`${info.name ?? ''} ${info.cmd ?? ''}`);
+  return starts;
+}
+
+function readPosixProcessStarts(pids: readonly number[]): Promise<Map<number, LiveProcessStart>> {
+  return new Promise((resolve, reject) => {
+    execFile('ps', ['-o', 'pid=,ppid=,lstart=', '-p', pids.join(',')], {
+      env: { ...process.env, LC_ALL: 'C', TZ: 'UTC' },
+      timeout: readDaemonHeartbeatIntervalMs(),
+    }, (error, stdout) => {
+      // ps exits 1 when none of the listed processes exists any more.
+      if (error && !(error.code === 1 && String(stdout).trim() === '')) {
+        reject(error);
+        return;
+      }
+      const starts = new Map<number, LiveProcessStart>();
+      for (const line of String(stdout).split('\n')) {
+        const row = /^\s*(\d+)\s+(\d+)\s+(\S.*\S)\s*$/.exec(line);
+        if (row) starts.set(Number(row[1]), { parentPid: Number(row[2]), procStart: row[3]! });
+      }
+      resolve(starts);
+    });
+  });
+}
+
+export function readLiveProcessStarts(
+  pids: readonly number[],
+  platform: NodeJS.Platform = process.platform,
+): Promise<Map<number, LiveProcessStart>> {
+  return platform === 'win32' ? readWin32ProcessStarts(pids) : readPosixProcessStarts(pids);
 }
 
 async function readSessionRecords(sessionsDir: string): Promise<ClaudeSessionRecord[]> {
@@ -90,15 +129,15 @@ async function readSessionRecords(sessionsDir: string): Promise<ClaudeSessionRec
 }
 
 /**
- * Verdicts for records that carry `procStart`, keyed by PID and `procStart`: the recorded process,
- * or `null` when the live process at that PID is a different one. A process's identity and parent
- * never change, so a verdict holds while the PID stays alive. Reading them on Windows costs a
- * PowerShell start (about 1.3 s), which status polling cannot pay every 250 ms.
+ * Verdicts keyed by PID and `procStart`: the recorded process, or `null` when the live process at
+ * that PID is a different one. A process's start time and parent never change, so a verdict holds
+ * while the PID stays alive. Reading them on Windows costs a PowerShell start (about 1.3 s), which
+ * status polling cannot pay every 250 ms.
  */
 const verifiedRecords = new Map<string, DirectSessionRunningProcess | null>();
 
-function readVerifiedRecordKey(record: ClaudeSessionRecord): string | null {
-  return record.procStart ? `${record.pid}:${record.procStart}` : null;
+function readVerifiedRecordKey(record: ClaudeSessionRecord & { procStart: string }): string {
+  return `${record.pid}:${record.procStart}`;
 }
 
 function forgetExitedRecords(): void {
@@ -118,36 +157,50 @@ export async function findLiveClaudeSessionProcesses(params: Readonly<{
   reuseVerifiedProcesses?: boolean;
   platform?: NodeJS.Platform;
   hostName?: string;
-  readProcessInfos?: (pids: readonly number[]) => Promise<Map<number, ProcessInfoByPid>>;
+  readProcessStarts?: (pids: readonly number[]) => Promise<Map<number, LiveProcessStart>>;
 }>): Promise<DirectSessionRunningProcess[]> {
   const platform = params.platform ?? process.platform;
   const pidDomain = `${platform}:${params.hostName ?? hostname()}`.toLowerCase();
-  const candidates = (await readSessionRecords(join(params.configDir, 'sessions'))).filter((record) =>
-    record.sessionId === params.remoteSessionId
-    && (record.pidDomain === undefined || record.pidDomain.toLowerCase() === pidDomain));
+  const candidates: Array<ClaudeSessionRecord & { procStart: string }> = [];
+  for (const record of await readSessionRecords(join(params.configDir, 'sessions'))) {
+    if (record.sessionId !== params.remoteSessionId) continue;
+    if (record.pidDomain !== undefined && record.pidDomain.toLowerCase() !== pidDomain) continue;
+    if (record.procStart === undefined) {
+      logger.debug('[claude-direct] Ignoring a Claude session record without procStart', { pid: record.pid });
+      continue;
+    }
+    candidates.push({ ...record, procStart: record.procStart });
+  }
   forgetExitedRecords();
   if (candidates.length === 0) return [];
 
   const live: DirectSessionRunningProcess[] = [];
-  const unverified: ClaudeSessionRecord[] = [];
+  const unverified: Array<ClaudeSessionRecord & { procStart: string }> = [];
   for (const record of candidates) {
     if (!isPidAliveBySignal(record.pid)) continue;
-    const key = readVerifiedRecordKey(record);
-    const verdict = params.reuseVerifiedProcesses && key ? verifiedRecords.get(key) : undefined;
+    const verdict = params.reuseVerifiedProcesses ? verifiedRecords.get(readVerifiedRecordKey(record)) : undefined;
     if (verdict === undefined) unverified.push(record);
     else if (verdict) live.push(verdict);
   }
   if (unverified.length === 0) return live;
 
-  const infos = await (params.readProcessInfos ?? readProcessInfosByPid)(unverified.map((record) => record.pid));
+  const starts = await (params.readProcessStarts ?? ((pids) => readLiveProcessStarts(pids, platform)))(
+    unverified.map((record) => record.pid),
+  );
   for (const record of unverified) {
-    const info = infos.get(record.pid);
-    const verdict = info && isRecordedProcess(record, info, platform)
-      ? { pid: record.pid, parentPid: info.parentPid ?? null }
+    const start = starts.get(record.pid);
+    if (!start) {
+      // No row means the process exited during the read, or its start time could not be read. A
+      // process that is still alive may be the recorded one, so it cannot count as absent.
+      if (isPidAliveBySignal(record.pid)) {
+        throw new Error(`Could not read the start time of process ${record.pid}, which Claude recorded for session ${params.remoteSessionId}`);
+      }
+      continue;
+    }
+    const verdict = readRecordedStartKey(record.procStart, platform) === start.procStart
+      ? { pid: record.pid, parentPid: start.parentPid }
       : null;
-    const key = readVerifiedRecordKey(record);
-    // A process that exited during the read leaves no row; its verdict is not a lasting fact.
-    if (key && info) verifiedRecords.set(key, verdict);
+    verifiedRecords.set(readVerifiedRecordKey(record), verdict);
     if (verdict) live.push(verdict);
   }
   return live;

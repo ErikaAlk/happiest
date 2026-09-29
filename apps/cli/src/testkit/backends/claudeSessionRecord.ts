@@ -1,4 +1,4 @@
-import type { ChildProcess } from 'node:child_process'
+import { execFileSync, type ChildProcess } from 'node:child_process'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { hostname } from 'node:os'
 import { join } from 'node:path'
@@ -21,9 +21,22 @@ export function filetimeFromCimFingerprint(fingerprint: string, subMicrosecondTi
 }
 
 /**
- * A live stand-in for a Claude Code process. Its command line names Claude so platforms that
- * identify the recorded process by command line recognise it; Windows ties it by creation time.
+ * `procStart` for `pid` as Claude Code writes it: the FILETIME creation time on Windows, and
+ * elsewhere `ps -o lstart= -p <pid>` run with `LC_ALL=C` and `TZ=UTC`.
  */
+export async function readClaudeRecordedProcStart(pid: number): Promise<string> {
+  if (process.platform === 'win32') {
+    const fingerprint = await readProcessInstanceFingerprint(pid)
+    if (!fingerprint) throw new Error(`no process fingerprint for ${pid}`)
+    return filetimeFromCimFingerprint(fingerprint)
+  }
+  return execFileSync('ps', ['-o', 'lstart=', '-p', String(pid)], {
+    encoding: 'utf8',
+    env: { ...process.env, LC_ALL: 'C', TZ: 'UTC' },
+  }).trim()
+}
+
+/** A live stand-in for a Claude Code process, tied to its session record by start time. */
 export function spawnClaudeStandInProcess(): ChildProcess {
   return spawnTestProcess(process.execPath, ['-e', 'setInterval(() => {}, 1000)', 'claude'], { windowsHide: true })
 }
@@ -34,19 +47,20 @@ export async function writeClaudeSessionRecord(params: Readonly<{
   sessionId: string
   procStart?: string
   entrypoint?: string
+  platform?: NodeJS.Platform
 }>): Promise<void> {
   await mkdir(join(params.configDir, 'sessions'), { recursive: true })
   await writeFile(join(params.configDir, 'sessions', `${params.pid}.json`), JSON.stringify({
     pid: params.pid,
     sessionId: params.sessionId,
     ...(params.procStart ? { procStart: params.procStart } : {}),
-    pidDomain: `${process.platform}:${hostname().toLowerCase()}`,
+    pidDomain: `${params.platform ?? process.platform}:${hostname().toLowerCase()}`,
     entrypoint: params.entrypoint ?? 'claude-desktop',
     kind: 'interactive',
   }), 'utf8')
 }
 
-/** Source for {@link spawnInlineNodeParentWithChild} whose grandchild command line names Claude. */
+/** Source for {@link spawnInlineNodeParentWithChild} whose grandchild stands in for Claude Code. */
 export const CLAUDE_STAND_IN_CHILD_SOURCE = 'setInterval(() => {}, 1000) // claude'
 
 /** Records `pid` as the live Claude Code process of `sessionId`, as Claude Code itself would. */
@@ -55,13 +69,10 @@ export async function recordLiveClaudeSession(params: Readonly<{
   pid: number
   sessionId: string
 }>): Promise<void> {
-  const pid = params.pid
-  const fingerprint = process.platform === 'win32' ? await readProcessInstanceFingerprint(pid) : null
-  if (process.platform === 'win32' && !fingerprint) throw new Error(`no process fingerprint for ${pid}`)
   await writeClaudeSessionRecord({
     configDir: params.configDir,
-    pid,
+    pid: params.pid,
     sessionId: params.sessionId,
-    procStart: fingerprint ? filetimeFromCimFingerprint(fingerprint) : undefined,
+    procStart: await readClaudeRecordedProcStart(params.pid),
   })
 }
