@@ -59,9 +59,13 @@ The unresolved row keeps its claim, and that claim blocks every later row.
 Settlement is offered again on reconnect, and while the session stays connected,
 when the Pending version changes behind the parked row (a message is queued or
 edited) and the server still holds the row. The server settlement is idempotent.
-An attempt that ends unresolved records the Pending version it left behind, so
-state returned by the attempt itself never re-triggers settlement; there is no
-timer or polling. The socket acknowledgement helper reports socket.io's own ack
+Reconciliation skips a row while its settlement runs. When that attempt ends
+unresolved after the version changed and materializable rows wait behind the
+parked row, the version from the attempt's start stays recorded and the input
+consumer is woken, so its reconciliation offers settlement once more. Otherwise
+the attempt records the version it left behind, so other changes (for example
+the row itself becoming blocked) never re-trigger settlement; there is no timer
+or polling. The socket acknowledgement helper reports socket.io's own ack
 timeout and disconnect as retryable `socket_ack_timeout` and
 `socket_not_connected`, so a lost settlement response also rejoins the same
 operation once.

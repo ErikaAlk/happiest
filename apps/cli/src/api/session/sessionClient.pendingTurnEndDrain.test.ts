@@ -2512,6 +2512,54 @@ describe('ApiSessionClient pending-queue turn-end drain', () => {
     expect(client.shouldAttemptPendingMaterialization()).toBe(true);
   });
 
+  it('re-offers a parked accepted settlement when input queued behind it while the settlement ran', async () => {
+    const client = await createClient({
+      latestTurnStatus: 'completed',
+      pendingCount: 1,
+      pendingVersion: 1,
+      metadata: { deliveredUserMessageSeqV1: 0 },
+    });
+    await waitForCurrentPendingInputContract(client);
+    materializeNextMock.mockResolvedValueOnce(createProviderDeliveryMaterializeResult('parked-local'));
+    listDeliveryStatusesMock.mockResolvedValue([{ localId: 'parked-local', status: 'delivering' }]);
+    let failFirstSettlement: (error: unknown) => void = () => {};
+    resolveAcceptedPendingDeliveryMock
+      .mockImplementationOnce(() => new Promise((_resolve, reject) => {
+        failFirstSettlement = reject;
+      }))
+      .mockResolvedValueOnce({
+        didResolve: true,
+        pendingQueueState: { known: true, pendingCount: 1, pendingBlockedCount: 0, pendingVersion: 4 },
+      });
+
+    await client.materializeNextPendingMessageSafely({ reconcileWhenEmpty: 'force' });
+    confirmProviderInputAccepted(client, 'parked-local');
+    await waitUntil(() => resolveAcceptedPendingDeliveryMock.mock.calls.length === 1);
+
+    // The user queues another message while the settlement is still in flight; the reconciliation
+    // it triggers skips the row whose settlement is running.
+    if (!userSocketStub) throw new Error('missing user socket');
+    userSocketStub.trigger('update', {
+      id: 'queued-during-settlement',
+      createdAt: Date.now(),
+      body: { t: 'pending-changed', sid: 's1', pendingCount: 2, pendingBlockedCount: 0, pendingVersion: 3 },
+    });
+    await client.reconcilePendingQueueState({ force: true });
+    expect(resolveAcceptedPendingDeliveryMock).toHaveBeenCalledTimes(1);
+
+    const wakes: number[] = [];
+    client.on('pending-eligibility-updated', () => wakes.push(Date.now()));
+    failFirstSettlement(new PendingQueueAcceptedSettlementError('internal', undefined, 'req-during'));
+    await waitUntil(() => (client as any).acceptedCanonicalPendingDeliveryResolutionLocalIdsInFlight.size === 0);
+    // The ended attempt wakes the input consumer, whose reconciliation offers the settlement again.
+    expect(wakes.length).toBeGreaterThan(0);
+    await client.reconcilePendingQueueState({ force: true });
+
+    await waitUntil(() => !(client as any).canonicalPendingDeliveryByLocalId.has('parked-local'));
+    expect(resolveAcceptedPendingDeliveryMock).toHaveBeenCalledTimes(2);
+    expect(client.shouldAttemptPendingMaterialization()).toBe(true);
+  });
+
   it('parks a generic accepted-settlement 500 with default file diagnostics and no terminal output or socket teardown', async () => {
     const { logger } = await import('@/ui/logger');
     const debugSpy = vi.spyOn(logger, 'debug').mockImplementation(() => {});

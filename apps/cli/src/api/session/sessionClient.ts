@@ -1641,7 +1641,8 @@ export class ApiSessionClient extends EventEmitter {
     ): Promise<void> {
         if (this.acceptedCanonicalPendingDeliveryResolutionLocalIdsInFlight.has(localId)) return;
         this.acceptedCanonicalPendingDeliveryResolutionLocalIdsInFlight.add(localId);
-        this.acceptedCanonicalPendingDeliverySettlementPendingVersionByLocalId.set(localId, this.readKnownPendingVersion());
+        const pendingVersionAtStart = this.readKnownPendingVersion();
+        this.acceptedCanonicalPendingDeliverySettlementPendingVersionByLocalId.set(localId, pendingVersionAtStart);
         try {
             for (let attempt = 0; attempt < 2; attempt += 1) {
                 if (
@@ -1731,9 +1732,17 @@ export class ApiSessionClient extends EventEmitter {
         }
         } finally {
             this.acceptedCanonicalPendingDeliveryResolutionLocalIdsInFlight.delete(localId);
-            // Server state returned by an unresolved attempt is not new input behind the row.
             if (this.canonicalPendingDeliveryByLocalId.has(localId)) {
-                this.acceptedCanonicalPendingDeliverySettlementPendingVersionByLocalId.set(localId, this.readKnownPendingVersion());
+                // Reconciliation skips a row while its settlement runs. When input was queued behind
+                // it meanwhile, the start version stays recorded and the woken consumer's
+                // reconciliation offers the settlement again after checking the row's server status.
+                // Any other change (such as the row itself becoming blocked) is absorbed.
+                const pendingVersion = this.readKnownPendingVersion();
+                if (pendingVersion !== pendingVersionAtStart && this.hasQueuedInputBehindParkedDelivery(localId)) {
+                    this.publishPendingEligibilityWake();
+                } else {
+                    this.acceptedCanonicalPendingDeliverySettlementPendingVersionByLocalId.set(localId, pendingVersion);
+                }
             }
         }
     }
@@ -1986,6 +1995,11 @@ export class ApiSessionClient extends EventEmitter {
 
     private readKnownPendingVersion(): number | null {
         return this.pendingQueueState.known ? this.pendingQueueState.pendingVersion : null;
+    }
+
+    private hasQueuedInputBehindParkedDelivery(localId: string): boolean {
+        const parkedRowIsMaterializable = !this.serverBlockedCanonicalPendingDeliveryLocalIds.has(localId);
+        return countMaterializablePendingRows(this.pendingQueueState) > (parkedRowIsMaterializable ? 1 : 0);
     }
 
     // An accepted row whose settlement ended unresolved keeps its claim and blocks every later
