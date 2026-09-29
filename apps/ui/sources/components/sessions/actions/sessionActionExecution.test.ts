@@ -8,6 +8,7 @@ import { createSessionActionTarget } from './sessionActionContext';
 import {
     SESSION_ACTION_ARCHIVE_ID,
     SESSION_ACTION_CLEAR_ATTENTION_STANDING_ID,
+    SESSION_ACTION_CONTINUE_IN_TERMINAL_ID,
     SESSION_ACTION_EDIT_TAGS_ID,
     SESSION_ACTION_MARK_READ_ID,
     SESSION_ACTION_MOVE_TO_FOLDER_ID,
@@ -282,6 +283,57 @@ describe('executeSessionAction', () => {
 
         expect(setTags).toHaveBeenCalledWith('session_1', ['urgent'], { serverId: 'server_1' });
         expect(moveToFolder).toHaveBeenCalledWith(target, { folderId: 'folder_1' });
+    });
+
+    it('continues in Windows Terminal by stopping the running runner before resuming it there', async () => {
+        const calls: string[] = [];
+        const stopSession = vi.fn(async () => {
+            calls.push('stop');
+            return { success: true as const };
+        });
+        const resumeSession = vi.fn(async () => {
+            calls.push('resume');
+        });
+
+        await executeSessionAction({
+            actionId: SESSION_ACTION_CONTINUE_IN_TERMINAL_ID,
+            target: createTarget({ active: true }),
+            context: { operations: { stopSession, resumeSession } },
+        });
+
+        expect(calls).toEqual(['stop', 'resume']);
+        expect(stopSession).toHaveBeenCalledWith('session_1', { serverId: 'server_1' });
+        expect(resumeSession).toHaveBeenCalledWith('session_1', { windowsRemoteSessionLaunchMode: 'windows_terminal' });
+    });
+
+    it('does not resume in Windows Terminal when stopping the hidden runner fails', async () => {
+        const resumeSession = vi.fn(async () => undefined);
+
+        await expect(executeSessionAction({
+            actionId: SESSION_ACTION_CONTINUE_IN_TERMINAL_ID,
+            target: createTarget({ active: true }),
+            context: {
+                operations: {
+                    stopSession: vi.fn(async () => ({ success: false as const, message: 'daemon unreachable' })),
+                    resumeSession,
+                },
+            },
+        })).rejects.toThrow('daemon unreachable');
+        expect(resumeSession).not.toHaveBeenCalled();
+    });
+
+    it('resumes an exited hidden session in Windows Terminal without stopping it first', async () => {
+        const stopSession = vi.fn(async () => ({ success: true as const }));
+        const resumeSession = vi.fn(async () => undefined);
+
+        await executeSessionAction({
+            actionId: SESSION_ACTION_CONTINUE_IN_TERMINAL_ID,
+            target: createTarget({ active: false }),
+            context: { operations: { stopSession, resumeSession } },
+        });
+
+        expect(stopSession).not.toHaveBeenCalled();
+        expect(resumeSession).toHaveBeenCalledWith('session_1', { windowsRemoteSessionLaunchMode: 'windows_terminal' });
     });
 
     it('does not silently ignore local action ids without an injected operation', async () => {

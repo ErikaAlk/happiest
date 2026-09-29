@@ -5,6 +5,7 @@ import type { TranslationKeyNoParams } from '@/text';
 import {
     SESSION_ACTION_ARCHIVE_ID,
     SESSION_ACTION_CLEAR_ATTENTION_STANDING_ID,
+    SESSION_ACTION_CONTINUE_IN_TERMINAL_ID,
     SESSION_ACTION_DELETE_ID,
     SESSION_ACTION_EDIT_TAGS_ID,
     SESSION_ACTION_MARK_READ_ID,
@@ -51,6 +52,11 @@ const METADATA_BY_ACTION_ID: Readonly<Record<string, SessionActionMetadata>> = {
         titleKey: 'session.workState.goal.resume',
         subtitleKey: 'session.inactiveResumable',
         icon: 'play',
+    },
+    [SESSION_ACTION_CONTINUE_IN_TERMINAL_ID]: {
+        titleKey: 'sessionInfo.continueInWindowsTerminal',
+        icon: 'terminal',
+        requiresConfirmation: true,
     },
     [SESSION_ACTION_STOP_ID]: {
         titleKey: 'sessionInfo.stopSession',

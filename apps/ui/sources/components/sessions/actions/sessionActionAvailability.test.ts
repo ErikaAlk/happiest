@@ -8,6 +8,7 @@ import { createSessionActionTarget } from './sessionActionContext';
 import {
     SESSION_ACTION_ARCHIVE_ID,
     SESSION_ACTION_CLEAR_ATTENTION_STANDING_ID,
+    SESSION_ACTION_CONTINUE_IN_TERMINAL_ID,
     SESSION_ACTION_DELETE_ID,
     SESSION_ACTION_MOVE_TO_FOLDER_ID,
     SESSION_ACTION_MARK_UNREAD_ID,
@@ -78,6 +79,42 @@ describe('session action availability', () => {
             .not.toContain(SESSION_ACTION_RESUME_ID);
         expect(listVisibleSessionActionIds({ target: nonResumableTarget, surface: 'sessionHeader' }))
             .not.toContain(SESSION_ACTION_RESUME_ID);
+    });
+
+    it('offers continuing in Windows Terminal for an owned hidden Windows session the daemon started', () => {
+        const hiddenWindowsMetadata = {
+            path: 'C:/workspace',
+            host: 'machine',
+            os: 'win32',
+            flavor: 'claude',
+            claudeSessionId: 'claude_vendor_session',
+            startedBy: 'daemon' as const,
+            terminal: { mode: 'plain' as const, requested: 'hidden' as const },
+        };
+        const createTarget = (overrides: Partial<Session>) => createSessionActionTarget({
+            session: createOwnedRawSession(overrides),
+            currentUserId: 'current_user',
+            isConnected: overrides.active === true,
+            resumeCapabilityOptions: { accountSettings: {} },
+        });
+        const activeHidden = createTarget({ active: true, metadata: hiddenWindowsMetadata });
+        const exitedHidden = createTarget({ active: false, metadata: hiddenWindowsMetadata });
+        const inWindowsTerminal = createTarget({
+            active: true,
+            metadata: {
+                ...hiddenWindowsMetadata,
+                terminal: { mode: 'windows_terminal', windows: { host: 'windows_terminal', windowId: 'happier' } },
+            },
+        });
+        const viewOnly = createTarget({ active: true, owner: 'other_user', accessLevel: 'view', metadata: hiddenWindowsMetadata });
+
+        for (const surface of ['sessionHeader', 'sessionInfo'] as const) {
+            expect(listVisibleSessionActionIds({ target: activeHidden, surface })).toContain(SESSION_ACTION_CONTINUE_IN_TERMINAL_ID);
+            expect(listVisibleSessionActionIds({ target: exitedHidden, surface })).toContain(SESSION_ACTION_CONTINUE_IN_TERMINAL_ID);
+            expect(listVisibleSessionActionIds({ target: inWindowsTerminal, surface })).not.toContain(SESSION_ACTION_CONTINUE_IN_TERMINAL_ID);
+            expect(listVisibleSessionActionIds({ target: viewOnly, surface })).not.toContain(SESSION_ACTION_CONTINUE_IN_TERMINAL_ID);
+        }
+        expect(listVisibleSessionActionIds({ target: activeHidden, surface: 'rowMenu' })).not.toContain(SESSION_ACTION_CONTINUE_IN_TERMINAL_ID);
     });
 
     it('offers exactly one attention standing action while placement standing is reachable', () => {

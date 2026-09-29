@@ -7,7 +7,9 @@ import {
     SessionAuthoringValueV1Schema,
     SessionInitialGoalRequestV1Schema,
     SpawnSessionExecutionAuthorizationSchema,
+    WindowsRemoteSessionLaunchModeSchema,
     type SessionAttachMetadataIdentityPolicy,
+    type WindowsRemoteSessionLaunchMode,
     type AgentRuntimeDescriptorV1,
     type BackendTargetRefV1,
     type SessionInitialGoalRequestV1,
@@ -29,6 +31,7 @@ export type ResumeHappySessionRpcParams = CodexBackendTransportFields & {
     agentRuntimeDescriptorV1?: AgentRuntimeDescriptorV1;
     environmentVariables?: Record<string, string>;
     terminal?: TerminalSpawnOptions;
+    windowsRemoteSessionLaunchMode?: WindowsRemoteSessionLaunchMode;
     connectedServices?: SessionAuthoringValueV1['connectedServices'];
     connectedServicesUpdatedAt?: number;
     transcriptStorage?: 'direct' | 'persisted';
@@ -59,6 +62,7 @@ const ResumeHappySessionRpcParamsSchema = z.object({
     agentRuntimeDescriptorV1: AgentRuntimeDescriptorV1Schema.optional(),
     environmentVariables: z.record(z.string(), z.string()).optional(),
     terminal: SpawnSessionTerminalSchema.optional(),
+    windowsRemoteSessionLaunchMode: WindowsRemoteSessionLaunchModeSchema.optional(),
     connectedServices: SessionAuthoringValueV1Schema.shape.connectedServices.optional(),
     connectedServicesUpdatedAt: z.number().optional(),
     transcriptStorage: z.enum(['direct', 'persisted']).optional(),

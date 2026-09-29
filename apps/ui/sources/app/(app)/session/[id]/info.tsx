@@ -69,6 +69,7 @@ import { resolveSessionAttentionStanding } from '@/sync/domains/session/organiza
 import { executeSessionAction } from '@/components/sessions/actions/sessionActionExecution';
 import {
     SESSION_ACTION_ARCHIVE_ID,
+    SESSION_ACTION_CONTINUE_IN_TERMINAL_ID,
     SESSION_ACTION_DELETE_ID,
     SESSION_ACTION_EDIT_TAGS_ID,
     SESSION_ACTION_MOVE_TO_FOLDER_ID,
@@ -83,6 +84,7 @@ import {
     resolveSessionReadStateActionId,
 } from '@/components/sessions/actions/sessionActionAvailability';
 import { createSessionActionInfoItemProps } from '@/components/sessions/actions/sessionActionPresentation';
+import { emitSessionResumeRequest } from '@/components/sessions/model/sessionResumeRequests';
 import { getTagsForSession, sessionTagKey } from '@/components/sessions/shell/sessionTagUtils';
 import { useSessionListMoveSheet } from '@/components/sessions/shell/move-sheet/useSessionListMoveSheet';
 import type { SessionListMoveSheetTarget } from '@/components/sessions/shell/move-sheet/buildSessionListMoveSheetTargets';
@@ -731,6 +733,10 @@ function SessionInfoContent({ session, sessionServerId, sourceMachineIdForHandof
         actionId: SESSION_ACTION_MOVE_TO_FOLDER_ID,
         iconColor: theme.colors.accent.blue,
     }), [theme.colors.accent.blue]);
+    const continueInTerminalInfoItemProps = React.useMemo(() => createSessionActionInfoItemProps({
+        actionId: SESSION_ACTION_CONTINUE_IN_TERMINAL_ID,
+        iconColor: theme.colors.accent.purple,
+    }), [theme.colors.accent.purple]);
     const stopInfoItemProps = React.useMemo(() => createSessionActionInfoItemProps({
         actionId: SESSION_ACTION_STOP_ID,
         iconColor: theme.colors.state.danger.foreground,
@@ -866,6 +872,32 @@ function SessionInfoContent({ session, sessionServerId, sourceMachineIdForHandof
         if (!confirmed) return;
         await performStop();
     }, [performStop]);
+
+    const handleContinueInTerminal = useCallback(async () => {
+        const confirmed = await Modal.confirm(
+            t('sessionInfo.continueInWindowsTerminalConfirmTitle'),
+            session.thinking
+                ? t('sessionInfo.continueInWindowsTerminalConfirmBodyRunning')
+                : t('sessionInfo.continueInWindowsTerminalConfirmBody'),
+            {
+                cancelText: t('common.cancel'),
+                confirmText: t('sessionInfo.continueInWindowsTerminalConfirm'),
+            },
+        );
+        if (!confirmed) return;
+        await executeSessionAction({
+            actionId: SESSION_ACTION_CONTINUE_IN_TERMINAL_ID,
+            target: sessionActionTarget,
+            context: {
+                operations: {
+                    resumeSession: async (sessionId, options) => {
+                        await emitSessionResumeRequest(sessionId, options);
+                    },
+                },
+            },
+        });
+    }, [session.thinking, sessionActionTarget]);
+    const [continuingInTerminal, performContinueInTerminal] = useHappyAction(handleContinueInTerminal);
 
     const handleArchive = useCallback(async () => {
         await executeSessionAction({
@@ -1201,6 +1233,13 @@ function SessionInfoContent({ session, sessionServerId, sourceMachineIdForHandof
                             icon={<Icon name="terminal" size={29} color={theme.colors.accent.purple} />}
                             showChevron={false}
                             copy={t('sessionInfo.resumeCommand', { sessionId: session.id })}
+                        />
+                    )}
+                    {visibleSessionActionIds.has(SESSION_ACTION_CONTINUE_IN_TERMINAL_ID) && continueInTerminalInfoItemProps && (
+                        <Item
+                            {...continueInTerminalInfoItemProps}
+                            onPress={performContinueInTerminal}
+                            loading={continuingInTerminal}
                         />
                     )}
                     <Item

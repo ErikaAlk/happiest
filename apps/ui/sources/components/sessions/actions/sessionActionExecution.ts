@@ -18,6 +18,7 @@ import {
 import {
     SESSION_ACTION_ARCHIVE_ID,
     SESSION_ACTION_CLEAR_ATTENTION_STANDING_ID,
+    SESSION_ACTION_CONTINUE_IN_TERMINAL_ID,
     SESSION_ACTION_DELETE_ID,
     SESSION_ACTION_EDIT_TAGS_ID,
     SESSION_ACTION_MARK_READ_ID,
@@ -172,6 +173,20 @@ export async function executeSessionAction(params: Readonly<{
             const resumeSession = resolveResumeSession(params.context);
             if (!resumeSession) throwUnsupportedSingleTargetAction();
             await resumeSession(params.target.sessionId);
+            return;
+        }
+        case SESSION_ACTION_CONTINUE_IN_TERMINAL_ID: {
+            // A running hidden runner must exit first: the daemon adopts a live runner instead of
+            // spawning a new one. Resume then restarts the same session in Windows Terminal.
+            const resumeSession = resolveResumeSession(params.context);
+            if (!resumeSession) throwUnsupportedSingleTargetAction();
+            if (params.target.isActive) {
+                throwIfFailed(
+                    await resolveStopSession(params.context)(params.target.sessionId, { serverId: params.target.serverId }),
+                    t('sessionInfo.failedToStopSession'),
+                );
+            }
+            await resumeSession(params.target.sessionId, { windowsRemoteSessionLaunchMode: 'windows_terminal' });
             return;
         }
         case SESSION_ACTION_STOP_ID:

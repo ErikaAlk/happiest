@@ -1,6 +1,7 @@
 import {
     SESSION_ACTION_ARCHIVE_ID,
     SESSION_ACTION_CLEAR_ATTENTION_STANDING_ID,
+    SESSION_ACTION_CONTINUE_IN_TERMINAL_ID,
     SESSION_ACTION_DELETE_ID,
     SESSION_ACTION_MARK_READ_ID,
     SESSION_ACTION_MARK_UNREAD_ID,
@@ -50,6 +51,10 @@ export function listVisibleSessionActionIds(params: Readonly<{
 
     if (surface === 'sessionHeader' && target.canResume) {
         ids.push(SESSION_ACTION_RESUME_ID);
+    }
+
+    if ((surface === 'sessionHeader' || surface === 'sessionInfo') && target.canContinueInTerminal) {
+        ids.push(SESSION_ACTION_CONTINUE_IN_TERMINAL_ID);
     }
 
     if ((target.isActive || target.hasStoppableTerminalHost) && target.canStop) {

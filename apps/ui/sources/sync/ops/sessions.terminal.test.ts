@@ -59,6 +59,15 @@ describe('session resume terminal settings', () => {
         });
     });
 
+    it('asks the daemon to host a resumed Windows session in the requested launch mode', async () => {
+        expect(await resumeSession({ ...options, windowsRemoteSessionLaunchMode: 'windows_terminal' }))
+            .toMatchObject({ type: 'success' });
+        expect(machineRPC.mock.calls[0]?.[2]).toMatchObject({
+            type: 'resume-session',
+            windowsRemoteSessionLaunchMode: 'windows_terminal',
+        });
+    });
+
     it('omits terminal when the resolved machine disables tmux', async () => {
         storage.setState({ settings: {
             ...storage.getState().settings,

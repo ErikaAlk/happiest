@@ -2,6 +2,7 @@ import { resolveSessionReadStateAction } from '@/sync/domains/session/readState/
 import type { Session } from '@/sync/domains/state/storageTypes';
 import type { SessionListRenderableSession } from '@/sync/domains/session/listing/sessionListRenderable';
 import { resolveTerminalControlServiceabilityPolicy } from '@happier-dev/protocol';
+import { resolveSessionComputerContinuation } from '@/sync/domains/session/terminal/sessionComputerContinuation';
 import {
     canContinueSessionWithFreshSpawn,
     canResumeSessionWithOptions,
@@ -51,7 +52,8 @@ export function createSessionActionTarget(params: Readonly<{
     const hasAdminAccess = isOwnedByCurrentUser || session.accessLevel === 'admin';
     const isActive = session.active === true;
     const isArchived = session.archivedAt != null;
-    const terminalControlServiceability = 'terminalControlServiceabilityV1' in (session.metadata ?? {})
+    const isListRenderableMetadata = 'terminalControlServiceabilityV1' in (session.metadata ?? {});
+    const terminalControlServiceability = isListRenderableMetadata
         ? (session.metadata as SessionListRenderableSession['metadata'])?.terminalControlServiceabilityV1
         : (session as Session).metadata?.terminal?.controlServiceabilityV1;
     const terminalControlPolicy = resolveTerminalControlServiceabilityPolicy(terminalControlServiceability);
@@ -67,6 +69,15 @@ export function createSessionActionTarget(params: Readonly<{
             canResumeSessionWithOptions(resumeMetadata, params.resumeCapabilityOptions)
             || canContinueSessionWithFreshSpawn(resumeMetadata, params.resumeCapabilityOptions)
         );
+    // Session-list rows carry a narrow metadata projection without the host fields.
+    const fullMetadata = isListRenderableMetadata ? null : (session as Session).metadata;
+    const canContinueInTerminal = !isArchived && resolveSessionComputerContinuation({
+        sessionId: session.id,
+        metadata: fullMetadata,
+        canReopen: canStop
+            && hasWriteAccess
+            && canResumeSessionWithOptions(resumeMetadata, params.resumeCapabilityOptions),
+    }).kind === 'reopen_in_windows_terminal';
 
     return {
         session,
@@ -83,6 +94,7 @@ export function createSessionActionTarget(params: Readonly<{
         canArchive,
         canRename: hasAdminAccess,
         canResume,
+        canContinueInTerminal,
         canDelete: isOwnedByCurrentUser && !isActive && !hasPreservedTerminalHost && params.isConnected !== true,
         readStateAction: isArchived
             ? { kind: 'none', visible: false }

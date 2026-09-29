@@ -50,6 +50,7 @@ import {
   resolveManualReadStateFromSessionActionId,
   SESSION_ACTION_ARCHIVE_ID,
   SESSION_ACTION_CLEAR_ATTENTION_STANDING_ID,
+  SESSION_ACTION_CONTINUE_IN_TERMINAL_ID,
   SESSION_ACTION_MARK_READ_ID,
   SESSION_ACTION_MARK_UNREAD_ID,
   SESSION_ACTION_RENAME_ID,
@@ -431,6 +432,40 @@ function SessionHeaderActionMenuInner(props: SessionHeaderActionMenuProps) {
               Modal.alert(t('common.error'), t('session.resumeFailed'));
             },
           });
+          return;
+        }
+        if (actionId === SESSION_ACTION_CONTINUE_IN_TERMINAL_ID) {
+          fireAndForget((async () => {
+            const confirmed = await Modal.confirm(
+              t('sessionInfo.continueInWindowsTerminalConfirmTitle'),
+              session.thinking
+                ? t('sessionInfo.continueInWindowsTerminalConfirmBodyRunning')
+                : t('sessionInfo.continueInWindowsTerminalConfirmBody'),
+              {
+                cancelText: t('common.cancel'),
+                confirmText: t('sessionInfo.continueInWindowsTerminalConfirm'),
+              },
+            );
+            if (!confirmed) return;
+            try {
+              await executeSessionAction({
+                actionId: SESSION_ACTION_CONTINUE_IN_TERMINAL_ID,
+                target: sessionActionTarget,
+                context: {
+                  operations: {
+                    resumeSession: async (sessionId, options) => {
+                      await emitSessionResumeRequest(sessionId, options);
+                    },
+                  },
+                },
+              });
+            } catch (error) {
+              Modal.alert(
+                t('common.error'),
+                error instanceof Error ? error.message : t('errors.unknownError'),
+              );
+            }
+          })(), { tag: 'SessionHeaderActionMenu.execute.sessionContinueInTerminal' });
           return;
         }
         if (actionId === SESSION_ACTION_STOP_ID || actionId === SESSION_ACTION_ARCHIVE_ID) {

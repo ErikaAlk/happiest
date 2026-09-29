@@ -155,6 +155,8 @@ export interface ResumeSessionOptions {
     attachMetadataIdentityPolicy?: SessionAttachMetadataIdentityPolicy;
     /** Optional explicit server scope for resume spawn routing. */
     serverId?: string;
+    /** Windows host for the resumed runner; omitted resumes use the machine/account default. */
+    windowsRemoteSessionLaunchMode?: import('@happier-dev/protocol').WindowsRemoteSessionLaunchMode;
     /**
      * Optional: publish an explicit UI-selected permission mode at resume time.
      * Use only when the UI selection is newer than metadata.permissionModeUpdatedAt.
@@ -272,6 +274,7 @@ async function runResumeSession(
             initialGoal,
             preferRequestedMachineTarget,
             preferScopedMachineRpc,
+            windowsRemoteSessionLaunchMode,
         } = preparedOptions;
 
         const machineTarget = readMachineControlTargetForSession(sessionId);
@@ -299,6 +302,7 @@ async function runResumeSession(
             directory,
             backendTarget,
             ...(terminal ? { terminal } : {}),
+            ...(windowsRemoteSessionLaunchMode ? { windowsRemoteSessionLaunchMode } : {}),
             ...(resume ? { resume } : {}),
             ...(environmentVariables ? { environmentVariables } : {}),
             ...(parsedConnectedServices !== undefined ? { connectedServices: parsedConnectedServices } : {}),

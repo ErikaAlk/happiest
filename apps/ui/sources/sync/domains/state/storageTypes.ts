@@ -235,6 +235,7 @@ const MetadataObjectSchema = z.object({
     homeDir: z.string().optional(), // User's home directory on the machine
     happyHomeDir: z.string().optional(), // Happy configuration directory 
     hostPid: z.number().optional(), // Process ID of the session
+    startedBy: z.enum(['daemon', 'terminal']).optional(), // Who launched the session runner (published by the CLI)
     sessionLogPath: z.string().optional(), // Session-specific CLI log file path
     terminal: createSessionTerminalMetadataSchema(z).optional(),
     flavor: z.string().nullish(), // Session flavor/variant identifier

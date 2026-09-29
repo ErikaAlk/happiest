@@ -2,6 +2,7 @@ import type { Session } from '@/sync/domains/state/storageTypes';
 import type { SessionReadStateAction } from '@/sync/domains/session/readState/sessionReadState';
 import type { SessionListRenderableSession } from '@/sync/domains/session/listing/sessionListRenderable';
 import type { SessionStopRecovery } from '@/sync/ops/sessionStopContract';
+import type { SessionResumeRequestOptions } from '@/components/sessions/model/sessionResumeRequests';
 
 export type SessionActionSurface =
     | 'rowMenu'
@@ -15,6 +16,7 @@ export type SessionActionId =
     | 'ui.session.mark-unread'
     | 'ui.session.rename'
     | 'ui.session.resume'
+    | 'ui.session.continue-in-terminal'
     | 'ui.session.stop'
     | 'ui.session.archive'
     | 'ui.session.unarchive'
@@ -48,6 +50,8 @@ export type SessionActionTarget = Readonly<{
     canArchive: boolean;
     canRename: boolean;
     canResume: boolean;
+    /** Hidden Windows runner the daemon started; it can be restarted in Windows Terminal. */
+    canContinueInTerminal: boolean;
     canDelete: boolean;
     readStateAction: SessionReadStateAction;
     attentionStandingAction: SessionAttentionStandingAction;
@@ -82,7 +86,7 @@ export type SessionActionExecutionOperations = Readonly<{
     archiveSession?: (sessionId: string, opts?: Readonly<{ serverId?: string | null }>) => Promise<SessionActionOperationResult>;
     unarchiveSession?: (sessionId: string, opts?: Readonly<{ serverId?: string | null }>) => Promise<SessionActionOperationResult>;
     renameSession?: (sessionId: string, title: string, opts?: Readonly<{ serverId?: string | null }>) => Promise<SessionActionOperationResult>;
-    resumeSession?: (sessionId: string) => void | Promise<void>;
+    resumeSession?: (sessionId: string, options?: SessionResumeRequestOptions) => void | Promise<void>;
     deleteSession?: (sessionId: string, opts?: Readonly<{ serverId?: string | null }>) => Promise<SessionActionOperationResult>;
     setPinned?: (
         sessionId: string,

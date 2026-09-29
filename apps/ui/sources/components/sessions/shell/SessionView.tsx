@@ -306,7 +306,10 @@ import { useOpenSessionTarget } from '@/components/sessions/panes/open/useOpenSe
 import type { SessionPaneUrlState } from '@/components/sessions/panes/url/sessionPaneUrlState';
 import { useSessionPaneUrlSync } from '@/components/sessions/panes/url/useSessionPaneUrlSync';
 import { SessionResumeProvider } from '@/components/sessions/model/SessionResumeContext';
-import { useSessionResumeRequestListener } from '@/components/sessions/model/sessionResumeRequests';
+import {
+    useSessionResumeRequestListener,
+    type SessionResumeRequestOptions,
+} from '@/components/sessions/model/sessionResumeRequests';
 import { resolveSessionResumeMachineTarget } from './sessionResumeMachineTarget';
 import { useDirectSessionTakeover } from '@/components/sessions/model/useDirectSessionTakeover';
 import { useDirectSessionRuntime } from '@/components/sessions/model/useDirectSessionRuntime';
@@ -4747,7 +4750,11 @@ function SessionViewLoaded({
     }, [agentId, hasWriteAccess, sessionId, session.metadata]);
 
     // Handle resuming an inactive session
-    const handleResumeSession = React.useCallback(async (opts?: { silent?: boolean; initialTranscriptAfterSeq?: number }): Promise<boolean> => {
+    const handleResumeSession = React.useCallback(async (opts?: {
+        silent?: boolean;
+        initialTranscriptAfterSeq?: number;
+        windowsRemoteSessionLaunchMode?: SessionResumeRequestOptions['windowsRemoteSessionLaunchMode'];
+    }): Promise<boolean> => {
         const silent = opts?.silent === true;
         const initialTranscriptAfterSeq = typeof opts?.initialTranscriptAfterSeq === 'number'
             && Number.isFinite(opts.initialTranscriptAfterSeq)
@@ -4855,6 +4862,7 @@ function SessionViewLoaded({
                 ...base,
                 serverId: capabilityServerId,
                 ...(initialTranscriptAfterSeq !== null ? { initialTranscriptAfterSeq } : {}),
+                ...(opts?.windowsRemoteSessionLaunchMode ? { windowsRemoteSessionLaunchMode: opts.windowsRemoteSessionLaunchMode } : {}),
                 ...buildResumeSessionExtrasFromUiState({
                     agentId,
                     settings,
@@ -4896,7 +4904,11 @@ function SessionViewLoaded({
 
     useSessionResumeRequestListener(
         sessionId,
-        React.useCallback(() => handleResumeSession(), [handleResumeSession]),
+        React.useCallback((request?: SessionResumeRequestOptions) => handleResumeSession(
+            request?.windowsRemoteSessionLaunchMode
+                ? { windowsRemoteSessionLaunchMode: request.windowsRemoteSessionLaunchMode }
+                : undefined,
+        ), [handleResumeSession]),
     );
 
     // Memoize header-dependent styles to prevent re-renders
