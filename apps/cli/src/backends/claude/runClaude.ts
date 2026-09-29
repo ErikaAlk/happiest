@@ -332,6 +332,19 @@ export async function runClaude(credentials: Credentials, options: StartOptions 
 
     const pendingFirstInputCommitter = createPendingFirstInputCommitter();
 
+    const resolveClaudeHelpProbeTimeoutMs = (): number => {
+        const raw = process.env.HAPPIER_CLAUDE_HELP_PROBE_TIMEOUT_MS;
+        const parsed = typeof raw === 'string' ? Number(raw) : Number.NaN;
+        if (Number.isFinite(parsed) && parsed > 0) return parsed;
+        return process.env.CI ? 3_000 : 1_500;
+    };
+    // The probe only spawns the local Claude binary, so it runs while session creation, the socket
+    // connection and the startup metadata write wait on the network instead of after them.
+    const installedRuntimeCapabilitiesProbe = probeClaudeInstalledRuntimeCapabilities({
+        cwd: workingDirectory,
+        timeoutMs: resolveClaudeHelpProbeTimeoutMs(),
+    });
+
     logger.infoFile('[CLAUDE_STARTUP] stage=backend_api_context_started');
     const { api, machineId } = await initializeBackendApiContext({
         credentials,
@@ -699,16 +712,7 @@ export async function runClaude(credentials: Credentials, options: StartOptions 
     // Used by hook server to notify Session when Claude changes session ID
     let currentSession: import('./session').Session | null = null;
     let didPublishSessionModelsMetadata = false;
-    const resolveClaudeHelpProbeTimeoutMs = (): number => {
-        const raw = process.env.HAPPIER_CLAUDE_HELP_PROBE_TIMEOUT_MS;
-        const parsed = typeof raw === 'string' ? Number(raw) : Number.NaN;
-        if (Number.isFinite(parsed) && parsed > 0) return parsed;
-        return process.env.CI ? 3_000 : 1_500;
-    };
-    const installedRuntimeCapabilities = await probeClaudeInstalledRuntimeCapabilities({
-        cwd: workingDirectory,
-        timeoutMs: resolveClaudeHelpProbeTimeoutMs(),
-    });
+    const installedRuntimeCapabilities = await installedRuntimeCapabilitiesProbe;
     let localPermissionBridgeEnabled = currentClaudeRemoteMetaState.claudeLocalPermissionBridgeEnabled === true;
     let localPermissionBridgeWaitIndefinitely = currentClaudeRemoteMetaState.claudeLocalPermissionBridgeWaitIndefinitely === true;
     let localPermissionBridgeTimeoutMs = localPermissionBridgeWaitIndefinitely

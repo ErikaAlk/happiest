@@ -376,6 +376,28 @@ describe('runClaude startup metadata ordering', () => {
         );
     });
 
+    it('probes the installed Claude runtime while the fresh-session startup metadata write is pending', async () => {
+        currentMetadataVersion = 1;
+        const { runClaude } = await import('./runClaude');
+
+        const runPromise = runClaude(testCredentials, {
+            startedBy: 'daemon',
+            startingMode: 'remote',
+        }).then(
+            () => 'resolved',
+            (error) => error,
+        );
+
+        await waitFor(() => applyStartupMetadataUpdateToSessionMock.mock.calls.length === 1);
+
+        expect(probeClaudeInstalledRuntimeCapabilitiesMock).toHaveBeenCalledTimes(1);
+
+        metadataUpdateDeferred.resolve();
+
+        await expect(runPromise).resolves.toBe(stopAfterSeed);
+        expect(probeClaudeInstalledRuntimeCapabilitiesMock).toHaveBeenCalledTimes(1);
+    });
+
     it('passes runtime identity replacement through attach startup metadata writes during handoff resume', async () => {
         currentMetadataVersion = -1;
         const previousAttachMetadataIdentityPolicy = process.env.HAPPIER_SESSION_ATTACH_METADATA_IDENTITY_POLICY;
