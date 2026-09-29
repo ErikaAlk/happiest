@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { delimiter as pathDelimiter, join, normalize as normalizePath } from 'node:path';
 
 export type CommandInvocation = Readonly<{ command: string; args: string[]; windowsVerbatimArguments?: boolean }>;
@@ -90,6 +90,23 @@ export function resolveWindowsCommandPath(commandPath: string, env: NodeJS.Proce
 }
 
 /**
+ * Whether a PATH directory can hold any of `lowerCandidates`, from one listing of the directory.
+ * Probing every PATHEXT spelling in every PATH directory costs over a thousand blocking filesystem
+ * calls per missing command on a typical Windows PATH; one listing per directory replaces them.
+ * A directory that cannot be listed keeps the per-candidate probes, which decide exactly as before.
+ */
+function pathDirectoryMayContain(dir: string, lowerCandidates: ReadonlySet<string>): boolean {
+  let entries: string[];
+  try {
+    entries = readdirSync(dir);
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    return code !== 'ENOENT' && code !== 'ENOTDIR';
+  }
+  return entries.some((entry) => lowerCandidates.has(entry.toLowerCase()));
+}
+
+/**
  * The first `command` on PATH, trying each PATHEXT spelling per directory. `accept` skips matches the
  * caller already knows are not the one it looks for (the managed `happier.exe` when looking for a
  * `happier` the user installed), so the search goes on to the next match instead of stopping there.
@@ -106,10 +123,12 @@ export function resolveWindowsCommandOnPath(
   if (!pathEnv) return null;
 
   const candidates = buildWindowsCommandCandidates(cmd, env);
+  const lowerCandidates = new Set(candidates.map((name) => name.toLowerCase()));
 
   for (const dir of pathEnv.split(pathDelimiter)) {
     const trimmedDir = dir.trim();
     if (!trimmedDir) continue;
+    if (!pathDirectoryMayContain(trimmedDir, lowerCandidates)) continue;
     for (const name of candidates) {
       const full = join(trimmedDir, name);
       try {
