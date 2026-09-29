@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
 import test from 'node:test';
 
 import {
@@ -36,6 +36,18 @@ test('readWin32ProcessRows reads every requested live process in one query', { s
     assert.match(row.commandLine, /setInterval/);
     assert.equal(row.processInstanceFingerprint, readProcessInstanceFingerprintSync(pid));
   }
+});
+
+test('readWin32ProcessRows ends a probe that outlives its deadline as unknown identity', { timeout: 20_000 }, async () => {
+  // A hung WMI query leaves PowerShell running; the real execFile must stop it at the deadline.
+  const hangingProbe = (_command, _args, options, callback) =>
+    execFile(process.execPath, ['-e', 'setInterval(() => {}, 1000)'], options, callback);
+  const startedAt = Date.now();
+
+  const rows = await readWin32ProcessRows([process.pid], { execFileImpl: hangingProbe, timeoutMs: 500 });
+
+  assert.equal(rows.size, 0);
+  assert.ok(Date.now() - startedAt < 10_000);
 });
 
 test('readProcessInstanceFingerprintSync reads the Linux proc start-time field', () => {

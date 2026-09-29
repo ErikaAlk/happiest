@@ -46,9 +46,12 @@ function runProbe(command, args, { spawnSyncImpl }) {
   return value || null;
 }
 
-function runProbeAsync(command, args, { execFileImpl }) {
+// `timeoutMs` comes from the caller's containing operation; execFile stops the probe process when
+// it expires, and the probe resolves as unknown identity.
+function runProbeAsync(command, args, { execFileImpl, timeoutMs }) {
+  const timeout = Number.isFinite(timeoutMs) && timeoutMs > 0 ? { timeout: timeoutMs } : {};
   return new Promise((resolve) => {
-    execFileImpl(command, args, { encoding: 'utf8', windowsHide: true }, (error, stdout) => {
+    execFileImpl(command, args, { encoding: 'utf8', windowsHide: true, ...timeout }, (error, stdout) => {
       const value = error ? '' : String(stdout ?? '').trim();
       resolve(value || null);
     });
@@ -125,7 +128,7 @@ function parseWin32ProcessRows(output) {
  * non-blocking PowerShell/CIM query. `pids === null` reads every process. Resolves an empty map
  * when the query fails; callers treat a missing row as unknown identity.
  */
-export async function readWin32ProcessRows(pids, { execFileImpl = execFile } = {}) {
+export async function readWin32ProcessRows(pids, { execFileImpl = execFile, timeoutMs } = {}) {
   const uniquePids = pids === null
     ? null
     : Array.from(new Set(pids.map(normalizePid).filter((pid) => pid !== null)));
@@ -138,7 +141,7 @@ export async function readWin32ProcessRows(pids, { execFileImpl = execFile } = {
     'if ($null -eq $rows) { return }',
     '$rows | ConvertTo-Json -Compress',
   ].join('; ');
-  const output = await runProbeAsync('powershell.exe', [...POWERSHELL_ARGS, script], { execFileImpl });
+  const output = await runProbeAsync('powershell.exe', [...POWERSHELL_ARGS, script], { execFileImpl, timeoutMs });
   if (!output) return new Map();
   try {
     return parseWin32ProcessRows(output);

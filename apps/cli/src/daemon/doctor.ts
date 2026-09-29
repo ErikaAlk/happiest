@@ -11,6 +11,7 @@ import { execFileSync } from 'node:child_process';
 import { readFile, readlink } from 'node:fs/promises';
 import { readLinuxProcessParentPid, readWin32ProcessRows } from '@happier-dev/cli-common/processInstance';
 import { listProcessSnapshot } from './processSnapshotCache';
+import { readDaemonHeartbeatIntervalMs } from './lifecycle/heartbeatInterval';
 
 const SAFE_RESPAWN_ENVIRONMENT_VARIABLE_KEYS = ['CLAUDE_CONFIG_DIR', 'CODEX_HOME', 'CODEX_SQLITE_HOME'] as const;
 const DAEMON_OWNERSHIP_ENVIRONMENT_VARIABLE_KEYS = [
@@ -178,7 +179,9 @@ function isWindowsHappyHostProcessCandidate(name: string | undefined): boolean {
 async function readWindowsProcessInfos(pids: readonly number[] | null): Promise<Map<number, RawProcessInfo>> {
   if (process.platform !== 'win32') return new Map();
   const infos = new Map<number, RawProcessInfo>();
-  for (const row of (await readWin32ProcessRows(pids)).values()) {
+  // Heartbeat, runner identity and Happier process discovery share this probe, and some share it
+  // through in-flight promises, so it must settle within the heartbeat period.
+  for (const row of (await readWin32ProcessRows(pids, { timeoutMs: readDaemonHeartbeatIntervalMs() })).values()) {
     infos.set(row.pid, {
       pid: row.pid,
       ...(row.parentPid ? { parentPid: row.parentPid } : {}),

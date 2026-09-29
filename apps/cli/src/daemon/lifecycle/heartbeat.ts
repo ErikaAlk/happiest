@@ -31,13 +31,9 @@ import {
   type SessionRunnerProcessIdentity,
 } from '../sessionRunnerProcessIdentity';
 import { requestDaemonSelfRestart } from './requestDaemonSelfRestart';
+import { readDaemonHeartbeatIntervalMs } from './heartbeatInterval';
 
 type RequestDaemonSelfRestart = typeof requestDaemonSelfRestart;
-
-function parsePositiveInt(rawValue: string | undefined, fallback: number): number {
-  const parsed = Number.parseInt(rawValue ?? '', 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
-}
 
 function parseNonNegativeInt(rawValue: string | undefined, fallback: number): number {
   const parsed = Number.parseInt(rawValue ?? '', 10);
@@ -127,7 +123,7 @@ export function startDaemonHeartbeatLoop(params: Readonly<{
   // 2. Check if daemon needs update
   // 3. If outdated, restart with latest version
   // 4. Write heartbeat
-  const heartbeatIntervalMs = parsePositiveInt(process.env.HAPPIER_DAEMON_HEARTBEAT_INTERVAL, 60000);
+  const heartbeatIntervalMs = readDaemonHeartbeatIntervalMs();
   const restartVerifyTimeoutMs = readDaemonRestartVerifyTimeoutMs();
   const restartVerifyPollMs = readDaemonRestartVerifyPollMs();
   const executionRunTerminalTtlMs = parseNonNegativeInt(

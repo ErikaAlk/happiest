@@ -35,6 +35,8 @@ export function readWin32ProcessRows(
   pids: readonly number[] | null,
   options?: Readonly<{
     execFileImpl?: typeof import('node:child_process').execFile;
+    /** Deadline of the caller's containing operation; an expired probe resolves as an empty map. */
+    timeoutMs?: number;
   }>,
 ): Promise<Map<number, Win32ProcessRow>>;
 
