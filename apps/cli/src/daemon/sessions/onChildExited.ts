@@ -80,8 +80,12 @@ export function createOnChildExited(params: Readonly<{
   } = params;
 
   return async (pid: number, exit: ChildExit) => {
-    logger.debug(`[DAEMON RUN] Removing exited process PID ${pid} from tracking`);
     const tracked = pidToTrackedSession.get(pid);
+    if (tracked?.pendingHostedRunnerReport === true) {
+      logger.debug(`[DAEMON RUN] Windows Terminal launcher PID ${pid} exited; waiting for its runner to report`);
+      return;
+    }
+    logger.debug(`[DAEMON RUN] Removing exited process PID ${pid} from tracking`);
     const runnerPid = tracked?.sessionRunnerPid;
     const override = tracked && isExitUnexpectedOverride ? isExitUnexpectedOverride(tracked, exit) : null;
     if (tracked && typeof runnerPid === 'number' && runnerPid !== pid && isPidAlive(runnerPid)) {

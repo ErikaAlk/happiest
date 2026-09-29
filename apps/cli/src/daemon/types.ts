@@ -42,6 +42,12 @@ export interface TrackedSession {
    */
   sessionRunnerPid?: number;
   /**
+   * Set while a Windows Terminal launch waits for its runner to report. The tracked PID is the
+   * `wt.exe` launcher, which exits once Windows Terminal has the command; that exit is not the
+   * session's exit.
+   */
+  pendingHostedRunnerReport?: boolean;
+  /**
    * Hash of the observed process command line for PID reuse safety.
    * If present, we require this to match before sending SIGTERM by PID.
    */

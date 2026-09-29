@@ -154,7 +154,7 @@ import {
 import { waitForExistingSessionExitIfStopRequested } from './sessions/waitForExistingSessionExitIfStopRequested';
 import { waitForTerminatingSessionRunnerExit } from './sessions/waitForTerminatingSessionRunnerExit';
 import { waitForTrackedRunnerProcessesExit } from './sessions/waitForTrackedRunnerProcessesExit';
-import { readProcessRunState } from './processRunState';
+import { isPidAliveBySignal, readProcessRunState } from './processRunState';
 import { resolveSpawnWebhookResult } from './sessions/resolveSpawnWebhookResult';
 import {
   isSessionRunnerActive as isSessionRunnerActiveInDaemon,
@@ -3983,6 +3983,8 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
                 pid: number;
                 logLabel: string;
                 terminal: NonNullable<Metadata['terminal']>;
+                /** `pid` is `wt.exe`, which exits once Windows Terminal has the runner command. */
+                launcherHandsOff?: boolean;
               }): Promise<SpawnSessionResult> => {
                 if (sessionAttachCleanup) {
                   sessionAttachCleanupByPid.set(params.pid, sessionAttachCleanup);
@@ -3998,6 +4000,7 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
                   hostedTerminal: params.terminal,
                   directoryCreated,
                   message: directoryCreated ? `The path '${resolvedDirectory}' did not exist. We created a new folder and spawned a new session there.` : undefined,
+                  ...(params.launcherHandsOff ? { pendingHostedRunnerReport: true } : {}),
                 };
                 pidToTrackedSession.set(params.pid, trackedSession);
                 await persistAcceptedSpawnMarker({
@@ -4051,6 +4054,7 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
                 const webhookCompletion = waitForVisibleConsoleSessionWebhook({
                   pid: params.pid,
                   pollMs,
+                  pollOnlyAfterReport: params.launcherHandsOff === true,
                   pidToAwaiter,
                   pidToSpawnResultResolver,
                   pidToSpawnWebhookTimeout,
@@ -4098,6 +4102,13 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
                     resolved.errorCode === SPAWN_SESSION_ERROR_CODES.SESSION_WEBHOOK_TIMEOUT
                   ) {
                     logger.debug(`[DAEMON RUN] Session webhook timeout for PID ${params.pid} (${params.logLabel})`);
+                  }
+                  if (resolved.type !== 'success' && trackedSession.pendingHostedRunnerReport === true) {
+                    // No runner reported for this launch: its launcher's exit now ends the launch.
+                    delete trackedSession.pendingHostedRunnerReport;
+                    if (!isPidAliveBySignal(params.pid)) {
+                      await onChildExited(params.pid, { reason: 'process-missing', code: null, signal: null });
+                    }
                   }
                 }).catch((error) => {
                   logger.warn(`[DAEMON RUN] Session webhook monitor failed for PID ${params.pid} (${params.logLabel}): ${error instanceof Error ? error.message : String(error)}`);
@@ -4201,6 +4212,7 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
                     return await waitForWindowsHostedSession({
                       pid: started.pid,
                       logLabel: 'windows terminal',
+                      launcherHandsOff: true,
                       terminal: buildWindowsHostedTerminalAttachment({
                         actualMode: 'windows_terminal',
                         requestedMode: 'windows_terminal',

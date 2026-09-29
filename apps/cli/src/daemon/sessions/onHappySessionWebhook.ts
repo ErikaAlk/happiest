@@ -292,6 +292,7 @@ export function createOnHappySessionWebhook(params: Readonly<{
               const wrapperPid = windowsTerminalSession.pid;
               trackedForPid = windowsTerminalSession;
               windowsTerminalSession.sessionRunnerPid = pid;
+              delete windowsTerminalSession.pendingHostedRunnerReport;
               adoptReportedHappySessionId(windowsTerminalSession, sessionId);
               windowsTerminalSession.happySessionMetadataFromLocalWebhook = normalizedMetadata;
               logger.debug(

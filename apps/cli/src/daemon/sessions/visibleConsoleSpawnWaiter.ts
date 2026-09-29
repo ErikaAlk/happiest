@@ -8,17 +8,27 @@ import { logger } from '@/ui/logger';
 export function waitForVisibleConsoleSessionWebhook(params: Readonly<{
   pid: number;
   pollMs: number;
+  /**
+   * The spawned PID is a launcher that exits once it hands the runner off (`wt.exe`). Its exit
+   * is only watched after the runner reports, to hand tracking over to the runner.
+   */
+  pollOnlyAfterReport?: boolean;
   pidToAwaiter: Map<number, (session: TrackedSession) => void>;
   pidToSpawnResultResolver: Map<number, (result: SpawnSessionResult) => void>;
   pidToSpawnWebhookTimeout: Map<number, ReturnType<typeof setTimeout>>;
   onChildExited: (pid: number, exit: ChildExit) => void | Promise<void>;
 }>): Promise<SpawnSessionResult> {
   const { pid, pollMs, pidToAwaiter, pidToSpawnResultResolver, pidToSpawnWebhookTimeout, onChildExited } = params;
-  const interval = setInterval(() => {
+  let interval: ReturnType<typeof setInterval> | null = null;
+  const stopExitPoll = () => {
+    if (interval) clearInterval(interval);
+    interval = null;
+  };
+  const startExitPoll = () => setInterval(() => {
     try {
       process.kill(pid, 0);
     } catch {
-      clearInterval(interval);
+      stopExitPoll();
       const resolveSpawn = pidToSpawnResultResolver.get(pid);
       if (resolveSpawn) {
         pidToSpawnResultResolver.delete(pid);
@@ -47,18 +57,26 @@ export function waitForVisibleConsoleSessionWebhook(params: Readonly<{
       })();
     }
   }, pollMs);
-  if (typeof interval.unref === 'function') {
-    interval.unref();
-  }
+  const watchExit = () => {
+    interval = startExitPoll();
+    if (typeof interval.unref === 'function') {
+      interval.unref();
+    }
+  };
+  if (params.pollOnlyAfterReport !== true) watchExit();
 
-  return waitForSessionWebhook({
+  const completion = waitForSessionWebhook({
     pid,
     pidToAwaiter,
     pidToSpawnResultResolver,
     pidToSpawnWebhookTimeout,
     timeoutErrorMessage: `Session webhook timeout for PID ${pid}`,
-    onTimeout: () => {
-      clearInterval(interval);
-    },
+    onTimeout: stopExitPoll,
   });
+  if (params.pollOnlyAfterReport === true) {
+    void completion.then((result) => {
+      if (result.type === 'success') watchExit();
+    });
+  }
+  return completion;
 }

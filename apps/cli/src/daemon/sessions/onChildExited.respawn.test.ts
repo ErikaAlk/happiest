@@ -16,6 +16,34 @@ describe('createOnChildExited', () => {
     hookSettingsMock.cleanupHookPluginDir.mockClear();
   });
 
+  it('keeps a Windows Terminal launch tracked when its launcher exits before the runner reports', async () => {
+    // wt.exe hands the command to Windows Terminal and exits; the runner starts later in the new tab
+    // and still has to read its attach file.
+    const pid = 120644;
+    const tracked = {
+      pid,
+      startedBy: 'daemon',
+      happySessionId: 'session-windows-terminal',
+      pendingHostedRunnerReport: true,
+    };
+    const pidToTrackedSession = new Map<number, any>([[pid, tracked]]);
+    const attachCleanup = vi.fn(async () => {});
+    const onUnexpectedExit = vi.fn();
+    const onChildExited = createOnChildExited({
+      pidToTrackedSession,
+      spawnResourceCleanupByPid: new Map(),
+      sessionAttachCleanupByPid: new Map([[pid, attachCleanup]]),
+      getApiMachineForSessions: () => null,
+      onUnexpectedExit,
+    });
+
+    await onChildExited(pid, { reason: 'process-missing', code: null, signal: null });
+
+    expect(pidToTrackedSession.get(pid)).toBe(tracked);
+    expect(attachCleanup).not.toHaveBeenCalled();
+    expect(onUnexpectedExit).not.toHaveBeenCalled();
+  });
+
   it('does not report exit completion or release tracking before exact-turn staging is durable', async () => {
     const pid = 123;
     const tracked = {

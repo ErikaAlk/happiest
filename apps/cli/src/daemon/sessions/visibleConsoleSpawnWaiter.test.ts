@@ -110,6 +110,33 @@ describe('waitForVisibleConsoleSessionWebhook', () => {
     });
   });
 
+  it('waits for the runner report past a launcher that exits right after handing off', async () => {
+    vi.useFakeTimers();
+    const aliveRef = { alive: false };
+    installProcessKillMock(aliveRef);
+    const pid = 120644;
+    const { pidToAwaiter, pidToSpawnResultResolver, pidToSpawnWebhookTimeout, onChildExited } = createWaiterState();
+
+    const promise = waitForVisibleConsoleSessionWebhook({
+      pid,
+      pollMs: 10,
+      pollOnlyAfterReport: true,
+      pidToAwaiter,
+      pidToSpawnResultResolver,
+      pidToSpawnWebhookTimeout,
+      onChildExited,
+    });
+    await vi.advanceTimersByTimeAsync(50);
+
+    expect(onChildExited).not.toHaveBeenCalled();
+    pidToAwaiter.get(pid)?.({ startedBy: 'daemon', pid, happySessionId: 'session-windows-terminal' });
+    await expect(promise).resolves.toEqual({ type: 'success', sessionId: 'session-windows-terminal' });
+
+    // After the report, the launcher's exit hands tracking to the runner.
+    await vi.advanceTimersByTimeAsync(20);
+    expect(onChildExited).toHaveBeenCalledWith(pid, { reason: 'process-exited', code: null, signal: null });
+  });
+
   it('keeps exit polling active after webhook success so cleanup can run on process exit', async () => {
     vi.useFakeTimers();
 
