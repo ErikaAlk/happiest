@@ -90,6 +90,17 @@ function buildClaudeDirectSessionMetadata(params: Readonly<{
     const machineId = typeof params.metadata.machineId === 'string' ? params.metadata.machineId.trim() : '';
     if (!machineId) return params.metadata;
 
+    // A takeover resumes an already linked session. The link written at link time (and extended by
+    // background follow) stays as is, because readers key the transcript source on it.
+    const existingLink = readRecord(params.metadata.directSessionV1);
+    if (
+        existingLink?.providerId === 'claude'
+        && existingLink.machineId === machineId
+        && existingLink.remoteSessionId === params.sessionId
+    ) {
+        return params.metadata;
+    }
+
     const configDir = resolveConfiguredClaudeConfigDir({ env: process.env });
     const projectId = resolveClaudeProjectIdFromTranscriptPath({
         transcriptPath: params.transcriptPath,

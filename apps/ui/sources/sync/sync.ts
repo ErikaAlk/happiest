@@ -997,6 +997,13 @@ class Sync {
     private serverScopeGeneration = 0;
       private sessionByIdHydrationInFlight = new Map<string, Promise<EnsureSessionVisibleForRouteResult>>();
       private sessionReceivedMessages = new Map<string, Map<string, number>>();
+      // Hosted user rows of a linked direct session still waiting for the provider row that records
+      // the same prompt, and the provider rows already recognized as such. Lives with the transcript.
+      private directTranscriptPromptTwinsBySessionId = new Map<string, {
+          awaitingHostedTextById: Map<string, string>;
+          pairedHostedIds: Set<string>;
+          pairedSourceIds: Set<string>;
+      }>();
       private sessionMessagesBeforeSeqByKey = new Map<string, number>();
       private sessionMessagesHasMoreOlderByKey = new Map<string, boolean>();
       private sessionMessagesFetchLatestInFlightByKey = new Set<string>();
@@ -2065,6 +2072,7 @@ class Sync {
         }
         this.messagesSync.clear();
         this.sessionReceivedMessages.clear();
+        this.directTranscriptPromptTwinsBySessionId.clear();
         this.sessionMessagesBeforeSeqByKey.clear();
         this.sessionMessagesHasMoreOlderByKey.clear();
         for (const sessionId of [...this.sessionMessagesTailDiscontinuityBySessionId.keys()]) {
@@ -5997,7 +6005,7 @@ class Sync {
           if (options?.mode === 'replace') this.resetSessionTranscriptState(sessionId);
           let changedMessageIds: readonly string[] = [];
           if (normalizedMessages.length > 0) {
-              changedMessageIds = this.applyMessages(sessionId, normalizedMessages, { notifyVoice: false }).changed;
+              changedMessageIds = this.applyMessages(sessionId, normalizedMessages, { notifyVoice: false, transcriptSource: 'direct' }).changed;
           }
           if (options?.mode === 'merge_latest') {
               const previous = this.sessionMessagesTailDiscontinuityBySessionId.get(sessionId);
@@ -6063,8 +6071,12 @@ class Sync {
                   return 0;
               }
               const replacesSource = !this.hasAcceptedDirectSessionSource(sessionId, directSessionLink);
+              // Pushes can accept tail rows before the first page commits (a push supersedes a held
+              // first read). Until a snapshot has loaded, catch-up stages one instead of reading on.
+              const awaitsFirstSnapshot = storage.getState().sessionMessages[sessionId]?.isLoaded !== true;
               if (replacesSource || this.directSessionTailStateBySessionId.get(sessionId)?.requiresRefresh === true
-                  || (this.directSessionLatestSnapshotPendingBySessionId.has(sessionId) && this.isDirectSessionLiveTail(sessionId))) {
+                  || ((this.directSessionLatestSnapshotPendingBySessionId.has(sessionId) || awaitsFirstSnapshot)
+                      && this.isDirectSessionLiveTail(sessionId))) {
                   this.deferredForwardLoadingSessions.add(sessionId);
                   if (this.isDirectSessionLiveTail(sessionId)) {
                       await this.withSessionCatchUpNewer(sessionId, () => this.fetchDirectSessionMessages(
@@ -6120,7 +6132,7 @@ class Sync {
 
               const normalizedMessages = normalizeDirectTranscriptMessages(tail.items);
               if (normalizedMessages.length > 0) {
-                  this.applyMessages(sessionId, normalizedMessages, { notifyVoice: false });
+                  this.applyMessages(sessionId, normalizedMessages, { notifyVoice: false, transcriptSource: 'direct' });
               }
               this.setDirectSessionTailCursor(sessionId, tail.nextCursor ?? null);
               this.recordDirectSessionSourcePage(sessionId, tail.items);
@@ -6182,7 +6194,7 @@ class Sync {
 
           const normalizedMessages = normalizeDirectTranscriptMessages(items);
           if (normalizedMessages.length > 0) {
-              const applied = this.applyMessages(sessionId, normalizedMessages, { notifyVoice: false, notifyActivity: true });
+              const applied = this.applyMessages(sessionId, normalizedMessages, { notifyVoice: false, notifyActivity: true, transcriptSource: 'direct' });
               if (!applied.hasReadyEvent) {
                   const sessionMessages = storage.getState().sessionMessages[sessionId];
                   const changedMessages = applied.changed
@@ -6411,7 +6423,7 @@ class Sync {
                       const normalizedMessages = normalizeDirectTranscriptMessages(page.items);
                       let changedMessageIds: readonly string[] = [];
                       if (normalizedMessages.length > 0) {
-                          changedMessageIds = this.applyMessages(params.sessionId, normalizedMessages, { notifyVoice: false }).changed;
+                          changedMessageIds = this.applyMessages(params.sessionId, normalizedMessages, { notifyVoice: false, transcriptSource: 'direct' }).changed;
                       }
                       if (opaqueGap) {
                           const nextGap = applyTailDiscontinuityOpaqueOlderPage({
@@ -7419,6 +7431,7 @@ class Sync {
           storage.getState().resetSessionMessages(sessionId);
 
           this.sessionReceivedMessages.delete(sessionId);
+          this.directTranscriptPromptTwinsBySessionId.delete(sessionId);
           this.deleteSessionMessagesPaginationStateForSession(sessionId);
           this.deferredForwardLoadingSessions.delete(sessionId);
           this.explicitSessionTailProbeIds.delete(sessionId);
@@ -8039,12 +8052,66 @@ class Sync {
         voiceHooks.onReady(sessionId, []);
     }
 
+    /**
+     * A linked direct session's conversation comes from its provider transcript. A runner hosting it
+     * (direct takeover) also commits hosted rows for the same turn under other identities: hosted
+     * agent output is not admitted, and a hosted user row stays because its localId hands the pending
+     * message over, so the provider row that records the same prompt later is not admitted again.
+     * Hosted events and sidechains have no provider counterpart.
+     */
+    private admitLinkedDirectTranscriptRows(
+        sessionId: string,
+        messages: NormalizedMessage[],
+        transcriptSource: 'hosted' | 'direct',
+    ): NormalizedMessage[] {
+        if (!readDirectSessionLink(storage.getState().sessions[sessionId]?.metadata)) return messages;
+        let twins = this.directTranscriptPromptTwinsBySessionId.get(sessionId);
+        if (!twins) {
+            twins = { awaitingHostedTextById: new Map(), pairedHostedIds: new Set(), pairedSourceIds: new Set() };
+            this.directTranscriptPromptTwinsBySessionId.set(sessionId, twins);
+        }
+        const admitted: NormalizedMessage[] = [];
+        for (const message of messages) {
+            if (message.isSidechain || message.role === 'event') {
+                admitted.push(message);
+                continue;
+            }
+            if (transcriptSource === 'hosted') {
+                if (message.role !== 'user') continue;
+                if (!twins.pairedHostedIds.has(message.id)) twins.awaitingHostedTextById.set(message.id, message.content.text);
+                admitted.push(message);
+                continue;
+            }
+            if (message.role === 'user') {
+                if (twins.pairedSourceIds.has(message.id)) continue;
+                let twinHostedId: string | null = null;
+                for (const [hostedId, text] of twins.awaitingHostedTextById) {
+                    if (text === message.content.text) {
+                        twinHostedId = hostedId;
+                        break;
+                    }
+                }
+                if (twinHostedId !== null) {
+                    twins.awaitingHostedTextById.delete(twinHostedId);
+                    twins.pairedHostedIds.add(twinHostedId);
+                    twins.pairedSourceIds.add(message.id);
+                    continue;
+                }
+            }
+            admitted.push(message);
+        }
+        return admitted;
+    }
+
     private applyMessages = (
         sessionId: string,
         messages: NormalizedMessage[],
-        options?: { notifyVoice?: boolean; notifyActivity?: boolean }
+        options?: { notifyVoice?: boolean; notifyActivity?: boolean; transcriptSource?: 'direct' }
     ) => {
-        const result = storage.getState().applyMessages(sessionId, messages);
+        const result = storage.getState().applyMessages(
+            sessionId,
+            this.admitLinkedDirectTranscriptRows(sessionId, messages, options?.transcriptSource ?? 'hosted'),
+        );
         const tailGap = this.sessionMessagesTailDiscontinuityBySessionId.get(sessionId);
         if (tailGap?.kind === 'opaque') {
             this.commitSessionTailDiscontinuity(sessionId, applyTailDiscontinuityOpaqueForwardPage({

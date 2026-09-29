@@ -51,6 +51,23 @@ function ensureClaudeOutputMessageRole(value: unknown): unknown {
   };
 }
 
+// Terminal prompts are stored as a string; prompts sent through the Agent SDK (Happier's own runner,
+// Claude desktop) are stored as text blocks. Claude also writes interrupt markers as text blocks,
+// and those are not prompts.
+function readClaudePromptText(content: unknown): string | null {
+  if (typeof content === 'string') return content;
+  if (!Array.isArray(content) || content.length === 0) return null;
+  const texts: string[] = [];
+  for (const block of content) {
+    if (!block || typeof block !== 'object' || (block as any).type !== 'text' || typeof (block as any).text !== 'string') {
+      return null;
+    }
+    texts.push((block as any).text);
+  }
+  const text = texts.join('\n');
+  return text.startsWith('[Request interrupted by user') ? null : text;
+}
+
 export function mapClaudeJsonlLineToDirectMessages(params: Readonly<{
   fileRelPath: string;
   lineStartOffsetBytes: number;
@@ -125,12 +142,10 @@ export function mapClaudeJsonlLineToDirectMessages(params: Readonly<{
   const normalizedForOutput = ensureClaudeOutputMessageRole(normalized);
   const messageRole = resolveClaudeSessionMessageRole(normalized);
 
-  if (
-    normalized.type === 'user' &&
-    typeof (normalized as any).message?.content === 'string' &&
-    (normalized as any).isSidechain !== true &&
-    (normalized as any).isMeta !== true
-  ) {
+  const promptText = normalized.type === 'user' && (normalized as any).isSidechain !== true && (normalized as any).isMeta !== true
+    ? readClaudePromptText((normalized as any).message?.content)
+    : null;
+  if (promptText !== null) {
     return [
       {
         id: stableId,
@@ -139,7 +154,7 @@ export function mapClaudeJsonlLineToDirectMessages(params: Readonly<{
         messageRole,
         raw: {
           role: 'user',
-          content: { type: 'text', text: String((normalized as any).message.content) },
+          content: { type: 'text', text: promptText },
         },
       },
     ];

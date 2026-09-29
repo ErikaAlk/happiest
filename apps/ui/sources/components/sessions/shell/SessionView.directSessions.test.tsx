@@ -3916,6 +3916,7 @@ describe('SessionView (direct sessions)', () => {
       canTakeOverDirect: true,
       canTakeOverPersist: true,
       canForceStop: false,
+      externalProcessActive: false,
     });
     expect(machineDirectSessionTakeoverSpy).toHaveBeenCalledWith({
       machineId: 'machine-1',

@@ -2296,6 +2296,89 @@ describe('sync.fetchMessages server-scoped known-session checks', () => {
             .toContainEqual(expect.objectContaining({ realID: 'direct-initial-push' }));
     });
 
+    it('loads the first direct page on the next refresh after a push superseded it', async () => {
+        const sessionId = 'direct_session_first_page_with_push';
+        storage.getState().applySessions([createDirectSession(sessionId)]);
+        const { sync } = await import('./sync');
+        (sync as any).encryption = { getSessionEncryption: () => null };
+        const internals = sync as unknown as {
+            fetchMessages: (id: string) => Promise<void>;
+            getDirectSessionTailCursor: (id: string) => string | null;
+            handleDirectSessionTranscriptEphemeralUpdate: (update: {
+                sessionId: string;
+                items: Array<{ id: string; createdAtMs: number; raw: { role: string; content: { type: string; text: string } } }>;
+                fromCursor: string;
+                nextCursor: string;
+                truncated: boolean;
+            }) => Promise<void>;
+        };
+        const page = createDeferred<unknown>();
+        machineDirectSessionTranscriptPageMock.mockReturnValueOnce(page.promise);
+        const firstLoad = internals.fetchMessages(sessionId);
+        const pushed = { id: 'pushed-prompt', createdAtMs: 3, raw: { role: 'user', content: { type: 'text', text: 'pushed prompt' } } };
+        await internals.handleDirectSessionTranscriptEphemeralUpdate({
+            sessionId, items: [pushed], fromCursor: 'tail', nextCursor: 'push-tail', truncated: false,
+        });
+        const earlier = { id: 'earlier-prompt', createdAtMs: 1, raw: { role: 'user', content: { type: 'text', text: 'earlier prompt' } } };
+        page.resolve({ ok: true, items: [earlier], nextCursor: 'older', tailCursor: 'page-tail', hasMore: true });
+        await firstLoad;
+        // The held page predates the push and is not admitted over it.
+        expect(storage.getState().sessionMessages[sessionId]?.isLoaded).not.toBe(true);
+
+        machineDirectSessionTranscriptPageMock.mockResolvedValueOnce({
+            ok: true, items: [earlier, pushed], nextCursor: 'older', tailCursor: 'latest-tail', hasMore: true,
+        });
+        machineDirectSessionTranscriptReadAfterMock.mockResolvedValue({ ok: true, items: [], nextCursor: 'push-tail', truncated: false });
+        await sync.refreshSessionMessages(sessionId);
+
+        expect(machineDirectSessionTranscriptPageMock).toHaveBeenCalledTimes(2);
+        expect(storage.getState().sessionMessages[sessionId]?.isLoaded).toBe(true);
+        expect(Object.values(storage.getState().sessionMessages[sessionId]?.messagesById ?? {}).map((message) => message.realID).sort())
+            .toEqual(['earlier-prompt', 'pushed-prompt']);
+        expect(internals.getDirectSessionTailCursor(sessionId)).toBe('latest-tail');
+    });
+
+    it('keeps one copy of each utterance while Happier hosts a linked direct session', async () => {
+        // After a direct takeover the runner commits hosted rows while the provider transcript
+        // records the same turn under its own row identities.
+        const sessionId = 'direct_session_hosted_twins';
+        const { sync } = await import('./sync');
+        const internals = sync as unknown as {
+            encryption: { getSessionEncryption: () => null };
+            fetchMessages(id: string): Promise<void>;
+            applyMessages(id: string, messages: unknown[]): unknown;
+        };
+        internals.encryption = { getSessionEncryption: () => null };
+        storage.getState().applySessions([{ ...createDirectSession(sessionId), encryptionMode: 'plain' as const }]);
+        machineDirectSessionTranscriptPageMock.mockResolvedValueOnce({
+            ok: true,
+            items: [{ id: 'provider-terminal-prompt', createdAtMs: 1, raw: { role: 'user', content: { type: 'text', text: 'hello' } } }],
+            nextCursor: null, tailCursor: 'tail-1', hasMore: false,
+        });
+        await internals.fetchMessages(sessionId);
+
+        internals.applyMessages(sessionId, [
+            { id: 'hosted-prompt', localId: 'local-1', createdAt: 10, role: 'user', isSidechain: false,
+                content: { type: 'text', text: 'Reply with the single word: taken' } },
+            { id: 'hosted-reply', localId: null, createdAt: 12, role: 'agent', isSidechain: false,
+                content: [{ type: 'text', text: 'taken', uuid: 'hosted-reply', parentUUID: null }] },
+        ]);
+        const providerTurn = [
+            { id: 'provider-prompt', createdAtMs: 11, raw: { role: 'user', content: { type: 'text', text: 'Reply with the single word: taken' } } },
+            { id: 'provider-reply', createdAtMs: 13, raw: { role: 'agent', content: { type: 'codex', data: { type: 'message', message: 'taken', id: 'provider-reply' } } } },
+        ];
+        machineDirectSessionTranscriptReadAfterMock.mockResolvedValueOnce({ ok: true, items: providerTurn, nextCursor: 'tail-2', truncated: false });
+        await sync.refreshSessionMessages(sessionId);
+        // A later read that returns the same provider rows again does not bring the twin back.
+        machineDirectSessionTranscriptReadAfterMock.mockResolvedValueOnce({ ok: true, items: providerTurn, nextCursor: 'tail-3', truncated: false });
+        await sync.refreshSessionMessages(sessionId);
+
+        const visible = Object.values(storage.getState().sessionMessages[sessionId]?.messagesById ?? {})
+            .map((message) => `${message.kind}:${(message as { text?: string }).text}`)
+            .sort();
+        expect(visible).toEqual(['agent-text:taken', 'user-text:Reply with the single word: taken', 'user-text:hello']);
+    });
+
     it('does not advance a direct-session tail cursor from a discontinuous pushed delta', async () => {
         const sessionId = 'direct_session_push_delta_cursor_gap';
         storage.getState().applySessions([createDirectSession(sessionId)]);

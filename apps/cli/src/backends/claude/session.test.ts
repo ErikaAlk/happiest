@@ -1200,6 +1200,43 @@ describe('Session', () => {
     }
   });
 
+  it('keeps the existing direct-session link when a takeover reports the same Claude session', () => {
+    // A takeover respawns the linked session with transcript storage `direct`. Rewriting the link
+    // changes its transcript source identity, and readers then replace the transcript they already hold.
+    const transcript = createTempClaudeTranscript('sess_1', { projectId: 'proj-a' });
+    vi.stubEnv('HAPPIER_TRANSCRIPT_STORAGE', 'direct');
+    vi.stubEnv('CLAUDE_CONFIG_DIR', transcript.configDir);
+    const existingLink = {
+      v: 1,
+      providerId: 'claude',
+      machineId: 'machine-1',
+      remoteSessionId: 'sess_1',
+      source: { kind: 'claudeConfig' },
+      linkedAtMs: 1_000,
+      followPolicy: { mode: 'background' },
+    };
+    let metadata: Metadata = createMetadataStub({ machineId: 'machine-1', directSessionV1: existingLink } as Partial<Metadata>);
+
+    const client = createSessionClientStub({
+      updateMetadata: (updater) => {
+        metadata = updater(metadata);
+      },
+    });
+
+    const session = createSession(client);
+
+    try {
+      session.onSessionFound('sess_1', hookWithTranscript(transcript.transcriptPath));
+
+      expect(metadata.claudeTranscriptPath).toBe(transcript.transcriptPath);
+      expect(metadata.directSessionV1).toEqual(existingLink);
+    } finally {
+      session.cleanup();
+      vi.unstubAllEnvs();
+      rmSync(transcript.tempDir, { recursive: true, force: true });
+    }
+  });
+
   it('does not carry over transcriptPath when sessionId changes and hook lacks transcriptPath', () => {
     const tempDir = mkdtempSync(join(tmpdir(), 'happier-claude-session-'));
     vi.stubEnv('CLAUDE_CONFIG_DIR', tempDir);
