@@ -352,8 +352,15 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
 
       vi.doMock('node:fs', async () => {
         const actual = await vi.importActual<typeof import('node:fs')>('node:fs');
+        // The fake PATH directory must list what existsSync reports inside it: PATH lookup reads
+        // each directory once before probing candidate spellings.
+        const readdirSync = ((path: Parameters<typeof actual.readdirSync>[0], ...rest: unknown[]) =>
+          String(path) === '/tmp/windows-system32'
+            ? ['powershell.exe']
+            : (actual.readdirSync as (...args: unknown[]) => unknown)(path, ...rest)) as typeof actual.readdirSync;
         return {
           ...actual,
+          readdirSync,
           existsSync: (path: string) =>
             path.endsWith('happier-server.ps1')
             || path === '/tmp/windows-system32/powershell.exe',
