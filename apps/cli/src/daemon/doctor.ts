@@ -9,6 +9,7 @@ import spawn from 'cross-spawn';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { readFile, readlink } from 'node:fs/promises';
+import { readWin32ProcessRows } from '@happier-dev/cli-common/processInstance';
 import { listProcessSnapshot } from './processSnapshotCache';
 
 const SAFE_RESPAWN_ENVIRONMENT_VARIABLE_KEYS = ['CLAUDE_CONFIG_DIR', 'CODEX_HOME', 'CODEX_SQLITE_HOME'] as const;
@@ -34,6 +35,8 @@ export type HappyProcessInfo = {
   cwd?: string;
   environmentVariables?: Record<string, string>;
   daemonOwnershipEnvironmentVariables?: DaemonOwnershipEnvironmentVariables;
+  /** Observed in the same query as the command line (Windows only). */
+  processInstanceFingerprint?: string;
 };
 
 export type ProcessInfoByPid = {
@@ -44,6 +47,8 @@ export type ProcessInfoByPid = {
   cwd?: string;
   environmentVariables?: Record<string, string>;
   daemonOwnershipEnvironmentVariables?: DaemonOwnershipEnvironmentVariables;
+  /** Observed in the same query as the command line (Windows only). */
+  processInstanceFingerprint?: string;
 };
 
 type RawProcessInfo = ProcessInfoByPid;
@@ -160,81 +165,18 @@ function isWindowsHappyHostProcessCandidate(name: string | undefined): boolean {
   return WINDOWS_HAPPY_HOST_PROCESS_NAMES.has(normalizeProcessName(name));
 }
 
-function parsePositiveInt(value: unknown): number | null {
-  const parsed = typeof value === 'number'
-    ? value
-    : Number.parseInt(typeof value === 'string' ? value : '', 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
-}
-
-function parseWindowsProcessInfoOutput(output: string): Map<number, { pid: number; name?: string; cmd?: string }> {
-  const trimmed = output.trim();
-  if (!trimmed) return new Map();
-
-  const parsed = JSON.parse(trimmed) as unknown;
-  const rows = Array.isArray(parsed) ? parsed : [parsed];
-  const result = new Map<number, { pid: number; name?: string; cmd?: string }>();
-  for (const row of rows) {
-    if (!row || typeof row !== 'object') continue;
-    const pid = parsePositiveInt((row as { ProcessId?: unknown }).ProcessId);
-    if (!pid) continue;
-    const name = typeof (row as { Name?: unknown }).Name === 'string' ? (row as { Name?: string }).Name : undefined;
-    const commandLine = typeof (row as { CommandLine?: unknown }).CommandLine === 'string'
-      ? (row as { CommandLine?: string }).CommandLine?.trim()
-      : undefined;
-    result.set(pid, { pid, ...(name ? { name } : {}), ...(commandLine ? { cmd: commandLine } : {}) });
-  }
-  return result;
-}
-
-async function getProcessInfosByPidWindows(
-  pids: readonly number[],
-): Promise<Map<number, { pid: number; name?: string; cmd?: string }>> {
+async function readWindowsProcessInfos(pids: readonly number[] | null): Promise<Map<number, RawProcessInfo>> {
   if (process.platform !== 'win32') return new Map();
-
-  const uniquePids = Array.from(new Set(pids.filter((pid) => Number.isInteger(pid) && pid > 0)));
-  if (uniquePids.length === 0) return new Map();
-
-  try {
-    const filter = uniquePids.map((pid) => `ProcessId=${pid}`).join(' OR ');
-    const script = [
-      `$rows = Get-CimInstance Win32_Process -Filter "${filter}" | Select-Object ProcessId, Name, CommandLine`,
-      'if ($null -eq $rows) { return }',
-      '$rows | ConvertTo-Json -Compress',
-    ].join('; ');
-    const output = execFileSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], {
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
-      windowsHide: true,
+  const infos = new Map<number, RawProcessInfo>();
+  for (const row of (await readWin32ProcessRows(pids)).values()) {
+    infos.set(row.pid, {
+      pid: row.pid,
+      ...(row.name ? { name: row.name } : {}),
+      ...(row.commandLine ? { cmd: row.commandLine } : {}),
+      ...(row.processInstanceFingerprint ? { processInstanceFingerprint: row.processInstanceFingerprint } : {}),
     });
-    return parseWindowsProcessInfoOutput(output);
-  } catch {
-    return new Map();
   }
-}
-
-async function getAllProcessInfosWindows(): Promise<Map<number, { pid: number; name?: string; cmd?: string }>> {
-  if (process.platform !== 'win32') return new Map();
-
-  try {
-    const script = [
-      '$rows = Get-CimInstance Win32_Process | Select-Object ProcessId, Name, CommandLine',
-      'if ($null -eq $rows) { return }',
-      '$rows | ConvertTo-Json -Compress',
-    ].join('; ');
-    const output = execFileSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], {
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
-      windowsHide: true,
-    });
-    return parseWindowsProcessInfoOutput(output);
-  } catch {
-    return new Map();
-  }
-}
-
-async function getProcessInfoByPidWindows(pid: number): Promise<{ pid: number; name?: string; cmd?: string } | null> {
-  return (await getProcessInfosByPidWindows([pid])).get(pid) ?? null;
+  return infos;
 }
 
 function getProcessInfoByPidPosix(pid: number): RawProcessInfo | null {
@@ -280,10 +222,23 @@ function getProcessInfoByPidPosix(pid: number): RawProcessInfo | null {
  * `ps`/procfs/CIM readers with divergent failure behavior.
  */
 export async function readProcessInfoByPid(pid: number): Promise<ProcessInfoByPid | null> {
-  if (!Number.isInteger(pid) || pid <= 0) return null;
-  return await getProcessInfoByPidProcfs(pid)
-    ?? getProcessInfoByPidPosix(pid)
-    ?? await getProcessInfoByPidWindows(pid);
+  return (await readProcessInfosByPid([pid])).get(pid) ?? null;
+}
+
+/**
+ * Batch form of {@link readProcessInfoByPid}. On Windows every PID shares one CIM query, which
+ * also carries the process-instance fingerprint; a missing entry means the process is gone or
+ * could not be read.
+ */
+export async function readProcessInfosByPid(pids: readonly number[]): Promise<Map<number, ProcessInfoByPid>> {
+  const validPids = Array.from(new Set(pids.filter((pid) => Number.isInteger(pid) && pid > 0)));
+  if (process.platform === 'win32') return await readWindowsProcessInfos(validPids);
+  const infos = new Map<number, ProcessInfoByPid>();
+  for (const pid of validPids) {
+    const info = await getProcessInfoByPidProcfs(pid) ?? getProcessInfoByPidPosix(pid);
+    if (info) infos.set(pid, info);
+  }
+  return infos;
 }
 
 /**
@@ -356,6 +311,7 @@ export function classifyHappyProcess(proc: RawProcessInfo): HappyProcessInfo | n
     ...(proc.daemonOwnershipEnvironmentVariables
       ? { daemonOwnershipEnvironmentVariables: proc.daemonOwnershipEnvironmentVariables }
       : {}),
+    ...(proc.processInstanceFingerprint ? { processInstanceFingerprint: proc.processInstanceFingerprint } : {}),
   };
 }
 
@@ -365,9 +321,12 @@ async function findAllHappyProcessesSnapshot(): Promise<HappyProcessInfo[]> {
       if (process.platform !== 'win32') throw error;
       return [];
     });
-    const windowsProcessInfoByPid = await getProcessInfosByPidWindows(
-      processes.filter((proc) => isWindowsHappyHostProcessCandidate(proc.name)).map((proc) => proc.pid),
-    );
+    const windowsHostCandidatePids = processes
+      .filter((proc) => isWindowsHappyHostProcessCandidate(proc.name))
+      .map((proc) => proc.pid);
+    const windowsProcessInfoByPid = windowsHostCandidatePids.length > 0
+      ? await readWindowsProcessInfos(windowsHostCandidatePids)
+      : new Map<number, RawProcessInfo>();
     const allProcesses: HappyProcessInfo[] = [];
     
     for (const proc of processes) {
@@ -386,7 +345,7 @@ async function findAllHappyProcessesSnapshot(): Promise<HappyProcessInfo[]> {
     }
 
     if (process.platform === 'win32' && allProcesses.length === 0) {
-      for (const proc of (await getAllProcessInfosWindows()).values()) {
+      for (const proc of (await readWindowsProcessInfos(null)).values()) {
         const classified = classifyHappyProcess(proc);
         if (!classified) continue;
         allProcesses.push(classified);
@@ -424,7 +383,7 @@ export async function findHappyProcessByPid(pid: number): Promise<HappyProcessIn
 
 export type ProcessByPidClassification =
   | Readonly<{ kind: 'happy'; process: HappyProcessInfo }>
-  | Readonly<{ kind: 'not_happy' }>
+  | Readonly<{ kind: 'not_happy'; processInstanceFingerprint?: string }>
   | Readonly<{ kind: 'unknown' }>;
 
 export type DaemonLifecycleProcessByPidClassification =
@@ -434,17 +393,37 @@ export type DaemonLifecycleProcessByPidClassification =
 
 function classifyRawProcessByPid(proc: RawProcessInfo): ProcessByPidClassification {
   const happy = classifyHappyProcess(proc);
-  return happy ? { kind: 'happy', process: happy } : { kind: 'not_happy' };
+  if (happy) return { kind: 'happy', process: happy };
+  return proc.processInstanceFingerprint
+    ? { kind: 'not_happy', processInstanceFingerprint: proc.processInstanceFingerprint }
+    : { kind: 'not_happy' };
 }
 
 export async function classifyProcessByPid(pid: number): Promise<ProcessByPidClassification> {
-  const processInfo = await readProcessInfoByPid(pid);
-  if (processInfo) {
-    return classifyRawProcessByPid(processInfo);
+  return (await classifyProcessesByPid([pid])).get(pid) ?? { kind: 'unknown' };
+}
+
+/**
+ * Batch form of {@link classifyProcessByPid}: one process query for every PID, and one full
+ * snapshot shared by the PIDs that query could not read.
+ */
+export async function classifyProcessesByPid(
+  pids: readonly number[],
+): Promise<Map<number, ProcessByPidClassification>> {
+  const infos = await readProcessInfosByPid(pids);
+  const classifications = new Map<number, ProcessByPidClassification>();
+  let snapshot: HappyProcessInfo[] | null = null;
+  for (const pid of new Set(pids)) {
+    const info = infos.get(pid);
+    if (info) {
+      classifications.set(pid, classifyRawProcessByPid(info));
+      continue;
+    }
+    snapshot ??= await findAllHappyProcesses();
+    const happy = snapshot.find((p) => p.pid === pid);
+    classifications.set(pid, happy ? { kind: 'happy', process: happy } : { kind: 'unknown' });
   }
-  const all = await findAllHappyProcesses();
-  const happy = all.find((p) => p.pid === pid);
-  return happy ? { kind: 'happy', process: happy } : { kind: 'unknown' };
+  return classifications;
 }
 
 /**

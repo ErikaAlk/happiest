@@ -163,7 +163,14 @@ export function adoptSessionsFromMarkers(params: {
   const happyPidToType = new Map(params.happyProcesses.map((p) => [p.pid, p.type] as const));
   const happyPidToCommandHash = new Map(params.happyProcesses.map((p) => [p.pid, hashProcessCommand(p.command)] as const));
   const happyPidToCommand = new Map(params.happyProcesses.map((p) => [p.pid, p.command] as const));
-  const readProcessInstanceFingerprint = params.readProcessInstanceFingerprint ?? readProcessInstanceFingerprintSync;
+  // Windows snapshots already carry the fingerprint from their CIM query; probing again would
+  // start one blocking PowerShell per marker during daemon startup.
+  const happyPidToProcessInstanceFingerprint = new Map(
+    params.happyProcesses.flatMap((p) => (p.processInstanceFingerprint ? [[p.pid, p.processInstanceFingerprint] as const] : [])),
+  );
+  const readProcessInstanceFingerprint = (pid: number): string | null =>
+    happyPidToProcessInstanceFingerprint.get(pid)
+    ?? (params.readProcessInstanceFingerprint ?? readProcessInstanceFingerprintSync)(pid);
 
   let adopted = 0;
   let eligible = 0;

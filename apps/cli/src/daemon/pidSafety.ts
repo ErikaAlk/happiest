@@ -1,6 +1,6 @@
 import { findHappyProcessByPid } from './doctor';
 import { hashProcessCommand } from './sessionRegistry';
-import { readProcessInstanceFingerprintSync } from '@happier-dev/cli-common/processInstance';
+import { readProcessInstanceFingerprint } from '@happier-dev/cli-common/processInstance';
 
 // IMPORTANT: keep this strict. A false positive here could cause us to adopt/kill an unrelated process.
 export const ALLOWED_HAPPY_SESSION_PROCESS_TYPES = new Set([
@@ -16,15 +16,16 @@ export async function isPidSafeHappySessionProcess(params: {
   expectedProcessInstanceFingerprint?: string;
 }, dependencies: Readonly<{
   findHappyProcessByPidFn?: typeof findHappyProcessByPid;
-  readProcessInstanceFingerprint?: typeof readProcessInstanceFingerprintSync;
+  readProcessInstanceFingerprint?: (pid: number) => string | null | Promise<string | null>;
 }> = {}): Promise<boolean> {
   const proc = await (dependencies.findHappyProcessByPidFn ?? findHappyProcessByPid)(params.pid);
   if (!proc || !ALLOWED_HAPPY_SESSION_PROCESS_TYPES.has(proc.type)) return false;
 
   const expectedProcessInstanceFingerprint = String(params.expectedProcessInstanceFingerprint ?? '').trim();
   if (expectedProcessInstanceFingerprint) {
-    return (dependencies.readProcessInstanceFingerprint ?? readProcessInstanceFingerprintSync)(params.pid)
-      === expectedProcessInstanceFingerprint;
+    const observedProcessInstanceFingerprint = proc.processInstanceFingerprint
+      ?? await (dependencies.readProcessInstanceFingerprint ?? readProcessInstanceFingerprint)(params.pid);
+    return observedProcessInstanceFingerprint === expectedProcessInstanceFingerprint;
   }
   if (params.expectedProcessCommandHash) {
     return hashProcessCommand(proc.command) === params.expectedProcessCommandHash;

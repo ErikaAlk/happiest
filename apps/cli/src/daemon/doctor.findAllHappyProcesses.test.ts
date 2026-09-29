@@ -7,6 +7,12 @@ const { execFileSyncMock, psListMock } = vi.hoisted(() => ({
 
 vi.mock('node:child_process', () => ({
   execFileSync: execFileSyncMock,
+  execFile: (
+    command: string,
+    args: readonly string[],
+    options: unknown,
+    callback: (error: Error | null, stdout: string, stderr: string) => void,
+  ) => callback(null, String(execFileSyncMock(command, args, options) ?? ''), ''),
 }));
 
 vi.mock('ps-list', () => ({

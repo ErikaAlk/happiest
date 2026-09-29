@@ -1,7 +1,7 @@
-import { classifyProcessByPid } from './doctor';
+import { classifyProcessesByPid, type ProcessByPidClassification } from './doctor';
 import { hashProcessCommand } from './sessionRegistry';
 import type { ProcessRunState } from './processRunState';
-import { readProcessInstanceFingerprintSync } from '@happier-dev/cli-common/processInstance';
+import { readProcessInstanceFingerprint } from '@happier-dev/cli-common/processInstance';
 
 export type SessionRunnerProcessIdentity =
   | Readonly<{ kind: 'happy'; processCommandHash: string; processInstanceFingerprint?: string }>
@@ -15,7 +15,7 @@ export type SessionRunnerProcessIdentity =
  * null when the PID was inspected and is not Happy, and throw when identity is unknown.
  */
 export type SessionRunnerProcessCommandHashReader = (pid: number) => Promise<string | null>;
-export type SessionRunnerProcessInstanceFingerprintReader = (pid: number) => string | null;
+export type SessionRunnerProcessInstanceFingerprintReader = (pid: number) => string | null | Promise<string | null>;
 
 export function isValidProcessCommandHash(value: string | null | undefined): value is string {
   return typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
@@ -26,7 +26,7 @@ async function readInjectedProcessIdentity(
   getProcessCommandHash: SessionRunnerProcessCommandHashReader,
   getProcessInstanceFingerprint: SessionRunnerProcessInstanceFingerprintReader,
 ): Promise<SessionRunnerProcessIdentity> {
-  const processInstanceFingerprint = getProcessInstanceFingerprint(pid) ?? undefined;
+  const processInstanceFingerprint = (await getProcessInstanceFingerprint(pid)) ?? undefined;
   try {
     const processCommandHash = await getProcessCommandHash(pid);
     if (isValidProcessCommandHash(processCommandHash)) {
@@ -45,24 +45,50 @@ export async function readSessionRunnerProcessIdentity(params: Readonly<{
   getProcessCommandHash?: SessionRunnerProcessCommandHashReader;
   getProcessInstanceFingerprint?: SessionRunnerProcessInstanceFingerprintReader;
 }>): Promise<SessionRunnerProcessIdentity> {
-  const getProcessInstanceFingerprint = params.getProcessInstanceFingerprint ?? readProcessInstanceFingerprintSync;
   if (params.getProcessCommandHash) {
-    return await readInjectedProcessIdentity(params.pid, params.getProcessCommandHash, getProcessInstanceFingerprint);
+    return await readInjectedProcessIdentity(
+      params.pid,
+      params.getProcessCommandHash,
+      params.getProcessInstanceFingerprint ?? readProcessInstanceFingerprint,
+    );
   }
+  return (await readSessionRunnerProcessIdentities([params.pid])).get(params.pid) ?? { kind: 'unknown' };
+}
 
-  const processInstanceFingerprint = getProcessInstanceFingerprint(params.pid) ?? undefined;
-  const classified = await classifyProcessByPid(params.pid).catch(() => ({ kind: 'unknown' as const }));
-  if (classified.kind === 'happy') {
-    return {
-      kind: 'happy',
-      processCommandHash: hashProcessCommand(classified.process.command),
-      ...(processInstanceFingerprint ? { processInstanceFingerprint } : {}),
-    };
+function readObservedProcessInstanceFingerprint(classified: ProcessByPidClassification): string | undefined {
+  if (classified.kind === 'happy') return classified.process.processInstanceFingerprint;
+  if (classified.kind === 'not_happy') return classified.processInstanceFingerprint;
+  return undefined;
+}
+
+/**
+ * Identity of several runner PIDs from one process observation. On Windows the command line and
+ * the process-instance fingerprint come from a single non-blocking CIM query for all PIDs, so the
+ * daemon heartbeat costs one PowerShell start per tick regardless of how many sessions it tracks.
+ */
+export async function readSessionRunnerProcessIdentities(
+  pids: readonly number[],
+): Promise<Map<number, SessionRunnerProcessIdentity>> {
+  const classifications = await classifyProcessesByPid(pids).catch(() => new Map<number, ProcessByPidClassification>());
+  const identities = new Map<number, SessionRunnerProcessIdentity>();
+  for (const pid of new Set(pids)) {
+    const classified = classifications.get(pid) ?? { kind: 'unknown' as const };
+    // Windows observes the fingerprint in the classification query; a PID missing from it has no
+    // process to fingerprint. Elsewhere the fingerprint is a cheap procfs read or `ps` probe.
+    const processInstanceFingerprint = readObservedProcessInstanceFingerprint(classified)
+      ?? (process.platform === 'win32' ? undefined : (await readProcessInstanceFingerprint(pid)) ?? undefined);
+    const fingerprintField = processInstanceFingerprint ? { processInstanceFingerprint } : {};
+    if (classified.kind === 'happy') {
+      identities.set(pid, {
+        kind: 'happy',
+        processCommandHash: hashProcessCommand(classified.process.command),
+        ...fingerprintField,
+      });
+    } else {
+      identities.set(pid, { kind: classified.kind, ...fingerprintField });
+    }
   }
-  if (classified.kind === 'not_happy') {
-    return { kind: 'not_happy', ...(processInstanceFingerprint ? { processInstanceFingerprint } : {}) };
-  }
-  return { kind: 'unknown', ...(processInstanceFingerprint ? { processInstanceFingerprint } : {}) };
+  return identities;
 }
 
 export function storedProcessIdentityProvesPidReuse(params: Readonly<{

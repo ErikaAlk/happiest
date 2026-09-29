@@ -1,14 +1,21 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const psListMock = vi.fn();
-const execFileSyncMock = vi.fn();
+// Stdout of the Win32_Process CIM query, one value per query.
+const win32ProcessQueryStdoutMock = vi.fn();
 
 vi.mock('ps-list', () => ({
     default: psListMock,
 }));
 
 vi.mock('node:child_process', () => ({
-    execFileSync: execFileSyncMock,
+    execFileSync: vi.fn(),
+    execFile: (
+        _command: string,
+        _args: readonly string[],
+        _options: unknown,
+        callback: (error: Error | null, stdout: string, stderr: string) => void,
+    ) => callback(null, win32ProcessQueryStdoutMock() ?? '', ''),
 }));
 
 describe('doctor win32 process discovery', () => {
@@ -17,7 +24,7 @@ describe('doctor win32 process discovery', () => {
     beforeEach(() => {
         vi.resetModules();
         psListMock.mockReset();
-        execFileSyncMock.mockReset();
+        win32ProcessQueryStdoutMock.mockReset();
         if (originalPlatformDescriptor) {
             Object.defineProperty(process, 'platform', { ...originalPlatformDescriptor, value: 'win32' });
         }
@@ -35,7 +42,7 @@ describe('doctor win32 process discovery', () => {
             { pid: 26316, ppid: 17692, name: 'MainThread' },
             { pid: 99999, ppid: 1, name: 'notepad.exe' },
         ]);
-        execFileSyncMock.mockReturnValue(
+        win32ProcessQueryStdoutMock.mockReturnValue(
             JSON.stringify([
                 {
                     ProcessId: 17692,
@@ -72,7 +79,7 @@ describe('doctor win32 process discovery', () => {
         psListMock.mockResolvedValue([
             { pid: 26316, ppid: 17692, name: 'MainThread' },
         ]);
-        execFileSyncMock
+        win32ProcessQueryStdoutMock
             .mockReturnValueOnce('')
             .mockReturnValueOnce(
                 JSON.stringify([
@@ -108,7 +115,7 @@ describe('doctor win32 process discovery', () => {
     });
 
     it('enriches single-pid inspection with Win32_Process command lines for PID safety', async () => {
-        execFileSyncMock.mockReturnValue(
+        win32ProcessQueryStdoutMock.mockReturnValue(
             JSON.stringify({
                 ProcessId: 26316,
                 Name: 'MainThread',

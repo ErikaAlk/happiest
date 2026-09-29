@@ -153,7 +153,7 @@ describe('startDaemonHeartbeatLoop process-missing delegation', () => {
       },
       currentCliVersion: '1.0.0',
       requestShutdown: vi.fn(),
-      readSessionRunnerProcessIdentity: async () => ({ kind: 'not_happy' }),
+      readSessionRunnerProcessIdentities: async (pids) => new Map(pids.map((pid) => [pid, { kind: 'not_happy' as const }])),
     });
 
     expect(setIntervalSpy).toHaveBeenCalled();
@@ -245,7 +245,7 @@ describe('startDaemonHeartbeatLoop process-missing delegation', () => {
       },
       currentCliVersion: '1.0.0',
       requestShutdown: vi.fn(),
-      readSessionRunnerProcessIdentity: async () => ({ kind: 'not_happy' }),
+      readSessionRunnerProcessIdentities: async (pids) => new Map(pids.map((pid) => [pid, { kind: 'not_happy' as const }])),
     });
 
     expect(setIntervalSpy).toHaveBeenCalled();

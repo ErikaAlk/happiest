@@ -13,6 +13,22 @@ vi.mock('node:child_process', async (importOriginal) => {
   return {
     ...actual,
     execFileSync: execFileSyncMock,
+    // The Win32_Process query runs through the non-blocking reader; answer it from the same fixture.
+    execFile: (
+      command: string,
+      args: readonly string[],
+      options: unknown,
+      callback: (error: Error | null, stdout: string, stderr: string) => void,
+    ) => {
+      let stdout: string;
+      try {
+        stdout = String(execFileSyncMock(command, args, options) ?? '');
+      } catch (error) {
+        callback(error as Error, '', '');
+        return;
+      }
+      callback(null, stdout, '');
+    },
   };
 });
 

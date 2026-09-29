@@ -26,7 +26,7 @@ import { createOnChildExited } from '../sessions/onChildExited';
 import { readSessionMarkerForPid } from '../sessionRegistry';
 import {
   isValidProcessCommandHash,
-  readSessionRunnerProcessIdentity as readSessionRunnerProcessIdentityDefault,
+  readSessionRunnerProcessIdentities as readSessionRunnerProcessIdentitiesDefault,
   storedProcessIdentityProvesPidReuse,
   type SessionRunnerProcessIdentity,
 } from '../sessionRunnerProcessIdentity';
@@ -57,7 +57,7 @@ function isPidAliveBestEffort(pid: number): boolean {
 }
 
 type TrackedSessionHeartbeatPruneReason = 'process-missing' | 'process-reused';
-type ReadSessionRunnerProcessIdentity = (params: Readonly<{ pid: number }>) => Promise<SessionRunnerProcessIdentity>;
+type ReadSessionRunnerProcessIdentities = (pids: readonly number[]) => Promise<Map<number, SessionRunnerProcessIdentity>>;
 
 function hasLiveDaemonChildProcessHandle(
   trackedSession: Pick<TrackedSession, 'startedBy' | 'pid' | 'childProcess'>,
@@ -95,7 +95,7 @@ export function startDaemonHeartbeatLoop(params: Readonly<{
   currentCliVersion: string;
   requestShutdown: (source: 'happier-app' | 'happier-cli' | 'os-signal' | 'exception', errorMessage?: string) => void;
   isShuttingDown?: () => boolean;
-  readSessionRunnerProcessIdentity?: ReadSessionRunnerProcessIdentity;
+  readSessionRunnerProcessIdentities?: ReadSessionRunnerProcessIdentities;
   requestSelfRestart?: RequestDaemonSelfRestart;
 }>): NodeJS.Timeout {
   const {
@@ -109,11 +109,9 @@ export function startDaemonHeartbeatLoop(params: Readonly<{
     currentCliVersion,
     requestShutdown,
     isShuttingDown,
-    readSessionRunnerProcessIdentity,
+    readSessionRunnerProcessIdentities = readSessionRunnerProcessIdentitiesDefault,
     requestSelfRestart = requestDaemonSelfRestart,
   } = params;
-  const readSessionRunnerProcessIdentityForHeartbeat =
-    readSessionRunnerProcessIdentity ?? readSessionRunnerProcessIdentityDefault;
 
   const onChildExitedForPrune =
     onChildExited ??
@@ -208,14 +206,26 @@ export function startDaemonHeartbeatLoop(params: Readonly<{
       await ensureWorkspaceReplicationRecovery();
       await ensureSessionHandoffPrepareTargetRecovery();
 
-      // Prune stale sessions
-      for (const [pid, tracked] of pidToTrackedSession.entries()) {
-        const isPidAlive = isPidAliveBestEffort(pid);
-        const currentIdentity = isPidAlive && (
+      // Prune stale sessions. Identities of every live tracked runner come from one observation.
+      const trackedSessions = Array.from(pidToTrackedSession.entries()).map(([pid, tracked]) => ({
+        pid,
+        tracked,
+        isPidAlive: isPidAliveBestEffort(pid),
+      }));
+      const identityPids = trackedSessions
+        .filter(({ tracked, isPidAlive }) => isPidAlive && (
           isValidProcessCommandHash(tracked.processCommandHash)
           || Boolean(tracked.processInstanceFingerprint)
-        )
-          ? await readSessionRunnerProcessIdentityForHeartbeat({ pid }).catch(() => ({ kind: 'unknown' as const }))
+        ))
+        .map(({ pid }) => pid);
+      const identities = identityPids.length > 0
+        ? await readSessionRunnerProcessIdentities(identityPids).catch(() => new Map<number, SessionRunnerProcessIdentity>())
+        : new Map<number, SessionRunnerProcessIdentity>();
+      for (const { pid, tracked, isPidAlive } of trackedSessions) {
+        // Another lifecycle path may have retired this session while identities were read.
+        if (pidToTrackedSession.get(pid) !== tracked) continue;
+        const currentIdentity = identityPids.includes(pid)
+          ? identities.get(pid) ?? { kind: 'unknown' as const }
           : undefined;
         const pruneReason = getTrackedSessionHeartbeatPruneReason({
           isPidAlive,
