@@ -127,6 +127,8 @@ export function explainAttachIneligibility(input: Readonly<{
   // pane. This is the case the user just hit and was confused by.
   const terminalMode = readMetadataTerminalMode(input.metadata);
   const terminalRequested = readMetadataTerminalRequested(input.metadata);
+  const windowsTerminalContinuationHint =
+    'In the Happier app, open this session\'s menu and choose "Continue in Windows Terminal" to reopen it in a window you can attach to.';
   if (
     terminalMode === 'plain'
     && (terminalRequested === 'windows_terminal' || terminalRequested === 'console')
@@ -135,7 +137,22 @@ export function explainAttachIneligibility(input: Readonly<{
       category: 'windows_hidden',
       shortReason: 'Windows session was started hidden',
       fullReason: eligibility.reason ?? 'This Windows session was started hidden and cannot be attached later.',
-      nextStepHint: 'Restart the session with a visible terminal if you need to attach to it later.',
+      nextStepHint: windowsTerminalContinuationHint,
+    };
+  }
+  // The daemon's default `hidden` Windows launch passes no terminal flags, so the runner records
+  // no terminal host at all.
+  if (
+    readMetadataString(input.metadata, 'os') === 'win32'
+    && readMetadataString(input.metadata, 'startedBy') === 'daemon'
+    && (terminalMode === null || terminalMode === 'plain')
+    && terminalRequested !== 'tmux'
+  ) {
+    return {
+      category: 'windows_hidden',
+      shortReason: 'Windows session was started without a window',
+      fullReason: 'This Windows session was started without a window, so no terminal can attach to it.',
+      nextStepHint: windowsTerminalContinuationHint,
     };
   }
 
@@ -145,19 +162,6 @@ export function explainAttachIneligibility(input: Readonly<{
       shortReason: 'started outside tmux',
       fullReason: 'This session was started outside tmux and can\'t be attached.',
       nextStepHint: 'Enable "Spawn Sessions in Tmux" in the Happier app → Session Settings, then start a new session.',
-    };
-  }
-
-  // tmux is the only supported attach strategy for this agent, but tmux is
-  // not installed on this computer. (Distinct from "started outside tmux":
-  // here the session might be in a tmux pane elsewhere, we just can't
-  // dispatch an `attach` command from this CLI.)
-  if (input.agentAttachStrategy === 'tmux' && !input.tmuxAvailable) {
-    return {
-      category: 'tmux_unavailable',
-      shortReason: 'tmux is not installed on this computer',
-      fullReason: 'tmux is required to attach to this session, but it isn\'t installed on this computer.',
-      nextStepHint: 'Install tmux (e.g. `brew install tmux` on macOS) and retry.',
     };
   }
 
@@ -200,6 +204,20 @@ export function explainAttachIneligibility(input: Readonly<{
         nextStepHint: 'Switch to that machine, or use `happier session list --active` to see all running sessions.',
       };
     }
+  }
+
+  // tmux is the only supported attach strategy for this agent, but tmux is
+  // not installed on this computer. (Distinct from "started outside tmux":
+  // here the session might be in a tmux pane elsewhere, we just can't
+  // dispatch an `attach` command from this CLI.) A session on another machine
+  // is explained as such above: installing tmux here would not help.
+  if (input.agentAttachStrategy === 'tmux' && !input.tmuxAvailable) {
+    return {
+      category: 'tmux_unavailable',
+      shortReason: 'tmux is not installed on this computer',
+      fullReason: 'tmux is required to attach to this session, but it isn\'t installed on this computer.',
+      nextStepHint: 'Install tmux (e.g. `brew install tmux` on macOS) and retry.',
+    };
   }
 
   // Default for everything else: missing_local_attach_state, current_machine_unknown,

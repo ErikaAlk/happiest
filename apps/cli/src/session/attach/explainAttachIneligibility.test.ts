@@ -80,7 +80,22 @@ describe('explainAttachIneligibility', () => {
 
     expect(result.category).toBe('windows_hidden');
     expect(result.fullReason).toBe('This Windows session was started hidden and cannot be attached later.');
-    expect(result.nextStepHint).toMatch(/visible terminal/i);
+    expect(result.nextStepHint).toMatch(/Continue in Windows Terminal/);
+  });
+
+  it('classifies a session the daemon started with the default hidden Windows launch as windows_hidden', () => {
+    // The default `hidden` launch passes no terminal flags, so the runner records no terminal host.
+    const result = explainAttachIneligibility({
+      eligibility: ineligibility({ agentId: 'claude' }),
+      metadata: { host: 'leeroy-pc', os: 'win32', startedBy: 'daemon' },
+      currentMachineHost: 'leeroy-pc',
+      tmuxAvailable: false,
+      agentAttachStrategy: 'tmux',
+    });
+
+    expect(result.category).toBe('windows_hidden');
+    expect(result.fullReason).toMatch(/started without a window/i);
+    expect(result.nextStepHint).toMatch(/Continue in Windows Terminal/);
   });
 
   it('classifies cross-machine sessions as remote_machine using metadata host', () => {
