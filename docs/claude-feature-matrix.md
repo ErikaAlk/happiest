@@ -69,6 +69,16 @@ Genuine rewrites remain subject to Claude's checks; `PreToolUse` still carries
 the input needed for `AskUserQuestion` answers. Claude's Auto classifier remains
 the permission authority before a request reaches these hooks.
 
+The Agent SDK runner also installs the host permission prompt (`canUseTool`,
+which the SDK passes to Claude as `--permission-prompt-tool stdio`).
+`remote/agentSdk/buildClaudeAgentSdkHooks.ts` builds it next to the hooks and
+routes it to the same permission handler. Claude Code 2.1.283 and 2.1.284
+(observed in the shipped binaries) switch `AskUserQuestion` off in SDK sessions
+without a host prompt, before any hook runs; the model then gets "nobody in
+this session can answer it". The hooks still decide first; the prompt only
+answers requests that reach the host. Because the SDK rejects a second prompt
+tool, the advanced options allowlist no longer accepts `permissionPromptToolName`.
+
 | Feature | Status | Exact source files | Current behavior / special cases | Unified architecture migration notes |
 | --- | --- | --- | --- | --- |
 | Direct session browse/list | `supported` | `apps/cli/src/backends/claude/directSessions/listClaudeSessionCandidates.ts`, `apps/ui/sources/agents/providers/claude/directSessions/resolveClaudeBrowseSourceOptions.ts`, `apps/ui/sources/agents/providers/claude/uiBehavior.tsx` | UI exposes only one Claude direct source today: `{ kind: 'claudeConfig' }`; discovery walks `~/.claude/projects/**.jsonl` and lazily reads session titles. | Promote direct-source selection into the same provider runtime record used by resume/takeover instead of a Claude-only browse option. |

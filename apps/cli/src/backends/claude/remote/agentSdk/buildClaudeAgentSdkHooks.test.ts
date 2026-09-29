@@ -80,6 +80,50 @@ describe('buildClaudeAgentSdkHooks', () => {
     ]);
   });
 
+  it('answers the host permission prompt through the same permission handler as the hooks', async () => {
+    const questionInput = {
+      questions: [{
+        question: 'Install the package?',
+        header: 'Install',
+        options: [{ label: 'Install', description: 'Run the installer' }, { label: 'Skip', description: 'Do nothing' }],
+        multiSelect: false,
+      }],
+    };
+    const answered: PermissionResult = {
+      behavior: 'allow',
+      updatedInput: { ...questionInput, answers: { 'Install the package?': 'Skip' } },
+    };
+    const canCallTool = vi.fn(async (): Promise<PermissionResult> => answered);
+    const { canUseTool } = buildHooks(canCallTool);
+    const signal = new AbortController().signal;
+
+    // Claude Code keeps AskUserQuestion enabled in SDK sessions only while a host permission
+    // prompt exists, so the runner must install this callback next to the hooks.
+    const result = await canUseTool('AskUserQuestion', questionInput, {
+      signal,
+      toolUseID: 'toolu_question',
+      agentID: 'agent_789',
+      suggestions: [],
+      blockedPath: '/tmp/blocked.txt',
+      decisionReason: 'needs the user',
+    });
+
+    expect(canCallTool).toHaveBeenCalledWith(
+      'AskUserQuestion',
+      questionInput,
+      expect.anything(),
+      expect.objectContaining({
+        signal,
+        toolUseId: 'toolu_question',
+        agentId: 'agent_789',
+        suggestions: [],
+        blockedPath: '/tmp/blocked.txt',
+        decisionReason: 'needs the user',
+      }),
+    );
+    expect(result).toEqual(answered);
+  });
+
   it('preserves permission metadata and provider updates through PermissionRequest hooks', async () => {
     const updatedInput = { file_path: '/tmp/file.txt' };
     const updatedPermissions = [{ type: 'setMode', mode: 'acceptEdits', destination: 'session' }];

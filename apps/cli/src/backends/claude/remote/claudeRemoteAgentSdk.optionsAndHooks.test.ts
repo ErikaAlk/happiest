@@ -3200,6 +3200,7 @@ describe('claudeRemoteAgentSdk options and hooks', () => {
                             plugins: [{ type: 'local', path: '/tmp/plugin' }],
                             hooks: { SessionStart: [] },
                             pathToClaudeCodeExecutable: null,
+                            permissionPromptToolName: 'mcp__custom__prompt',
                         }),
                     }),
                 }),
@@ -3211,6 +3212,9 @@ describe('claudeRemoteAgentSdk options and hooks', () => {
 
             expect(capturedOptions?.plugins).toEqual([{ type: 'local', path: '/tmp/plugin' }]);
             expect(capturedOptions?.pathToClaudeCodeExecutable).toBe('/tmp/claude');
+            // Happier's host prompt owns permission prompts; the SDK rejects a second prompt tool.
+            expect(capturedOptions?.permissionPromptToolName).toBeUndefined();
+            expect(typeof capturedOptions?.canUseTool).toBe('function');
             expect(capturedOptions?.hooks?.SessionStart?.[0]?.hooks?.length).toBe(1);
             expect(typeof capturedOptions?.debugFile).toBe('string');
             expect(capturedOptions?.debugFile).toMatch(/^\/tmp\/happier-claude-debug-artifacts\//);
@@ -3273,7 +3277,7 @@ describe('claudeRemoteAgentSdk options and hooks', () => {
         }
     });
 
-    it('forwards unresolved Agent SDK permission requests through hooks without installing a prompt tool', async () => {
+    it('installs the host permission prompt and forwards unresolved Agent SDK permission requests through hooks', async () => {
         let capturedOptions: any = null;
         const updatedInput = { file_path: '/tmp/file.txt' };
         const updatedPermissions = [{ type: 'setMode', mode: 'acceptEdits', destination: 'session' }];
@@ -3317,7 +3321,19 @@ describe('claudeRemoteAgentSdk options and hooks', () => {
             createQuery,
         } as any);
 
-        expect(capturedOptions?.canUseTool).toBeUndefined();
+        expect(typeof capturedOptions?.canUseTool).toBe('function');
+        const promptResult = await capturedOptions.canUseTool(
+            'AskUserQuestion',
+            { questions: [] },
+            { signal: new AbortController().signal, toolUseID: 'toolu_prompt' },
+        );
+        expect(canCallTool).toHaveBeenLastCalledWith(
+            'AskUserQuestion',
+            { questions: [] },
+            expect.anything(),
+            expect.objectContaining({ toolUseId: 'toolu_prompt' }),
+        );
+        expect(promptResult).toEqual({ behavior: 'allow', updatedInput, updatedPermissions });
         expect(capturedOptions?.hooks?.PermissionRequest).toHaveLength(1);
 
         const permissionHook = capturedOptions.hooks.PermissionRequest[0].hooks[0];

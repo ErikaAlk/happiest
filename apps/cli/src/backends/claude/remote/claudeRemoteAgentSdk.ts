@@ -804,6 +804,7 @@ export async function claudeRemoteAgentSdk(opts: {
             maxThinkingTokens:
                 typeof mode.claudeRemoteMaxThinkingTokens === 'number' ? mode.claudeRemoteMaxThinkingTokens : undefined,
             hooks,
+            canUseTool: builtHooks.canUseTool,
             ...(claudeSubscriptionRefreshSelection ? {
                 getOAuthToken: createClaudeSubscriptionAccessTokenRefreshCallback({
                     sessionId: daemonRefreshSessionId,
@@ -828,7 +829,6 @@ export async function claudeRemoteAgentSdk(opts: {
             'maxBudgetUsd',
             'sandbox',
             'additionalDirectories',
-            'permissionPromptToolName',
             'tools',
             'systemPrompt',
             'debug',

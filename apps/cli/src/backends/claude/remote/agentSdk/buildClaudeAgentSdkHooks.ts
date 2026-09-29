@@ -16,6 +16,20 @@ function readRecord(value: unknown): Record<string, unknown> {
     : {};
 }
 
+// Agent SDK `canUseTool` callback shape (SDK 0.2.123 `CanUseTool`).
+export type ClaudeAgentSdkCanUseTool = (
+  toolName: string,
+  input: Record<string, unknown>,
+  options: {
+    signal: AbortSignal;
+    toolUseID: string;
+    agentID?: string;
+    suggestions?: unknown;
+    blockedPath?: string;
+    decisionReason?: string;
+  },
+) => Promise<PermissionResult>;
+
 export function buildClaudeAgentSdkHooks(params: Readonly<{
   cwd: string;
   claudeConfigDir: string | null;
@@ -42,6 +56,7 @@ export function buildClaudeAgentSdkHooks(params: Readonly<{
   ) => Promise<PermissionResult>;
 }>): Readonly<{
   hooks: Record<string, unknown>;
+  canUseTool: ClaudeAgentSdkCanUseTool;
 }> {
   const buildObservationHook = () => ({
     hooks: [
@@ -122,5 +137,18 @@ export function buildClaudeAgentSdkHooks(params: Readonly<{
     }],
   };
 
-  return { hooks };
+  // Claude Code enables AskUserQuestion in SDK sessions only while a host permission prompt
+  // exists (`--permission-prompt-tool stdio`, installed by the SDK for `canUseTool`). The hooks
+  // above still decide first; this prompt answers whatever reaches the host through the same handler.
+  const canUseTool: ClaudeAgentSdkCanUseTool = (toolName, input, options) =>
+    params.canCallTool(toolName, input, params.getMode(), {
+      signal: options.signal,
+      toolUseId: readString(options.toolUseID),
+      agentId: readString(options.agentID),
+      suggestions: options.suggestions,
+      blockedPath: readString(options.blockedPath),
+      decisionReason: readString(options.decisionReason),
+    });
+
+  return { hooks, canUseTool };
 }
