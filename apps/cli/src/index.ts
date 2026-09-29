@@ -18,6 +18,7 @@ import { fileURLToPath } from 'node:url';
 import packageJson from '../package.json';
 import { resolveNpmPackageNameOverride } from '@happier-dev/cli-common/update';
 import { installAxiosProxySupport } from '@/utils/proxy/axiosProxy';
+import { installAxiosRequestDeadline } from '@/api/client/axiosRequestDeadline';
 import { ensureWindowsUtf8CodePage } from '@/utils/platform/windows/ensureWindowsUtf8CodePage';
 import { installConsoleWriteErrorGuards, shouldInstallConsoleWriteErrorGuards } from '@/utils/writeConsoleBestEffort';
 import { logger } from '@/ui/logger';
@@ -33,6 +34,7 @@ async function main() {
   }
   initToolTraceIfEnabled();
   installAxiosProxySupport({ axios, env: process.env });
+  installAxiosRequestDeadline(axios);
   const cliRootDir = dirname(dirname(fileURLToPath(import.meta.url)));
   const normalizedArgv = normalizeCliArgv(process.argv.slice(2));
   const updatePackageName = resolveNpmPackageNameOverride({

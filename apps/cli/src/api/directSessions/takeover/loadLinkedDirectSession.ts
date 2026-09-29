@@ -13,6 +13,8 @@ import {
 import * as z from 'zod';
 
 import type { Credentials } from '@/persistence';
+import { serializeAxiosErrorForLog } from '@/api/client/serializeAxiosErrorForLog';
+import { logger } from '@/ui/logger';
 import { fetchSessionById, type RawSessionRecord } from '@/session/transport/http/sessionsHttp';
 import { tryDecryptSessionMetadata } from '@/session/transport/encryption/sessionEncryptionContext';
 
@@ -112,7 +114,13 @@ export async function loadLinkedDirectSession(params: Readonly<{
   | Readonly<{ ok: true; session: LoadedLinkedDirectSession }>
   | Readonly<{ ok: false; errorCode: 'invalid_request' | 'provider_unavailable'; error: string }>
 > {
-  const rawSession = await fetchSessionById({ token: params.credentials.token, sessionId: params.sessionId }).catch(() => null);
+  const rawSession = await fetchSessionById({ token: params.credentials.token, sessionId: params.sessionId }).catch((error: unknown) => {
+    logger.infoFile('[directSessions] linked session lookup failed', {
+      sessionId: params.sessionId,
+      error: serializeAxiosErrorForLog(error),
+    });
+    return null;
+  });
   if (!rawSession) {
     return { ok: false, errorCode: 'invalid_request', error: 'session_not_found' };
   }
