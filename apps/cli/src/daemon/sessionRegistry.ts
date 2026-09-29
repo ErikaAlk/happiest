@@ -110,6 +110,11 @@ async function ensureDir(dir: string): Promise<void> {
 export type WriteSessionMarkerOptions = Readonly<{
   preserveConnectedServiceRestartIntent?: boolean;
   preserveTerminalHostHealth?: boolean;
+  /**
+   * Leave a marker already written for the same process instance in place. Spawn custody is only
+   * a placeholder until the runner reports its session; it must not replace that report.
+   */
+  keepMarkerOfSameProcessInstance?: boolean;
 }>;
 
 /**
@@ -164,6 +169,14 @@ async function writeSessionMarkerUnlocked(
         logger.debug(`[sessionRegistry] Could not read existing session marker pid-${marker.pid}.json to preserve createdAt`, e);
       }
     }
+  }
+
+  if (
+    options.keepMarkerOfSameProcessInstance === true
+    && marker.processInstanceFingerprint !== undefined
+    && existingMarkerFromDisk?.processInstanceFingerprint === marker.processInstanceFingerprint
+  ) {
+    return;
   }
 
   const preservedConnectedServiceRestartIntent =

@@ -36,6 +36,7 @@ export async function persistAcceptedSpawnMarker(
     ? params.existingSessionId.trim()
     : '';
   const processInstanceFingerprint = (await readProcessInstanceFingerprint(params.pid)) ?? undefined;
+  // The runner can report its session while the identity read above is pending.
   await (deps.writeSessionMarkerFn ?? writeSessionMarker)({
     pid: params.pid,
     happySessionId: existingSessionId || `PID-${params.pid}`,
@@ -43,5 +44,5 @@ export async function persistAcceptedSpawnMarker(
     cwd: params.directory,
     ...(processInstanceFingerprint ? { processInstanceFingerprint } : {}),
     respawn,
-  });
+  }, { keepMarkerOfSameProcessInstance: true });
 }
