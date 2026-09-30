@@ -40,7 +40,7 @@ async function writeLegacyCliArtifact(fixtureDir, version, marker = 'legacy') {
   const artifactStem = `happier-v${version}-linux-x64`;
   const artifactName = `${artifactStem}.tar.gz`;
   const artifactDir = join(fixtureDir, artifactStem);
-  await mkdir(join(artifactDir, 'package-dist'), { recursive: true });
+  await mkdir(join(artifactDir, 'happiest-runtime'), { recursive: true });
   const happierBin = join(artifactDir, 'happier');
   await writeFile(
     happierBin,
@@ -59,7 +59,7 @@ exit 0
     'utf8',
   );
   await chmod(happierBin, 0o755);
-  await writeFile(join(artifactDir, 'package-dist', 'index.mjs'), `export default ${JSON.stringify(marker)};\n`, 'utf8');
+  await writeFile(join(artifactDir, 'happiest-runtime', 'index.mjs'), `export default ${JSON.stringify(marker)};\n`, 'utf8');
 
   const tarPath = join(fixtureDir, artifactName);
   const tarRes = spawnSync('tar', ['-czf', tarPath, '-C', fixtureDir, artifactStem], { encoding: 'utf8' });

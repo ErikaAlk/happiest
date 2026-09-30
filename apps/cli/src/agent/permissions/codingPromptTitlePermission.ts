@@ -3,6 +3,7 @@ import {
   parseHappierToolsShellBridgeCommand,
 } from '@happier-dev/protocol';
 import { isChangeTitleToolLikeName } from '@happier-dev/protocol/tools/v2';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { extractShellCommand } from './permissionToolIdentifier';
 
@@ -24,7 +25,7 @@ function isShellBridgeTitleCall(toolName: string, input: unknown): boolean {
   const command = extractShellCommand(input);
   if (!command) return false;
 
-  const parsed = parseHappierToolsShellBridgeCommand(command);
+  const parsed = parseHappierToolsShellBridgeCommand(command, productIdentity.commandName);
   if (!parsed || parsed.kind !== 'call') return false;
   if (parsed.source !== 'happier') return false;
   return parsed.tool === 'change_title' || parsed.tool === 'session_title_set';

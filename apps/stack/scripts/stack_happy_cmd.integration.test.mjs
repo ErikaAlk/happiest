@@ -299,10 +299,10 @@ test('hstack stack happier <name> uses stack.runtime.json ports when env file do
   assert.equal(out.serverUrl, `http://127.0.0.1:${fixture.serverPort}`);
 });
 
-test('hstack stack happier <name> forwards wrapper runtime flags to happier.mjs', async (t) => {
+test('hstack stack happier <name> forwards wrapper runtime flags to happiest.mjs', async (t) => {
   const fixture = await createRuntimeSnapshotFixture(t, {
     stackName: 'runtime-wrapper-passthrough',
-    cliEntrypoint: 'cli/happier.mjs',
+    cliEntrypoint: 'cli/happiest.mjs',
     cliSource: 'process.stdout.write("SNAPSHOT WRAPPER HELP\\n");\n',
   });
 
@@ -342,7 +342,7 @@ test('hstack happier (HAPPIER_STACK_STACK set) uses stack.runtime.json ports whe
   delete env.HAPPIER_STACK_SERVER_PORT_BASE;
   delete env.HAPPIER_STACK_SERVER_PORT_RANGE;
 
-  const res = await runNodeCapture([join(rootDir, 'bin', 'happier.mjs')], {
+  const res = await runNodeCapture([join(rootDir, 'bin', 'happiest.mjs')], {
     cwd: rootDir,
     env,
   });
@@ -384,7 +384,7 @@ test('hstack happier keeps the stable scope when another settings profile matche
   };
   delete env.HAPPIER_STACK_ENV_FILE;
 
-  const res = await runNodeCapture([join(rootDir, 'bin', 'happier.mjs')], {
+  const res = await runNodeCapture([join(rootDir, 'bin', 'happiest.mjs')], {
     cwd: rootDir,
     env,
   });

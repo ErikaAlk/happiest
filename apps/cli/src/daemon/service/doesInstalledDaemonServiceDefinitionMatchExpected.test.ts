@@ -62,7 +62,7 @@ const BOILERPLATE = `<?xml version="1.0" encoding="UTF-8"?>
 
 const PROGRAM_ARGS_NODE_ENTRY = `
       <string>/Users/me/.local/share/fnm/node-versions/v22.22.1/installation/bin/node</string>
-      <string>/Users/me/.happier/cli-dev/current/package-dist/index.mjs</string>
+      <string>/Users/me/.happier/cli-dev/current/happiest-runtime/index.mjs</string>
       <string>daemon</string>
       <string>start-sync</string>`;
 

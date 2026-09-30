@@ -22,7 +22,7 @@ describe('Devin executionRunBackendFactory', () => {
       dispose: vi.fn(),
     } satisfies AgentBackend);
     const resolveMcpServers = vi.fn(async () => ({
-      happier: { command: 'happier-mcp', args: ['bridge'] },
+      happier: { command: 'happiest-mcp', args: ['bridge'] },
     }));
 
     executionRunBackendFactory({

@@ -21,7 +21,7 @@ describe('setup.thisComputer.v1 prompt contract', () => {
       accountId: 'acct_app',
       pairingRequirement: 'compatible',
       cliProvenance: 'override',
-      cliCommand: '/repo/apps/cli/bin/happier.mjs',
+      cliCommand: '/repo/apps/cli/bin/happiest.mjs',
     });
 
     expect(data.kind).toBe(SETUP_PAIRING_PROMPT_KIND);
@@ -32,7 +32,7 @@ describe('setup.thisComputer.v1 prompt contract', () => {
       accountId: 'acct_app',
       pairingRequirement: 'compatible',
       cliProvenance: 'override',
-      cliCommand: '/repo/apps/cli/bin/happier.mjs',
+      cliCommand: '/repo/apps/cli/bin/happiest.mjs',
     });
 
     // A requirement this contract does not know must reach the reader as `unsupported`, never as

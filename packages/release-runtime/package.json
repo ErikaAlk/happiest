@@ -41,12 +41,14 @@
     },
     "./productIdentity": {
       "types": "./dist/productIdentity.d.ts",
+      "require": "./productIdentity.cjs",
       "default": "./dist/productIdentity.js"
     }
   },
   "files": [
     "dist",
     "releaseRings.cjs",
+    "productIdentity.cjs",
     "package.json",
     "README.md"
   ],

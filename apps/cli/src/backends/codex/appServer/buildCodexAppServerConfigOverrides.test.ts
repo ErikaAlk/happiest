@@ -30,7 +30,7 @@ describe('buildCodexAppServerConfigOverrides', () => {
 
     it('uses the app-server startup budget for optional Happier MCP discovery without making it required', () => {
         const overrides = buildCodexAppServerConfigOverrides({
-            happier: { command: 'happier-mcp' },
+            happier: { command: 'happiest-mcp' },
         }, {
             processEnv: {
                 HAPPIER_CODEX_APP_SERVER_STARTUP_RPC_TIMEOUT_MS: '90000',
@@ -62,7 +62,7 @@ describe('buildCodexAppServerConfigOverrides', () => {
 
     it('uses the configured bounded Happier MCP tool-call timeout', () => {
         const overrides = buildCodexAppServerConfigOverrides({
-            happier: { command: 'happier-mcp' },
+            happier: { command: 'happiest-mcp' },
         }, {
             happierMcpToolCallTimeoutMs: 7_230_500,
         });

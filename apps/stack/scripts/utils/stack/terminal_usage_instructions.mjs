@@ -1,3 +1,5 @@
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 import { cmd, sectionTitle } from '../ui/layout.mjs';
 import { cyan, dim } from '../ui/ansi.mjs';
 
@@ -18,7 +20,7 @@ export function renderTerminalUsageInstructions({
   return [
     '',
     sectionTitle('Terminal usage'),
-    dim(`To run ${cyan('happier')} against this stack (and have sessions appear in the UI), use the stack-aware wrapper:`),
+    dim(`To run ${cyan(productIdentity.commandName)} against this stack (and have sessions appear in the UI), use the stack-aware wrapper:`),
     ...(stack ? [cmd(`export HAPPIER_STACK_STACK="${stack}"`)] : []),
     cmd('hstack happier auth status --json'),
     cmd('hstack happier'),

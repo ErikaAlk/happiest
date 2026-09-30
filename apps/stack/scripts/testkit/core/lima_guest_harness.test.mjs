@@ -53,7 +53,7 @@ test('fake guest daemon cleanup cannot invoke host process matching', async () =
   const marker = join(root, 'host-pkill-invoked');
   await writeFile(join(root, 'pkill'), '#!/bin/bash\nprintf called > "$HOST_KILL_MARKER"\n', { mode: 0o755 });
   const result = spawnSync('/bin/bash', ['-c', limaGuestExec, 'fake-lima', 'bash', '-lc',
-    'pkill -f "package-dist/index.mjs daemon start-sync"; printf done',
+    'pkill -f "happiest-runtime/index.mjs daemon start-sync"; printf done',
   ], { env: { PATH: `${root}:/usr/bin:/bin`, HOME: root, HOST_KILL_MARKER: marker }, encoding: 'utf8' });
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stdout, 'done');

@@ -1,6 +1,7 @@
 import type { PermissionMode } from '@/api/types';
 import { getAgentSessionModesKind, type AgentId } from '@happier-dev/agents';
 import { partitionProviderSessionArgs } from '@/cli/providerSessionArgPartition';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 export type ParsedSessionStartArgs = {
   startedBy: 'daemon' | 'terminal' | undefined;
@@ -14,7 +15,7 @@ export type ParsedSessionStartArgs = {
 
 export function parseSessionStartArgs(args: string[]): ParsedSessionStartArgs {
   const parsed = partitionProviderSessionArgs({
-    args: args[0] === 'happier' ? args.slice(1) : args,
+    args: args[0] === productIdentity.commandName ? args.slice(1) : args,
   });
 
   return {

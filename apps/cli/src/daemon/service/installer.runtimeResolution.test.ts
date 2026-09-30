@@ -18,7 +18,7 @@ const {
   discoverInstalledDaemonServiceEntriesMock: vi.fn(async () => []),
   resolveDaemonServiceRuntimeTargetMock: vi.fn(() => ({
     nodePath: '/managed/node',
-    entryPath: '/opt/happier/package-dist/index.mjs',
+    entryPath: '/opt/happier/happiest-runtime/index.mjs',
   })),
   planDaemonServiceInstallMock: vi.fn(() => ({ files: [], commands: [] })),
   applyDaemonServiceInstallPlanMock: vi.fn(async () => undefined),
@@ -79,7 +79,7 @@ describe('installDaemonService runtime resolution', () => {
     resolveDaemonServiceRuntimeTargetMock.mockReset();
     resolveDaemonServiceRuntimeTargetMock.mockReturnValue({
       nodePath: '/managed/node',
-      entryPath: '/opt/happier/package-dist/index.mjs',
+      entryPath: '/opt/happier/happiest-runtime/index.mjs',
     });
     planDaemonServiceInstallMock.mockReset();
     planDaemonServiceInstallMock.mockReturnValue({ files: [], commands: [] });

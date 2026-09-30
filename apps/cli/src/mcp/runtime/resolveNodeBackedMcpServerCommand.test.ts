@@ -78,10 +78,10 @@ describe('resolveNodeBackedMcpServerCommand', () => {
     });
   });
 
-  it('prefers the package-dist entrypoint when it exists', async () => {
+  it('prefers the happiest-runtime entrypoint when it exists', async () => {
     vi.mocked(existsSync).mockImplementation((pathLike) => {
       const path = String(pathLike);
-      if (path.endsWith('/package-dist/mcp/bridges/remoteMcpStdioBridge.mjs')) return true;
+      if (path.endsWith('/happiest-runtime/mcp/bridges/remoteMcpStdioBridge.mjs')) return true;
       return false;
     });
 
@@ -96,7 +96,7 @@ describe('resolveNodeBackedMcpServerCommand', () => {
       args: [
         '--no-warnings',
         '--no-deprecation',
-        '/repo/package-dist/mcp/bridges/remoteMcpStdioBridge.mjs',
+        '/repo/happiest-runtime/mcp/bridges/remoteMcpStdioBridge.mjs',
         '--url',
         'http://127.0.0.1:4010/',
       ],
@@ -111,11 +111,11 @@ describe('resolveNodeBackedMcpServerCommand', () => {
     requireJavaScriptRuntimeExecutableMock.mockResolvedValue('/usr/local/bin/node');
     process.argv = [
       '/usr/local/bin/node',
-      '/repo/apps/cli/.runner-snapshots/5fa3abbb60ff1860/index.mjs',
+      '/repo/apps/cli/.happiest-runner-snapshots/5fa3abbb60ff1860/index.mjs',
     ];
     vi.mocked(existsSync).mockImplementation((pathLike) => {
       const path = String(pathLike);
-      return path === '/repo/apps/cli/.runner-snapshots/5fa3abbb60ff1860/backends/codex/happyMcpStdioBridge.mjs';
+      return path === '/repo/apps/cli/.happiest-runner-snapshots/5fa3abbb60ff1860/backends/codex/happyMcpStdioBridge.mjs';
     });
 
     await expect(
@@ -129,17 +129,17 @@ describe('resolveNodeBackedMcpServerCommand', () => {
       args: [
         '--no-warnings',
         '--no-deprecation',
-        '/repo/apps/cli/.runner-snapshots/5fa3abbb60ff1860/backends/codex/happyMcpStdioBridge.mjs',
+        '/repo/apps/cli/.happiest-runner-snapshots/5fa3abbb60ff1860/backends/codex/happyMcpStdioBridge.mjs',
         '--session-id',
         'cmrae5m2x',
       ],
     });
   });
 
-  it('prefers the source entrypoint when explicitly requested even if package-dist exists', async () => {
+  it('prefers the source entrypoint when explicitly requested even if happiest-runtime exists', async () => {
     vi.mocked(existsSync).mockImplementation((pathLike) => {
       const path = String(pathLike);
-      if (path.endsWith('/package-dist/mcp/bridges/remoteMcpStdioBridge.mjs')) return true;
+      if (path.endsWith('/happiest-runtime/mcp/bridges/remoteMcpStdioBridge.mjs')) return true;
       if (path.endsWith('/src/mcp/bridges/remoteMcpStdioBridge.ts')) return true;
       return false;
     });
@@ -165,10 +165,10 @@ describe('resolveNodeBackedMcpServerCommand', () => {
     });
   });
 
-  it('falls back to the dist entrypoint when package-dist is missing', async () => {
+  it('falls back to the dist entrypoint when happiest-runtime is missing', async () => {
     vi.mocked(existsSync).mockImplementation((pathLike) => {
       const path = String(pathLike);
-      if (path.endsWith('/package-dist/mcp/bridges/remoteMcpStdioBridge.mjs')) return false;
+      if (path.endsWith('/happiest-runtime/mcp/bridges/remoteMcpStdioBridge.mjs')) return false;
       if (path.endsWith('/dist/mcp/bridges/remoteMcpStdioBridge.mjs')) return true;
       return false;
     });
@@ -231,7 +231,7 @@ describe('resolveNodeBackedMcpServerCommand', () => {
     vi.mocked(resolveTsxImportHookPath).mockReturnValue(null);
     vi.mocked(existsSync).mockImplementation((pathLike) => {
       const path = String(pathLike);
-      if (path.endsWith('/package-dist/mcp/bridges/remoteMcpStdioBridge.mjs')) return false;
+      if (path.endsWith('/happiest-runtime/mcp/bridges/remoteMcpStdioBridge.mjs')) return false;
       if (path.endsWith('/dist/mcp/bridges/remoteMcpStdioBridge.mjs')) return false;
       if (path.endsWith('/src/mcp/bridges/remoteMcpStdioBridge.ts')) return true;
       return false;

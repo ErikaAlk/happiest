@@ -60,7 +60,7 @@ describe('resolveManagedCliReleaseChannelSync', () => {
     const resolved = resolveManagedCliReleaseChannelSync({
       argv: [
         'happiest-dev',
-        '/Users/test/.happiest/cli-preview/versions/1.2.3/package-dist/index.mjs',
+        '/Users/test/.happiest/cli-preview/versions/1.2.3/happiest-runtime/index.mjs',
       ],
       processEnv: {},
     });

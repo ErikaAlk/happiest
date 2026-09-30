@@ -586,7 +586,7 @@ describe('CodexLikePermissionHandler', () => {
 
     const result = await handler.handleToolCall('tool-1', 'Bash', {
       command:
-        `happier tools call --session-id cmmfivqgm002d8o1ug15b02o1 --directory /tmp/workspace ` +
+        `happiest tools call --session-id cmmfivqgm002d8o1ug15b02o1 --directory /tmp/workspace ` +
         `--source happier --tool change_title --args-json '{"title":"Blocked"}' --json`,
     });
 
@@ -755,12 +755,12 @@ describe('CodexLikePermissionHandler', () => {
 
     await expect(
       handler.handleToolCall('tool-untrusted-launcher', 'bash', {
-        command: `node ./happier-helper.js tools call --source happier --tool save_memory --args-json '{}' --json`,
+        command: `node ./happiest-helper.js tools call --source happier --tool save_memory --args-json '{}' --json`,
       }),
     ).resolves.toEqual({ decision: 'denied' });
     await expect(
       handler.handleToolCall('tool-compound', 'bash', {
-        command: `happier tools list --json; touch /tmp/happier-pwn`,
+        command: `happiest tools list --json; touch /tmp/happiest-pwn`,
       }),
     ).resolves.toEqual({ decision: 'denied' });
   });
@@ -771,7 +771,7 @@ describe('CodexLikePermissionHandler', () => {
 
     const promise = handler.handleToolCall('tool-1', 'bash', {
       command:
-        `happier tools call --session-id cmmfivqgm002d8o1ug15b02o1 --directory /tmp/workspace ` +
+        `happiest tools call --session-id cmmfivqgm002d8o1ug15b02o1 --directory /tmp/workspace ` +
         `--source qa_marker_stdio_20260306 --tool get_marker --args-json '{}' --json`,
     });
 
@@ -794,7 +794,7 @@ describe('CodexLikePermissionHandler', () => {
 
     const promise = handler.handleToolCall('tool-1', 'bash', {
       command:
-        `happier tools call --session-id cmmfivqgm002d8o1ug15b02o1 --directory /tmp/workspace ` +
+        `happiest tools call --session-id cmmfivqgm002d8o1ug15b02o1 --directory /tmp/workspace ` +
         `--source happier --tool action_execute --args-json '{"actionId":"dangerous.action"}' --json`,
     });
 

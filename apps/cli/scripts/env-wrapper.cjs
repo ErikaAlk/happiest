@@ -18,16 +18,17 @@ const { spawn } = require('child_process');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
+const { productIdentity } = require('@happier-dev/release-runtime/productIdentity');
 
 const VARIANTS = {
   stable: {
-    homeDir: path.join(os.homedir(), '.happier'),
+    homeDir: path.join(os.homedir(), productIdentity.homeDirName),
     color: '\x1b[32m', // Green
     label: '✅ STABLE',
     serverUrl: process.env.HAPPIEST_SERVER_URL ||'https://api.happier.dev'
   },
   dev: {
-    homeDir: path.join(os.homedir(), '.happier-dev'),
+    homeDir: path.join(os.homedir(), productIdentity.sourceHomeDirName),
     color: '\x1b[33m', // Yellow
     label: '🔧 DEV',
     serverUrl: process.env.HAPPIEST_SERVER_URL ||'https://api.happier.dev'
@@ -78,7 +79,7 @@ const env = {
   HAPPIER_VARIANT: variant, // For internal validation
 };
 
-const binPath = path.join(__dirname, '..', 'bin', 'happier.mjs');
+const binPath = path.join(__dirname, '..', 'bin', `${productIdentity.commandName}.mjs`);
 const proc = spawn('node', [binPath, command, ...args], {
   env,
   stdio: 'inherit',

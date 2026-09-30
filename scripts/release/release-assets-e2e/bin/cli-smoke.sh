@@ -38,9 +38,9 @@ resolve_happier_prefix_from_npm_global_package() {
     exit 1
   fi
 
-  local expected_bin="$npm_global_root/@happier-dev/cli/bin/happier.mjs"
+  local expected_bin="$npm_global_root/@happier-dev/cli/bin/happiest.mjs"
   if [[ ! -f "$expected_bin" ]]; then
-    echo "[cli] expected packaged happier command entrypoint at: $expected_bin" >&2
+    echo "[cli] expected packaged happiest command entrypoint at: $expected_bin" >&2
     echo "[cli] npm --version: $(npm --version 2>/dev/null || echo unknown)" >&2
     echo "[cli] npm root -g: ${npm_global_root:-}" >&2
     echo "[cli] PATH: $PATH" >&2
@@ -48,8 +48,8 @@ resolve_happier_prefix_from_npm_global_package() {
     exit 1
   fi
 
-  if ! command -v happier >/dev/null 2>&1; then
-    echo "[cli] expected installed happier shim command, but it is not on PATH" >&2
+  if ! command -v happiest >/dev/null 2>&1; then
+    echo "[cli] expected installed happiest shim command, but it is not on PATH" >&2
     echo "[cli] npm prefix -g: ${npm_global_prefix:-}" >&2
     echo "[cli] npm root -g: ${npm_global_root:-}" >&2
     echo "[cli] PATH: $PATH" >&2
@@ -57,28 +57,28 @@ resolve_happier_prefix_from_npm_global_package() {
   fi
 
   local command_path
-  command_path="$(command -v happier)"
+  command_path="$(command -v happiest)"
   local resolved_command_path
   resolved_command_path="$(readlink -f "$command_path" 2>/dev/null || echo "$command_path")"
   local resolved_expected_bin
   resolved_expected_bin="$(readlink -f "$expected_bin" 2>/dev/null || echo "$expected_bin")"
   if [[ "$resolved_command_path" != "$resolved_expected_bin" ]]; then
-    echo "[cli] expected happier command to resolve to packaged bin entrypoint" >&2
-    echo "[cli] command -v happier: $command_path" >&2
+    echo "[cli] expected happiest command to resolve to packaged bin entrypoint" >&2
+    echo "[cli] command -v happiest: $command_path" >&2
     echo "[cli] resolved command path: $resolved_command_path" >&2
     echo "[cli] expected packaged bin path: $resolved_expected_bin" >&2
     exit 1
   fi
 
-  if ! happier --version >/dev/null 2>&1; then
-    echo "[cli] expected installed happier shim command to be runnable: happier --version" >&2
-    echo "[cli] command -v happier: $command_path" >&2
+  if ! happiest --version >/dev/null 2>&1; then
+    echo "[cli] expected installed happiest shim command to be runnable: happiest --version" >&2
+    echo "[cli] command -v happiest: $command_path" >&2
     echo "[cli] resolved command path: $resolved_command_path" >&2
     exit 1
   fi
 
-  echo "[cli] installed happier shim proof: $command_path -> $resolved_command_path"
-  HAPPIER_PREFIX=(happier)
+  echo "[cli] installed happiest shim proof: $command_path -> $resolved_command_path"
+  HAPPIER_PREFIX=(happiest)
 }
 
 # Reset state so reruns cannot reuse stale tokens from previous stack instances.
@@ -92,14 +92,14 @@ if [[ -n "$HAPPIER_TGZ" && -f "$HAPPIER_TGZ" ]]; then
   resolve_happier_prefix_from_npm_global_package
 elif [[ "$HAPPIER_CLI_INSTALL_MODE" == "preinstalled" ]]; then
   echo "[cli] using preinstalled happier-cli"
-  if ! command -v happier >/dev/null 2>&1; then
-    echo "[cli] expected happier to be preinstalled (HAPPIER_CLI_INSTALL_MODE=preinstalled), but it was not found in PATH" >&2
+  if ! command -v happiest >/dev/null 2>&1; then
+    echo "[cli] expected happiest to be preinstalled (HAPPIER_CLI_INSTALL_MODE=preinstalled), but it was not found in PATH" >&2
     exit 1
   fi
-  HAPPIER_PREFIX=(happier)
+  HAPPIER_PREFIX=(happiest)
 elif [[ "$HAPPIER_CLI_INSTALL_MODE" == "npx" ]]; then
   echo "[cli] running happier-cli via npx: $HAPPIER_NPM_SPEC"
-  HAPPIER_PREFIX=(npx --yes -p "$HAPPIER_NPM_SPEC" happier)
+  HAPPIER_PREFIX=(npx --yes -p "$HAPPIER_NPM_SPEC" happiest)
 else
   echo "[cli] installing happier-cli from npm: $HAPPIER_NPM_SPEC"
   npm_config_bin_links=true npm install -g "$HAPPIER_NPM_SPEC" >/dev/null

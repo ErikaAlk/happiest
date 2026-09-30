@@ -1476,7 +1476,7 @@ describe('claudeRemoteAgentSdk options and hooks', () => {
         });
 
         const happierMcpServers = {
-            happier: { command: 'node', args: ['happier-mcp.mjs', '--url', 'http://127.0.0.1:1234'] },
+            happier: { command: 'node', args: ['happiest-mcp.mjs', '--url', 'http://127.0.0.1:1234'] },
         };
 
             await claudeRemoteAgentSdk({
@@ -1525,7 +1525,7 @@ describe('claudeRemoteAgentSdk options and hooks', () => {
         });
 
         const happierMcpServers = {
-            happier: { command: 'node', args: ['happier-mcp.mjs', '--url', 'http://127.0.0.1:1234'] },
+            happier: { command: 'node', args: ['happiest-mcp.mjs', '--url', 'http://127.0.0.1:1234'] },
         };
         const userMcpConfig = JSON.stringify({
             mcpServers: {

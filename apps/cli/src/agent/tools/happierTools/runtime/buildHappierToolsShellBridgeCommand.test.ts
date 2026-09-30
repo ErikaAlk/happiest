@@ -50,12 +50,12 @@ describe('buildHappierToolsShellBridgeCommand', () => {
     });
     expect(
       parseTrustedHappierToolsShellBridgeCommand(
-        `happier tools call --source happier --tool save_memory --args-json '{"memory":"remember this"}' --json`,
+        `happiest tools call --source happier --tool save_memory --args-json '{"memory":"remember this"}' --json`,
       ),
     ).toBeNull();
     expect(
       parseTrustedHappierToolsShellBridgeCommand(
-        `node ./happier-helper.js tools call --source happier --tool save_memory --args-json '{"memory":"remember this"}' --json`,
+        `node ./happiest-helper.js tools call --source happier --tool save_memory --args-json '{"memory":"remember this"}' --json`,
       ),
     ).toBeNull();
     expect(parseTrustedHappierToolsShellBridgeCommand(`${command} && touch /tmp/happier-pwn`)).toBeNull();

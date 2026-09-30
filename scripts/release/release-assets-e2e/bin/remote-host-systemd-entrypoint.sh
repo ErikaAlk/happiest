@@ -52,9 +52,9 @@ if [[ ! -f /packs/cli.tgz ]]; then
   exit 1
 fi
 
-prefix="$HOME/.happier/npm"
-cache_dir="$HOME/.happier/.npm-cache"
-mkdir -p "$HOME/.happier/bin" "$prefix" "$cache_dir"
+prefix="$HOME/.happiest/npm"
+cache_dir="$HOME/.happiest/.npm-cache"
+mkdir -p "$HOME/.happiest/bin" "$prefix" "$cache_dir"
 npm config set prefix "$prefix" >/dev/null
 npm config set cache "$cache_dir" >/dev/null
 npm cache clean --force >/dev/null 2>&1 || true
@@ -63,7 +63,7 @@ with_cli="${HAPPIER_WITH_CLI:-1}"
 
 rm -rf "$prefix/lib/node_modules/@happier-dev/cli"
 rm -rf "$prefix/lib/node_modules/@happier-dev/stack"
-rm -f "$prefix/bin/happier" "$prefix/bin/happier-dev" "$prefix/bin/happier-mcp" \
+rm -f "$prefix/bin/happiest" "$prefix/bin/happiest-source" "$prefix/bin/happiest-mcp" \
   "$prefix/bin/happier-mcp-remote-bridge" "$prefix/bin/happier-mcp-stdio-launcher" "$prefix/bin/hstack"
 
 if [[ -f /packs/stack.tgz ]]; then
@@ -71,7 +71,7 @@ if [[ -f /packs/stack.tgz ]]; then
   # optional CLI install can win last (and avoid EEXIST on the bin link).
   npm install -g --force /packs/stack.tgz --no-audit --no-fund >/dev/null
   if [[ -x "$prefix/bin/hstack" ]]; then
-    ln -sf "$prefix/bin/hstack" "$HOME/.happier/bin/hstack"
+    ln -sf "$prefix/bin/hstack" "$HOME/.happiest/bin/hstack"
   fi
 fi
 
@@ -79,12 +79,12 @@ if [[ "$with_cli" == "1" ]]; then
   npm install -g --force /packs/cli.tgz --no-audit --no-fund >/dev/null
 fi
 
-if [[ "$with_cli" == "1" && ! -x "$prefix/bin/happier" ]]; then
-  echo "[install-shim] expected $prefix/bin/happier to exist after install" >&2
+if [[ "$with_cli" == "1" && ! -x "$prefix/bin/happiest" ]]; then
+  echo "[install-shim] expected $prefix/bin/happiest to exist after install" >&2
   exit 1
 fi
 if [[ "$with_cli" == "1" ]]; then
-  ln -sf "$prefix/bin/happier" "$HOME/.happier/bin/happier"
+  ln -sf "$prefix/bin/happiest" "$HOME/.happiest/bin/happiest"
 fi
 
 rm -rf "$cache_dir" "$HOME/.npm/_cacache" >/dev/null 2>&1 || true

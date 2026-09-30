@@ -60,7 +60,7 @@ export type CurrentCliInfo = Readonly<{
   /**
    * The actual invocation name observed from `process.argv` / env. May
    * differ from `shim` when the user runs the dev binary directly (e.g.
-   * `node apps/cli/bin/happier.mjs`) or via a custom alias. Used in repair
+   * `node apps/cli/bin/happiest.mjs`) or via a custom alias. Used in repair
    * copy so command suggestions match the binary the user actually ran —
    * if they invoked via `hdev`, suggestions should say `hdev daemon start`,
    * not the hardcoded `happier`. Falls back to `shim ?? 'happier'` when

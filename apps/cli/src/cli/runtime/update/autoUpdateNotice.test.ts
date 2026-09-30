@@ -120,13 +120,13 @@ describe('maybeAutoUpdateNotice', () => {
   });
 
 
-  it('prefers the installed package-dist entrypoint for background update checks', () => {
+  it('prefers the installed happiest-runtime entrypoint for background update checks', () => {
     withUpdateHomeDir((homeDir) => {
       const output = captureConsoleText();
       try {
         const cliRootDir = join(homeDir, 'cli', 'current');
-        mkdirSync(join(cliRootDir, 'package-dist'), { recursive: true });
-        writeFileSync(join(cliRootDir, 'package-dist', 'index.mjs'), 'export {};\n', 'utf8');
+        mkdirSync(join(cliRootDir, 'happiest-runtime'), { recursive: true });
+        writeFileSync(join(cliRootDir, 'happiest-runtime', 'index.mjs'), 'export {};\n', 'utf8');
         const cacheDir = join(homeDir, 'cache');
         mkdirSync(cacheDir, { recursive: true });
 
@@ -146,7 +146,7 @@ describe('maybeAutoUpdateNotice', () => {
         });
 
         expect(spawnDetached).toHaveBeenCalledWith({
-          script: join(cliRootDir, 'package-dist', 'index.mjs'),
+          script: join(cliRootDir, 'happiest-runtime', 'index.mjs'),
           args: ['self', 'check', '--quiet'],
           cwd: cliRootDir,
           env: expect.objectContaining({ HAPPIER_CLI_UPDATE_CHECK_SPAWNED: '1' }),

@@ -4,6 +4,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { getRootDir } from './utils/paths/paths.mjs';
 import { printResult, wantsHelp, wantsJson } from './utils/cli/cli.mjs';
 import { parseArgs } from './utils/cli/args.mjs';
@@ -39,7 +40,7 @@ function usage() {
     '- creates a temporary sandbox dir',
     '- runs `hstack tools setup-pr ...` inside that sandbox (sandboxed home/runtime/storage; optional shared workspace cache)',
     '- on exit (including Ctrl+C): stops sandbox processes and deletes the sandbox dir',
-    '- prints a "Terminal usage" section with the exact env exports + `happier` command to run sessions against the sandbox server/account',
+    `- prints a "Terminal usage" section with the exact env exports + \`${productIdentity.commandName}\` command to run sessions against the sandbox server/account`,
     '',
   ].join('\n');
 }
@@ -318,7 +319,7 @@ async function main() {
       dim('Tips:'),
       dim('- Add `-v` / `-vv` / `-vvv` to show the full logs'),
       dim('- Add `--keep-sandbox` to keep the sandbox directory between runs'),
-      dim('- To start a CLI session from another terminal, use the printed "Terminal usage" exports, then run `happier`'),
+      dim(`- To start a CLI session from another terminal, use the printed "Terminal usage" exports, then run \`${productIdentity.commandName}\``),
       '',
       existingSandboxes.length
         ? bold('Choose how to proceed') + dim(' (or Ctrl+C to cancel).')

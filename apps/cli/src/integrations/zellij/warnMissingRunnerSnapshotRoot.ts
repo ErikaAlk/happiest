@@ -2,17 +2,18 @@
  * Orphan surfacing for pinned runner dist snapshots.
  *
  * A session runner spawns bundled tools (zellij, node-pty relay) from paths inside its own
- * `.runner-snapshots/<fingerprint>/` root for its whole lifetime. If that root is deleted out from
+ * `.happiest-runner-snapshots/<fingerprint>/` root for its whole lifetime. If that root is deleted out from
  * under the still-running runner, those spawns ENOENT. This helper makes that class diagnosable by
  * emitting ONE distinct WARN naming the snapshot fingerprint and runner pid.
  *
  * It is diagnostic-only: it never restarts anything and never classifies host liveness/death.
  */
 import { existsSync } from 'node:fs';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { logger } from '@/ui/logger';
 
-const RUNNER_SNAPSHOTS_SEGMENT = '.runner-snapshots';
+const RUNNER_SNAPSHOTS_SEGMENT = productIdentity.runnerSnapshotsDirName.replaceAll('.', '\\.');
 
 export type MissingRunnerSnapshotRoot = Readonly<{
   fingerprint: string;
@@ -24,7 +25,7 @@ function normalizeSeparators(pathLike: string): string {
 }
 
 /**
- * When `entrypointPath` points inside a `.runner-snapshots/<fingerprint>/` root and that root no
+ * When `entrypointPath` points inside a `.happiest-runner-snapshots/<fingerprint>/` root and that root no
  * longer exists on disk, return the fingerprint + root; otherwise null.
  */
 export function describeMissingRunnerSnapshotRoot(params: Readonly<{

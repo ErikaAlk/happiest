@@ -150,7 +150,7 @@ _.env.pipeline.production.local
 /.clawpatch
 /apply_fix.py
 /apps/cli/.restore.*
-/apps/cli/.runner-snapshots/
+/apps/cli/.happiest-runner-snapshots/
 /apps/cli/package.yaml
 /evidence/
 /liveqa_*.mjs

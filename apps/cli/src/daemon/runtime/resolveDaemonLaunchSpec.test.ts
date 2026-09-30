@@ -11,7 +11,7 @@ const {
   resolveCliTsxTsconfigPathMock,
 } = vi.hoisted(() => ({
   ensureJavaScriptRuntimeExecutableMock: vi.fn<() => Promise<string | null>>(async () => '/usr/bin/node'),
-  resolvePackagedRuntimeEntrypointMock: vi.fn(() => '/opt/happier/package-dist/index.mjs'),
+  resolvePackagedRuntimeEntrypointMock: vi.fn(() => '/opt/happier/happiest-runtime/index.mjs'),
   resolveTsxImportHookSpecifierMock: vi.fn(() => '/opt/happier/node_modules/tsx/dist/esm/index.mjs'),
   resolveCliTsxTsconfigPathMock: vi.fn(() => '/opt/happier/apps/cli/tsconfig.json'),
 }));
@@ -135,7 +135,7 @@ describe('resolveDaemonLaunchSpec', () => {
       });
       process.argv = [
         'happier',
-        'C:\\Users\\test_qa\\.happier\\cli-preview\\versions\\0.2.8\\package-dist\\index.mjs',
+        'C:\\Users\\test_qa\\.happier\\cli-preview\\versions\\0.2.8\\happiest-runtime\\index.mjs',
         'daemon',
         'restart',
       ];
@@ -145,7 +145,7 @@ describe('resolveDaemonLaunchSpec', () => {
 
       expect(result).toEqual({
         filePath: 'C:\\Users\\test_qa\\.happier\\tools\\js-runtime\\current\\bin\\happier-js-runtime.cmd',
-        args: ['C:\\Users\\test_qa\\.happier\\cli-preview\\versions\\0.2.8\\package-dist\\index.mjs', 'daemon', 'start-sync'],
+        args: ['C:\\Users\\test_qa\\.happier\\cli-preview\\versions\\0.2.8\\happiest-runtime\\index.mjs', 'daemon', 'start-sync'],
       });
       expect(ensureJavaScriptRuntimeExecutableMock).not.toHaveBeenCalled();
     } finally {
@@ -162,7 +162,7 @@ describe('resolveDaemonLaunchSpec', () => {
       const actual = await vi.importActual<typeof import('node:fs')>('node:fs');
       return {
         ...actual,
-        existsSync: (path: string) => path === '/opt/happier/package-dist/index.mjs',
+        existsSync: (path: string) => path === '/opt/happier/happiest-runtime/index.mjs',
       };
     });
 
@@ -188,7 +188,7 @@ describe('resolveDaemonLaunchSpec', () => {
 
       expect(result).toEqual({
         filePath: '/usr/bin/node',
-        args: ['--no-warnings', '--no-deprecation', '/opt/happier/package-dist/index.mjs', 'daemon', 'start-sync'],
+        args: ['--no-warnings', '--no-deprecation', '/opt/happier/happiest-runtime/index.mjs', 'daemon', 'start-sync'],
       });
     } finally {
       Object.defineProperty(process, 'execPath', {
@@ -204,14 +204,14 @@ describe('resolveDaemonLaunchSpec', () => {
 
   it('does not launch detached daemons from an embedded bun virtual packaged entrypoint on Windows', async () => {
     process.env.HAPPIER_CLI_SUBPROCESS_ALLOW_TSX_FALLBACK = '1';
-    resolvePackagedRuntimeEntrypointMock.mockReturnValueOnce('B:/~BUN/root/package-dist/index.mjs');
+    resolvePackagedRuntimeEntrypointMock.mockReturnValueOnce('B:/~BUN/root/happiest-runtime/index.mjs');
     vi.doMock('node:fs', async () => {
       const actual = await vi.importActual<typeof import('node:fs')>('node:fs');
       return {
         ...actual,
         existsSync: (path: string) => (
           path.replaceAll('\\', '/').endsWith('/src/index.ts')
-          || path === 'B:/~BUN/root/package-dist/index.mjs'
+          || path === 'B:/~BUN/root/happiest-runtime/index.mjs'
         ),
       };
     });
@@ -241,7 +241,7 @@ describe('resolveDaemonLaunchSpec', () => {
         'daemon',
         'start-sync',
       ]);
-      expect(result.args).not.toEqual(expect.arrayContaining(['B:/~BUN/root/package-dist/index.mjs']));
+      expect(result.args).not.toEqual(expect.arrayContaining(['B:/~BUN/root/happiest-runtime/index.mjs']));
     } finally {
       Object.defineProperty(process, 'execPath', {
         value: originalExecPath,
@@ -256,7 +256,7 @@ describe('resolveDaemonLaunchSpec', () => {
 
   it('prefers the installed Windows packaged binary when launched under bun with an embedded bundle argv path', async () => {
     resolvePackagedRuntimeEntrypointMock.mockReturnValueOnce(
-      'C:\\Users\\test\\.happier\\cli-preview\\versions\\0.2.6-preview.9\\package-dist\\index.mjs',
+      'C:\\Users\\test\\.happier\\cli-preview\\versions\\0.2.6-preview.9\\happiest-runtime\\index.mjs',
     );
     vi.doMock('node:fs', async () => {
       const actual = await vi.importActual<typeof import('node:fs')>('node:fs');
@@ -264,8 +264,8 @@ describe('resolveDaemonLaunchSpec', () => {
         ...actual,
         existsSync: (path: string) => {
           const normalized = path.replaceAll('\\', '/');
-          return normalized === 'C:/Users/test/.happier/cli-preview/versions/0.2.6-preview.9/package-dist/index.mjs'
-            || normalized === 'C:/Users/test/.happier/cli-preview/versions/0.2.6-preview.9/happier.exe';
+          return normalized === 'C:/Users/test/.happier/cli-preview/versions/0.2.6-preview.9/happiest-runtime/index.mjs'
+            || normalized === 'C:/Users/test/.happier/cli-preview/versions/0.2.6-preview.9/happiest.exe';
         },
       };
     });
@@ -286,7 +286,7 @@ describe('resolveDaemonLaunchSpec', () => {
       const result = await mod.resolveDaemonLaunchSpec(['daemon', 'start-sync']);
 
       expect(result).toEqual({
-        filePath: 'C:\\Users\\test\\.happier\\cli-preview\\versions\\0.2.6-preview.9\\happier.exe',
+        filePath: 'C:\\Users\\test\\.happier\\cli-preview\\versions\\0.2.6-preview.9\\happiest.exe',
         args: ['daemon', 'start-sync'],
       });
       expect(ensureJavaScriptRuntimeExecutableMock).not.toHaveBeenCalled();
@@ -307,7 +307,7 @@ describe('resolveDaemonLaunchSpec', () => {
       const actual = await vi.importActual<typeof import('node:fs')>('node:fs');
       return {
         ...actual,
-        existsSync: (path: string) => path === '/opt/happier/package-dist/index.mjs',
+        existsSync: (path: string) => path === '/opt/happier/happiest-runtime/index.mjs',
       };
     });
 
@@ -321,7 +321,7 @@ describe('resolveDaemonLaunchSpec', () => {
     });
     expect(result).toEqual({
       filePath: '/usr/bin/node',
-      args: ['--no-warnings', '--no-deprecation', '/opt/happier/package-dist/index.mjs', 'daemon', 'start-sync'],
+      args: ['--no-warnings', '--no-deprecation', '/opt/happier/happiest-runtime/index.mjs', 'daemon', 'start-sync'],
     });
   });
 
@@ -332,7 +332,7 @@ describe('resolveDaemonLaunchSpec', () => {
       return {
         ...actual,
         existsSync: (path: string) => (
-          path === '/opt/happier/package-dist/index.mjs'
+          path === '/opt/happier/happiest-runtime/index.mjs'
           || path.replaceAll('\\', '/').endsWith('/src/index.ts')
         ),
       };
@@ -376,7 +376,7 @@ describe('resolveDaemonLaunchSpec', () => {
 
       expect(result.filePath).toMatch(/[\\/]node(?:\.exe)?$/i);
       expect(result.args).toEqual(expect.arrayContaining([
-        expect.stringMatching(/[\\/]\.runner-snapshots[\\/][a-f0-9]{16}[\\/]index\.mjs$/),
+        expect.stringMatching(/[\\/]\.happiest-runner-snapshots[\\/][a-f0-9]{16}[\\/]index\.mjs$/),
         'daemon',
         'start-sync',
       ]));
@@ -391,7 +391,7 @@ describe('resolveDaemonLaunchSpec', () => {
       return {
         ...actual,
         existsSync: (path: string) => (
-          path === '/opt/happier/package-dist/index.mjs'
+          path === '/opt/happier/happiest-runtime/index.mjs'
           || path.replaceAll('\\', '/').endsWith('/src/index.ts')
         ),
       };
@@ -407,7 +407,7 @@ describe('resolveDaemonLaunchSpec', () => {
       });
       process.argv = [
         'happier',
-        '/opt/happier/package-dist/index.mjs',
+        '/opt/happier/happiest-runtime/index.mjs',
         'daemon',
         'restart',
       ];

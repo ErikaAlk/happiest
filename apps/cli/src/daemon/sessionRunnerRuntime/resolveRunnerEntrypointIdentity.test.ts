@@ -6,9 +6,9 @@ import {
 } from './resolveRunnerEntrypointIdentity';
 
 describe('resolveSessionRunnerEntrypointIdentityFromProcessCommand', () => {
-  it('parses pinned Happier CLI package-dist process commands', () => {
+  it('parses pinned Happiest CLI runtime process commands', () => {
     const identity = resolveSessionRunnerEntrypointIdentityFromProcessCommand(
-      'node --no-warnings /Users/alice/.happier/cli-dev/versions/0.2.10/package-dist/index.mjs claude --happy-starting-mode remote --started-by daemon',
+      'node --no-warnings /Users/alice/.happiest/cli-dev/versions/0.2.10/happiest-runtime/index.mjs claude --happy-starting-mode remote --started-by daemon',
     );
 
     expect(identity).toEqual(expect.objectContaining({
@@ -19,9 +19,9 @@ describe('resolveSessionRunnerEntrypointIdentityFromProcessCommand', () => {
     }));
   });
 
-  it('parses quoted Windows pinned package-dist process commands', () => {
+  it('parses quoted Windows pinned runtime process commands', () => {
     const identity = resolveSessionRunnerEntrypointIdentityFromProcessCommand(
-      '"C:\\Program Files\\nodejs\\node.exe" "--no-warnings" "C:\\Users\\alice\\.happier\\cli\\versions\\0.2.11\\package-dist\\index.mjs" codex --started-by daemon',
+      '"C:\\Program Files\\nodejs\\node.exe" "--no-warnings" "C:\\Users\\alice\\.happiest\\cli\\versions\\0.2.11\\happiest-runtime\\index.mjs" codex --started-by daemon',
     );
 
     expect(identity).toEqual(expect.objectContaining({
@@ -34,7 +34,7 @@ describe('resolveSessionRunnerEntrypointIdentityFromProcessCommand', () => {
 
   it('fails closed for mutable pointer commands', () => {
     const identity = resolveSessionRunnerEntrypointIdentityFromProcessCommand(
-      'node /Users/alice/.happier/cli-dev/current/package-dist/index.mjs claude --started-by daemon',
+      'node /Users/alice/.happiest/cli-dev/current/happiest-runtime/index.mjs claude --started-by daemon',
     );
 
     expect(identity).toEqual(expect.objectContaining({
@@ -44,10 +44,8 @@ describe('resolveSessionRunnerEntrypointIdentityFromProcessCommand', () => {
   });
 
   it('parses pinned runner-snapshot process commands into a snapshot generation identity', () => {
-    // Live shape observed on 2026-07-10: daemon-spawned runners execute a flat pinned
-    // dist snapshot (`.runner-snapshots/<distClosureFingerprint>/index.mjs`, no /dist/ segment).
     const identity = resolveSessionRunnerEntrypointIdentityFromProcessCommand(
-      'node --no-warnings --no-deprecation /Users/alice/dev/happier/apps/cli/.runner-snapshots/2ee2ef1b2f776a89/index.mjs claude --happy-starting-mode remote --started-by daemon',
+      'node --no-warnings --no-deprecation /Users/alice/dev/happiest/apps/cli/.happiest-runner-snapshots/2ee2ef1b2f776a89/index.mjs claude --happy-starting-mode remote --started-by daemon',
     );
 
     expect(identity).toEqual(expect.objectContaining({
@@ -60,7 +58,7 @@ describe('resolveSessionRunnerEntrypointIdentityFromProcessCommand', () => {
 
   it('parses nested dist runner-snapshot commands into the same snapshot generation identity', () => {
     const identity = resolveSessionRunnerEntrypointIdentityFromProcessCommand(
-      'node /Users/alice/dev/happier/apps/cli/.runner-snapshots/2ee2ef1b2f776a89/dist/index.mjs claude --happy-starting-mode remote --started-by daemon',
+      'node /Users/alice/dev/happiest/apps/cli/.happiest-runner-snapshots/2ee2ef1b2f776a89/dist/index.mjs claude --happy-starting-mode remote --started-by daemon',
     );
 
     expect(identity).toEqual(expect.objectContaining({
@@ -100,7 +98,7 @@ describe('resolveEntrypointIdentityFromLaunchSpec', () => {
       args: [
         '--no-warnings',
         '--no-deprecation',
-        '/Users/alice/dev/happier/apps/cli/.runner-snapshots/30bb29f6afae521d/index.mjs',
+        '/Users/alice/dev/happiest/apps/cli/.happiest-runner-snapshots/30bb29f6afae521d/index.mjs',
       ],
     });
 
@@ -117,7 +115,7 @@ describe('resolveEntrypointIdentityFromLaunchSpec', () => {
       filePath: '/usr/local/bin/node',
       args: [
         '--no-warnings',
-        '/Users/alice/.happier/cli-dev/versions/0.2.12/package-dist/index.mjs',
+        '/Users/alice/.happiest/cli-dev/versions/0.2.12/happiest-runtime/index.mjs',
         'daemon',
         'start-sync',
       ],

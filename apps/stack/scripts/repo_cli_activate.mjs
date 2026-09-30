@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /**
- * Repo convenience: configure global hstack/happier shims to run from THIS monorepo checkout.
+ * Repo convenience: configure global hstack/happiest shims to run from THIS monorepo checkout.
  *
  * Why:
  * - Developers often have a stable runtime install, but want the CLI they run from any terminal

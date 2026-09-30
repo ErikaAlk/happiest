@@ -45,7 +45,7 @@ function indentFindingBodyLines(lines: readonly string[]): string[] {
  * to `buildHappyCliSubprocessLaunchSpec` so we get the same resolution logic
  * used by the rest of the codebase:
  *
- *  - Bypasses the shim wrapper (`bin/happier.mjs`, `happier.cmd`) — important
+ *  - Bypasses the shim wrapper (`bin/happiest.mjs`, `happiest.cmd`) — important
  *    for Windows where the .cmd wrapper is argv[1].
  *  - Resolves the packaged entrypoint (`dist/index.mjs`) and bundled
  *    single-executable / tsx-dev fallbacks for dev variants.

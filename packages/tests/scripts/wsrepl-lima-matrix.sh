@@ -170,7 +170,7 @@ trap 'wsrepl_early_terminate_due_to_signal 130 int' INT
 #   WSREPL_QA_VM_DIRECT_PEER_ADVERTISED_HOSTS=...  # guest direct-peer advertised hosts; defaults to 127.0.0.1 (or 127.0.0.1,host.lima.internal for multi-VM runs)
 #   WSREPL_QA_HOST_HAPPIER_SOURCE=auto|stack_runtime|worktree_node|explicit:/abs/path  # default: auto
 #   WSREPL_QA_FORCE_VM_RECONFIGURE=1  # force stop/reconfigure/start via lima-vm.sh (default is reuse-first)
-#   WSREPL_QA_VM_HAPPIER_MODE=skip|require|autoupdate  # default: require (fail closed if the guest is running an unexpected Happier build)
+#   WSREPL_QA_VM_HAPPIER_MODE=skip|require|autoupdate  # default: require (fail closed if the guest is running an unexpected Happiest build)
 #     - autoupdate builds a Linux CLI artifact from this repo and installs it into the VM
 #   WSREPL_QA_VM_BUN_TARGET=bun-linux-arm64|bun-linux-x64-baseline  # override bun target for autoupdate
 #
@@ -371,7 +371,7 @@ PY
       fi
       base64 --decode
     }
-    dst=\"\$HOME/.happier/wsrepl-qa/fixtures/fake-claude-code-cli.js\"
+    dst=\"\$HOME/.happiest/wsrepl-qa/fixtures/fake-claude-code-cli.js\"
     mkdir -p \"\$(dirname \"\$dst\")\"
     printf '%s' '${encoded}' | decode_base64 > \"\$dst\"
     chmod 700 \"\$dst\" 2>/dev/null || true
@@ -858,7 +858,7 @@ start_host_daemon_watchdog_background() {
     set +o pipefail
     consecutive_not_running=0
     while true; do
-      # `happier daemon status` can exit 0 even when unhealthy; treat explicit "not running" as unhealthy.
+      # `happiest daemon status` can exit 0 even when unhealthy; treat explicit "not running" as unhealthy.
       if [[ -n "${watchdog_cli_root}" && -n "${watchdog_active_server_id}" ]]; then
         status_out="$(HAPPIEST_SERVER_URL="${host_server_url:-}" HAPPIEST_HOME_DIR="${watchdog_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${watchdog_active_server_id}" run_host_happier daemon status 2>&1)"
         status_code=$?
@@ -1176,7 +1176,7 @@ PY
     echo ""
     return 0
   fi
-  local candidate="$HOME/.happier/stacks/${stack_name}/runtime/current/cli/happier"
+  local candidate="$HOME/.happier/stacks/${stack_name}/runtime/current/cli/happiest"
   if [[ -x "${candidate}" ]]; then
     echo "${candidate}"
     return 0
@@ -1275,10 +1275,10 @@ PY
 
   if [[ "${source}" == "worktree_node" ]]; then
     kind="worktree_node"
-    resolved_path="node ${REPO_DIR}/apps/cli/bin/happier.mjs"
-    invocation=(node "${REPO_DIR}/apps/cli/bin/happier.mjs")
-    version_output="$(node "${REPO_DIR}/apps/cli/bin/happier.mjs" --version 2>/dev/null | head -n 1 | tr -d '\r' || true)"
-    cmd=(node "${REPO_DIR}/apps/cli/bin/happier.mjs" "$@")
+    resolved_path="node ${REPO_DIR}/apps/cli/bin/happiest.mjs"
+    invocation=(node "${REPO_DIR}/apps/cli/bin/happiest.mjs")
+    version_output="$(node "${REPO_DIR}/apps/cli/bin/happiest.mjs" --version 2>/dev/null | head -n 1 | tr -d '\r' || true)"
+    cmd=(node "${REPO_DIR}/apps/cli/bin/happiest.mjs" "$@")
     WSREPL_QA_HOST_HAPPIER_KIND="${kind}"
     write_resolution_once
     "${cmd[@]}"
@@ -1304,33 +1304,33 @@ PY
     return $?
   fi
 
-  if [[ -x "$HOME/.happier/bin/happier" ]]; then
+  if [[ -x "$HOME/.happiest/bin/happiest" ]]; then
     kind="user_install"
-    resolved_path="$HOME/.happier/bin/happier"
-    invocation=("$HOME/.happier/bin/happier")
-    version_output="$("$HOME/.happier/bin/happier" --version 2>/dev/null | head -n 1 | tr -d '\r' || true)"
-    cmd=("$HOME/.happier/bin/happier" "$@")
+    resolved_path="$HOME/.happiest/bin/happiest"
+    invocation=("$HOME/.happiest/bin/happiest")
+    version_output="$("$HOME/.happiest/bin/happiest" --version 2>/dev/null | head -n 1 | tr -d '\r' || true)"
+    cmd=("$HOME/.happiest/bin/happiest" "$@")
     WSREPL_QA_HOST_HAPPIER_KIND="${kind}"
     write_resolution_once
     "${cmd[@]}"
     return $?
   fi
-  if command -v happier >/dev/null 2>&1; then
+  if command -v happiest >/dev/null 2>&1; then
     kind="path"
-    resolved_path="$(command -v happier 2>/dev/null | head -n 1 | tr -d '\r' || true)"
-    invocation=("happier")
-    version_output="$(happier --version 2>/dev/null | head -n 1 | tr -d '\r' || true)"
-    cmd=(happier "$@")
+    resolved_path="$(command -v happiest 2>/dev/null | head -n 1 | tr -d '\r' || true)"
+    invocation=("happiest")
+    version_output="$(happiest --version 2>/dev/null | head -n 1 | tr -d '\r' || true)"
+    cmd=(happiest "$@")
     WSREPL_QA_HOST_HAPPIER_KIND="${kind}"
     write_resolution_once
     "${cmd[@]}"
     return $?
   fi
   kind="worktree_node"
-  resolved_path="node ${REPO_DIR}/apps/cli/bin/happier.mjs"
-  invocation=(node "${REPO_DIR}/apps/cli/bin/happier.mjs")
-  version_output="$(node "${REPO_DIR}/apps/cli/bin/happier.mjs" --version 2>/dev/null | head -n 1 | tr -d '\r' || true)"
-  cmd=(node "${REPO_DIR}/apps/cli/bin/happier.mjs" "$@")
+  resolved_path="node ${REPO_DIR}/apps/cli/bin/happiest.mjs"
+  invocation=(node "${REPO_DIR}/apps/cli/bin/happiest.mjs")
+  version_output="$(node "${REPO_DIR}/apps/cli/bin/happiest.mjs" --version 2>/dev/null | head -n 1 | tr -d '\r' || true)"
+  cmd=(node "${REPO_DIR}/apps/cli/bin/happiest.mjs" "$@")
   WSREPL_QA_HOST_HAPPIER_KIND="${kind}"
   write_resolution_once
   "${cmd[@]}"
@@ -2117,7 +2117,7 @@ PY
   wait_for_host_daemon_health_after_start "${status_file}" "${log_path_file}" "${log_tail_file}" "${server_url}" "${stack_cli_root}" "${stack_active_server_id}" || true
 
   local cli_dist_rebuild_attempted=0
-  if [[ "${WSREPL_QA_HOST_HAPPIER_KIND:-}" == "worktree_node" ]] && grep -Eq "Cannot find module '.*/apps/cli/(dist|package-dist)/index\\.mjs'|Daemon packaged entrypoint is missing: .*/apps/cli/package-dist/index\\.mjs" "${start_file}" "${status_file}" "${log_tail_file}" 2>/dev/null; then
+  if [[ "${WSREPL_QA_HOST_HAPPIER_KIND:-}" == "worktree_node" ]] && grep -Eq "Cannot find module '.*/apps/cli/(dist|happiest-runtime)/index\\.mjs'|Daemon packaged entrypoint is missing: .*/apps/cli/happiest-runtime/index\\.mjs" "${start_file}" "${status_file}" "${log_tail_file}" 2>/dev/null; then
     cli_dist_rebuild_attempted=1
     echo "[wsrepl-qa] host daemon start/status reported a missing CLI dist entrypoint; rebuilding and retrying..." >&2
     (
@@ -2240,7 +2240,7 @@ PY
     # In dev worktrees the CLI entrypoint depends on `apps/cli/dist/**`. If another process is
     # rebuilding the CLI (or the dist folder is missing), `daemon start` can fail with a missing
     # entrypoint. Recover by rebuilding once and retrying so the QA harness doesn't fail flakily.
-    if [[ "${cli_dist_rebuild_attempted}" != "1" && "${WSREPL_QA_HOST_HAPPIER_KIND:-}" == "worktree_node" ]] && grep -Eq "Cannot find module '.*/apps/cli/(dist|package-dist)/index\\.mjs'|Daemon packaged entrypoint is missing: .*/apps/cli/package-dist/index\\.mjs" "${start_file}" "${log_tail_file}" 2>/dev/null; then
+    if [[ "${cli_dist_rebuild_attempted}" != "1" && "${WSREPL_QA_HOST_HAPPIER_KIND:-}" == "worktree_node" ]] && grep -Eq "Cannot find module '.*/apps/cli/(dist|happiest-runtime)/index\\.mjs'|Daemon packaged entrypoint is missing: .*/apps/cli/happiest-runtime/index\\.mjs" "${start_file}" "${log_tail_file}" 2>/dev/null; then
       echo "[wsrepl-qa] host daemon start failed due to missing CLI dist entrypoint; rebuilding and retrying..." >&2
       (
         cd "${REPO_DIR}"
@@ -2424,14 +2424,14 @@ restart_guest_daemon_and_capture_logs() {
     guest_direct_peer_server_enabled="${WSREPL_QA_VM_DIRECT_PEER_SERVER_ENABLED:-true}"
   fi
   if [[ -n "${guest_active_server_id}" && -n "${guest_access_key_src}" && -f "${guest_access_key_src}" ]]; then
-    guest_happier_home_rel=".happier/wsrepl-qa"
+    guest_happier_home_rel=".happiest/wsrepl-qa"
   fi
 
-  # If the guest does not have Happier installed yet (common in local harness tests, or when mode=skip),
+  # If the guest does not have Happiest installed yet (common in local harness tests, or when mode=skip),
   # keep the wrapper non-fatal and leave the placeholder diagnostics in place.
-  if ! limactl shell "${VM_NAME}" -- bash -lc '[[ -x "$HOME/.happier/bin/happier" ]] || command -v happier >/dev/null 2>&1' >/dev/null 2>&1; then
-    printf "%s\n" "(guest happier not found; skipping daemon restart)" > "${start_file}"
-    printf "%s\n" "(guest happier not found)" > "${status_file}"
+  if ! limactl shell "${VM_NAME}" -- bash -lc '[[ -x "$HOME/.happiest/bin/happiest" ]] || command -v happiest >/dev/null 2>&1' >/dev/null 2>&1; then
+    printf "%s\n" "(guest happiest not found; skipping daemon restart)" > "${start_file}"
+    printf "%s\n" "(guest happiest not found)" > "${status_file}"
     printf "%s\n" "" > "${log_path_file}"
     printf "%s\n" "(no daemon log file found)" > "${log_tail_file}"
     return 0
@@ -2486,17 +2486,17 @@ PY
     if [[ -n "${WSREPL_QA_GUEST_HOME_REL:-}" ]]; then
       export HAPPIEST_HOME_DIR="$HOME/${WSREPL_QA_GUEST_HOME_REL}"
     fi
-    if [[ -z "${HAPPIER_CLAUDE_PATH:-}" && -f "$HOME/.happier/wsrepl-qa/fixtures/fake-claude-code-cli.js" ]]; then
-      export HAPPIER_CLAUDE_PATH="$HOME/.happier/wsrepl-qa/fixtures/fake-claude-code-cli.js"
+    if [[ -z "${HAPPIER_CLAUDE_PATH:-}" && -f "$HOME/.happiest/wsrepl-qa/fixtures/fake-claude-code-cli.js" ]]; then
+      export HAPPIER_CLAUDE_PATH="$HOME/.happiest/wsrepl-qa/fixtures/fake-claude-code-cli.js"
     fi
     HAPPY=""
-    if [[ -x "$HOME/.happier/bin/happier" ]]; then
-      HAPPY="$HOME/.happier/bin/happier"
-    elif command -v happier >/dev/null 2>&1; then
-      HAPPY="happier"
+    if [[ -x "$HOME/.happiest/bin/happiest" ]]; then
+      HAPPY="$HOME/.happiest/bin/happiest"
+    elif command -v happiest >/dev/null 2>&1; then
+      HAPPY="happiest"
 	    fi
 	    if [[ -z "$HAPPY" ]]; then
-	      echo "missing guest happier binary (expected $HOME/.happier/bin/happier or PATH happier)" >&2
+	      echo "missing guest happiest binary (expected $HOME/.happiest/bin/happiest or PATH happiest)" >&2
 	      exit 2
 	    fi
 	    "$HAPPY" daemon stop >/dev/null 2>&1 || true
@@ -2520,14 +2520,14 @@ PY
       if [[ -n "${WSREPL_QA_GUEST_HOME_REL:-}" ]]; then
         export HAPPIEST_HOME_DIR="$HOME/${WSREPL_QA_GUEST_HOME_REL}"
       fi
-      if [[ -z "${HAPPIER_CLAUDE_PATH:-}" && -f "$HOME/.happier/wsrepl-qa/fixtures/fake-claude-code-cli.js" ]]; then
-        export HAPPIER_CLAUDE_PATH="$HOME/.happier/wsrepl-qa/fixtures/fake-claude-code-cli.js"
+      if [[ -z "${HAPPIER_CLAUDE_PATH:-}" && -f "$HOME/.happiest/wsrepl-qa/fixtures/fake-claude-code-cli.js" ]]; then
+        export HAPPIER_CLAUDE_PATH="$HOME/.happiest/wsrepl-qa/fixtures/fake-claude-code-cli.js"
       fi
 	    HAPPY=""
-    if [[ -x "$HOME/.happier/bin/happier" ]]; then
-      HAPPY="$HOME/.happier/bin/happier"
-    elif command -v happier >/dev/null 2>&1; then
-      HAPPY="happier"
+    if [[ -x "$HOME/.happiest/bin/happiest" ]]; then
+      HAPPY="$HOME/.happiest/bin/happiest"
+    elif command -v happiest >/dev/null 2>&1; then
+      HAPPY="happiest"
     fi
     if [[ -z "$HAPPY" ]]; then exit 0; fi
     "$HAPPY" daemon status 2>&1 || true
@@ -2542,14 +2542,14 @@ PY
     if [[ -n "${WSREPL_QA_GUEST_HOME_REL:-}" ]]; then
       export HAPPIEST_HOME_DIR="$HOME/${WSREPL_QA_GUEST_HOME_REL}"
     fi
-    if [[ -z "${HAPPIER_CLAUDE_PATH:-}" && -f "$HOME/.happier/wsrepl-qa/fixtures/fake-claude-code-cli.js" ]]; then
-      export HAPPIER_CLAUDE_PATH="$HOME/.happier/wsrepl-qa/fixtures/fake-claude-code-cli.js"
+    if [[ -z "${HAPPIER_CLAUDE_PATH:-}" && -f "$HOME/.happiest/wsrepl-qa/fixtures/fake-claude-code-cli.js" ]]; then
+      export HAPPIER_CLAUDE_PATH="$HOME/.happiest/wsrepl-qa/fixtures/fake-claude-code-cli.js"
     fi
     HAPPY=""
-    if [[ -x "$HOME/.happier/bin/happier" ]]; then
-      HAPPY="$HOME/.happier/bin/happier"
-    elif command -v happier >/dev/null 2>&1; then
-      HAPPY="happier"
+    if [[ -x "$HOME/.happiest/bin/happiest" ]]; then
+      HAPPY="$HOME/.happiest/bin/happiest"
+    elif command -v happiest >/dev/null 2>&1; then
+      HAPPY="happiest"
     fi
     if [[ -z "$HAPPY" ]]; then exit 0; fi
     "$HAPPY" daemon logs 2>&1 || true
@@ -2593,10 +2593,10 @@ PY
 	          export HAPPIEST_HOME_DIR="$HOME/${WSREPL_QA_GUEST_HOME_REL}"
 	        fi
 	        HAPPY=""
-	        if [[ -x "$HOME/.happier/bin/happier" ]]; then
-	          HAPPY="$HOME/.happier/bin/happier"
-	        elif command -v happier >/dev/null 2>&1; then
-	          HAPPY="happier"
+	        if [[ -x "$HOME/.happiest/bin/happiest" ]]; then
+	          HAPPY="$HOME/.happiest/bin/happiest"
+	        elif command -v happiest >/dev/null 2>&1; then
+	          HAPPY="happiest"
 	        fi
 	        if [[ -z "$HAPPY" ]]; then exit 0; fi
 	        "$HAPPY" daemon status 2>&1 || true
@@ -2609,7 +2609,7 @@ PY
 	    return 0
 	  }
 
-	  # `happier daemon status` is a doctor-style command and may exit 0 even when the daemon
+	  # `happiest daemon status` is a doctor-style command and may exit 0 even when the daemon
 	  # isn't running. Detect health from the rendered output we captured above.
 	  if ! grep -qi "Daemon is not running" "${status_file}" 2>/dev/null; then
 	    if [[ -z "${WSREPL_QA_VM_MACHINE_ID:-}" && "${WSREPL_QA_DERIVE_STEPS_LATER:-0}" == "1" ]]; then
@@ -2632,10 +2632,10 @@ PY
         limactl shell "${VM_NAME}" -- env HAPPIEST_SERVER_URL="${server_url}" bash -lc '
           set -euo pipefail
           HAPPY=""
-          if [[ -x "$HOME/.happier/bin/happier" ]]; then
-            HAPPY="$HOME/.happier/bin/happier"
-          elif command -v happier >/dev/null 2>&1; then
-            HAPPY="happier"
+          if [[ -x "$HOME/.happiest/bin/happiest" ]]; then
+            HAPPY="$HOME/.happiest/bin/happiest"
+          elif command -v happiest >/dev/null 2>&1; then
+            HAPPY="happiest"
           fi
           if [[ -z "$HAPPY" ]]; then exit 2; fi
           "$HAPPY" daemon start >/dev/null 2>&1 || true
@@ -2674,10 +2674,10 @@ ensure_guest_provider_cli_installed() {
     return 0
   fi
 
-  # If the guest does not have Happier installed, keep this best-effort and let the matrix fail
+  # If the guest does not have Happiest installed, keep this best-effort and let the matrix fail
   # on its own (common in local harness tests with WSREPL_QA_VM_HAPPIER_MODE=skip).
-  if ! limactl shell "${VM_NAME}" -- bash -lc '[[ -x "$HOME/.happier/bin/happier" ]] || command -v happier >/dev/null 2>&1' >/dev/null 2>&1; then
-    printf "%s\n" "(guest happier not found; skipping provider install)" > "${out_file}"
+  if ! limactl shell "${VM_NAME}" -- bash -lc '[[ -x "$HOME/.happiest/bin/happiest" ]] || command -v happiest >/dev/null 2>&1' >/dev/null 2>&1; then
+    printf "%s\n" "(guest happiest not found; skipping provider install)" > "${out_file}"
     return 0
   fi
 
@@ -2685,13 +2685,13 @@ ensure_guest_provider_cli_installed() {
   limactl shell "${VM_NAME}" -- bash -lc '
     set -euo pipefail
     HAPPY=""
-    if [[ -x "$HOME/.happier/bin/happier" ]]; then
-      HAPPY="$HOME/.happier/bin/happier"
-    elif command -v happier >/dev/null 2>&1; then
-      HAPPY="happier"
+    if [[ -x "$HOME/.happiest/bin/happiest" ]]; then
+      HAPPY="$HOME/.happiest/bin/happiest"
+    elif command -v happiest >/dev/null 2>&1; then
+      HAPPY="happiest"
     fi
     if [[ -z "$HAPPY" ]]; then
-      echo "missing guest happier binary (expected $HOME/.happier/bin/happier or PATH happier)" >&2
+      echo "missing guest happiest binary (expected $HOME/.happiest/bin/happiest or PATH happiest)" >&2
       exit 2
     fi
     "$HAPPY" install provider "'"${provider_id}"'" 2>&1
@@ -3281,12 +3281,12 @@ PY
 }
 
 resolve_guest_happier_version() {
-  limactl shell "${VM_NAME}" -- bash -lc 'if [[ -x "$HOME/.happier/bin/happier" ]]; then "$HOME/.happier/bin/happier" --version; elif command -v happier >/dev/null 2>&1; then happier --version; fi' \
+  limactl shell "${VM_NAME}" -- bash -lc 'if [[ -x "$HOME/.happiest/bin/happiest" ]]; then "$HOME/.happiest/bin/happiest" --version; elif command -v happiest >/dev/null 2>&1; then happiest --version; fi' \
     2>/dev/null | head -n 1 | tr -d '\r' || true
 }
 
 resolve_guest_wsrepl_installed_happier_version() {
-  limactl shell "${VM_NAME}" -- bash -lc '[[ -x "$HOME/.happier/bin/happier" ]] && "$HOME/.happier/bin/happier" --version' \
+  limactl shell "${VM_NAME}" -- bash -lc '[[ -x "$HOME/.happiest/bin/happiest" ]] && "$HOME/.happiest/bin/happiest" --version' \
     2>/dev/null | head -n 1 | tr -d '\r' || true
 }
 
@@ -3332,7 +3332,7 @@ autoupdate_guest_happier_from_worktree() {
   rm -rf "${payload_root}" 2>/dev/null || true
   mkdir -p "${payload_root}"
 
-  echo "[wsrepl-qa] building VM Happier artifact from worktree (bunTarget=${bun_target})..."
+  echo "[wsrepl-qa] building VM Happiest artifact from worktree (bunTarget=${bun_target})..."
   # Run the payload builder from the repo root so `node -` ESM resolution is stable (it otherwise
   # resolves relative to the current working directory, which can be a temp dir or `apps/stack`).
   if ! (
@@ -3355,7 +3355,7 @@ autoupdate_guest_happier_from_worktree() {
 NODE
   ) 2>&1 | tee "${build_log}"
   then
-    echo "[wsrepl-qa] failed to build VM Happier artifact from worktree; see ${build_log}" >&2
+    echo "[wsrepl-qa] failed to build VM Happiest artifact from worktree; see ${build_log}" >&2
     return 2
   fi
 
@@ -3363,7 +3363,7 @@ NODE
   # that was frozen at the start of this wrapper run (avoid HEAD drift during long builds).
   write_wsrepl_build_marker_files "${payload_dir}" "${expected_cli_version}" "${expected_git_rev}"
 
-  echo "[wsrepl-qa] installing VM Happier artifact..."
+  echo "[wsrepl-qa] installing VM Happiest artifact..."
   local guest_home
   guest_home="$(limactl shell "${VM_NAME}" -- bash -lc 'printf "%s" "$HOME"' 2>/dev/null | tr -d '\r' || true)"
   if [[ -z "${guest_home}" ]]; then
@@ -3379,25 +3379,25 @@ NODE
   python3 "${PAYLOAD_TAR_HELPER}" "${payload_dir}" "${payload_tar}"
 
   limactl shell "${VM_NAME}" -- bash -lc 'set -euo pipefail;
-    mkdir -p "$HOME/.happier/wsrepl-dev"
-    rm -rf "$HOME/.happier/wsrepl-dev/payload.tmp"
-    rm -f "$HOME/.happier/wsrepl-dev/payload.tar"
+    mkdir -p "$HOME/.happiest/wsrepl-dev"
+    rm -rf "$HOME/.happiest/wsrepl-dev/payload.tmp"
+    rm -f "$HOME/.happiest/wsrepl-dev/payload.tar"
   '
 
-  limactl copy --backend=scp "${payload_tar}" "${VM_NAME}:${guest_home}/.happier/wsrepl-dev/payload.tar"
+  limactl copy --backend=scp "${payload_tar}" "${VM_NAME}:${guest_home}/.happiest/wsrepl-dev/payload.tar"
 
   limactl shell "${VM_NAME}" -- bash -lc 'set -euo pipefail;
-    mkdir -p "$HOME/.happier/wsrepl-dev/payload.tmp"
-    tar -xf "$HOME/.happier/wsrepl-dev/payload.tar" -C "$HOME/.happier/wsrepl-dev/payload.tmp"
-    rm -f "$HOME/.happier/wsrepl-dev/payload.tar"
+    mkdir -p "$HOME/.happiest/wsrepl-dev/payload.tmp"
+    tar -xf "$HOME/.happiest/wsrepl-dev/payload.tar" -C "$HOME/.happiest/wsrepl-dev/payload.tmp"
+    rm -f "$HOME/.happiest/wsrepl-dev/payload.tar"
   '
 
   limactl shell "${VM_NAME}" -- bash -lc 'set -euo pipefail;
-    export PATH="$HOME/.happier/bin:$PATH"
+    export PATH="$HOME/.happiest/bin:$PATH"
 
     # Stop any existing daemon before swapping binaries. Some Lima images can end up with multiple
-    # daemon processes (PATH + ~/.happier/bin) which causes mismatched transfer-id contracts.
-    if [[ -d "$HOME/.happier/servers" ]]; then
+    # daemon processes (PATH + ~/.happiest/bin) which causes mismatched transfer-id contracts.
+    if [[ -d "$HOME/.happiest/servers" ]]; then
       python3 - "$HOME" <<'"'"'PY'"'"' || true
 import json
 import os
@@ -3405,7 +3405,7 @@ import signal
 from pathlib import Path
 
 home = os.environ.get("HOME") or ""
-servers = Path(home) / ".happier" / "servers"
+servers = Path(home) / ".happiest" / "servers"
 for state_path in sorted(servers.glob("*/daemon.state.json")):
   try:
     payload = json.loads(state_path.read_text(encoding="utf-8"))
@@ -3421,51 +3421,51 @@ for state_path in sorted(servers.glob("*/daemon.state.json")):
       continue
 PY
     fi
-    if [[ -x "$HOME/.happier/bin/happier" ]]; then
+    if [[ -x "$HOME/.happiest/bin/happiest" ]]; then
       if command -v timeout >/dev/null 2>&1; then
-        timeout 5s "$HOME/.happier/bin/happier" daemon stop >/dev/null 2>&1 || true
+        timeout 5s "$HOME/.happiest/bin/happiest" daemon stop >/dev/null 2>&1 || true
       else
-        "$HOME/.happier/bin/happier" daemon stop >/dev/null 2>&1 || true
+        "$HOME/.happiest/bin/happiest" daemon stop >/dev/null 2>&1 || true
       fi
     fi
-    if command -v happier >/dev/null 2>&1; then
+    if command -v happiest >/dev/null 2>&1; then
       if command -v timeout >/dev/null 2>&1; then
-        timeout 5s happier daemon stop >/dev/null 2>&1 || true
+        timeout 5s happiest daemon stop >/dev/null 2>&1 || true
       else
-        happier daemon stop >/dev/null 2>&1 || true
+        happiest daemon stop >/dev/null 2>&1 || true
       fi
     fi
     # Best-effort hard stop: ensure no stale worker keeps running with the old binary.
     if command -v pkill >/dev/null 2>&1; then
-      # Avoid killing this shell (its argv contains the pattern). Use a regex trick (`happie[r]`)
-      # so the pattern matches "happier" in the target process but not itself.
-      pkill -f "/\\.happier/bin/happie[r] daemon start-sync" >/dev/null 2>&1 || true
-      pkill -f "package-dist/index\\.mjs daemon start-syn[c]" >/dev/null 2>&1 || true
+      # Avoid killing this shell (its argv contains the pattern). Use a regex trick (`happies[t]`)
+      # so the pattern matches "happiest" in the target process but not itself.
+      pkill -f "/\\.happiest/bin/happies[t] daemon start-sync" >/dev/null 2>&1 || true
+      pkill -f "happiest-runtime/index\\.mjs daemon start-syn[c]" >/dev/null 2>&1 || true
     fi
 
-    mkdir -p "$HOME/.happier/bin"
-    if [[ -d "$HOME/.happier/wsrepl-dev/payload.tmp" ]]; then
-      if [[ -d "$HOME/.happier/wsrepl-dev/payload" ]]; then
-        mv "$HOME/.happier/wsrepl-dev/payload" "$HOME/.happier/wsrepl-dev/payload.wsrepl-backup.$(date +%Y%m%d-%H%M%S)" || true
+    mkdir -p "$HOME/.happiest/bin"
+    if [[ -d "$HOME/.happiest/wsrepl-dev/payload.tmp" ]]; then
+      if [[ -d "$HOME/.happiest/wsrepl-dev/payload" ]]; then
+        mv "$HOME/.happiest/wsrepl-dev/payload" "$HOME/.happiest/wsrepl-dev/payload.wsrepl-backup.$(date +%Y%m%d-%H%M%S)" || true
       fi
-      mv "$HOME/.happier/wsrepl-dev/payload.tmp" "$HOME/.happier/wsrepl-dev/payload"
+      mv "$HOME/.happiest/wsrepl-dev/payload.tmp" "$HOME/.happiest/wsrepl-dev/payload"
     fi
-    if [[ ! -x "$HOME/.happier/wsrepl-dev/payload/happier" ]]; then
-      echo "[wsrepl-qa] guest payload install failed (missing payload/happier)" >&2
+    if [[ ! -x "$HOME/.happiest/wsrepl-dev/payload/happiest" ]]; then
+      echo "[wsrepl-qa] guest payload install failed (missing payload/happiest)" >&2
       exit 2
     fi
-    if [[ -e "$HOME/.happier/bin/happier" && ! -L "$HOME/.happier/bin/happier" ]]; then
-      mv "$HOME/.happier/bin/happier" "$HOME/.happier/bin/happier.wsrepl-backup.$(date +%Y%m%d-%H%M%S)" || true
+    if [[ -e "$HOME/.happiest/bin/happiest" && ! -L "$HOME/.happiest/bin/happiest" ]]; then
+      mv "$HOME/.happiest/bin/happiest" "$HOME/.happiest/bin/happiest.wsrepl-backup.$(date +%Y%m%d-%H%M%S)" || true
     fi
-    ln -sf "$HOME/.happier/wsrepl-dev/payload/happier" "$HOME/.happier/bin/happier"
+    ln -sf "$HOME/.happiest/wsrepl-dev/payload/happiest" "$HOME/.happiest/bin/happiest"
 
-    "$HOME/.happier/bin/happier" daemon start >/dev/null 2>&1 || true
+    "$HOME/.happiest/bin/happiest" daemon start >/dev/null 2>&1 || true
     # `daemon start` can legitimately fail or remain unhealthy while the daemon is waiting for
     # credentials (Playwright injects auth later in this harness). Do a short best-effort poll to
     # catch obvious "daemon is up" cases, but never fail autoupdate solely on daemon health.
     set +e
     for attempt in {1..20}; do
-      status_out="$("$HOME/.happier/bin/happier" daemon status 2>&1)"
+      status_out="$("$HOME/.happiest/bin/happiest" daemon status 2>&1)"
       status_code=$?
       if [[ "$status_code" == "0" ]]; then
         exit 0
@@ -3482,12 +3482,12 @@ PY
 }
 
 resolve_guest_wsrepl_build_marker_git_rev() {
-  limactl shell "${VM_NAME}" -- bash -lc 'cat "$HOME/.happier/wsrepl-dev/payload/wsrepl-build.gitrev" 2>/dev/null || true' \
+  limactl shell "${VM_NAME}" -- bash -lc 'cat "$HOME/.happiest/wsrepl-dev/payload/wsrepl-build.gitrev" 2>/dev/null || true' \
     2>/dev/null | head -n 1 | tr -d '\r' || true
 }
 
 resolve_guest_wsrepl_build_marker_cli_version() {
-  limactl shell "${VM_NAME}" -- bash -lc 'cat "$HOME/.happier/wsrepl-dev/payload/wsrepl-build.version" 2>/dev/null || true' \
+  limactl shell "${VM_NAME}" -- bash -lc 'cat "$HOME/.happiest/wsrepl-dev/payload/wsrepl-build.version" 2>/dev/null || true' \
     2>/dev/null | head -n 1 | tr -d '\r' || true
 }
 
@@ -3515,7 +3515,7 @@ ensure_current_vm_happier_matches_worktree() {
     if [[ -z "${guest_marker_git_rev}" ]]; then
       echo "[wsrepl-qa] guest wsrepl build marker is missing, but the worktree git rev is available (mode=${WSREPL_QA_VM_HAPPIER_MODE})." >&2
       echo "[wsrepl-qa] expected git rev: ${expected_git_rev}" >&2
-      echo "[wsrepl-qa] expected marker path: \$HOME/.happier/wsrepl-dev/payload/wsrepl-build.json" >&2
+      echo "[wsrepl-qa] expected marker path: \$HOME/.happiest/wsrepl-dev/payload/wsrepl-build.json" >&2
       echo "[wsrepl-qa] Fix: rerun with WSREPL_QA_VM_HAPPIER_MODE=autoupdate (installs a matching build marker), or set WSREPL_QA_VM_HAPPIER_MODE=skip to bypass this guard." >&2
       return 2
     fi
@@ -3534,14 +3534,14 @@ ensure_current_vm_happier_matches_worktree() {
     fi
   else
     if [[ -z "${guest_version}" ]]; then
-      echo "[wsrepl-qa] failed to resolve guest Happier version; ensure happier is installed in the VM and reachable from PATH" >&2
+      echo "[wsrepl-qa] failed to resolve guest Happiest version; ensure happiest is installed in the VM and reachable from PATH" >&2
       return 2
     fi
     if [[ "${guest_version}" != "${expected_version}" ]]; then
-      echo "[wsrepl-qa] guest Happier CLI version does not match the current worktree (mode=${WSREPL_QA_VM_HAPPIER_MODE})." >&2
+      echo "[wsrepl-qa] guest Happiest CLI version does not match the current worktree (mode=${WSREPL_QA_VM_HAPPIER_MODE})." >&2
       echo "[wsrepl-qa] expected: ${expected_version}" >&2
       echo "[wsrepl-qa] guest:    ${guest_version}" >&2
-      echo "[wsrepl-qa] Fix: update the VM's Happier install to the same commit/build, rerun with WSREPL_QA_VM_HAPPIER_MODE=autoupdate, or set WSREPL_QA_VM_HAPPIER_MODE=skip to bypass this guard." >&2
+      echo "[wsrepl-qa] Fix: update the VM's Happiest install to the same commit/build, rerun with WSREPL_QA_VM_HAPPIER_MODE=autoupdate, or set WSREPL_QA_VM_HAPPIER_MODE=skip to bypass this guard." >&2
       return 2
     fi
   fi
@@ -3558,10 +3558,10 @@ fi
 # for dev/smoke runs when the fixture is not present).
 if [[ -z "${HAPPIER_QA_SESSION_PATH:-}" && -z "${WSREPL_QA_LARGE_REPO_PATH:-}" ]]; then
   # Prefer a non-hidden fixture location when present. Lima guests mount the macOS home directory,
-  # but cannot reliably traverse host `chmod 700` parents like `.happier` due to UID/GID/perms
+  # but cannot reliably traverse host `chmod 700` parents like `.happiest` due to UID/GID/perms
   # mapping, which can surface as ENOENT during target staging.
   SAFE_WSREPL_QA_LARGE_REPO_PATH="${HOME}/wsrepl-qa-fixtures/large-repo-k8s"
-  LEGACY_WSREPL_QA_LARGE_REPO_PATH="${HOME}/.happier/wsrepl-qa-fixtures/large-repo-k8s"
+  LEGACY_WSREPL_QA_LARGE_REPO_PATH="${HOME}/.happiest/wsrepl-qa-fixtures/large-repo-k8s"
   if [[ -d "${SAFE_WSREPL_QA_LARGE_REPO_PATH}" ]]; then
     export HAPPIER_QA_SESSION_PATH="${SAFE_WSREPL_QA_LARGE_REPO_PATH}"
   elif [[ -d "${LEGACY_WSREPL_QA_LARGE_REPO_PATH}" ]]; then
@@ -3864,7 +3864,7 @@ if [[ "${WSREPL_QA_VM_HAPPIER_MODE}" != "skip" ]]; then
   if [[ -z "${expected_version}" ]]; then
     FAILURE_STAGE="guest_version_check"
     FAILURE_REASON="missing_worktree_version"
-    echo "[wsrepl-qa] failed to resolve expected Happier version from worktree; expected ${REPO_DIR}/apps/cli/package.json to contain a version string" >&2
+    echo "[wsrepl-qa] failed to resolve expected Happiest version from worktree; expected ${REPO_DIR}/apps/cli/package.json to contain a version string" >&2
     exit 2
   fi
 
@@ -3887,7 +3887,7 @@ if [[ "${WSREPL_QA_VM_HAPPIER_MODE}" != "skip" ]]; then
       safe_extra_vm="${extra_vm//[^A-Za-z0-9._-]/_}"
       extra_root="${REPORT_ROOT}/vms/${safe_extra_vm}"
       mkdir -p "${extra_root}"
-      echo "[wsrepl-qa] ensure additional VM Happier build matches worktree: ${extra_vm}"
+      echo "[wsrepl-qa] ensure additional VM Happiest build matches worktree: ${extra_vm}"
       if ! (
         VM_NAME="${extra_vm}"
         ensure_current_vm_happier_matches_worktree "${expected_version}" "${expected_git_rev}"
@@ -3930,8 +3930,8 @@ if [[ "${#EXTRA_VM_NAMES[@]}" -gt 0 ]]; then
       DAEMON_DIAG_DIR="${extra_daemon_dir}"
       restart_guest_daemon_and_capture_logs "${guest_server_url}" "${server_routed_max_bytes_seed}" || true
 
-      # Best-effort only: do not fail the whole wrapper if an additional VM lacks Happier/provider tooling.
-      if limactl shell "${VM_NAME}" -- bash -lc '[[ -x "$HOME/.happier/bin/happier" ]] || command -v happier >/dev/null 2>&1' >/dev/null 2>&1; then
+      # Best-effort only: do not fail the whole wrapper if an additional VM lacks Happiest/provider tooling.
+      if limactl shell "${VM_NAME}" -- bash -lc '[[ -x "$HOME/.happiest/bin/happiest" ]] || command -v happiest >/dev/null 2>&1' >/dev/null 2>&1; then
         extra_provider_log="${DAEMON_DIAG_DIR}/guest.provider.install.${guest_provider_install_id}.txt"
         ensure_guest_provider_cli_installed "${guest_provider_install_id}" "${extra_provider_log}" || true
       fi

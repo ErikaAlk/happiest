@@ -29,7 +29,7 @@ const {
   })),
   resolveDaemonServiceInstallRuntimeTargetMock: vi.fn(async () => ({
     nodePath: '/managed/node',
-    entryPath: '/opt/happier/package-dist/index.mjs',
+    entryPath: '/opt/happier/happiest-runtime/index.mjs',
   })),
   inspectDaemonRunningStateMock: vi.fn<() => Promise<DaemonRunningInspection>>(async () => ({ status: 'not-running' as const })),
 }));

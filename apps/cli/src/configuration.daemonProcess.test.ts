@@ -14,7 +14,7 @@ describe('isDaemonProcessArgv', () => {
 
   it('treats bun-wrapped daemon start-sync as a daemon process after argv normalization', () => {
     const { args } = parseCliArgs([
-      '/Users/test/.happier/runtime/current/cli/package-dist/index.mjs',
+      '/Users/test/.happier/runtime/current/cli/happiest-runtime/index.mjs',
       'daemon',
       'start-sync',
     ]);

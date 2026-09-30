@@ -84,7 +84,7 @@ describe('prepareDevinMcpProcessLaunch', () => {
           XDG_CONFIG_HOME: userConfigRoot,
         },
         mcpServers: {
-          collision: { command: 'happier-mcp', args: ['bridge'] },
+          collision: { command: 'happiest-mcp', args: ['bridge'] },
           explicitXdg: {
             command: 'custom-mcp',
             env: { XDG_CONFIG_HOME: '/custom/mcp/config' },
@@ -128,7 +128,7 @@ describe('prepareDevinMcpProcessLaunch', () => {
           transport: 'stdio',
         });
         expect(overlay.mcpServers.collision).toEqual({
-          command: 'happier-mcp',
+          command: 'happiest-mcp',
           args: ['bridge'],
           env: { XDG_CONFIG_HOME: userConfigRoot },
           transport: 'stdio',
@@ -162,7 +162,7 @@ describe('prepareDevinMcpProcessLaunch', () => {
       await expect(prepareDevinMcpProcessLaunch({
         cwd: userConfigRoot,
         processEnv: { HOME: userConfigRoot, XDG_CONFIG_HOME: userConfigRoot },
-        mcpServers: { happier: { command: 'happier-mcp' } },
+        mcpServers: { happier: { command: 'happiest-mcp' } },
       })).rejects.toThrow(/Devin MCP config/);
     });
   });
@@ -177,7 +177,7 @@ describe('prepareDevinMcpProcessLaunch', () => {
       await expect(prepareDevinMcpProcessLaunch({
         cwd: root,
         processEnv: { HOME: root, XDG_CONFIG_HOME: root },
-        mcpServers: { happier: { command: 'happier-mcp' } },
+        mcpServers: { happier: { command: 'happiest-mcp' } },
       })).rejects.toThrow('link unavailable');
     });
   });
@@ -221,7 +221,7 @@ describe('prepareDevinMcpProcessLaunch', () => {
           USERPROFILE: join(appDataRoot, 'home'),
           XDG_CONFIG_HOME: join(appDataRoot, 'ignored-xdg'),
         },
-        mcpServers: { happier: { command: 'happier-mcp' } },
+        mcpServers: { happier: { command: 'happiest-mcp' } },
       });
       try {
         expect(prepared.env).toEqual({ APPDATA: expect.stringContaining('happier-devin-acp-') });

@@ -590,7 +590,7 @@ describe('claudeRemote', () => {
     const { claudeRemote } = await import('./claudeRemote');
 
     const happierMcp = JSON.stringify({
-      mcpServers: { happier: { type: 'stdio', command: 'node', args: ['happier-mcp.mjs', '--url', 'http://127.0.0.1:1234'] } },
+      mcpServers: { happier: { type: 'stdio', command: 'node', args: ['happiest-mcp.mjs', '--url', 'http://127.0.0.1:1234'] } },
     });
     const userMcp = JSON.stringify({ mcpServers: { fixture: { type: 'stdio', command: 'node', args: ['server.mjs'] } } });
 
@@ -605,7 +605,7 @@ describe('claudeRemote', () => {
     const call = mockQuery.mock.calls[0]?.[0] as QueryCall | undefined;
     expect(call?.options?.extraArgs?.filter((arg) => arg === '--mcp-config')).toHaveLength(2);
     expect(JSON.stringify(call?.options?.extraArgs)).not.toContain('server.mjs');
-    expect(JSON.stringify(call?.options?.extraArgs)).not.toContain('happier-mcp.mjs');
+    expect(JSON.stringify(call?.options?.extraArgs)).not.toContain('happiest-mcp.mjs');
     const configPaths = [call?.options?.extraArgs?.[1], call?.options?.extraArgs?.[3]];
     for (const configPath of configPaths) {
       expect(configPath).not.toBe(userMcp);

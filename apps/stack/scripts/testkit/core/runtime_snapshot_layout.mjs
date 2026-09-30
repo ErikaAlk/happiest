@@ -1,5 +1,6 @@
 import { chmod, mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 
 function defaultArtifactFingerprint(prefix, snapshotId) {
@@ -104,7 +105,7 @@ export async function writeRuntimeSnapshotLayout({
   if (daemonNodeEntrypoint && typeof daemon.nodeContent !== 'undefined') {
     await writeRuntimeArtifact(paths.snapshotDir, daemonNodeEntrypoint, daemon.nodeContent);
     await writeFile(
-      join(paths.snapshotDir, 'cli', 'package-dist', '.build-manifest.json'),
+      join(paths.snapshotDir, 'cli', productIdentity.cliRuntimeDirName, '.build-manifest.json'),
       JSON.stringify({ fingerprint: daemon.distClosureFingerprint ?? '0123456789abcdef', fileCount: 1 }) + '\n',
       'utf8',
     );
@@ -123,7 +124,7 @@ export async function writeRuntimeSnapshotLayout({
     if (daemonNodeEntrypoint && typeof daemon.nodeContent !== 'undefined') {
       await writeRuntimeArtifact(paths.currentDir, daemonNodeEntrypoint, daemon.nodeContent);
       await writeFile(
-        join(paths.currentDir, 'cli', 'package-dist', '.build-manifest.json'),
+        join(paths.currentDir, 'cli', productIdentity.cliRuntimeDirName, '.build-manifest.json'),
         JSON.stringify({ fingerprint: daemon.distClosureFingerprint ?? '0123456789abcdef', fileCount: 1 }) + '\n',
         'utf8',
       );

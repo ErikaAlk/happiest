@@ -83,16 +83,16 @@ describe('resolveRuntimeEntrypoint', () => {
     );
   });
 
-  it('falls back to package-dist when dist and backup manifests are invalid', () => {
+  it('falls back to happiest-runtime when dist and backup manifests are invalid', () => {
     const root = createTempDirSync('happier-cli-resolve-entrypoint-');
     writeEntrypoint(join(root, 'dist'), 'export const source = "dist";\n');
     writeFileSync(join(root, 'dist', '.build-manifest.json'), '{invalid\n', 'utf8');
     writeEntrypoint(join(root, '.dist.hstack-backup'), 'export const source = "backup";\n');
     writeBuildManifest(join(root, '.dist.hstack-backup'), 'not-a-fingerprint');
-    writeEntrypoint(join(root, 'package-dist'), 'export const source = "package";\n');
-    writeBuildManifest(join(root, 'package-dist'), '3333333333333333');
+    writeEntrypoint(join(root, 'happiest-runtime'), 'export const source = "package";\n');
+    writeBuildManifest(join(root, 'happiest-runtime'), '3333333333333333');
 
-    expect(resolveRuntimeEntrypoint(root, 'index.mjs')).toEqual(join(root, 'package-dist', 'index.mjs'));
+    expect(resolveRuntimeEntrypoint(root, 'index.mjs')).toEqual(join(root, 'happiest-runtime', 'index.mjs'));
   });
 
   it('returns the dist path when no candidate exists', () => {

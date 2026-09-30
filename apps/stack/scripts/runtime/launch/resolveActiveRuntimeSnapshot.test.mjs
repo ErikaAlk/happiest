@@ -81,11 +81,11 @@ test('resolveActiveRuntimeSnapshot rejects pointers that escape the stack runtim
   await mkdir(join(escaped, 'ui'), { recursive: true });
   await mkdir(join(escaped, 'server'), { recursive: true });
   await mkdir(join(escaped, 'cli'), { recursive: true });
-  await mkdir(join(escaped, 'cli', 'package-dist'), { recursive: true });
+  await mkdir(join(escaped, 'cli', 'happiest-runtime'), { recursive: true });
   await writeFile(join(escaped, 'ui', 'index.html'), '<html></html>\n', 'utf-8');
   await writeFile(join(escaped, 'server', 'happier-server'), 'echo server\n', 'utf-8');
   await writeFile(join(escaped, 'cli', 'happier'), 'echo cli\n', 'utf-8');
-  await writeFile(join(escaped, 'cli', 'package-dist', 'index.mjs'), 'export {};\n', 'utf-8');
+  await writeFile(join(escaped, 'cli', 'happiest-runtime', 'index.mjs'), 'export {};\n', 'utf-8');
   await writeRuntimeManifest({
     manifestPath: paths.manifestPath,
     manifest: {
@@ -122,13 +122,13 @@ test('resolveActiveRuntimeSnapshot returns validated manifest and pointer data',
   await mkdir(join(paths.snapshotDir, 'ui'), { recursive: true });
   await mkdir(join(paths.snapshotDir, 'server', 'dist', 'runtime'), { recursive: true });
   await mkdir(join(paths.snapshotDir, 'cli', 'dist'), { recursive: true });
-  await mkdir(join(paths.snapshotDir, 'cli', 'package-dist'), { recursive: true });
+  await mkdir(join(paths.snapshotDir, 'cli', 'happiest-runtime'), { recursive: true });
   await writeFile(join(paths.snapshotDir, 'ui', 'index.html'), '<html></html>\n', 'utf-8');
   await writeFile(join(paths.snapshotDir, 'server', 'dist', 'runtime', 'main.js'), 'export {};\n', 'utf-8');
   await writeFile(join(paths.snapshotDir, 'cli', 'dist', 'index.mjs'), 'export {};\n', 'utf-8');
-  await writeFile(join(paths.snapshotDir, 'cli', 'package-dist', 'index.mjs'), 'export {};\n', 'utf-8');
+  await writeFile(join(paths.snapshotDir, 'cli', 'happiest-runtime', 'index.mjs'), 'export {};\n', 'utf-8');
   await writeFile(
-    join(paths.snapshotDir, 'cli', 'package-dist', '.build-manifest.json'),
+    join(paths.snapshotDir, 'cli', 'happiest-runtime', '.build-manifest.json'),
     JSON.stringify({ fingerprint: '1111111111111111', fileCount: 1 }),
     'utf-8',
   );
@@ -174,13 +174,13 @@ test('resolveActiveRuntimeSnapshot pins an admitted launch to its immutable buil
     const paths = resolveStackRuntimePaths({ stackBaseDir: root, snapshotId });
     await mkdir(join(paths.snapshotDir, 'ui'), { recursive: true });
     await mkdir(join(paths.snapshotDir, 'server'), { recursive: true });
-    await mkdir(join(paths.snapshotDir, 'cli', 'package-dist'), { recursive: true });
+    await mkdir(join(paths.snapshotDir, 'cli', 'happiest-runtime'), { recursive: true });
     await writeFile(join(paths.snapshotDir, 'ui', 'index.html'), '<html></html>\n', 'utf-8');
     await writeFile(join(paths.snapshotDir, 'server', 'happier-server'), 'server\n', 'utf-8');
     await writeFile(join(paths.snapshotDir, 'cli', 'happier'), 'daemon\n', 'utf-8');
-    await writeFile(join(paths.snapshotDir, 'cli', 'package-dist', 'index.mjs'), 'export {};\n', 'utf-8');
+    await writeFile(join(paths.snapshotDir, 'cli', 'happiest-runtime', 'index.mjs'), 'export {};\n', 'utf-8');
     await writeFile(
-      join(paths.snapshotDir, 'cli', 'package-dist', '.build-manifest.json'),
+      join(paths.snapshotDir, 'cli', 'happiest-runtime', '.build-manifest.json'),
       JSON.stringify({ fingerprint, fileCount: 1 }),
       'utf-8',
     );
@@ -204,11 +204,11 @@ test('resolveActiveRuntimeSnapshot pins an admitted launch to its immutable buil
   const second = await writeSnapshot('snap-2', '2222222222222222');
   await mkdir(join(first.currentDir, 'ui'), { recursive: true });
   await mkdir(join(first.currentDir, 'server'), { recursive: true });
-  await mkdir(join(first.currentDir, 'cli', 'package-dist'), { recursive: true });
+  await mkdir(join(first.currentDir, 'cli', 'happiest-runtime'), { recursive: true });
   await writeFile(join(first.currentDir, 'ui', 'index.html'), '<html>mutable current</html>\n', 'utf-8');
   await writeFile(join(first.currentDir, 'server', 'happier-server'), 'current server\n', 'utf-8');
   await writeFile(join(first.currentDir, 'cli', 'happier'), 'current daemon\n', 'utf-8');
-  await writeFile(join(first.currentDir, 'cli', 'package-dist', 'index.mjs'), 'export {};\n', 'utf-8');
+  await writeFile(join(first.currentDir, 'cli', 'happiest-runtime', 'index.mjs'), 'export {};\n', 'utf-8');
   await writeRuntimePointer({
     currentPath: first.currentPath,
     pointer: {
@@ -240,13 +240,13 @@ test('resolveActiveRuntimeSnapshot rejects pointer and manifest source fingerpri
   const paths = resolveStackRuntimePaths({ stackBaseDir: root, snapshotId: 'snap-mismatch' });
   await mkdir(join(paths.snapshotDir, 'ui'), { recursive: true });
   await mkdir(join(paths.snapshotDir, 'server'), { recursive: true });
-  await mkdir(join(paths.snapshotDir, 'cli', 'package-dist'), { recursive: true });
+  await mkdir(join(paths.snapshotDir, 'cli', 'happiest-runtime'), { recursive: true });
   await writeFile(join(paths.snapshotDir, 'ui', 'index.html'), '<html></html>\n', 'utf-8');
   await writeFile(join(paths.snapshotDir, 'server', 'happier-server'), 'server\n', 'utf-8');
   await writeFile(join(paths.snapshotDir, 'cli', 'happier'), 'daemon\n', 'utf-8');
-  await writeFile(join(paths.snapshotDir, 'cli', 'package-dist', 'index.mjs'), 'export {};\n', 'utf-8');
+  await writeFile(join(paths.snapshotDir, 'cli', 'happiest-runtime', 'index.mjs'), 'export {};\n', 'utf-8');
   await writeFile(
-    join(paths.snapshotDir, 'cli', 'package-dist', '.build-manifest.json'),
+    join(paths.snapshotDir, 'cli', 'happiest-runtime', '.build-manifest.json'),
     JSON.stringify({ fingerprint: '1111111111111111', fileCount: 1 }),
     'utf-8',
   );

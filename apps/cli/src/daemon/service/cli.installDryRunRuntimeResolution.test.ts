@@ -13,7 +13,7 @@ const {
     resolveJavaScriptRuntimeExecutableMock: vi.fn(() => null),
     resolveDaemonServiceRuntimeTargetMock: vi.fn(() => ({
         nodePath: '/managed/node',
-        entryPath: '/opt/happier/package-dist/index.mjs',
+        entryPath: '/opt/happier/happiest-runtime/index.mjs',
     })),
     planDaemonServiceInstallMock: vi.fn(() => ({ files: [], commands: [] })),
 }));
@@ -83,7 +83,7 @@ describe('runDaemonServiceCliCommand install dry-run runtime resolution', () => 
             expect(planDaemonServiceInstallMock).toHaveBeenCalledWith(
                 expect.objectContaining({
                     nodePath: '/managed/node',
-                    entryPath: '/opt/happier/package-dist/index.mjs',
+                    entryPath: '/opt/happier/happiest-runtime/index.mjs',
                 }),
             );
 

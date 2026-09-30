@@ -1,6 +1,8 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 import { projectPath } from '@/projectPath';
 import { isEmbeddedBunBundlePath } from '@/runtime/js/isEmbeddedBunBundlePath';
 import { getRuntime, type Runtime } from '@/utils/runtime';
@@ -51,7 +53,7 @@ export function buildDoctorRuntimeDiagnostics(params?: Readonly<{
     };
   }
 
-  const wrapperPath = join(resolvedProjectRoot, 'bin', 'happier.mjs');
+  const wrapperPath = join(resolvedProjectRoot, 'bin', `${productIdentity.commandName}.mjs`);
   const cliEntrypointPath = join(resolvedProjectRoot, 'dist', 'index.mjs');
 
   return {

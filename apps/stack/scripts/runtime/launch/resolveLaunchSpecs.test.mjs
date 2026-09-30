@@ -25,7 +25,7 @@ test('resolveCliRuntimeLaunchSpec returns a runtime binary command from the snap
     source: 'runtime',
     cliDir: '/tmp/stack/runtime/builds/snap-1/cli',
     entrypoint: '/tmp/stack/runtime/builds/snap-1/cli/happier',
-    nodeEntrypoint: '/tmp/stack/runtime/builds/snap-1/cli/package-dist/index.mjs',
+    nodeEntrypoint: '/tmp/stack/runtime/builds/snap-1/cli/happiest-runtime/index.mjs',
     command: '/tmp/stack/runtime/builds/snap-1/cli/happier',
     args: [],
     runtimeBacked: true,
@@ -48,14 +48,14 @@ test('runtime CLI provenance is one canonical shape for daemon options and neste
   assert.deepEqual(resolveCliRuntimeLaunchProvenance(launchSpec), {
     runtimeBacked: true,
     admittedDistClosureFingerprint: 'abcdef1234567890',
-    distEntrypoint: '/tmp/runtime/builds/snap-a/cli/package-dist/index.mjs',
+    distEntrypoint: '/tmp/runtime/builds/snap-a/cli/happiest-runtime/index.mjs',
   });
   const projected = applyCliRuntimeLaunchProvenanceEnv({
     env: {},
     cliLaunchSpec: launchSpec,
   });
   assert.equal(projected.HAPPIER_CLI_SUBPROCESS_RUNTIME_BACKED, '1');
-  assert.equal(projected.HAPPIER_CLI_SUBPROCESS_DIST_ENTRYPOINT, '/tmp/runtime/builds/snap-a/cli/package-dist/index.mjs');
+  assert.equal(projected.HAPPIER_CLI_SUBPROCESS_DIST_ENTRYPOINT, '/tmp/runtime/builds/snap-a/cli/happiest-runtime/index.mjs');
   assert.equal(projected.HAPPIER_CLI_SUBPROCESS_DAEMON_DIST_CLOSURE_FINGERPRINT, 'abcdef1234567890');
 });
 
@@ -214,9 +214,9 @@ test('resolveCliRuntimeLaunchSpec falls back to the canonical cli path when the 
   assert.deepEqual(resolved, {
     source: 'runtime',
     cliDir: '/tmp/stack/runtime/builds/snap-1/cli',
-    entrypoint: '/tmp/stack/runtime/builds/snap-1/cli/happier',
-    nodeEntrypoint: '/tmp/stack/runtime/builds/snap-1/cli/package-dist/index.mjs',
-    command: '/tmp/stack/runtime/builds/snap-1/cli/happier',
+    entrypoint: '/tmp/stack/runtime/builds/snap-1/cli/happiest',
+    nodeEntrypoint: '/tmp/stack/runtime/builds/snap-1/cli/happiest-runtime/index.mjs',
+    command: '/tmp/stack/runtime/builds/snap-1/cli/happiest',
     args: [],
     runtimeBacked: true,
     daemonDistClosureFingerprint: '1111111111111111',

@@ -14,9 +14,9 @@ describe('apps/cli package publish contract', () => {
     };
 
     expect(cliPackageJson.bin).toEqual({
-      happier: './bin/happier.mjs',
-      'happier-dev': './bin/happier-dev.mjs',
-      'happier-mcp': './bin/happier-mcp.mjs',
+      happiest: './bin/happiest.mjs',
+      'happiest-source': './bin/happiest-source.mjs',
+      'happiest-mcp': './bin/happiest-mcp.mjs',
     });
   });
 
@@ -66,8 +66,8 @@ describe('apps/cli package publish contract', () => {
 
     const publishedFiles = Array.isArray(cliPackageJson.files) ? cliPackageJson.files.map((value) => String(value)) : [];
 
-    expect(publishedFiles).toContain('package-dist');
-    expect(publishedFiles).toContain('package-dist/**');
+    expect(publishedFiles).toContain('happiest-runtime');
+    expect(publishedFiles).toContain('happiest-runtime/**');
     expect(cliNpmIgnore).toContain('!dist/');
     expect(cliNpmIgnore).toContain('!dist/**');
   });

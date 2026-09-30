@@ -15,6 +15,7 @@ import {
 } from '@happier-dev/cli-common/update';
 import { resolveManagedCliToolNameForRing } from '@happier-dev/cli-common/firstPartyRuntime';
 import type { PublicReleaseRingId } from '@happier-dev/release-runtime/releaseRings';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 const DEFAULT_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_CHECK_LOCK_TTL_MS = 2 * 60 * 1000;
@@ -86,7 +87,7 @@ function isVersionInvocation(argv: string[]): boolean {
 
 function resolveUpdateCheckEntrypoint(cliRootDir: string): string {
   const normalizedRoot = String(cliRootDir ?? '').trim();
-  const packageDistEntrypoint = join(normalizedRoot, 'package-dist', 'index.mjs');
+  const packageDistEntrypoint = join(normalizedRoot, productIdentity.cliRuntimeDirName, 'index.mjs');
   if (existsSync(packageDistEntrypoint)) {
     return packageDistEntrypoint;
   }

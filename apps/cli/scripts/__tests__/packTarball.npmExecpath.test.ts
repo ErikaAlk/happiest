@@ -212,7 +212,7 @@ describe('packTarball (npmExecpath)', () => {
     );
   });
 
-  it('does not mask incomplete package-dist filesystem adapters', () => {
+  it('does not mask incomplete happiest-runtime filesystem adapters', () => {
     const destDir = createTempDirSync('happier-cli-pack-tarball-dest-');
     const packageRoot = createPackageRoot();
     const tarballName = 'artifact.tgz';

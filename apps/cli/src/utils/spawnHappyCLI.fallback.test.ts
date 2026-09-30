@@ -224,7 +224,7 @@ describe('spawnHappyCLI fallback invocation', () => {
         expect.arrayContaining([
           '--no-warnings',
           '--no-deprecation',
-          expect.stringMatching(/[\\/]\.runner-snapshots[\\/][a-f0-9]{16}[\\/]index\.mjs$/),
+          expect.stringMatching(/[\\/]\.happiest-runner-snapshots[\\/][a-f0-9]{16}[\\/]index\.mjs$/),
           'claude',
           '--started-by',
           'daemon',
@@ -266,7 +266,7 @@ describe('spawnHappyCLI fallback invocation', () => {
 
       expect(startup.runtime).toBe('node');
       expect(startup.argv).toEqual(expect.arrayContaining([
-        expect.stringMatching(/[\\/]\.runner-snapshots[\\/][a-f0-9]{16}[\\/]index\.mjs$/),
+        expect.stringMatching(/[\\/]\.happiest-runner-snapshots[\\/][a-f0-9]{16}[\\/]index\.mjs$/),
         'daemon',
         'start-sync',
       ]));
@@ -319,7 +319,7 @@ describe('spawnHappyCLI fallback invocation', () => {
 
       expect(invocation.runtime).toBe('node');
       expect(invocation.argv).toEqual(expect.arrayContaining([
-        expect.stringMatching(/[\\/]\.runner-snapshots[\\/]abc123def4567890[\\/]index\.mjs$/),
+        expect.stringMatching(/[\\/]\.happiest-runner-snapshots[\\/]abc123def4567890[\\/]index\.mjs$/),
         'daemon',
         'start-sync',
       ]));
@@ -376,7 +376,7 @@ describe('spawnHappyCLI fallback invocation', () => {
 
       expect(inv.runtime).toBe('node');
       expect(inv.argv).toEqual(expect.arrayContaining([
-        expect.stringMatching(/[\\/]\.runner-snapshots[\\/][a-f0-9]{16}[\\/]index\.mjs$/),
+        expect.stringMatching(/[\\/]\.happiest-runner-snapshots[\\/][a-f0-9]{16}[\\/]index\.mjs$/),
         'claude',
         '--started-by',
         'daemon',
@@ -541,8 +541,8 @@ describe('spawnHappyCLI fallback invocation', () => {
         const inv = mod.buildHappyCliSubprocessInvocation(['codex', '--started-by', 'daemon', '--foo=bar']);
 
         const pinnedEntrypoint = inv.argv.find((arg) => arg.endsWith('index.mjs'));
-        expect(pinnedEntrypoint).toMatch(/[\\/]\.runner-snapshots[\\/][a-f0-9]{16}[\\/]index\.mjs$/);
-        expect(pinnedEntrypoint).not.toContain(`${join('dist', '.runner-snapshots')}`);
+        expect(pinnedEntrypoint).toMatch(/[\\/]\.happiest-runner-snapshots[\\/][a-f0-9]{16}[\\/]index\.mjs$/);
+        expect(pinnedEntrypoint).not.toContain(`${join('dist', '.happiest-runner-snapshots')}`);
         expect(inv.argv).toEqual([
           '--preserve-symlinks',
           '--no-warnings',
@@ -574,7 +574,7 @@ describe('spawnHappyCLI fallback invocation', () => {
       writeStackRuntimeFingerprint(runtimeStatePath, fingerprint);
       patchFreshDistEnv(entrypoint, runtimeStatePath, fingerprint);
 
-      const snapshotsDir = join(root, '.runner-snapshots');
+      const snapshotsDir = join(root, '.happiest-runner-snapshots');
       for (const [index, name] of [
         fingerprint,
         liveFingerprint,

@@ -13,7 +13,7 @@ function assertCoreAuthLoginInvocation(invocation) {
   if (invocation.command === process.execPath) {
     assert.match(
       String(invocation.args[0] ?? ''),
-      /apps\/cli\/(package-dist\/index\.mjs|dist\/index\.mjs|bin\/happier\.mjs)$/,
+      /apps\/cli\/(happiest-runtime\/index\.mjs|dist\/index\.mjs|bin\/happiest\.mjs)$/,
     );
     assert.deepEqual(invocation.args.slice(1), ['auth', 'login']);
     return;
@@ -86,7 +86,7 @@ test('guided stack auth login invocation uses the active runtime snapshot cli wh
       daemon: {
         content: '#!/bin/sh\nexit 0\n',
         artifactFingerprint: 'cli-auth',
-        nodeEntrypoint: 'cli/package-dist/index.mjs',
+        nodeEntrypoint: 'cli/happiest-runtime/index.mjs',
         nodeContent: 'export {};\n',
       },
     });

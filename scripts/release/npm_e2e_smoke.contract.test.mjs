@@ -484,8 +484,8 @@ test('npm-e2e-smoke remote server smoke forwards canonical server binary overrid
   );
   assert.match(
     raw,
-    /bin\/happier\.mjs/,
-    'expected remote server smoke to source happier command from packaged cli bin/happier.mjs'
+    /bin\/happiest\.mjs/,
+    'expected remote server smoke to source happier command from packaged cli bin/happiest.mjs'
   );
   assert.match(
     raw,

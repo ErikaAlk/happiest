@@ -3,6 +3,7 @@ import { parseArgs } from './utils/cli/args.mjs';
 import { pathExists } from './utils/fs/fs.mjs';
 import { killProcessTree, runCapture, spawnProc } from './utils/proc/proc.mjs';
 import { getComponentDir, getDefaultAutostartPaths, getRootDir, resolveExplicitStackEnvFilePath } from './utils/paths/paths.mjs';
+import { getCliBinPath } from './utils/paths/cli_bin.mjs';
 import { killPortListeners, observeTcpPortAvailability } from './utils/net/ports.mjs';
 import { fetchHappierHealth, getServerComponentName, isHappierServerRunning, waitForServerReady } from './utils/server/server.mjs';
 import { resolveServerShutdownGraceMs } from './utils/server/shutdown_grace.mjs';
@@ -227,7 +228,7 @@ async function main() {
   const cliDir = cliLaunchSpec?.cliDir ?? getComponentDir(rootDir, 'happier-cli');
   const uiDir = getComponentDir(rootDir, 'happier-ui');
 
-  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+  const cliBin = getCliBinPath(cliDir);
   const cliNodeEntrypoint = cliLaunchSpec?.nodeEntrypoint ?? '';
   const cliCommand = cliLaunchSpec?.command ?? '';
   const cliCommandArgs = cliLaunchSpec?.args ?? [];

@@ -167,7 +167,7 @@ describe('runPkgrollBuild', () => {
       },
       bundledDependencies: ['@happier-dev/protocol'],
       bin: {
-        happier: './bin/happier.mjs',
+        happiest: './bin/happiest.mjs',
       },
     }), 'utf8');
     const updatedCanonicalManifestRaw = readFileSync(fixture.packageJsonPath, 'utf8');
@@ -277,27 +277,27 @@ runPkgrollBuild({
     }
   }, 20_000);
 
-  it('rewrites package-dist entrypoints to dist for pkgroll without modifying publish file allowlists', () => {
+  it('rewrites happiest-runtime entrypoints to dist for pkgroll without modifying publish file allowlists', () => {
     const manifest = preparePkgrollPackageManifest({
-      main: './package-dist/index.cjs',
-      module: './package-dist/index.mjs',
-      types: './package-dist/index.d.cts',
+      main: './happiest-runtime/index.cjs',
+      module: './happiest-runtime/index.mjs',
+      types: './happiest-runtime/index.d.cts',
       exports: {
         '.': {
           require: {
-            types: './package-dist/index.d.cts',
-            default: './package-dist/index.cjs',
+            types: './happiest-runtime/index.d.cts',
+            default: './happiest-runtime/index.cjs',
           },
           import: {
-            types: './package-dist/index.d.mts',
-            default: './package-dist/index.mjs',
+            types: './happiest-runtime/index.d.mts',
+            default: './happiest-runtime/index.mjs',
           },
         },
       },
       bin: {
-        happier: './bin/happier.mjs',
+        happiest: './bin/happiest.mjs',
       },
-      files: ['package-dist', 'package-dist/**', 'bin'],
+      files: ['happiest-runtime', 'happiest-runtime/**', 'bin'],
     });
 
     expect(manifest).toMatchObject({
@@ -316,25 +316,25 @@ runPkgrollBuild({
           },
         },
       },
-      files: ['package-dist', 'package-dist/**', 'bin'],
+      files: ['happiest-runtime', 'happiest-runtime/**', 'bin'],
     });
     expect(manifest).not.toHaveProperty('bin');
   });
 
-  it('can rewrite package-dist entrypoints to an explicit build output directory', () => {
+  it('can rewrite happiest-runtime entrypoints to an explicit build output directory', () => {
     const manifest = preparePkgrollPackageManifest(
       {
-        main: './package-dist/index.cjs',
-        module: './package-dist/index.mjs',
+        main: './happiest-runtime/index.cjs',
+        module: './happiest-runtime/index.mjs',
         exports: {
           '.': {
             import: {
-              default: './package-dist/index.mjs',
+              default: './happiest-runtime/index.mjs',
             },
           },
         },
         bin: {
-          happier: './bin/happier.mjs',
+          happiest: './bin/happiest.mjs',
         },
       },
       { outputDir: '.tmp.cli-dist-build' },
@@ -432,7 +432,7 @@ runPkgrollBuild({
     const dir = createTempDirSync('happier-cli-pkgroll-timeout-');
     const packageJsonPath = join(dir, 'package.json');
     const outputDir = 'dist.staging.timeout';
-    writeFileSync(packageJsonPath, `${JSON.stringify({ main: './package-dist/index.mjs' }, null, 2)}\n`, 'utf8');
+    writeFileSync(packageJsonPath, `${JSON.stringify({ main: './happiest-runtime/index.mjs' }, null, 2)}\n`, 'utf8');
     const spawn = vi.fn(() => ({ status: 0 }));
 
     try {

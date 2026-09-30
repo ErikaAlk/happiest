@@ -20,9 +20,9 @@ describe('readCliUpdateFacts (K5)', () => {
   function installManaged(root: string, versionId: string): string {
     const versionDir = join(homeDir, root, 'versions', versionId);
     mkdirSync(versionDir, { recursive: true });
-    writeFileSync(join(versionDir, 'happier'), 'binary');
+    writeFileSync(join(versionDir, 'happiest'), 'binary');
     writeFileSync(join(homeDir, root, 'current.version'), `${versionId}\n`);
-    return join(versionDir, 'happier');
+    return join(versionDir, 'happiest');
   }
 
   it('reports a managed install with its ring-filtered latest, update command and last outcome', () => {
@@ -48,7 +48,7 @@ describe('readCliUpdateFacts (K5)', () => {
       latestVersion: '0.2.14-preview.3',
       channel: 'preview',
       installSource: 'managed',
-      updateCommand: 'hprev self update',
+      updateCommand: 'happiest-preview self update',
       canUpdateRemotely: true,
       lastUpdate: { targetVersion: '0.2.13-preview.1', outcome: 'pendingReconnect', at: 5, message: null },
     });
@@ -58,21 +58,21 @@ describe('readCliUpdateFacts (K5)', () => {
     const execPath = installManaged('cli', '0.2.13');
     expect(readCliUpdateFacts({
       homeDir, publicReleaseRing: 'stable', currentVersion: '0.2.13', execPath, invokedPath: execPath, platform: 'win32', npmPackageName: '@happier-dev/cli',
-    })).toMatchObject({ installSource: 'managed', canUpdateRemotely: false, updateCommand: 'happier self update' });
+    })).toMatchObject({ installSource: 'managed', canUpdateRemotely: false, updateCommand: 'happiest self update' });
   });
 
   it('names the package manager\'s command for an npm install and never offers a remote update', () => {
     const packageRoot = join(homeDir, 'global', 'node_modules', '@happier-dev', 'cli');
     mkdirSync(join(packageRoot, 'bin'), { recursive: true });
     writeFileSync(join(packageRoot, 'package.json'), JSON.stringify({ name: '@happier-dev/cli' }));
-    writeFileSync(join(packageRoot, 'bin', 'happier.mjs'), '');
+    writeFileSync(join(packageRoot, 'bin', 'happiest.mjs'), '');
 
     expect(readCliUpdateFacts({
       homeDir,
       publicReleaseRing: 'stable',
       currentVersion: '0.2.12',
       execPath: '/usr/bin/node',
-      invokedPath: join(packageRoot, 'bin', 'happier.mjs'),
+      invokedPath: join(packageRoot, 'bin', 'happiest.mjs'),
       platform: 'linux',
       npmPackageName: '@happier-dev/cli',
     })).toMatchObject({
@@ -95,7 +95,7 @@ describe('readCliUpdateFacts (K5)', () => {
     const packageRoot = join(homeDir, 'homebrew', 'lib', 'node_modules', '@happier-dev', 'cli');
     mkdirSync(join(packageRoot, 'bin'), { recursive: true });
     writeFileSync(join(packageRoot, 'package.json'), JSON.stringify({ name: '@happier-dev/cli' }));
-    writeFileSync(join(packageRoot, 'bin', 'happier.mjs'), '');
+    writeFileSync(join(packageRoot, 'bin', 'happiest.mjs'), '');
     const checkout = join(homeDir, 'src', 'happier', 'apps', 'cli', 'dist', 'index.mjs');
     mkdirSync(join(checkout, '..'), { recursive: true });
     writeFileSync(checkout, '');
@@ -103,7 +103,7 @@ describe('readCliUpdateFacts (K5)', () => {
     const read = (invokedPath: string) => readCliUpdateFacts({
       homeDir, publicReleaseRing: 'stable', currentVersion: '1.0.0', execPath: nodeKeg, invokedPath, platform: 'darwin', npmPackageName: '@happier-dev/cli',
     });
-    expect(read(join(packageRoot, 'bin', 'happier.mjs'))).toMatchObject({
+    expect(read(join(packageRoot, 'bin', 'happiest.mjs'))).toMatchObject({
       installSource: 'npm',
       updateCommand: 'npm install -g @happier-dev/cli@latest',
     });
@@ -111,7 +111,7 @@ describe('readCliUpdateFacts (K5)', () => {
   });
 
   it('treats a binary outside the managed layout as other, with no command', () => {
-    const stray = join(homeDir, 'somewhere', 'happier');
+    const stray = join(homeDir, 'somewhere', 'happiest');
     mkdirSync(join(homeDir, 'somewhere'), { recursive: true });
     writeFileSync(stray, 'binary');
     installManaged('cli', '0.2.13');

@@ -1,4 +1,5 @@
 import { parseHappierToolsShellBridgeCommand } from '@happier-dev/protocol';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -95,7 +96,7 @@ export function normalizeBashInput(rawInput: unknown): { command?: string; timeo
     }
 
     if (typeof out.command === 'string') {
-        const parsedShellBridge = parseHappierToolsShellBridgeCommand(out.command);
+        const parsedShellBridge = parseHappierToolsShellBridgeCommand(out.command, productIdentity.commandName);
         if (parsedShellBridge) {
             out.happierToolsShellBridge = parsedShellBridge;
         }

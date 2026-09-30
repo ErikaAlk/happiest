@@ -6,6 +6,7 @@ import { resolveInvokerName } from '@/cli/runtime/resolveInvokerName';
 
 import {
   listInstalledVersionIdsNewestFirst,
+  getFirstPartyComponentCatalogEntry,
   resolveFirstPartyVersionInstallPath,
   resolveInstalledFirstPartyComponentPaths,
 } from '@happier-dev/cli-common/firstPartyRuntime';
@@ -61,7 +62,8 @@ function resolveBinaryPathForVersion(params: Readonly<{
     versionId: params.versionId,
     processEnv: process.env,
   });
-  return join(versionRoot, process.platform === 'win32' ? 'happier.exe' : 'happier');
+  const binaryName = getFirstPartyComponentCatalogEntry('happier-cli').executableBaseName;
+  return join(versionRoot, process.platform === 'win32' ? `${binaryName}.exe` : binaryName);
 }
 
 function isPathDirectoryOnPath(path: string): boolean {

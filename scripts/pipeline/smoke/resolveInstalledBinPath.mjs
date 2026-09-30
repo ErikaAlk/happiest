@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 /**
  * @param {string} prefixDir
@@ -8,14 +9,14 @@ import path from 'node:path';
  */
 export function resolveInstalledBinPath(prefixDir, options = {}) {
   const platform = options.platform ?? process.platform;
-  const exe = platform === 'win32' ? 'happier.cmd' : 'happier';
+  const exe = platform === 'win32' ? `${productIdentity.commandName}.cmd` : productIdentity.commandName;
 
   const candidates = [
     path.join(prefixDir, 'bin', exe),
     path.join(prefixDir, exe),
     path.join(prefixDir, 'node_modules', '.bin', exe),
     path.join(prefixDir, 'lib', 'node_modules', '.bin', exe),
-    path.join(prefixDir, 'lib', 'node_modules', '@happier-dev', 'cli', 'bin', platform === 'win32' ? 'happier.mjs' : 'happier.mjs'),
+    path.join(prefixDir, 'lib', 'node_modules', '@happier-dev', 'cli', 'bin', `${productIdentity.commandName}.mjs`),
   ];
 
   for (const candidate of candidates) {

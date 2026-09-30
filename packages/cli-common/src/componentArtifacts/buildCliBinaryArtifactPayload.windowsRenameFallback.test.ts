@@ -157,9 +157,9 @@ module.exports = { unpackTools };
             },
         });
 
-        await expect(readFile(join(payloadDir, 'package-dist', 'index.mjs'), 'utf8')).resolves.toBe('export const cli = "fresh";\n');
+        await expect(readFile(join(payloadDir, 'happiest-runtime', 'index.mjs'), 'utf8')).resolves.toBe('export const cli = "fresh";\n');
         await expect(readFile(join(cliDistDir, 'index.mjs'), 'utf8')).resolves.toBe('export const cli = "fresh";\n');
-        expect(existsSync(join(payloadDir, 'happier.exe'))).toBe(true);
+        expect(existsSync(join(payloadDir, 'happiest.exe'))).toBe(true);
         expect(existsSync(join(payloadDir, 'tools', 'unpacked', 'rg.exe'))).toBe(true);
         expect(existsSync(join(payloadDir, 'tools', 'unpacked', 'ripgrep.node'))).toBe(false);
         expect(existsSync(join(payloadDir, 'tools', 'unpacked', 'zellij.exe'))).toBe(false);

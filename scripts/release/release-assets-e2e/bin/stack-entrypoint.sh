@@ -154,7 +154,7 @@ if [[ -n "$HAPPIER_TGZ" && -f "$HAPPIER_TGZ" ]]; then
   resolve_happier_prefix_from_npm_global_package
 elif [[ "$HAPPIER_CLI_INSTALL_MODE" == "npx" ]]; then
   echo "[stack] running happier-cli via npx: $HAPPIER_NPM_SPEC"
-  HAPPIER_PREFIX=(npx --yes -p "$HAPPIER_NPM_SPEC" happier)
+  HAPPIER_PREFIX=(npx --yes -p "$HAPPIER_NPM_SPEC" happiest)
 else
   echo "[stack] installing happier-cli from npm: $HAPPIER_NPM_SPEC"
   npm_install_with_retry "install happier-cli from npm" npm install -g "$HAPPIER_NPM_SPEC" >/dev/null

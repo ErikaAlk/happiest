@@ -168,11 +168,11 @@ describe('tool normalization fixtures (v1): catalog coverage', () => {
       callId: 'run_shell_command-1',
       rawInput: {
         command:
-          `happier tools call --source happier --tool change_title --args-json '{"title":"Pi Tools Proof 2026-03-06"}' --json`,
+          `happiest tools call --source happier --tool change_title --args-json '{"title":"Pi Tools Proof 2026-03-06"}' --json`,
         happierToolsShellBridge: {
           kind: 'call',
           rawCommand:
-            `happier tools call --source happier --tool change_title --args-json '{"title":"Pi Tools Proof 2026-03-06"}' --json`,
+            `happiest tools call --source happier --tool change_title --args-json '{"title":"Pi Tools Proof 2026-03-06"}' --json`,
           sessionId: null,
           directory: null,
           source: 'happier',
@@ -233,11 +233,11 @@ describe('tool normalization fixtures (v1): catalog coverage', () => {
       callId: 'run_shell_command-2',
       rawInput: {
         command:
-          `happier tools call --source qa_marker_stdio_20260306 --tool get_marker --args-json '{}' --json`,
+          `happiest tools call --source qa_marker_stdio_20260306 --tool get_marker --args-json '{}' --json`,
         happierToolsShellBridge: {
           kind: 'call',
           rawCommand:
-            `happier tools call --source qa_marker_stdio_20260306 --tool get_marker --args-json '{}' --json`,
+            `happiest tools call --source qa_marker_stdio_20260306 --tool get_marker --args-json '{}' --json`,
           sessionId: null,
           directory: null,
           source: 'qa_marker_stdio_20260306',

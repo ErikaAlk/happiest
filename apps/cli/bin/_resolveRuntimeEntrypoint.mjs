@@ -1,12 +1,13 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 export const CLI_DIST_BUILD_MANIFEST = '.build-manifest.json';
 
 function runtimeEntrypointCandidates(projectRoot, relativePath) {
   return [
     { outputDir: join(projectRoot, 'dist'), entrypoint: join(projectRoot, 'dist', relativePath) },
-    { outputDir: join(projectRoot, 'package-dist'), entrypoint: join(projectRoot, 'package-dist', relativePath) },
+    { outputDir: join(projectRoot, productIdentity.cliRuntimeDirName), entrypoint: join(projectRoot, productIdentity.cliRuntimeDirName, relativePath) },
     {
       outputDir: join(projectRoot, '.dist.hstack-backup'),
       entrypoint: join(projectRoot, '.dist.hstack-backup', relativePath),

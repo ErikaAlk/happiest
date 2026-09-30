@@ -37,7 +37,7 @@ note/
 happier-dev-cli-*.tgz
 happy-coder-*.tgz
 /dist/
-/package-dist/
+/happiest-runtime/
 
 # Lock-owned transient build generations. These may survive a force-killed build.
 /.dist.hstack-*

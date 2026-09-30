@@ -51,7 +51,7 @@ describe('parseMessageAsEvent', () => {
         expect(
             parseMessageAsEvent(
                 makeShellBridgeToolCallMessage(
-                    `happier tools call --source happier --tool change_title --args-json '{"title":"Bridge title"}' --json`,
+                    `happiest tools call --source happier --tool change_title --args-json '{"title":"Bridge title"}' --json`,
                 ),
             ),
         ).toBeNull();

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { resolveDaemonServiceRuntimeTarget } from './runtimeTarget.js';
 
 describe('resolveDaemonServiceRuntimeTarget', () => {
-  it('prefers the bundled package-dist entrypoint when the current runtime executable is bun', () => {
+  it('prefers the bundled happiest-runtime entrypoint when the current runtime executable is bun', () => {
     expect(
       resolveDaemonServiceRuntimeTarget({
         currentExecPath: '/opt/homebrew/bin/bun',
@@ -11,11 +11,11 @@ describe('resolveDaemonServiceRuntimeTarget', () => {
       }),
     ).toEqual({
       nodePath: '/opt/homebrew/bin/bun',
-      entryPath: expect.stringContaining('/apps/cli/package-dist/index.mjs'),
+      entryPath: expect.stringContaining('/apps/cli/happiest-runtime/index.mjs'),
     });
   });
 
-  it('prefers the bundled package-dist entrypoint for an explicit managed js runtime wrapper', () => {
+  it('prefers the bundled happiest-runtime entrypoint for an explicit managed js runtime wrapper', () => {
     expect(
       resolveDaemonServiceRuntimeTarget({
         currentExecPath: '/Applications/Happier.app/Contents/MacOS/happier',
@@ -23,7 +23,7 @@ describe('resolveDaemonServiceRuntimeTarget', () => {
       }),
     ).toEqual({
       nodePath: '/Users/test/.happier/tools/js-runtime/current/bin/happier-js-runtime',
-      entryPath: expect.stringContaining('/apps/cli/package-dist/index.mjs'),
+      entryPath: expect.stringContaining('/apps/cli/happiest-runtime/index.mjs'),
     });
   });
 

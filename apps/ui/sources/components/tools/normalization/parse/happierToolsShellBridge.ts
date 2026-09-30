@@ -2,6 +2,7 @@ import {
     parseHappierToolsShellBridgeCommand,
     type HappierToolsShellBridgeCommand,
 } from '@happier-dev/protocol';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { extractShellCommand } from '@happier-dev/protocol';
 
@@ -26,5 +27,5 @@ export function extractHappierToolsShellBridgeCommand(input: unknown): HappierTo
 
     const command = extractShellCommand(input);
     if (!command) return null;
-    return parseHappierToolsShellBridgeCommand(command);
+    return parseHappierToolsShellBridgeCommand(command, productIdentity.commandName);
 }

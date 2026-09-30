@@ -2,6 +2,8 @@ import { existsSync } from 'node:fs';
 import { basename, join } from 'node:path';
 
 import { parseOptionalBooleanEnv } from '@happier-dev/protocol';
+import { getFirstPartyComponentCatalogEntry } from '@happier-dev/cli-common/firstPartyRuntime';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { projectPath } from '@/projectPath';
 import { resolvePackagedRuntimeEntrypoint } from '@/runtime/resolvePackagedRuntimeEntrypoint';
@@ -38,7 +40,7 @@ function isRuntimeExecutablePath(pathLike: string): boolean {
 
 function isPackagedEntrypointPath(pathLike: string): boolean {
   const normalized = String(pathLike ?? '').trim().replaceAll('\\', '/').toLowerCase();
-  return normalized.endsWith('/package-dist/index.mjs') || normalized.endsWith('/dist/index.mjs');
+  return normalized.endsWith(`/${productIdentity.cliRuntimeDirName}/index.mjs`) || normalized.endsWith('/dist/index.mjs');
 }
 
 function hasDaemonStackContext(env: Readonly<NodeJS.ProcessEnv>): boolean {
@@ -153,7 +155,7 @@ function resolveWindowsSiblingPackagedBinary(packagedEntrypoint: string): string
     return null;
   }
   const entrypointForwardSlashes = normalizedEntrypoint.replaceAll('\\', '/');
-  const packageDistSuffix = '/package-dist/index.mjs';
+  const packageDistSuffix = `/${productIdentity.cliRuntimeDirName}/index.mjs`;
   if (!entrypointForwardSlashes.toLowerCase().endsWith(packageDistSuffix)) {
     return null;
   }
@@ -161,7 +163,7 @@ function resolveWindowsSiblingPackagedBinary(packagedEntrypoint: string): string
   if (!runtimeRoot) {
     return null;
   }
-  const siblingBinaryForwardSlashes = `${runtimeRoot}/happier.exe`;
+  const siblingBinaryForwardSlashes = `${runtimeRoot}/${getFirstPartyComponentCatalogEntry('happier-cli').executableBaseName}.exe`;
   const siblingBinaryNativeSeparators = normalizedEntrypoint.includes('\\')
     ? siblingBinaryForwardSlashes.replaceAll('/', '\\')
     : siblingBinaryForwardSlashes;

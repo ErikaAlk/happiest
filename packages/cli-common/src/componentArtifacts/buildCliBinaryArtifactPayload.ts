@@ -2,6 +2,8 @@ import { existsSync } from 'node:fs';
 import { cp, mkdir, mkdtemp, readdir, rename, rm } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+import { getFirstPartyComponentCatalogEntry } from '../firstPartyRuntime/componentCatalog.js';
 
 import { CLI_BINARY_TARGETS, resolveCliToolsPlatformDir, resolveCurrentBinaryTarget, resolveExecutableName, type BinaryTarget } from './targets.js';
 import { commandExists, compileBunBinary, ensureFileExists, execOrThrow, resolveBunCommand, resolveYarnCommand, type RunCommand } from './commands.js';
@@ -105,7 +107,7 @@ async function copyCliNodeRuntimePayload(
 ): Promise<void> {
   const cliDir = join(repoRoot, 'apps', 'cli');
 
-  await cp(distDir, join(payloadDir, 'package-dist'), { recursive: true });
+  await cp(distDir, join(payloadDir, productIdentity.cliRuntimeDirName), { recursive: true });
   vendorBundledPackageRuntimeDependencies({
     srcPackageJsonPath: join(cliDir, 'package.json'),
     destPackageDir: payloadDir,
@@ -201,7 +203,7 @@ export async function buildCliBinaryArtifactPayload({
     repoRoot,
     hostPackageDir: cliDir,
   });
-  const executableName = resolveExecutableName({ baseName: 'happier', target });
+  const executableName = resolveExecutableName({ baseName: getFirstPartyComponentCatalogEntry('happier-cli').executableBaseName, target });
   const mergedExternals = [...new Set([...CLI_RUNTIME_BUNDLED_PACKAGES, ...CLI_OPTIONAL_RUNTIME_PACKAGES, ...externals.map((value) => String(value ?? '').trim()).filter(Boolean)])];
 
   await withCliDistBuildLock(async ({ heldLockValue }) => {

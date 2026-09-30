@@ -117,12 +117,12 @@ test('a failed approval stops the run instead of answering the prompt', async ()
 
 const FRESH_OK = () => ({
   expectedCliVersion: '0.2.13',
-  precondition: { happierOnPath: '', happierHomeExists: false, userUnits: '' },
+  precondition: { happiestOnPath: '', happiestHomeExists: false, userUnits: '' },
   inspection: { exitCode: 0, result: { ok: true, data: {} }, prompts: [] },
   setup: { exitCode: 0, result: { ok: true, data: { machineId: 'm1', cliProvenance: 'managed', cliVersion: '0.2.13', serviceAction: 'install' } }, prompts: [{ kind: 'setup.pairThisComputer' }] },
   feedServedArchive: true,
-  pathCommand: '/home/happy/.happier/bin/happier',
-  pathCommandResolved: '/home/happy/.happier/cli/versions/0.2.13/happier',
+  pathCommand: '/home/happy/.happiest/bin/happiest',
+  pathCommandResolved: '/home/happy/.happiest/cli/versions/0.2.13/happiest',
   pathVersion: '0.2.13',
   status: {
     service: { installed: true, running: true },

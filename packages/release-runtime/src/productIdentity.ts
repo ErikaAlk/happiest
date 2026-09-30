@@ -14,6 +14,18 @@ export const productIdentity = {
   commandName: 'happiest',
   /** Home directory under the user's home; `HAPPIEST_HOME_DIR` overrides it. */
   homeDirName: '.happiest',
+  /**
+   * Directory that holds the CLI's Node entrypoint (`index.mjs`) in the CLI package and in every
+   * installed CLI payload. Upstream Happier uses `package-dist`; its `doctor clean` kills processes
+   * whose command line contains that name, so this product uses its own.
+   */
+  cliRuntimeDirName: 'happiest-runtime',
+  /** Directory of the pinned session-runner snapshots of the CLI runtime; upstream uses `.runner-snapshots`. */
+  runnerSnapshotsDirName: '.happiest-runner-snapshots',
+  /** Command of the launcher that runs the CLI from this repository's sources during development. */
+  sourceCommandName: 'happiest-source',
+  /** Home directory of the source launcher, kept apart from an installed CLI's home. */
+  sourceHomeDirName: '.happiest-source',
   /** launchd label prefix of the background daemon service. */
   daemonServiceLaunchdLabelPrefix: 'com.happiest.cli.daemon',
   /** systemd unit and Windows task/wrapper prefix of the background daemon service. */

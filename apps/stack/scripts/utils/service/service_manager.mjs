@@ -6,6 +6,7 @@ import {
   inspectServiceRegistration,
   planServiceAction,
   applyServicePlan,
+  qualifyWindowsScheduledTaskName,
 } from '@happier-dev/cli-common/service';
 
 export { resolveServiceBackend, buildServiceDefinition, planServiceAction };
@@ -18,7 +19,7 @@ function normalizeLabel(spec) {
 
 function taskNameFor({ backend, label }) {
   if (String(backend).startsWith('schtasks-')) {
-    return `Happier\\${label}`;
+    return qualifyWindowsScheduledTaskName(label);
   }
   return '';
 }

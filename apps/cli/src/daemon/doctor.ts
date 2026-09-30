@@ -10,6 +10,9 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { readFile, readlink } from 'node:fs/promises';
 import { readLinuxProcessParentPid, readWin32ProcessRows } from '@happier-dev/cli-common/processInstance';
+import { getFirstPartyComponentCatalogEntry } from '@happier-dev/cli-common/firstPartyRuntime';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+import { projectPath } from '@/projectPath';
 import { listProcessSnapshot } from './processSnapshotCache';
 import { readDaemonHeartbeatIntervalMs } from './lifecycle/heartbeatInterval';
 
@@ -22,7 +25,8 @@ const DAEMON_OWNERSHIP_ENVIRONMENT_VARIABLE_KEYS = [
   'HAPPIEST_WEBAPP_URL',
   'HAPPIEST_PUBLIC_SERVER_URL',
 ] as const;
-const WINDOWS_HAPPY_HOST_PROCESS_NAMES = new Set(['happier', 'happier.exe', 'node', 'node.exe', 'bun', 'bun.exe', 'mainthread']);
+const CLI_EXECUTABLE_NAME = getFirstPartyComponentCatalogEntry('happier-cli').executableBaseName;
+const WINDOWS_HAPPY_HOST_PROCESS_NAMES = new Set([CLI_EXECUTABLE_NAME, `${CLI_EXECUTABLE_NAME}.exe`, 'node', 'node.exe', 'bun', 'bun.exe', 'mainthread']);
 
 export type DaemonOwnershipEnvironmentVariables = Partial<Record<
   typeof DAEMON_OWNERSHIP_ENVIRONMENT_VARIABLE_KEYS[number],
@@ -265,40 +269,24 @@ export function classifyHappyProcess(proc: RawProcessInfo): HappyProcessInfo | n
   const name = proc.name || '';
   const normalizedCommand = cmd.replaceAll('\\', '/');
   const normalizedName = normalizeProcessName(name);
-  const isNodeHostProcess = normalizedName === 'node' || normalizedName === 'node.exe' || normalizedName === 'mainthread';
-  const isCliSourceSnapshotCommand =
-    normalizedCommand.includes('/cli-dist-snapshot/src/index.ts') ||
-    normalizedCommand.includes('/cli-dist/src/index.ts') ||
-    (
-      (normalizedCommand.includes('/.project/logs/e2e/') || normalizedCommand.includes('/.project/tmp/')) &&
-      /\/cli-[^/\s]+\/src\/index\.ts(?:\s|$)/.test(normalizedCommand)
-    );
+  const isNodeHostProcess = ['node', 'node.exe', 'bun', 'bun.exe', 'mainthread'].includes(normalizedName);
+  const sourceRoot = projectPath().replaceAll('\\', '/');
+  const isCliSourceSnapshotCommand = normalizedCommand.includes(`${sourceRoot}/src/index.ts`);
   const isRunnerSnapshotCommand =
-    /\/\.runner-snapshots\/[^/\s]+\/index\.mjs(?:\s|$)/.test(normalizedCommand) ||
-    /\/dist\/\.runner-snapshots\/[^/\s]+\/index\.mjs(?:\s|$)/.test(normalizedCommand);
+    normalizedCommand.includes(`/${productIdentity.runnerSnapshotsDirName}/`) &&
+    /\/index\.mjs(?:["']|\s|$)/.test(normalizedCommand);
 
   // NOTE: Be intentionally strict here. This classification is used for PID reuse safety
   // (reattach + stopSession). A false positive could cause us to adopt/kill a non-Happy process.
   const isHappy =
     (isNodeHostProcess &&
-      (normalizedCommand.includes('@happier-dev/cli') ||
-        normalizedCommand.includes('dist/index.mjs') ||
-        normalizedCommand.includes('package-dist/index.mjs') ||
-        normalizedCommand.includes('bin/happier.mjs') ||
+      (normalizedCommand.includes(`/${productIdentity.cliRuntimeDirName}/index.mjs`) ||
+        normalizedCommand.includes(`${sourceRoot}/dist/index.mjs`) ||
+        normalizedCommand.includes(`/bin/${CLI_EXECUTABLE_NAME}.mjs`) ||
         isRunnerSnapshotCommand ||
-        // Some runtime handoff paths execute snapshot `src/index.ts` directly under `node`
-        // (without the tsx import hook), so keep this as a first-class Happy process shape.
-        isCliSourceSnapshotCommand ||
-        (normalizedCommand.includes('tsx') &&
-          normalizedCommand.includes('src/index.ts') &&
-          (normalizedCommand.includes('apps/cli') ||
-            normalizedCommand.includes('@happier-dev/cli') ||
-            isCliSourceSnapshotCommand)))) ||
-    normalizedCommand.includes('happier.mjs') ||
-    normalizedCommand.includes('@happier-dev/cli') ||
-    normalizedCommand.includes('package-dist/index.mjs') ||
-    normalizedName === 'happier' ||
-    normalizedName === 'happier.exe';
+        isCliSourceSnapshotCommand)) ||
+    normalizedName === CLI_EXECUTABLE_NAME ||
+    normalizedName === `${CLI_EXECUTABLE_NAME}.exe`;
 
   if (!isHappy) return null;
 

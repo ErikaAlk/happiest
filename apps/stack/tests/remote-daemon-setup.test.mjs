@@ -25,7 +25,7 @@ test('hstack remote daemon setup delegates to happier machine setup with relay t
   assert.equal(res.status, 0, res.stderr);
 
   const log = h.readInvocationsLog();
-  assert.ok(log.includes('"bin":"happier"'), `expected local happier invocation\n${log}`);
+  assert.ok(log.includes('"bin":"happiest"'), `expected local happier invocation\n${log}`);
   assert.ok(log.includes('"machine","setup"'), `expected machine setup delegation\n${log}`);
   assert.ok(log.includes('--server-url=https://example.invalid'), `expected server-url passed to local happier invocation\n${log}`);
   assert.ok(log.includes('--public-server-url=https://public.example.invalid'), `expected public-server-url passed to local happier invocation\n${log}`);
@@ -48,7 +48,7 @@ test('hstack remote daemon setup forwards ssh config file and service mode to ha
   assert.equal(res.status, 0, res.stderr);
 
   const log = h.readInvocationsLog();
-  assert.ok(log.includes('"bin":"happier"'), `expected local happier invocation\n${log}`);
+  assert.ok(log.includes('"bin":"happiest"'), `expected local happier invocation\n${log}`);
   assert.ok(log.includes('--service-mode=none'), `expected service none delegation\n${log}`);
   assert.ok(log.includes('--ssh-config-file=/tmp/lima-ssh.config'), `expected ssh config delegation\n${log}`);
 });
@@ -66,7 +66,7 @@ test('hstack remote daemon setup forwards --yes to happier machine setup', (t) =
   assert.equal(res.status, 0, res.stderr);
 
   const log = h.readInvocationsLog();
-  assert.ok(log.includes('"bin":"happier"'), `expected local happier invocation\n${log}`);
+  assert.ok(log.includes('"bin":"happiest"'), `expected local happier invocation\n${log}`);
   assert.ok(log.includes('--yes'), `expected --yes delegation\n${log}`);
 });
 

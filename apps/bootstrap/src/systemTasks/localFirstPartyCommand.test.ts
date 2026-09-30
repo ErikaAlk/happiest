@@ -76,7 +76,7 @@ describe('ensureLocalFirstPartyComponentCommand', () => {
     it('prefers the repo-local Happier CLI command before attempting a payload download', async () => {
         const rootDir = mkdtempSync(join(tmpdir(), 'hsetup-repo-local-happier-cli-'));
         const repoRoot = join(rootDir, 'repo');
-        const happierPath = join(repoRoot, 'apps', 'cli', 'bin', 'happier.mjs');
+        const happierPath = join(repoRoot, 'apps', 'cli', 'bin', 'happiest.mjs');
         const preparePayload = vi.fn(async () => {
             throw new Error('preparePayload should not have been called');
         });
@@ -137,7 +137,7 @@ describe('ensureLocalFirstPartyComponentCommand', () => {
         const happyHomeDir = join(rootDir, 'home');
         const managedPath = join(happyHomeDir, 'cli', 'current', 'happiest');
         const repoRoot = join(rootDir, 'repo');
-        const repoPath = join(repoRoot, 'apps', 'cli', 'bin', 'happier.mjs');
+        const repoPath = join(repoRoot, 'apps', 'cli', 'bin', 'happiest.mjs');
         const envPath = join(rootDir, 'env-happier');
         const stagedPayloadRoot = join(rootDir, 'staged');
 
@@ -197,7 +197,7 @@ describe('ensureLocalFirstPartyComponentCommand', () => {
         const rootDir = mkdtempSync(join(tmpdir(), 'hsetup-cli-choice-'));
         const happyHomeDir = join(rootDir, 'home');
         const npmBin = join(rootDir, 'npm-global', 'bin');
-        const npmHappier = join(npmBin, 'happier');
+        const npmHappier = join(npmBin, 'happiest');
         const managedPath = join(happyHomeDir, 'cli', 'current', 'happiest');
         const stagedPayloadRoot = join(rootDir, 'staged');
         const processEnv = { HAPPIEST_HOME_DIR: happyHomeDir, HAPPIER_STACK_REPO_DIR: join(rootDir, 'elsewhere'), PATH: npmBin };

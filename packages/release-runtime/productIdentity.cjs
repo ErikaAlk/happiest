@@ -1,0 +1,16 @@
+const productIdentity = {
+  productName: 'Happiest',
+  commandName: 'happiest',
+  homeDirName: '.happiest',
+  cliRuntimeDirName: 'happiest-runtime',
+  runnerSnapshotsDirName: '.happiest-runner-snapshots',
+  sourceCommandName: 'happiest-source',
+  sourceHomeDirName: '.happiest-source',
+  daemonServiceLaunchdLabelPrefix: 'com.happiest.cli.daemon',
+  daemonServiceUnitPrefix: 'happiest-daemon',
+  windowsTaskFolder: 'Happiest',
+  systemDirName: 'happiest',
+  relayDefaultPort: 3015,
+};
+
+module.exports = { productIdentity };

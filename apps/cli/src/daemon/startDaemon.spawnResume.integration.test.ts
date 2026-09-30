@@ -2368,7 +2368,7 @@ describe('startDaemon spawn resume wiring (integration)', () => {
       argvPrefix: [
         '--no-warnings',
         '--no-deprecation',
-        '/runtime/.runner-snapshots/0123456789abcdef/index.mjs',
+        '/runtime/.happiest-runner-snapshots/0123456789abcdef/index.mjs',
       ],
       env: { HAPPIER_TEST_ADMITTED_CLOSURE: '0123456789abcdef' },
     };
@@ -2801,7 +2801,7 @@ describe('startDaemon spawn resume wiring (integration)', () => {
           happySessionId: 'sess-stale-6480',
           reattachedFromDiskMarker: true,
           processCommand:
-            'bun C:/hq/windetachedfix-007/happier-v0.2.4-windows-x64/package-dist/index.mjs codex --happy-starting-mode remote --started-by daemon --existing-session sess-stale-6480',
+            'bun C:/hq/windetachedfix-007/happier-v0.2.4-windows-x64/happiest-runtime/index.mjs codex --happy-starting-mode remote --started-by daemon --existing-session sess-stale-6480',
           spawnOptions: {
             directory: '/tmp/workspace-stale',
             backendTarget: { kind: 'builtInAgent', agentId: 'codex' },
@@ -3485,7 +3485,7 @@ describe('startDaemon spawn resume wiring (integration)', () => {
         happySessionId: 'sess_already_running',
         processCommandHash: 'hash-stale-runner',
         processCommand:
-          'node /tmp/happier/versions/0.2.10/package-dist/index.mjs codex --happy-starting-mode remote --started-by daemon',
+          'node /tmp/happier/versions/0.2.10/happiest-runtime/index.mjs codex --happy-starting-mode remote --started-by daemon',
         spawnOptions: {
           directory: '/tmp',
           backendTarget: { kind: 'builtInAgent', agentId: 'codex' },
@@ -5851,7 +5851,7 @@ describe('startDaemon spawn resume wiring (integration)', () => {
     const refreshEnvOriginal = process.env.HAPPIER_CONNECTED_SERVICES_REFRESH_ENABLED;
     process.env.HAPPIER_CONNECTED_SERVICES_REFRESH_ENABLED = 'false';
     let run: Promise<void> | null = null;
-    const immutableEntrypoint = '/runtime/.runner-snapshots/0123456789abcdef/index.mjs';
+    const immutableEntrypoint = '/runtime/.happiest-runner-snapshots/0123456789abcdef/index.mjs';
     const runtimeDecision: HappyCliSubprocessRuntimeDecision = {
       runtime: 'node',
       argvPrefix: ['--no-warnings', '--no-deprecation', immutableEntrypoint],
@@ -5928,7 +5928,7 @@ describe('startDaemon spawn resume wiring (integration)', () => {
     const refreshEnvOriginal = process.env.HAPPIER_CONNECTED_SERVICES_REFRESH_ENABLED;
     process.env.HAPPIER_CONNECTED_SERVICES_REFRESH_ENABLED = 'false';
     let run: Promise<void> | null = null;
-    const immutableEntrypoint = '/runtime/.runner-snapshots/fedcba9876543210/index.mjs';
+    const immutableEntrypoint = '/runtime/.happiest-runner-snapshots/fedcba9876543210/index.mjs';
     const runtimeDecision: HappyCliSubprocessRuntimeDecision = {
       runtime: 'node',
       argvPrefix: ['--no-warnings', '--no-deprecation', immutableEntrypoint],

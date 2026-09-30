@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 /**
- * link-dev.cjs - Create symlink for happier-dev only
+ * link-dev.cjs - Create symlink for happiest-source only
  *
- * This script creates a symlink for the happier-dev command pointing to the local
- * development version, while leaving the stable npm version of `happier` untouched.
+ * This script creates a symlink for the happiest-source command pointing to the local
+ * development version, while leaving the stable npm version of `happiest` untouched.
  *
  * Usage: yarn link:dev
  *
  * What it does:
  * 1. Finds the global npm bin directory
- * 2. Creates/updates a symlink: happier-dev -> ./bin/happier-dev.mjs
+ * 2. Creates/updates a symlink: happiest-source -> ./bin/happiest-source.mjs
  *
  * To undo: yarn unlink:dev
  */
@@ -18,11 +18,12 @@ const childProcess = require('node:child_process');
 const { join, dirname } = require('path');
 const fs = require('fs');
 const { withWindowsHide } = require('./childProcessOptions.cjs');
+const { productIdentity } = require('@happier-dev/release-runtime/productIdentity');
 
 const projectRoot = dirname(__dirname);
-const binSource = join(projectRoot, 'bin', 'happier-dev.mjs');
+const binSource = join(projectRoot, 'bin', `${productIdentity.sourceCommandName}.mjs`);
 
-const targetBins = ['happier-dev'];
+const targetBins = [productIdentity.sourceCommandName];
 
 function getGlobalBinDir(opts = {}) {
     const execFileSync = typeof opts.execFileSync === 'function' ? opts.execFileSync : childProcess.execFileSync;
@@ -60,9 +61,9 @@ function getGlobalBinDir(opts = {}) {
 
 function link() {
     const globalBin = getGlobalBinDir();
-    const primaryBinTarget = join(globalBin, 'happier-dev');
+    const primaryBinTarget = join(globalBin, productIdentity.sourceCommandName);
 
-    console.log('Creating symlink for happier-dev...');
+    console.log(`Creating symlink for ${productIdentity.sourceCommandName}...`);
     console.log(`  Source: ${binSource}`);
     console.log(`  Target: ${primaryBinTarget}`);
 
@@ -88,10 +89,10 @@ function link() {
             fs.symlinkSync(binSource, binTarget);
         }
 
-        console.log('\n✅ Successfully linked happier-dev to local development version');
+        console.log(`\n✅ Successfully linked ${productIdentity.sourceCommandName} to local development version`);
         console.log('\nNow you can use:');
-        console.log('  happier      → stable npm version (unchanged)');
-        console.log('  happier-dev  → local development version');
+        console.log(`  ${productIdentity.commandName.padEnd(productIdentity.sourceCommandName.length)}  → stable npm version (unchanged)`);
+        console.log(`  ${productIdentity.sourceCommandName}  → local development version`);
         console.log('\nTo undo: yarn unlink:dev');
     } catch (e) {
         if (e.code === 'EACCES') {
@@ -107,7 +108,7 @@ function link() {
 function unlink() {
     const globalBin = getGlobalBinDir();
 
-    console.log('Removing happier-dev symlink...');
+    console.log(`Removing ${productIdentity.sourceCommandName} symlink...`);
 
     for (const binName of targetBins) {
         const binTarget = join(globalBin, binName);
@@ -124,7 +125,7 @@ function unlink() {
         }
     }
 
-    console.log('\n✅ Removed happier-dev development symlink(s)');
+    console.log(`\n✅ Removed ${productIdentity.sourceCommandName} development symlink(s)`);
     console.log('\nTo restore npm version: npm install -g @happier-dev/cli');
 }
 

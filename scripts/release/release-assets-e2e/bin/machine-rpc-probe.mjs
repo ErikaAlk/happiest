@@ -109,7 +109,7 @@ async function main() {
   const relayUrl = argValue('--relay-url');
   const machineId = argValue('--machine-id');
   const serverId = argValue('--server-id');
-  const homeDir = argValue('--home-dir') || String(process.env.HAPPIEST_HOME_DIR ?? '').trim() || join(homedir(), '.happier');
+  const homeDir = argValue('--home-dir') || String(process.env.HAPPIEST_HOME_DIR ?? '').trim() || join(homedir(), '.happiest');
   if (!relayUrl || !machineId || !serverId) throw new Error('usage: --relay-url <url> --machine-id <id> --server-id <id>');
 
   const { token, machineKey } = readMachineCredentials({ homeDir, serverId });

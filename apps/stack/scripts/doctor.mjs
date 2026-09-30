@@ -3,6 +3,7 @@ import { parseArgs } from './utils/cli/args.mjs';
 import { pathExists } from './utils/fs/fs.mjs';
 import { runCapture } from './utils/proc/proc.mjs';
 import { resolveCommandPath } from './utils/proc/commands.mjs';
+import { getCliBinPath } from './utils/paths/cli_bin.mjs';
 import {
   getComponentDir,
   getDefaultAutostartPaths,
@@ -141,7 +142,7 @@ async function main() {
 
 	  const serverDir = getComponentDir(rootDir, serverComponentName);
 	  const cliDir = getComponentDir(rootDir, 'happier-cli');
-	  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+	  const cliBin = getCliBinPath(cliDir);
 
   assertServerComponentDirMatches({ rootDir, serverComponentName, serverDir });
 

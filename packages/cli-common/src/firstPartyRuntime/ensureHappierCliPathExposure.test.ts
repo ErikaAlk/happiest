@@ -154,7 +154,7 @@ posixOnly('ensureHappierCliPathExposure (POSIX shell profiles)', () => {
         const binDir = join(homeDir, '.happier', 'bin');
         const userBinDir = join(homeDir, 'npm-global', 'bin');
         await mkdir(userBinDir, { recursive: true });
-        const userHappier = join(userBinDir, 'happier');
+        const userHappier = join(userBinDir, 'happiest');
         await writeFile(userHappier, '#!/bin/sh\n', 'utf8');
         await chmod(userHappier, 0o755);
         const processEnv = { HOME: homeDir, SHELL: '/bin/zsh', PATH: `/usr/bin:${userBinDir}` };
@@ -170,7 +170,7 @@ posixOnly('ensureHappierCliPathExposure (POSIX shell profiles)', () => {
         const binDir = join(homeDir, '.happier', 'bin');
         const userBinDir = join(homeDir, 'npm-global', 'bin');
         await mkdir(userBinDir, { recursive: true });
-        const userHappier = join(userBinDir, 'happier');
+        const userHappier = join(userBinDir, 'happiest');
         await writeFile(userHappier, '#!/bin/sh\n', 'utf8');
         await chmod(userHappier, 0o755);
         const processEnv = { HOME: homeDir, SHELL: '/bin/zsh', PATH: `/usr/bin:${userBinDir}` };
@@ -193,7 +193,7 @@ posixOnly('ensureHappierCliPathExposure (POSIX shell profiles)', () => {
         const binDir = join(homeDir, '.happier', 'bin');
         const userBinDir = join(homeDir, 'npm-global', 'bin');
         await mkdir(userBinDir, { recursive: true });
-        const userHappier = join(userBinDir, 'happier');
+        const userHappier = join(userBinDir, 'happiest');
         await writeFile(userHappier, '#!/bin/sh\n', 'utf8');
         await chmod(userHappier, 0o755);
         const processEnv = { HOME: homeDir, SHELL: '/bin/zsh', PATH: '/usr/bin' };
@@ -215,7 +215,7 @@ posixOnly('ensureHappierCliPathExposure (POSIX shell profiles)', () => {
             // A CLI the user installed into the per-user bin the service PATH owner lists.
             const userBinDir = join(homeDir, '.local', 'bin');
             await mkdir(userBinDir, { recursive: true });
-            const userHappier = join(userBinDir, 'happier');
+            const userHappier = join(userBinDir, 'happiest');
             await writeFile(userHappier, '#!/bin/sh\n', 'utf8');
             await chmod(userHappier, 0o755);
             // What launchd gives an app opened from the Dock or Finder.
@@ -236,12 +236,12 @@ posixOnly('ensureHappierCliPathExposure (POSIX shell profiles)', () => {
         const versionDir = join(homeDir, '.happier', 'cli', 'versions', '1.0.0');
         await mkdir(versionDir, { recursive: true });
         await mkdir(binDir, { recursive: true });
-        await writeFile(join(versionDir, 'happier'), '#!/bin/sh\n', 'utf8');
-        await chmod(join(versionDir, 'happier'), 0o755);
-        await symlink(join(versionDir, 'happier'), join(binDir, 'happier'));
+        await writeFile(join(versionDir, 'happiest'), '#!/bin/sh\n', 'utf8');
+        await chmod(join(versionDir, 'happiest'), 0o755);
+        await symlink(join(versionDir, 'happiest'), join(binDir, 'happiest'));
         const localBin = join(homeDir, '.local', 'bin');
         await mkdir(localBin, { recursive: true });
-        await symlink(join(binDir, 'happier'), join(localBin, 'happier'));
+        await symlink(join(binDir, 'happiest'), join(localBin, 'happiest'));
         const processEnv = { HOME: homeDir, SHELL: '/bin/zsh', PATH: `${localBin}:/usr/bin` };
 
         const result = await ensureHappierCliPathExposure({ binDir, processEnv });
@@ -450,7 +450,7 @@ describe('Windows user PATH transport', () => {
 
         const result = await ensureHappierCliPathExposure({ binDir, processEnv });
 
-        expect(result).toEqual({ changed: true, shellReloadHint: 'Open a new terminal to use happier.', failure: null, existingCommand: null });
+        expect(result).toEqual({ changed: true, shellReloadHint: 'Open a new terminal to use happiest.', failure: null, existingCommand: null });
         expect(execFileMock).toHaveBeenCalledTimes(2);
         for (const [command, args, options] of execFileMock.mock.calls) {
             expect(command).toBe('C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe');

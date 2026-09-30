@@ -13,9 +13,9 @@ import {
 async function createStagedPayload(rootDir, versionId, contents) {
   const stagedPayloadPath = join(rootDir, `stage-${versionId}`);
   await mkdir(stagedPayloadPath, { recursive: true });
-  await writeFile(join(stagedPayloadPath, 'happier'), contents, 'utf8');
-  await mkdir(join(stagedPayloadPath, 'package-dist'), { recursive: true });
-  await writeFile(join(stagedPayloadPath, 'package-dist', 'index.mjs'), `export default ${JSON.stringify(versionId)};\n`, 'utf8');
+  await writeFile(join(stagedPayloadPath, 'happiest'), contents, 'utf8');
+  await mkdir(join(stagedPayloadPath, 'happiest-runtime'), { recursive: true });
+  await writeFile(join(stagedPayloadPath, 'happiest-runtime', 'index.mjs'), `export default ${JSON.stringify(versionId)};\n`, 'utf8');
   return stagedPayloadPath;
 }
 
@@ -53,7 +53,7 @@ test('promoteVersionedPayload updates current payload and preserves previous pay
       processEnv: env,
     });
     assert.equal(await readFile(paths.binaryPath, 'utf8'), 'second-version');
-    assert.equal(await readFile(join(paths.previousPath, 'happier'), 'utf8'), 'first-version');
+    assert.equal(await readFile(join(paths.previousPath, 'happiest'), 'utf8'), 'first-version');
   } finally {
     await rm(homeDir, { recursive: true, force: true });
   }
@@ -73,7 +73,7 @@ test('promoteVersionedPayload fails closed without leaving a partial version dir
     });
 
     const secondStage = await createStagedPayload(homeDir, '2.0.0', 'second-version');
-    await chmod(join(secondStage, 'package-dist', 'index.mjs'), 0);
+    await chmod(join(secondStage, 'happiest-runtime', 'index.mjs'), 0);
 
     await assert.rejects(
       () =>
@@ -112,9 +112,9 @@ test('promoteVersionedPayload detects a legacy current install when the current 
       componentId: 'happier-cli',
       processEnv: env,
     });
-    await mkdir(join(paths.currentPath, 'package-dist'), { recursive: true });
+    await mkdir(join(paths.currentPath, 'happiest-runtime'), { recursive: true });
     await writeFile(paths.binaryPath, 'legacy-version', 'utf8');
-    await writeFile(join(paths.currentPath, 'package-dist', 'index.mjs'), 'export default "legacy";\n', 'utf8');
+    await writeFile(join(paths.currentPath, 'happiest-runtime', 'index.mjs'), 'export default "legacy";\n', 'utf8');
 
     const nextStage = await createStagedPayload(homeDir, '2.0.0', 'second-version');
     const promotion = await promoteVersionedPayload({

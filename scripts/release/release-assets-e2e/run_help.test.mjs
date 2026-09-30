@@ -175,7 +175,7 @@ test('npm-e2e-smoke cli-smoke.sh supports preinstalled happier-cli mode', () => 
   const cliSmoke = fs.readFileSync(join(here, 'bin', 'cli-smoke.sh'), 'utf8');
   assert.match(cliSmoke, /HAPPIER_CLI_INSTALL_MODE/);
   assert.match(cliSmoke, /preinstalled/);
-  assert.match(cliSmoke, /command -v happier/);
+  assert.match(cliSmoke, /command -v happiest/);
 });
 
 test('release-assets-e2e remote host install shims make repeated CLI installs idempotent', () => {
@@ -186,7 +186,7 @@ test('release-assets-e2e remote host install shims make repeated CLI installs id
 
   for (const entrypoint of entrypoints) {
     const script = fs.readFileSync(entrypoint, 'utf8');
-    assert.match(script, /rm -f "\$prefix\/bin\/happier"/);
+    assert.match(script, /rm -f "\$prefix\/bin\/happiest"/);
     assert.match(script, /npm install -g --force \/packs\/cli\.tgz --no-audit --no-fund/);
   }
 });

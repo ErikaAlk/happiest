@@ -223,7 +223,7 @@ test('startDaemonPostAuth uses the active runtime snapshot cli when runtime mode
       daemon: {
         content: '#!/bin/sh\nexit 0\n',
         artifactFingerprint: 'cli-auth',
-        nodeEntrypoint: 'cli/package-dist/index.mjs',
+        nodeEntrypoint: 'cli/happiest-runtime/index.mjs',
         nodeContent: 'export {};\n',
       },
     });
@@ -294,7 +294,7 @@ await startDaemonPostAuth({
     const marker = JSON.parse(markerRaw);
     assert.equal(marker.cliBin, join(snapshotDir, 'cli', 'happier'));
     assert.equal(marker.cliEntrypoint, join(snapshotDir, 'cli', 'happier'));
-    assert.equal(marker.cliNodeEntrypoint, join(snapshotDir, 'cli', 'package-dist', 'index.mjs'));
+    assert.equal(marker.cliNodeEntrypoint, join(snapshotDir, 'cli', 'happiest-runtime', 'index.mjs'));
     assert.equal(marker.cliCommand, join(snapshotDir, 'cli', 'happier'));
     assert.deepEqual(marker.cliCommandArgs, []);
     assert.equal(marker.runtimeBacked, true);

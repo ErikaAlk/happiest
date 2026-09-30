@@ -28,9 +28,9 @@ import { installVersionedPayload, readInstalledVersionMarkers, readLastCliUpdate
 
 async function createPayload(rootDir: string, versionId: string): Promise<string> {
   const payloadRoot = join(rootDir, `payload-${versionId}-${Math.random().toString(16).slice(2)}`);
-  await mkdir(join(payloadRoot, 'package-dist'), { recursive: true });
+  await mkdir(join(payloadRoot, 'happiest-runtime'), { recursive: true });
   await writeFile(join(payloadRoot, process.platform === 'win32' ? 'happiest.exe' : 'happiest'), `binary-${versionId}`, 'utf8');
-  await writeFile(join(payloadRoot, 'package-dist', 'index.mjs'), 'export {};\n', 'utf8');
+  await writeFile(join(payloadRoot, 'happiest-runtime', 'index.mjs'), 'export {};\n', 'utf8');
   return payloadRoot;
 }
 

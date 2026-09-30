@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import * as tar from 'tar';
 
@@ -67,9 +68,9 @@ function stripInternalWorkspaceDeps(pkgJson) {
 }
 
 const CLI_PUBLISHED_BIN_CONTRACT = Object.freeze({
-  happier: './bin/happier.mjs',
-  'happier-dev': './bin/happier-dev.mjs',
-  'happier-mcp': './bin/happier-mcp.mjs',
+  [productIdentity.commandName]: `./bin/${productIdentity.commandName}.mjs`,
+  [productIdentity.sourceCommandName]: `./bin/${productIdentity.sourceCommandName}.mjs`,
+  [`${productIdentity.commandName}-mcp`]: `./bin/${productIdentity.commandName}-mcp.mjs`,
 });
 
 function restoreCliPublishedBinContract(pkgJson) {

@@ -12,7 +12,7 @@ const baseInstallParams = {
   webappUrl: 'https://app.example.test',
   publicServerUrl: 'https://api.example.test',
   nodePath: '/usr/bin/node',
-  entryPath: '/opt/happier/package-dist/index.mjs',
+  entryPath: '/opt/happier/happiest-runtime/index.mjs',
 } as const;
 
 describe('daemon service plan legacy cloud cleanup', () => {

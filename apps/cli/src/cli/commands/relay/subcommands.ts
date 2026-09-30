@@ -249,7 +249,7 @@ async function resolveLocalRelayArgIfRequested(
   }
   // Surface the resolved channel so the user sees exactly which local relay
   // is being activated — the current CLI channel is not always obvious from
-  // the invocation (e.g. running `node apps/cli/bin/happier.mjs` directly).
+  // the invocation (e.g. running `node apps/cli/bin/happiest.mjs` directly).
   // Callers running a multi-step flow (e.g. relay start-daemon) can suppress
   // this and print their own consolidated line.
   if (!options.silent) {

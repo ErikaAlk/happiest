@@ -331,7 +331,7 @@ test('hstack stack start --runtime --no-ui publishes the effective disabled UI d
 test('hstack stack start --runtime --background fails when the requested daemon fails after server health', async (t) => {
   const rootDir = stackRootDirFromMeta(import.meta.url);
   const fixture = await createStartableRuntimeSnapshotFixture(t, { stackName: 'runtime-daemon-start-fails' });
-  const daemonEntrypoint = join(fixture.snapshotDir, 'cli', 'package-dist', 'index.mjs');
+  const daemonEntrypoint = join(fixture.snapshotDir, 'cli', 'happiest-runtime', 'index.mjs');
   await writeFile(
     daemonEntrypoint,
     [

@@ -224,8 +224,8 @@ test('buildCliBinaryArtifactPayload reuses the first completed dist build across
     await Promise.all([first, second]);
 
     assert.equal(runCalls.length, 1);
-    assert.equal(existsSync(join(payloadDirA, 'happier')), true);
-    assert.equal(existsSync(join(payloadDirB, 'happier')), true);
+    assert.equal(existsSync(join(payloadDirA, 'happiest')), true);
+    assert.equal(existsSync(join(payloadDirB, 'happiest')), true);
   } finally {
     rmSync(tempRoot, { recursive: true, force: true });
   }
@@ -273,7 +273,7 @@ test('buildCliBinaryArtifactPayload propagates its current owner lease to the re
       },
     });
 
-    assert.equal(existsSync(join(payloadDir, 'happier')), true);
+    assert.equal(existsSync(join(payloadDir, 'happiest')), true);
   } finally {
     rmSync(tempRoot, { recursive: true, force: true });
   }

@@ -1,5 +1,6 @@
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 function normalizePathLike(pathLike: string): string {
     return String(pathLike ?? '').trim().replaceAll('\\', '/');
@@ -8,7 +9,7 @@ function normalizePathLike(pathLike: string): string {
 export function projectPathFromModuleUrl(moduleUrl: string): string {
     const modulePath = fileURLToPath(moduleUrl);
     const normalized = normalizePathLike(modulePath);
-    for (const snapshotMarker of ['/.runner-snapshots/', '/dist/.runner-snapshots/']) {
+    for (const snapshotMarker of [`/${productIdentity.runnerSnapshotsDirName}/`]) {
         const snapshotIndex = normalized.lastIndexOf(snapshotMarker);
         if (snapshotIndex < 0) continue;
         const afterMarker = normalized.slice(snapshotIndex + snapshotMarker.length);
@@ -18,7 +19,7 @@ export function projectPathFromModuleUrl(moduleUrl: string): string {
         }
     }
 
-    for (const marker of ['/src/', '/dist/', '/package-dist/']) {
+    for (const marker of ['/src/', '/dist/', `/${productIdentity.cliRuntimeDirName}/`]) {
         const markerIndex = normalized.lastIndexOf(marker);
         if (markerIndex >= 0) {
             return normalized.slice(0, markerIndex);

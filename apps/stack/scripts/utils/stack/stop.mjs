@@ -3,6 +3,7 @@ import { readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { getComponentDir, resolveExplicitStackEnvFilePath } from '../paths/paths.mjs';
+import { getCliBinPath } from '../paths/cli_bin.mjs';
 import { isPidAlive, readPidState } from '../expo/expo.mjs';
 import { stopLocalDaemon } from '../../daemon.mjs';
 import { stopHappyServerManagedInfra } from '../server/infra/happy_server_infra.mjs';
@@ -440,7 +441,7 @@ async function stopStackWithEnvInternal({
   const internalServerUrl = port ? `http://127.0.0.1:${port}` : 'http://127.0.0.1:3005';
   const cliHomeDir = (env.HAPPIER_STACK_CLI_HOME_DIR ?? join(baseDir, 'cli')).toString();
   const cliDir = getComponentDir(rootDir, 'happier-cli', env);
-  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+  const cliBin = getCliBinPath(cliDir);
   const envPath = resolveExplicitStackEnvFilePath(env);
   const selfPgid = await getProcessGroupIdImpl(process.pid);
   const cleanupResults = [];
@@ -632,7 +633,7 @@ async function stopStackWithEnvInternal({
 
   if (!preserveDaemon) {
     try {
-      // If happier-cli isn't built yet (common in repo checkouts), running `happier.mjs` can fail noisily.
+      // If happier-cli isn't built yet (common in repo checkouts), running the CLI launcher can fail noisily.
       // Stopping stack infra should still work without the daemon stop step.
       const cliDistIndex = join(cliDir, 'dist', 'index.mjs');
       if (existsSync(cliDistIndex)) {

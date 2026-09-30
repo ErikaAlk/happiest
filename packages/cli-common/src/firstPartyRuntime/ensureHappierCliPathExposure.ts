@@ -4,6 +4,8 @@ import { appendFile, readFile, writeFile } from 'node:fs/promises';
 import { homedir, userInfo } from 'node:os';
 import { basename, delimiter as pathDelimiter, join, win32 } from 'node:path';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 import { resolveWindowsCommandOnPath } from '../process/windows/resolveWindowsCommandInvocation.js';
 import { buildServicePath } from '../service/path.js';
 import { readHappierCliChoiceSync } from './happierCliChoice.js';
@@ -36,17 +38,17 @@ export interface HappierCliPathRemovalResult {
   failure: string | null;
 }
 
-export const HAPPIER_DESKTOP_PATH_MARKER_LINE = '# Added by Happier Desktop';
+export const HAPPIER_DESKTOP_PATH_MARKER_LINE = `# Added by ${productIdentity.productName} Desktop`;
 
 /** User-scoped environment variable holding the PATH entries Desktop added on Windows. */
-export const HAPPIER_DESKTOP_WINDOWS_PATH_PROVENANCE_VARIABLE = 'HAPPIER_DESKTOP_PATH_ENTRIES';
+export const HAPPIER_DESKTOP_WINDOWS_PATH_PROVENANCE_VARIABLE = 'HAPPIEST_DESKTOP_PATH_ENTRIES';
 
 /**
  * User-scoped environment variable holding the moves Desktop made in the user PATH on Windows
  * (R13 b): one record per moved entry, `;`-separated, each `<entry>|<entry it was moved ahead of>|…`.
  * `|` cannot occur in a Windows path, and `;` cannot occur in a PATH entry.
  */
-export const HAPPIER_DESKTOP_WINDOWS_PATH_MOVES_VARIABLE = 'HAPPIER_DESKTOP_PATH_MOVES';
+export const HAPPIER_DESKTOP_WINDOWS_PATH_MOVES_VARIABLE = 'HAPPIEST_DESKTOP_PATH_MOVES';
 
 const DESKTOP_EXPORT_LINE_PATTERN = /^export PATH="[^"\n]+:\$PATH"$/u;
 
@@ -152,7 +154,7 @@ export function resolveForeignHappierCli(params: Readonly<{
  * home's managed CLI; `desktopExposed` when it got there through what Desktop wrote and "Keep my
  * own" takes back (`removeHappierCliPathExposure`) — the managed bin dir itself on POSIX (the
  * shell installer exposes `~/.local/bin` instead), and on Windows that dir only while Desktop's
- * records (`HAPPIER_DESKTOP_PATH_ENTRIES` / `_MOVES`, user-scoped, so in a launched app's env) name
+ * records (`HAPPIEST_DESKTOP_PATH_ENTRIES` / `_MOVES`, user-scoped, so in a launched app's env) name
  * it. A managed CLI first by any other route (the installer's link or entry) keeps answering first
  * whatever the person keeps.
  */
@@ -165,7 +167,7 @@ export function resolveTerminalHappierCli(params: Readonly<{
   const command = resolveHappierOnPath(params.processEnv);
   if (!command) return null;
   if (!isManagedShim(command, params.binDir)) return { command, managed: false, desktopExposed: false };
-  const shimPath = join(params.binDir, process.platform === 'win32' ? 'happier.exe' : 'happier');
+  const shimPath = join(params.binDir, resolveManagedShimFileName());
   const direct = process.platform === 'win32' ? sameWindowsPathEntry(command, shimPath) : command === shimPath;
   const recordedByDesktop = process.platform !== 'win32' || [
     ...splitWindowsPathEntries(readEnvCaseInsensitive(params.processEnv, HAPPIER_DESKTOP_WINDOWS_PATH_PROVENANCE_VARIABLE)),
@@ -181,7 +183,11 @@ function readEnvCaseInsensitive(env: NodeJS.ProcessEnv, name: string): string | 
 }
 
 function isManagedShim(candidate: string, binDir: string): boolean {
-  return isSameFile(candidate, join(binDir, process.platform === 'win32' ? 'happier.exe' : 'happier'));
+  return isSameFile(candidate, join(binDir, resolveManagedShimFileName()));
+}
+
+function resolveManagedShimFileName(): string {
+  return process.platform === 'win32' ? `${productIdentity.commandName}.exe` : productIdentity.commandName;
 }
 
 /**
@@ -199,11 +205,11 @@ function resolveHappierOnPath(
   accept: (candidate: string) => boolean = () => true,
 ): string | null {
   if (process.platform === 'win32') {
-    return resolveWindowsCommandOnPath('happier', processEnv, accept);
+    return resolveWindowsCommandOnPath(productIdentity.commandName, processEnv, accept);
   }
   for (const dir of resolveHappierCliSearchPath(processEnv).split(pathDelimiter)) {
     if (!dir.trim()) continue;
-    const candidate = join(dir, 'happier');
+    const candidate = join(dir, productIdentity.commandName);
     try {
       accessSync(candidate, fsConstants.X_OK);
       if (statSync(candidate).isFile() && accept(candidate)) return candidate;
@@ -609,7 +615,7 @@ async function ensureWindowsUserPathExposure(params: Readonly<{
       provenance: planned.provenance,
       moves: planned.moves,
     });
-    return { changed: true, shellReloadHint: 'Open a new terminal to use happier.', failure: null, existingCommand: null };
+    return { changed: true, shellReloadHint: `Open a new terminal to use ${productIdentity.commandName}.`, failure: null, existingCommand: null };
   } catch (error) {
     return { changed: false, shellReloadHint: null, failure: `Could not update the user PATH: ${describeError(error)}`, existingCommand: null };
   }

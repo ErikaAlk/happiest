@@ -480,7 +480,7 @@ if [[ "$mode" == "local" ]]; then
         ;;
     esac
 
-    echo "[npm-e2e-smoke] building local happier-server binary for remote server smoke (${server_target})..."
+    echo "[npm-e2e-smoke] building local happiest-server binary for remote server smoke (${server_target})..."
     node "$repo_root/scripts/pipeline/release/build-server-binaries.mjs" --channel=stable --targets="$server_target" --server-component=happier-server >/dev/null
 
     server_artifact="$(ls -t "$repo_root"/dist/release-assets/server/happier-server-v*-"${server_target}".tar.gz 2>/dev/null | head -n 1 || true)"
@@ -491,9 +491,9 @@ if [[ "$mode" == "local" ]]; then
 
     extract_dir="$(mktemp -d "$packs_dir/.server-bin.XXXXXX")"
     tar -xzf "$server_artifact" -C "$extract_dir"
-    server_binary="$(find "$extract_dir" -type f -name 'happier-server' | head -n 1 || true)"
+    server_binary="$(find "$extract_dir" -type f -name 'happiest-server' | head -n 1 || true)"
     if [[ -z "$server_binary" || ! -f "$server_binary" ]]; then
-      echo "[npm-e2e-smoke] failed to extract happier-server binary from $server_artifact" >&2
+      echo "[npm-e2e-smoke] failed to extract happiest-server binary from $server_artifact" >&2
       exit 1
     fi
 
@@ -507,11 +507,11 @@ if [[ "$mode" == "local" ]]; then
       echo "[npm-e2e-smoke] extracted server runtime is missing packaged generated clients: $staged_runtime_dir/generated" >&2
       exit 1
     fi
-    if [[ ! -f "$staged_runtime_dir/happier-server" ]]; then
-      echo "[npm-e2e-smoke] extracted server runtime is missing happier-server binary: $staged_runtime_dir/happier-server" >&2
+    if [[ ! -f "$staged_runtime_dir/happiest-server" ]]; then
+      echo "[npm-e2e-smoke] extracted server runtime is missing happiest-server binary: $staged_runtime_dir/happiest-server" >&2
       exit 1
     fi
-    chmod 755 "$staged_runtime_dir/happier-server"
+    chmod 755 "$staged_runtime_dir/happiest-server"
 
     prisma_engine_source="$staged_runtime_dir/node_modules/.prisma/client/${prisma_engine_name}"
     if [[ ! -f "$prisma_engine_source" ]]; then
@@ -521,7 +521,7 @@ if [[ "$mode" == "local" ]]; then
 
     rm -rf "$extract_dir"
 
-    echo "REMOTE_SELF_HOST_SERVER_BINARY=/packs/happier-server-${server_target}-runtime/happier-server" >> "$env_file"
+    echo "REMOTE_SELF_HOST_SERVER_BINARY=/packs/happier-server-${server_target}-runtime/happiest-server" >> "$env_file"
     echo "REMOTE_SELF_HOST_PRISMA_ENGINE_PATH=/packs/happier-server-${server_target}-runtime/node_modules/.prisma/client/${prisma_engine_name}" >> "$env_file"
   fi
 fi

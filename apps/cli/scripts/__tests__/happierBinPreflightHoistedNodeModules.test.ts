@@ -11,14 +11,14 @@ import {
   writeProtocolBundleStub,
 } from './testkit/cliBinPreflightSandbox';
 
-describe('apps/cli bin/happier.mjs preflight', () => {
-  it('runs from packaged package-dist entrypoints when dist is absent', () => {
+describe('apps/cli bin/happiest.mjs preflight', () => {
+  it('runs from packaged happiest-runtime entrypoints when dist is absent', () => {
     const { rootDir: tmp, cleanup } = createCliBinPreflightSandbox('happier-bin-preflight-');
     try {
       const projectRoot = join(tmp, 'apps', 'cli');
       const { binDir } = writeCliProjectFixture({
         projectRoot,
-        entrypointDir: 'package-dist',
+        entrypointDir: 'happiest-runtime',
         entrypointContent: 'process.exit(0);\n',
       });
 

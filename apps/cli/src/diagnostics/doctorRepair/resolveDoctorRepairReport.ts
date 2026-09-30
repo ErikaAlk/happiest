@@ -13,6 +13,7 @@ import type { BackgroundServiceRepairPlan } from '@/diagnostics/backgroundServic
 import { isLegacyChannelScopedDefaultService } from '@/diagnostics/backgroundServiceRepair/buildBackgroundServiceRepairPlan';
 import { resolveBackgroundServiceRepairPlanForCurrentRuntime } from '@/diagnostics/backgroundServiceRepair/resolveBackgroundServiceRepairPlanForCurrentRuntime';
 import type { DaemonServiceMode } from '@/daemon/service/plan';
+import { getFirstPartyComponentCatalogEntry } from '@happier-dev/cli-common/firstPartyRuntime';
 import type { DaemonServiceInventoryEntry } from '@/daemon/service/cli';
 import { resolveDaemonServiceCliRuntimeFromEnv, resolveDaemonServiceInventoryEntries } from '@/daemon/service/cli';
 import type { DoctorSnapshot } from '@/ui/doctorSnapshot';
@@ -182,20 +183,21 @@ function buildCurrentCliInfo(
  * code path for "ask the installed CLI which version it is", no parallel
  * package.json / symlink parsers to keep in sync.
  *
- * Why this matters: in local-dev invocations (`node apps/cli/bin/happier.mjs`),
+ * Why this matters: in local-dev invocations (`node apps/cli/bin/happiest.mjs`),
  * `configuration.currentCliVersion` is the REPO package.json's version (e.g.
  * `0.2.5`), but the INSTALLED CLI at `~/.happier/cli-dev/current/...` can be
  * something like `0.2.5-dev.15.1`. For "did the user install a new CLI?" we
  * want the installed version, not the loaded-from-repo bundled constant.
  *
- * `entryPath` is the Node entrypoint path (`<installRoot>/current/package-dist/index.mjs`).
+ * `entryPath` is the Node entrypoint path (`<installRoot>/current/happiest-runtime/index.mjs`).
  * The shim we invoke sits two directories up: `<installRoot>/current/happier`
  * on unix, `<installRoot>\current\happier.exe` on Windows.
  */
 function readInstalledCliVersion(entryPath: string | null, platform: NodeJS.Platform): string | null {
   if (!entryPath) return null;
   const currentDir = dirname(dirname(entryPath));
-  const shim = platform === 'win32' ? 'happier.exe' : 'happier';
+  const binaryName = getFirstPartyComponentCatalogEntry('happier-cli').executableBaseName;
+  const shim = platform === 'win32' ? `${binaryName}.exe` : binaryName;
   return resolveCliVersionFromBinary({ binaryPath: join(currentDir, shim), platform });
 }
 

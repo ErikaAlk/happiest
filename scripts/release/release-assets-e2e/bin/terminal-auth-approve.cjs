@@ -100,7 +100,7 @@ async function main() {
     throw new Error('missing token from /v1/auth response');
   }
 
-  // 2) Write credentials to enable `happier auth approve` (token-only usage).
+  // 2) Write credentials to enable `happiest auth approve` (token-only usage).
   const secret = randomBytes(32).toString('base64');
   const serverDir = join(homeDir, 'servers', activeServerId);
   const keyPath = join(serverDir, 'access.key');

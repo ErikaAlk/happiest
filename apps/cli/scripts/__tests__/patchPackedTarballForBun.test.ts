@@ -85,9 +85,9 @@ describe('patchPackedTarballForBun', () => {
     };
 
     expect(patchedPkg.bin).toEqual({
-      happier: './bin/happier.mjs',
-      'happier-dev': './bin/happier-dev.mjs',
-      'happier-mcp': './bin/happier-mcp.mjs',
+      happiest: './bin/happiest.mjs',
+      'happiest-source': './bin/happiest-source.mjs',
+      'happiest-mcp': './bin/happiest-mcp.mjs',
     });
   });
 });

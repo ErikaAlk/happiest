@@ -308,7 +308,7 @@ export function gethstackRegistry() {
     {
       name: 'happier',
       kind: 'node',
-      scriptRelPath: 'scripts/happier.mjs',
+      scriptRelPath: 'scripts/happiest.mjs',
       rootUsage: 'hstack happier <happier-cli args...>',
       description: 'Run the Happier CLI against this stack',
     },

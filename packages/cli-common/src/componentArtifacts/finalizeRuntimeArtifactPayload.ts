@@ -1,6 +1,7 @@
 import { lstat, readFile, readdir, readlink, rm, stat } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { fixNodePtyPackageSpawnHelperPermissions } from '../../nodePtySpawnHelperPermissions.cjs';
 import type { BinaryTarget } from './targets.js';
@@ -380,6 +381,6 @@ export async function finalizeRuntimeArtifactPayload(payloadDir: string, target?
     await projectCliRuntimeTools(payloadDir, target);
     // Only the binary CLI's root disk entrypoints use the ESM build. Published
     // npm/library distributions and dependency/sidecar CJS remain untouched.
-    await projectCliRuntimeFormats(join(payloadDir, 'package-dist'));
+    await projectCliRuntimeFormats(join(payloadDir, productIdentity.cliRuntimeDirName));
   }
 }

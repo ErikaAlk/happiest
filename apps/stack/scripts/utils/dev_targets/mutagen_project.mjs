@@ -1,3 +1,5 @@
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 const DEFAULT_IGNORES = [
   'node_modules',
   'dist',
@@ -5,8 +7,8 @@ const DEFAULT_IGNORES = [
   'dist.__finalize_backup__.*',
   'dist.__sync_tmp__.*',
   'dist.__sync_backup__.*',
-  'package-dist.__sync_tmp__.*',
-  'package-dist.__sync_backup__.*',
+  `${productIdentity.cliRuntimeDirName}.__sync_tmp__.*`,
+  `${productIdentity.cliRuntimeDirName}.__sync_backup__.*`,
   '.*.__sync_tmp__.*',
   '.*.__sync_backup__.*',
   '.tmp.*',
@@ -32,8 +34,8 @@ const DEFAULT_IGNORES = [
   '!packages/protocol/src/browser/target/**',
   'Pods',
   '.next',
-  '.runner-snapshots',
-  'package-dist',
+  productIdentity.runnerSnapshotsDirName,
+  productIdentity.cliRuntimeDirName,
   '.restore.*',
   '.dist.hstack-*',
   '.cxx',

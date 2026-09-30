@@ -392,8 +392,8 @@ test('buildCliBinaryArtifactPayload compiles the local CLI binary into the paylo
       },
     });
 
-    assert.equal(result.executableName, 'happier');
-    assert.equal(result.entrypoint, 'happier');
+    assert.equal(result.executableName, 'happiest');
+    assert.equal(result.entrypoint, 'happiest');
     assert.deepEqual(runCalls, []);
     assert.equal(compileCalls.length, 1);
     assert.equal(compileCalls[0].autoloadDotenv, false);
@@ -402,8 +402,8 @@ test('buildCliBinaryArtifactPayload compiles the local CLI binary into the paylo
       '@huggingface/transformers',
       'node-pty',
     ]);
-    assert.equal(readFileSync(join(payloadDir, 'happier'), 'utf8'), '#!/bin/sh\necho happier\n');
-    assert.equal(readFileSync(join(payloadDir, 'package-dist', 'index.mjs'), 'utf8'), 'console.log("cli");\n');
+    assert.equal(readFileSync(join(payloadDir, 'happiest'), 'utf8'), '#!/bin/sh\necho happier\n');
+    assert.equal(readFileSync(join(payloadDir, 'happiest-runtime', 'index.mjs'), 'utf8'), 'console.log("cli");\n');
     assert.equal(
       readFileSync(join(payloadDir, 'node_modules', '@happier-dev', 'protocol', 'dist', 'index.mjs'), 'utf8'),
       'export const packageName = "@happier-dev/protocol";\n',
@@ -685,8 +685,8 @@ test('buildCliBinaryArtifactPayload snapshots CLI dist before compile/copy so la
       },
     });
 
-    assert.equal(readFileSync(join(payloadDir, 'package-dist', 'index.mjs'), 'utf8'), 'export { detect } from "./detect-BwxnBwvx.mjs";\n');
-    assert.equal(readFileSync(join(payloadDir, 'package-dist', 'detect-BwxnBwvx.mjs'), 'utf8'), 'export const detect = true;\n');
+    assert.equal(readFileSync(join(payloadDir, 'happiest-runtime', 'index.mjs'), 'utf8'), 'export { detect } from "./detect-BwxnBwvx.mjs";\n');
+    assert.equal(readFileSync(join(payloadDir, 'happiest-runtime', 'detect-BwxnBwvx.mjs'), 'utf8'), 'export const detect = true;\n');
   } finally {
     rmSync(tempRoot, { recursive: true, force: true });
   }
@@ -1071,9 +1071,9 @@ test('buildServerBinaryArtifactPayload stages the compiled binary and runtime si
       },
     });
 
-    assert.equal(result.executableName, 'happier-server');
-    assert.equal(result.entrypoint, 'happier-server');
-    assert.equal(result.migrationEntrypoint, 'happier-server-migrate');
+    assert.equal(result.executableName, 'happiest-server');
+    assert.equal(result.entrypoint, 'happiest-server');
+    assert.equal(result.migrationEntrypoint, 'happiest-server-migrate');
     assert.equal(compileCalls.length, 2);
     assert.deepEqual(runCalls, [
       { cmd: process.execPath, args: ['apps/server/scripts/buildSharedDeps.mjs', '--quiet'] },
@@ -1092,11 +1092,11 @@ test('buildServerBinaryArtifactPayload stages the compiled binary and runtime si
       { cmd: 'yarn', args: ['--cwd', 'apps/ui', '-s', 'expo', 'export', '--platform', 'web', '--output-dir', 'dist'] },
       { cmd: process.execPath, args: ['scripts/pipeline/release/precompress-ui-web-assets.mjs', '--dir', 'apps/ui/dist'] },
     ]);
-    assert.equal(readFileSync(join(payloadDir, 'happier-server'), 'utf8'), '#!/bin/sh\necho happier-server\n');
+    assert.equal(readFileSync(join(payloadDir, 'happiest-server'), 'utf8'), '#!/bin/sh\necho happier-server\n');
     assert.equal(readFileSync(join(payloadDir, 'generated', 'sqlite-client', 'schema.prisma'), 'utf8'), '// sqlite\n');
     assert.equal(readFileSync(join(payloadDir, 'generated', 'mysql-client', 'schema.prisma'), 'utf8'), '// mysql\n');
     assert.equal(readFileSync(join(payloadDir, 'prisma', 'sqlite', 'migrations', 'migration.sql'), 'utf8'), '-- sql\n');
-    assert.equal(existsSync(join(payloadDir, 'happier-server-migrate')), true);
+    assert.equal(existsSync(join(payloadDir, 'happiest-server-migrate')), true);
     assert.equal(readFileSync(join(payloadDir, 'prisma', 'schema.prisma'), 'utf8'), '// postgres schema\n');
     assert.equal(
       readFileSync(join(payloadDir, 'prisma', 'migrations', '20260719000100_pg_sentinel', 'migration.sql'), 'utf8'),
@@ -1206,15 +1206,15 @@ test('buildServerBinaryArtifactPayload packages the complete full-server migrate
       },
     });
 
-    assert.equal(result.migrationEntrypoint, 'happier-server-migrate');
+    assert.equal(result.migrationEntrypoint, 'happiest-server-migrate');
     assert.deepEqual(
       compileCalls.map(({ entrypoint, outfile }) => [entrypoint, outfile.slice(payloadDir.length + 1)]),
       [
-        [join(serverSourcesDir, 'main.ts'), 'happier-server'],
-        [join(runtimeScriptsDir, 'migrateFullRuntime.ts'), 'happier-server-migrate'],
+        [join(serverSourcesDir, 'main.ts'), 'happiest-server'],
+        [join(runtimeScriptsDir, 'migrateFullRuntime.ts'), 'happiest-server-migrate'],
       ],
     );
-    assert.match(readFileSync(join(payloadDir, 'happier-server-migrate'), 'utf8'), /migrateFullRuntime\.ts/);
+    assert.match(readFileSync(join(payloadDir, 'happiest-server-migrate'), 'utf8'), /migrateFullRuntime\.ts/);
     assert.equal(
       readFileSync(join(payloadDir, 'runtime', 'prisma-migrate'), 'utf8'),
       'packaged Prisma migrate runner\n',

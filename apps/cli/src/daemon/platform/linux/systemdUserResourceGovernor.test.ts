@@ -22,7 +22,7 @@ describe('systemd user resource governor', () => {
         filePath: '/opt/happier/runtime/bin/happier-js-runtime',
         args: [
           '--no-warnings',
-          '/opt/happier/.runner-snapshots/immutable/index.mjs',
+          '/opt/happier/.happiest-runner-snapshots/immutable/index.mjs',
           'codex',
           '--happy-starting-mode',
           'remote',
@@ -42,7 +42,7 @@ describe('systemd user resource governor', () => {
         '--',
         '/opt/happier/runtime/bin/happier-js-runtime',
         '--no-warnings',
-        '/opt/happier/.runner-snapshots/immutable/index.mjs',
+        '/opt/happier/.happiest-runner-snapshots/immutable/index.mjs',
         'codex',
         '--happy-starting-mode',
         'remote',

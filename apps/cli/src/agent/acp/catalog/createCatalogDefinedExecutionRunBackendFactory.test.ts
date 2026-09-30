@@ -25,7 +25,7 @@ describe('createCatalogDefinedExecutionRunBackendFactory', () => {
 
   it('defers catalog backend resolution until session launch so managed prerequisites can be ensured', async () => {
     const resolved = fakeBackend();
-    const mcpServers = { happier: { command: 'happier-mcp', args: ['bridge'] } };
+    const mcpServers = { happier: { command: 'happiest-mcp', args: ['bridge'] } };
     const resolveMcpServers = vi.fn(async () => mcpServers);
     createCatalogAcpBackend.mockResolvedValue({ backend: resolved });
     const factory = createCatalogDefinedExecutionRunBackendFactory('agy');

@@ -1,6 +1,8 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 import { projectPath } from '@/projectPath';
 import { requireJavaScriptRuntimeExecutable } from '@/runtime/js/requireJavaScriptRuntimeExecutable';
 import { resolvePackagedRuntimeEntrypoint } from '@/runtime/resolvePackagedRuntimeEntrypoint';
@@ -62,7 +64,7 @@ export async function resolveNodeBackedMcpServerCommand(params: Readonly<{
       `sourceEntrypoint=${sourceEntrypoint}`,
       `tsxImportHook=${tsxHookPath ?? 'null'}`,
       'Expected either:',
-      '- the packaged entrypoint to exist (package-dist/dist), or',
+      `- the packaged entrypoint to exist (${productIdentity.cliRuntimeDirName}/dist), or`,
       '- a TSX import hook + source entrypoint to be available for dev execution.',
     ].join(' '),
   );

@@ -2,6 +2,8 @@ import { existsSync } from 'node:fs';
 import { cp, mkdir, realpath, rename, rm, writeFile } from 'node:fs/promises';
 import { isAbsolute, resolve } from 'node:path';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 import { repoRootDir } from '../paths';
 import { ensureCliPackSnapshotRuntimeDependencies } from '../process/cliDistSnapshotNodeModules';
 import { resolveCliTestLaunchSpec } from '../process/cliLaunchSpec';
@@ -232,7 +234,7 @@ async function preparePublishedCliSourceSnapshot(params: {
     });
 
     const installedPayload = await realpath(resolve(installDir, plan.installRootName, 'current'));
-    if (!existsSync(resolve(installedPayload, 'package-dist', 'index.mjs')) || !existsSync(resolve(installedPayload, 'node_modules'))) {
+    if (!existsSync(resolve(installedPayload, productIdentity.cliRuntimeDirName, 'index.mjs')) || !existsSync(resolve(installedPayload, 'node_modules'))) {
         throw new Error(`Installed cli-update release payload is incomplete: ${installedPayload}`);
     }
     await rm(params.snapshotDir, { recursive: true, force: true });

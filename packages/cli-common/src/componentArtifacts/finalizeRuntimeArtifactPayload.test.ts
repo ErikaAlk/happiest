@@ -64,12 +64,12 @@ describe('finalizeRuntimeArtifactPayload native target projection', () => {
       'node_modules/library/dist/index.d.cts.map',
       'node_modules/library/dist/cache.tsbuildinfo',
     ];
-    const retained = ['package-dist/index.mjs', 'package-dist/mcp/bridge.mjs', 'package-dist/index.js.map', 'package-dist/index.mjs.map', 'package-dist/index.cjs.map',
+    const retained = ['happiest-runtime/index.mjs', 'happiest-runtime/mcp/bridge.mjs', 'happiest-runtime/index.js.map', 'happiest-runtime/index.mjs.map', 'happiest-runtime/index.cjs.map',
       'scripts/relay.cjs', 'node_modules/library/package-dist/index.cjs', 'node_modules/library/dist/index.js',
       'node_modules/library/dist/index.js.map', 'node_modules/library/dist/index.d.ts',
       'node_modules/library/dist/index.d.mts', 'node_modules/library/dist/index.d.cts',
       'node_modules/library/LICENSE', 'node_modules/library/README.md'];
-    for (const file of removedFormats) await put(root, `package-dist/${file}`);
+    for (const file of removedFormats) await put(root, `happiest-runtime/${file}`);
     for (const file of removedRuntimeMetadata) await put(root, file);
     for (const file of retained) await put(root, file);
     const psPackages = ['node_modules/ps-list', 'node_modules/consumer/node_modules/ps-list'];
@@ -82,7 +82,7 @@ describe('finalizeRuntimeArtifactPayload native target projection', () => {
 
     await finalizeRuntimeArtifactPayload(root, target);
 
-    for (const file of removedFormats) await expect(stat(join(root, 'package-dist', file))).rejects.toMatchObject({ code: 'ENOENT' });
+    for (const file of removedFormats) await expect(stat(join(root, 'happiest-runtime', file))).rejects.toMatchObject({ code: 'ENOENT' });
     for (const file of removedRuntimeMetadata) await expect(stat(join(root, file))).rejects.toMatchObject({ code: 'ENOENT' });
     for (const file of [...retained, 'node_modules/unrelated/vendor/helper.exe']) await expect(readFile(join(root, file), 'utf8')).resolves.toBe(file);
     for (const pkg of psPackages) {
@@ -159,7 +159,7 @@ describe('finalizeRuntimeArtifactPayload native target projection', () => {
     await put(root, 'node_modules/unrelated/prebuilds/linux-x64/keep.node');
     await put(root, 'node_modules/unrelated/lib/windowsTerminal.js');
     await put(root, 'scripts/node_pty_relay.cjs');
-    await put(root, 'package-dist/index.mjs');
+    await put(root, 'happiest-runtime/index.mjs');
     await put(root, 'node_modules/.bin/unused');
 
     await finalizeRuntimeArtifactPayload(root, target);
@@ -256,7 +256,7 @@ describe('finalizeRuntimeArtifactPayload native target projection', () => {
     await put(root, 'node_modules/@anthropic-ai/claude-agent-sdk/LICENSE.md', 'Anthropic SDK license');
     await put(root, 'node_modules/@anthropic-ai/claude-agent-sdk/node_modules/@anthropic-ai/sdk/index.mjs', 'export {};');
     await put(root, `${sharpRoot}/colour/package.json`, '{}');
-    await put(root, 'package-dist/index.mjs');
+    await put(root, 'happiest-runtime/index.mjs');
 
     await finalizeRuntimeArtifactPayload(root, target);
 
@@ -350,7 +350,7 @@ describe('finalizeRuntimeArtifactPayload native target projection', () => {
       ...pairs,
     ];
     await putPackage(root, 'node_modules/unlisted-consumer/node_modules/zod', 'zod', marker);
-    await put(root, 'package-dist/index.mjs');
+    await put(root, 'happiest-runtime/index.mjs');
 
     await finalizeRuntimeArtifactPayload(root, target);
 
@@ -455,7 +455,7 @@ describe('finalizeRuntimeArtifactPayload native target projection', () => {
     await put(root, 'node_modules/sharp/node_modules/@img/sharp-linux-arm64/package.json', '{}');
     await putPackage(root, 'node_modules/sharp/node_modules/@img/sharp-libvips-linuxmusl-arm64', '@img/sharp-libvips-linuxmusl-arm64', marker);
     await put(root, 'node_modules/sharp/node_modules/@img/sharp-linuxmusl-arm64/package.json', '{}');
-    await put(root, 'package-dist/index.mjs');
+    await put(root, 'happiest-runtime/index.mjs');
 
     await finalizeRuntimeArtifactPayload(root, {
       os: 'linux', arch: 'arm64', bunTarget: 'bun-linux-arm64', exeExt: '',
@@ -476,7 +476,7 @@ describe('finalizeRuntimeArtifactPayload native target projection', () => {
     const root = await fixtureRoot();
     await put(root, `${packageRoot}/package.json`, '{}');
     await put(root, `${installedPackage}/package.json`, '{}');
-    await put(root, 'package-dist/index.mjs');
+    await put(root, 'happiest-runtime/index.mjs');
 
     await expect(finalizeRuntimeArtifactPayload(root, {
       os: 'darwin', arch: 'arm64', bunTarget: 'bun-darwin-arm64', exeExt: '',

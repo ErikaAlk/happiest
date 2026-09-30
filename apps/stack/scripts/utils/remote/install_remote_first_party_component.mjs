@@ -9,11 +9,14 @@ import {
   prepareFirstPartyComponentPayloadFromGitHubRelease,
   resolveFirstPartyComponentPublicReleaseVariant,
 } from '@happier-dev/cli-common/firstPartyRuntime';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { normalizePublicReleaseRingId } from '@happier-dev/release-runtime/releaseRings';
 
 import { run, runCapture } from '../proc/proc.mjs';
 
 const execFileAsync = promisify(execFile);
+
+const DEFAULT_REMOTE_HOME_DIR = `$HOME/${productIdentity.homeDirName}`;
 
 function safeBashSingleQuote(value) {
   const raw = String(value ?? '');
@@ -115,7 +118,7 @@ async function createScpReadyPayloadArchive(payloadRoot) {
   }
 }
 
-export function resolveRemoteInstalledFirstPartyBinaryPath({ componentId, channel, remoteHomeDir = '$HOME/.happier' }) {
+export function resolveRemoteInstalledFirstPartyBinaryPath({ componentId, channel, remoteHomeDir = DEFAULT_REMOTE_HOME_DIR }) {
   const normalizedChannel = normalizeChannel(channel);
   const component = getFirstPartyComponentCatalogEntry(componentId);
   const variant = resolveFirstPartyComponentPublicReleaseVariant({
@@ -156,7 +159,7 @@ export async function installRemoteFirstPartyComponent(
     componentId,
     channel,
     target,
-    remoteHomeDir = '$HOME/.happier',
+    remoteHomeDir = DEFAULT_REMOTE_HOME_DIR,
     userAgent = 'hstack-remote-bootstrap',
   },
   deps = {},

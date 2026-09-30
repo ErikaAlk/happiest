@@ -27,12 +27,12 @@ test('stack daemon command retains admitted runtime provenance in its composed l
   assert.deepEqual(context.runtimeProvenance, {
     runtimeBacked: true,
     admittedDistClosureFingerprint: context.runtimeProvenance.admittedDistClosureFingerprint,
-    distEntrypoint: join(fixture.snapshotDir, 'cli', 'package-dist', 'index.mjs'),
+    distEntrypoint: join(fixture.snapshotDir, 'cli', 'happiest-runtime', 'index.mjs'),
   });
   assert.match(context.runtimeProvenance.admittedDistClosureFingerprint, /^[a-f0-9]{16}$/);
   assert.equal(context.cliEntrypoint.startsWith(fixture.snapshotDir), true);
   assert.equal(context.envForIdentity.HAPPIER_CLI_SUBPROCESS_RUNTIME_BACKED, '1');
-  assert.equal(context.envForIdentity.HAPPIER_CLI_SUBPROCESS_DIST_ENTRYPOINT, join(fixture.snapshotDir, 'cli', 'package-dist', 'index.mjs'));
+  assert.equal(context.envForIdentity.HAPPIER_CLI_SUBPROCESS_DIST_ENTRYPOINT, join(fixture.snapshotDir, 'cli', 'happiest-runtime', 'index.mjs'));
   assert.equal(
     context.envForIdentity.HAPPIER_CLI_SUBPROCESS_DAEMON_DIST_CLOSURE_FINGERPRINT,
     context.runtimeProvenance.admittedDistClosureFingerprint,

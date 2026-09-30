@@ -104,7 +104,7 @@ async function createStackLaunchedComputer() {
       'relay-z': { serverUrl: RELAY_Z },
     },
   }));
-  const cliPath = join(bin, 'happier');
+  const cliPath = join(bin, 'happiest');
   await writeFile(cliPath, fakeCliScript({ settingsPath, logPath }));
   await chmod(cliPath, 0o755);
 

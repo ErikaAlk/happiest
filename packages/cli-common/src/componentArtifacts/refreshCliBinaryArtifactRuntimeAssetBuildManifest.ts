@@ -1,4 +1,5 @@
 import { join } from 'node:path';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import cliDistBuildManifest from '../../cliDistBuildManifest.cjs';
 
@@ -10,7 +11,7 @@ const EXPECTED_POST_PROJECTION_MANIFEST_FAILURES = new Set([
 export function refreshCliBinaryArtifactClosureBuildManifest(
   params: Readonly<{ payloadDir: string }>,
 ): void {
-  const entrypoint = join(params.payloadDir, 'package-dist', 'index.mjs');
+  const entrypoint = join(params.payloadDir, productIdentity.cliRuntimeDirName, 'index.mjs');
   const previous = cliDistBuildManifest.readCliDistBuildManifest(entrypoint);
   if (previous.ok) return;
   if (!EXPECTED_POST_PROJECTION_MANIFEST_FAILURES.has(previous.reason) || !previous.manifest) {
@@ -31,7 +32,7 @@ export function recordCliBinaryArtifactRuntimeAssetBuildManifest(
 ): void {
   cliDistBuildManifest.writeCliRuntimeAssetBuildManifest({
     runtimeRoot: params.payloadDir,
-    entrypoint: join(params.payloadDir, 'package-dist', 'index.mjs'),
+    entrypoint: join(params.payloadDir, productIdentity.cliRuntimeDirName, 'index.mjs'),
     relativePath: params.relativePath,
   });
 }
@@ -41,6 +42,6 @@ export function refreshCliBinaryArtifactRuntimeAssetBuildManifest(
 ): void {
   cliDistBuildManifest.refreshCliRuntimeAssetBuildManifest({
     runtimeRoot: params.payloadDir,
-    entrypoint: join(params.payloadDir, 'package-dist', 'index.mjs'),
+    entrypoint: join(params.payloadDir, productIdentity.cliRuntimeDirName, 'index.mjs'),
   });
 }

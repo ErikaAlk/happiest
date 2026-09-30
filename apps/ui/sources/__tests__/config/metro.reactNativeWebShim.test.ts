@@ -154,8 +154,8 @@ describe('metro.config.js (web)', () => {
         );
         const cliRoot = resolve(repoRoot, 'apps/cli');
 
-        expect(isBlocked(join(cliRoot, '.runner-snapshots', 'current', 'tools', 'unpacked', 'zellij'))).toBe(true);
-        expect(isBlocked(String.raw`C:\repo\apps\cli\.runner-snapshots\current\tools\unpacked\zellij`)).toBe(true);
+        expect(isBlocked(join(cliRoot, '.happiest-runner-snapshots', 'current', 'tools', 'unpacked', 'zellij'))).toBe(true);
+        expect(isBlocked(String.raw`C:\repo\apps\cli\.happiest-runner-snapshots\current\tools\unpacked\zellij`)).toBe(true);
         expect(isBlocked(join(cliRoot, 'src/index.ts'))).toBe(false);
         expect(isBlocked(join(cliRoot, '.runner-snapshot-scratch', 'src/index.ts'))).toBe(false);
     });

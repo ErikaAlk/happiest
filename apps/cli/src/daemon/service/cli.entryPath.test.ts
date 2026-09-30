@@ -34,7 +34,7 @@ describe('resolveDaemonServiceCliRuntimeFromEnv entrypoint resolution', () => {
         .then(({ resolveDaemonServiceCliRuntimeFromEnv }) => {
           const runtime = resolveDaemonServiceCliRuntimeFromEnv();
           expect(runtime.nodePath).toBe('/Users/test/.happier/tools/js-runtime/current/bin/happier-js-runtime');
-          expect(runtime.entryPath).toContain('/apps/cli/package-dist/index.mjs');
+          expect(runtime.entryPath).toContain('/apps/cli/happiest-runtime/index.mjs');
         })
         .finally(() => {
           output.restore();
@@ -55,7 +55,7 @@ describe('resolveDaemonServiceCliRuntimeFromEnv entrypoint resolution', () => {
       const originalArgv = [...process.argv];
       process.argv = [
         '/Users/test/.happier/tools/js-runtime/current/runtime/bin/node',
-        '/Users/test/.happier/cli-preview/versions/0.2.3/package-dist/index.mjs',
+        '/Users/test/.happier/cli-preview/versions/0.2.3/happiest-runtime/index.mjs',
         'service',
         'install',
       ];
@@ -78,7 +78,7 @@ describe('resolveDaemonServiceCliRuntimeFromEnv entrypoint resolution', () => {
       envScope.patch({
         HAPPIEST_HOME_DIR: homeDir,
         HAPPIEST_DAEMON_SERVICE_NODE_PATH: '/Users/test/.happier/tools/js-runtime/current/bin/happier-js-runtime',
-        HAPPIEST_DAEMON_SERVICE_ENTRY_PATH: '/Users/test/.happier/cli-dev/versions/0.2.3/package-dist/index.mjs',
+        HAPPIEST_DAEMON_SERVICE_ENTRY_PATH: '/Users/test/.happier/cli-dev/versions/0.2.3/happiest-runtime/index.mjs',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: '',
         HAPPIER_RELEASE_RING: '',
         HAPPIER_RELEASE_CHANNEL: '',

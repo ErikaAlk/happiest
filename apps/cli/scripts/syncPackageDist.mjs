@@ -1,6 +1,7 @@
 import { cpSync, existsSync, mkdirSync, renameSync, rmSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { withOptionalCliSharedDepsBuildLockSync } from './optionalWorkspaceBundleLock.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -62,7 +63,7 @@ function syncPackageDistUnlocked(options = {}) {
   const packageRoot = resolve(String(options.packageRoot ?? resolveCliPackageRoot()));
   const env = options.env ?? process.env;
   const distDir = resolve(String(options.distDir ?? resolve(packageRoot, env?.HAPPIER_CLI_BUILD_OUTPUT_DIR ?? 'dist')));
-  const packageDistDir = resolve(String(options.packageDistDir ?? resolve(packageRoot, 'package-dist')));
+  const packageDistDir = resolve(String(options.packageDistDir ?? resolve(packageRoot, productIdentity.cliRuntimeDirName)));
   const exists = options.existsSync ?? existsSync;
   const { copy, makeDir, rename, remove } = resolveWriteFs(options);
 

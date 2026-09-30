@@ -33,10 +33,10 @@ function isRuntimeExecutableToken(token: string): boolean {
   return base === 'node' || base === 'node.exe' || base === 'bun' || base === 'bun.exe';
 }
 
-function isLikelyHappierCliEntrypointToken(token: string): boolean {
+function isLikelyProductCliEntrypointToken(token: string, productCommandName: string): boolean {
   const normalized = normalizeShellPathLike(token);
   const base = getShellPathBasename(token);
-  if (base.includes('happier')) return true;
+  if (base.includes(productCommandName)) return true;
   if (normalized.includes('/@happier-dev/cli/')) return true;
   if (normalized.includes('/apps/cli/')) return true;
   return (base === 'index.mjs' || base === 'index.ts') && normalized.includes('/cli/');
@@ -181,26 +181,37 @@ function parseBridgeFlags(subcommand: 'list' | 'call', tokens: readonly string[]
   return { sessionId, directory, source, tool, argsJson, json };
 }
 
-function normalizeHappierToolsTokens(tokens: readonly string[]): string[] | null {
+function normalizeProductToolsTokens(tokens: readonly string[], productCommandName: string): string[] | null {
   if (tokens.length < 3) return null;
-  if (tokens[0] === 'happier' && tokens[1] === 'tools') return [...tokens];
+  if (tokens[0] === productCommandName && tokens[1] === 'tools') return [...tokens];
   if (!isRuntimeExecutableToken(tokens[0] ?? '')) return null;
 
   for (let index = 1; index < tokens.length - 2; index++) {
-    if (!isLikelyHappierCliEntrypointToken(tokens[index] ?? '')) continue;
+    if (!isLikelyProductCliEntrypointToken(tokens[index] ?? '', productCommandName)) continue;
     if (tokens[index + 1] !== 'tools') continue;
-    return ['happier', ...tokens.slice(index + 1)];
+    return [productCommandName, ...tokens.slice(index + 1)];
   }
 
   return null;
 }
 
-export function parseHappierToolsShellBridgeCommand(command: string): HappierToolsShellBridgeCommand | null {
+/**
+ * Parses a `<product command> tools list|call ...` shell invocation.
+ *
+ * `productCommandName` is the command of the product whose CLI the caller runs. Another product's
+ * command on the same machine runs a different CLI and is not this bridge.
+ */
+export function parseHappierToolsShellBridgeCommand(
+  command: string,
+  productCommandName: string,
+): HappierToolsShellBridgeCommand | null {
   const rawCommand = String(command ?? '').trim();
   if (!rawCommand) return null;
 
   const rawTokens = tokenizeShellWords(rawCommand);
-  const tokens = rawTokens ? normalizeHappierToolsTokens(stripLeadingEnvAssignmentTokens(rawTokens)) : null;
+  const tokens = rawTokens
+    ? normalizeProductToolsTokens(stripLeadingEnvAssignmentTokens(rawTokens), productCommandName)
+    : null;
   if (!tokens || tokens.length < 3) return null;
 
   const subcommand = tokens[2];

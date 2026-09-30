@@ -16,7 +16,7 @@ describe('daemon service plan release ring env', () => {
       webappUrl: 'https://app.example.test',
       publicServerUrl: 'https://api.example.test',
       nodePath: '/usr/bin/node',
-      entryPath: '/opt/happier/package-dist/index.mjs',
+      entryPath: '/opt/happier/happiest-runtime/index.mjs',
     });
 
     expect(plan.files[0]?.content ?? '').toContain('HAPPIER_PUBLIC_RELEASE_CHANNEL=dev');

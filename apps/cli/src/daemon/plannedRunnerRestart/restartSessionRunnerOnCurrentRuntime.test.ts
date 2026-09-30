@@ -35,7 +35,7 @@ function trackedSession(overrides: Partial<TrackedSession> = {}): TrackedSession
     happySessionId: 'sess-1',
     processCommandHash: 'hash-1',
     processCommand:
-      'node /Users/alice/.happier/cli-dev/versions/0.2.10/package-dist/index.mjs claude --happy-starting-mode remote --started-by daemon',
+      'node /Users/alice/.happier/cli-dev/versions/0.2.10/happiest-runtime/index.mjs claude --happy-starting-mode remote --started-by daemon',
     vendorResumeId: 'claude-thread-1',
     spawnOptions: {
       directory: '/tmp/workspace',
@@ -191,7 +191,7 @@ describe('restartSessionRunnerOnCurrentRuntime', () => {
       },
       tracked: trackedSession({
         processCommand:
-          'node /Users/alice/.happier/cli-dev/versions/0.2.10/package-dist/index.mjs claude --started-by daemon',
+          'node /Users/alice/.happier/cli-dev/versions/0.2.10/happiest-runtime/index.mjs claude --started-by daemon',
       }),
       currentIdentity: currentIdentity('0.2.11'),
       requestRestart,
@@ -261,7 +261,7 @@ describe('restartSessionRunnerOnCurrentRuntime', () => {
       },
       tracked: trackedSession({
         processCommand:
-          'node /Users/alice/.happier/cli-dev/versions/0.2.10/package-dist/index.mjs claude --happy-starting-mode local --started-by daemon',
+          'node /Users/alice/.happier/cli-dev/versions/0.2.10/happiest-runtime/index.mjs claude --happy-starting-mode local --started-by daemon',
       }),
       currentIdentity: currentIdentity('0.2.11'),
       requestRestart,
@@ -460,7 +460,7 @@ describe('restartSessionRunnerOnCurrentRuntime', () => {
       },
       tracked: trackedSession({
         processCommand:
-          'node --no-warnings --no-deprecation /Users/alice/dev/happier/apps/cli/.runner-snapshots/2ee2ef1b2f776a89/index.mjs claude --happy-starting-mode remote --started-by daemon',
+          'node --no-warnings --no-deprecation /Users/alice/dev/happier/apps/cli/.happiest-runner-snapshots/2ee2ef1b2f776a89/index.mjs claude --happy-starting-mode remote --started-by daemon',
       }),
       currentIdentity: {
         status: 'known',
@@ -547,7 +547,7 @@ describe('restartSessionRunnerOnCurrentRuntime', () => {
       },
       tracked: trackedSession({
         processCommand:
-          'node /Users/alice/dev/happier/apps/cli/.runner-snapshots/2ee2ef1b2f776a89/index.mjs claude --happy-starting-mode remote --started-by daemon',
+          'node /Users/alice/dev/happier/apps/cli/.happiest-runner-snapshots/2ee2ef1b2f776a89/index.mjs claude --happy-starting-mode remote --started-by daemon',
       }),
       currentIdentity: {
         status: 'known',
@@ -579,7 +579,7 @@ describe('restartSessionRunnerOnCurrentRuntime', () => {
       },
       tracked: trackedSession({
         processCommand:
-          'node /Users/alice/dev/happier/apps/cli/.runner-snapshots/2ee2ef1b2f776a89/index.mjs claude --happy-starting-mode remote --started-by daemon',
+          'node /Users/alice/dev/happier/apps/cli/.happiest-runner-snapshots/2ee2ef1b2f776a89/index.mjs claude --happy-starting-mode remote --started-by daemon',
       }),
       currentIdentity: {
         status: 'known',

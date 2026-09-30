@@ -52,7 +52,7 @@ function preflightRequiredDependencies(projectRoot) {
   }
 }
 
-// Check if we're already running with the flags
+// 检查当前进程的运行参数。
 const hasNoWarnings = process.execArgv.includes('--no-warnings');
 const hasNoDeprecation = process.execArgv.includes('--no-deprecation');
 

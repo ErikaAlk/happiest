@@ -75,7 +75,7 @@ describe('daemon tmux spawn config', () => {
   });
 
   it('uses the admitted immutable runner decision for the tmux child command', async () => {
-    const immutableEntrypoint = '/runtime/.runner-snapshots/0123456789abcdef/index.mjs';
+    const immutableEntrypoint = '/runtime/.happiest-runner-snapshots/0123456789abcdef/index.mjs';
     const cfg = await buildTmuxSpawnConfig({
       agent: 'claude',
       directory: '/tmp',

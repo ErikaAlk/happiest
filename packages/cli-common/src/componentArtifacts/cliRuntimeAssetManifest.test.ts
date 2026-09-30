@@ -25,10 +25,10 @@ async function createRuntimeRoot(input: Readonly<{
 }>> {
   const runtimeRoot = await mkdtemp(join(tmpdir(), 'cli-runtime-asset-manifest-'));
   tempDirs.push(runtimeRoot);
-  const entrypoint = join(runtimeRoot, 'package-dist', 'index.mjs');
+  const entrypoint = join(runtimeRoot, 'happiest-runtime', 'index.mjs');
   const relativePath = `tools/unpacked/${input.executableName}`;
   const executablePath = join(runtimeRoot, ...relativePath.split('/'));
-  await mkdir(join(runtimeRoot, 'package-dist'), { recursive: true });
+  await mkdir(join(runtimeRoot, 'happiest-runtime'), { recursive: true });
   await mkdir(join(runtimeRoot, 'tools', 'unpacked'), { recursive: true });
   await writeFile(entrypoint, 'export default true;\n');
   await writeFile(
@@ -166,7 +166,7 @@ describe('CLI runtime asset build manifest', () => {
 
   it('records the packaged CLI executable and refreshes its digest after codesign changes its bytes', async () => {
     const runtime = await createRuntimeRoot({
-      executableName: 'happier',
+      executableName: 'happiest',
       executableBytes: 'unsigned-cli-bytes',
     });
 
@@ -188,8 +188,8 @@ describe('CLI runtime asset build manifest', () => {
   });
 
   it('refreshes the packaged closure after target pruning without dropping build provenance', async () => {
-    const runtime = await createRuntimeRoot({ executableName: 'happier' });
-    const prunedPath = join(runtime.runtimeRoot, 'package-dist', 'unused.cjs');
+    const runtime = await createRuntimeRoot({ executableName: 'happiest' });
+    const prunedPath = join(runtime.runtimeRoot, 'happiest-runtime', 'unused.cjs');
     await writeFile(prunedPath, 'module.exports = true;\n');
     const inputFingerprint = 'a'.repeat(64);
     cliDistBuildManifest.writeCliDistBuildManifest(runtime.entrypoint, {

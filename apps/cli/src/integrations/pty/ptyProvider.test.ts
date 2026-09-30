@@ -126,7 +126,7 @@ describe('createNodePtyProvider', () => {
         argv: [
           'bun',
           'B:/~BUN/root/happier.exe',
-          'C:\\Users\\test\\happier-v0.2.10-windows-x64\\package-dist\\index.mjs',
+          'C:\\Users\\test\\happier-v0.2.10-windows-x64\\happiest-runtime\\index.mjs',
           'claude',
           '--happy-starting-mode',
           'remote',
@@ -134,7 +134,7 @@ describe('createNodePtyProvider', () => {
           'daemon',
         ],
       }).replaceAll('\\', '/'),
-    ).toBe('C:/Users/test/happier-v0.2.10-windows-x64/package-dist/index.mjs');
+    ).toBe('C:/Users/test/happier-v0.2.10-windows-x64/happiest-runtime/index.mjs');
   });
 
   it('prefers node-pty when available', async () => {
@@ -305,7 +305,7 @@ describe('createNodePtyProvider', () => {
       argv: [
         'bun',
         'B:/~BUN/root/happier.exe',
-        'C:\\Users\\test\\happier-v0.2.10-windows-x64\\package-dist\\index.mjs',
+        'C:\\Users\\test\\happier-v0.2.10-windows-x64\\happiest-runtime\\index.mjs',
         'claude',
       ],
       platform: 'win32',
@@ -333,7 +333,7 @@ describe('createNodePtyProvider', () => {
       argv: [
         'bun',
         'B:/~BUN/root/happier.exe',
-        'C:\\Users\\test\\happier-v0.2.10-windows-x64\\package-dist\\index.mjs',
+        'C:\\Users\\test\\happier-v0.2.10-windows-x64\\happiest-runtime\\index.mjs',
         'claude',
       ],
       platform: 'win32',
@@ -360,9 +360,9 @@ describe('createNodePtyProvider', () => {
     const { provider, requireCalls } = await loadProviderWithModules({
       [packageDir]: nodePty,
     }, {
-      currentExecPath: 'C:\\Users\\test\\happier-v0.2.10-windows-x64\\happier.exe',
+      currentExecPath: 'C:\\Users\\test\\happier-v0.2.10-windows-x64\\happiest.exe',
       argv: [
-        'C:\\Users\\test\\happier-v0.2.10-windows-x64\\happier.exe',
+        'C:\\Users\\test\\happier-v0.2.10-windows-x64\\happiest.exe',
         'claude',
         '--happy-starting-mode',
         'remote',

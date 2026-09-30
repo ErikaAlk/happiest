@@ -79,8 +79,8 @@ describe('runLocalHappierJsonCommand', () => {
         'utf8',
       );
       chmodSync(installedBinaryPath, 0o755);
-      mkdirSync(join(payloadRoot, 'package-dist'), { recursive: true });
-      writeFileSync(join(payloadRoot, 'package-dist', 'index.mjs'), 'export default "machine-auto-installed";\n', 'utf8');
+      mkdirSync(join(payloadRoot, 'happiest-runtime'), { recursive: true });
+      writeFileSync(join(payloadRoot, 'happiest-runtime', 'index.mjs'), 'export default "machine-auto-installed";\n', 'utf8');
 
       preparePayloadMock.mockResolvedValue({
         versionId: '1.2.3',
@@ -420,10 +420,10 @@ describe('updateManagedLocalHappierCli', () => {
   /** A staged release payload whose `happiest` prints `versionId`, as the real one does. */
   function stagePayload(rootDir: string, versionId: string, reports: string = versionId): string {
     const payloadRoot = join(rootDir, `payload-${versionId}`);
-    mkdirSync(join(payloadRoot, 'package-dist'), { recursive: true });
+    mkdirSync(join(payloadRoot, 'happiest-runtime'), { recursive: true });
     writeFileSync(join(payloadRoot, 'happiest'), `#!/bin/sh\necho ${reports}\n`, 'utf8');
     chmodSync(join(payloadRoot, 'happiest'), 0o755);
-    writeFileSync(join(payloadRoot, 'package-dist', 'index.mjs'), 'export {};\n', 'utf8');
+    writeFileSync(join(payloadRoot, 'happiest-runtime', 'index.mjs'), 'export {};\n', 'utf8');
     return payloadRoot;
   }
 
@@ -525,18 +525,18 @@ describe('updateManagedLocalHappierCli', () => {
 });
 
 describe('the one-CLI question (R12)', () => {
-  /** An npm global install of the CLI: `<prefix>/bin/happier` → the package's own entry. */
+  /** An npm global install of the CLI: `<prefix>/bin/happiest` → the package's own entry. */
   function withNpmCli(run: (params: Readonly<{ command: string; processEnv: NodeJS.ProcessEnv }>) => Promise<void>) {
     const rootDir = mkdtempSync(join(tmpdir(), 'hsetup-cli-choice-'));
     const packageRoot = join(rootDir, 'npm-global', 'lib', 'node_modules', '@happier-dev', 'cli');
     mkdirSync(join(packageRoot, 'bin'), { recursive: true });
     writeFileSync(join(packageRoot, 'package.json'), JSON.stringify({ name: '@happier-dev/cli' }), 'utf8');
-    writeFileSync(join(packageRoot, 'bin', 'happier.mjs'), '#!/bin/sh\n', 'utf8');
-    chmodSync(join(packageRoot, 'bin', 'happier.mjs'), 0o755);
+    writeFileSync(join(packageRoot, 'bin', 'happiest.mjs'), '#!/bin/sh\n', 'utf8');
+    chmodSync(join(packageRoot, 'bin', 'happiest.mjs'), 0o755);
     const npmBin = join(rootDir, 'npm-global', 'bin');
     mkdirSync(npmBin, { recursive: true });
-    const command = join(npmBin, 'happier');
-    symlinkSync(join(packageRoot, 'bin', 'happier.mjs'), command);
+    const command = join(npmBin, 'happiest');
+    symlinkSync(join(packageRoot, 'bin', 'happiest.mjs'), command);
     return run({
       command,
       processEnv: { HAPPIEST_HOME_DIR: join(rootDir, 'home'), HAPPIER_STACK_REPO_DIR: join(rootDir, 'elsewhere'), PATH: npmBin },
@@ -567,15 +567,15 @@ describe('the one-CLI question (R12)', () => {
     await withNpmCli(async ({ command, processEnv }) => {
       const readVersion = vi.fn(async () => '0.2.13');
       const happyHomeDir = String(processEnv.HAPPIEST_HOME_DIR);
-      // The official installer: a managed install, its shim, and `~/.local/bin/happier` → that shim,
+      // The official installer: a managed install, its shim, and `~/.local/bin/happiest` → that shim,
       // ahead of an npm copy on PATH.
       writeInstalledPayloadFixture({ happyHomeDir, versionId: '0.2.13', binaryContents: '#!/bin/sh\n' });
       mkdirSync(join(happyHomeDir, 'bin'), { recursive: true });
-      symlinkSync(join(happyHomeDir, 'cli', 'current', 'happier'), join(happyHomeDir, 'bin', 'happier'));
+      symlinkSync(join(happyHomeDir, 'cli', 'current', 'happiest'), join(happyHomeDir, 'bin', 'happiest'));
       const localBin = join(happyHomeDir, '..', 'local-bin');
       mkdirSync(localBin, { recursive: true });
-      const installerLink = join(localBin, 'happier');
-      symlinkSync(join(happyHomeDir, 'bin', 'happier'), installerLink);
+      const installerLink = join(localBin, 'happiest');
+      symlinkSync(join(happyHomeDir, 'bin', 'happiest'), installerLink);
       const env = { ...processEnv, PATH: `${localBin}:${processEnv.PATH}` };
 
       // The terminal runs the managed CLI: nothing to ask, even with the npm copy further down.
@@ -616,10 +616,10 @@ describe('the one-CLI question (R12)', () => {
       // A happier installed since somewhere else is what there is to choose now.
       const otherBin = join(String(processEnv.HAPPIEST_HOME_DIR), '..', 'brew', 'bin');
       mkdirSync(otherBin, { recursive: true });
-      writeFileSync(join(otherBin, 'happier'), '#!/bin/sh\n', 'utf8');
-      chmodSync(join(otherBin, 'happier'), 0o755);
+      writeFileSync(join(otherBin, 'happiest'), '#!/bin/sh\n', 'utf8');
+      chmodSync(join(otherBin, 'happiest'), 0o755);
       await expect(inspectLocalHappierCliChoice({ processEnv: { ...processEnv, PATH: `${processEnv.PATH}:${otherBin}` } }, { readVersion }))
-        .resolves.toMatchObject({ question: { command: join(otherBin, 'happier'), version: '0.2.13', missing: false } });
+        .resolves.toMatchObject({ question: { command: join(otherBin, 'happiest'), version: '0.2.13', missing: false } });
     });
   });
 

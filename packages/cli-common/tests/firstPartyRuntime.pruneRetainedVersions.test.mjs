@@ -13,9 +13,9 @@ import {
 async function createStagedPayload(rootDir, versionId) {
   const stagedPayloadPath = join(rootDir, `stage-${versionId}`);
   await mkdir(stagedPayloadPath, { recursive: true });
-  await writeFile(join(stagedPayloadPath, 'happier'), versionId, 'utf8');
-  await mkdir(join(stagedPayloadPath, 'package-dist'), { recursive: true });
-  await writeFile(join(stagedPayloadPath, 'package-dist', 'index.mjs'), `export default ${JSON.stringify(versionId)};\n`, 'utf8');
+  await writeFile(join(stagedPayloadPath, 'happiest'), versionId, 'utf8');
+  await mkdir(join(stagedPayloadPath, 'happiest-runtime'), { recursive: true });
+  await writeFile(join(stagedPayloadPath, 'happiest-runtime', 'index.mjs'), `export default ${JSON.stringify(versionId)};\n`, 'utf8');
   return stagedPayloadPath;
 }
 

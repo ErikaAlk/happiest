@@ -46,9 +46,9 @@ test('installed component paths resolve binary, shim, and node entrypoint locati
     processEnv: env,
   });
 
-  assert.equal(paths.binaryPath, '/Users/tester/.happier-custom/cli/current/happier');
-  assert.equal(paths.nodeEntrypointPath, '/Users/tester/.happier-custom/cli/current/package-dist/index.mjs');
-  assert.equal(paths.shimPaths[0], '/Users/tester/.happier-custom/bin/happier');
+  assert.equal(paths.binaryPath, '/Users/tester/.happier-custom/cli/current/happiest');
+  assert.equal(paths.nodeEntrypointPath, '/Users/tester/.happier-custom/cli/current/happiest-runtime/index.mjs');
+  assert.equal(paths.shimPaths[0], '/Users/tester/.happier-custom/bin/happiest');
 });
 
 test('public release rings resolve to distinct install roots and public shims', () => {
@@ -80,11 +80,11 @@ test('public release rings resolve to distinct install roots and public shims', 
 
   assert.equal(previewLayout.installRoot, '/Users/tester/.happier-custom/cli-preview');
   assert.equal(previewLayout.currentPath, '/Users/tester/.happier-custom/cli-preview/current');
-  assert.equal(previewPaths.shimPaths[0], '/Users/tester/.happier-custom/bin/hprev');
+  assert.equal(previewPaths.shimPaths[0], '/Users/tester/.happier-custom/bin/happiest-preview');
 
   assert.equal(publicdevLayout.installRoot, '/Users/tester/.happier-custom/cli-dev');
   assert.equal(publicdevLayout.currentPath, '/Users/tester/.happier-custom/cli-dev/current');
-  assert.equal(publicdevPaths.shimPaths[0], '/Users/tester/.happier-custom/bin/hdev');
+  assert.equal(publicdevPaths.shimPaths[0], '/Users/tester/.happier-custom/bin/happiest-dev');
 });
 
 test('publicdev install layout resolves a side-by-side cli root and shim', () => {
@@ -106,9 +106,9 @@ test('publicdev install layout resolves a side-by-side cli root and shim', () =>
 
   assert.equal(cliLayout.installRoot, '/Users/tester/.happier-custom/cli-dev');
   assert.equal(cliLayout.currentPath, '/Users/tester/.happier-custom/cli-dev/current');
-  assert.equal(daemonPaths.binaryPath, '/Users/tester/.happier-custom/cli-dev/current/happier');
-  assert.equal(daemonPaths.nodeEntrypointPath, '/Users/tester/.happier-custom/cli-dev/current/package-dist/index.mjs');
-  assert.equal(daemonPaths.shimPaths[0], '/Users/tester/.happier-custom/bin/hdev');
+  assert.equal(daemonPaths.binaryPath, '/Users/tester/.happier-custom/cli-dev/current/happiest');
+  assert.equal(daemonPaths.nodeEntrypointPath, '/Users/tester/.happier-custom/cli-dev/current/happiest-runtime/index.mjs');
+  assert.equal(daemonPaths.shimPaths[0], '/Users/tester/.happier-custom/bin/happiest-dev');
 });
 
 test('installed component paths use .exe suffixes for Windows binaries and shims', () => {
@@ -128,9 +128,9 @@ test('installed component paths use .exe suffixes for Windows binaries and shims
       releaseRing: 'preview',
     });
 
-    assert.equal(stablePaths.binaryPath, 'C:\\Users\\tester\\.happier-custom\\cli\\current\\happier.exe');
-    assert.equal(stablePaths.shimPaths[0], 'C:\\Users\\tester\\.happier-custom\\bin\\happier.exe');
-    assert.equal(previewPaths.binaryPath, 'C:\\Users\\tester\\.happier-custom\\cli-preview\\current\\happier.exe');
-    assert.equal(previewPaths.shimPaths[0], 'C:\\Users\\tester\\.happier-custom\\bin\\hprev.exe');
+    assert.equal(stablePaths.binaryPath, 'C:\\Users\\tester\\.happier-custom\\cli\\current\\happiest.exe');
+    assert.equal(stablePaths.shimPaths[0], 'C:\\Users\\tester\\.happier-custom\\bin\\happiest.exe');
+    assert.equal(previewPaths.binaryPath, 'C:\\Users\\tester\\.happier-custom\\cli-preview\\current\\happiest.exe');
+    assert.equal(previewPaths.shimPaths[0], 'C:\\Users\\tester\\.happier-custom\\bin\\happiest-preview.exe');
   });
 });

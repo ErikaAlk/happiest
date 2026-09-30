@@ -4,6 +4,7 @@ import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { ensureCanonicalHomeEnvUpdated, ensureHomeEnvUpdated } from './utils/env/config.mjs';
 import { loadEnvFile } from './utils/env/load_env_file.mjs';
 import { expandHome } from './utils/paths/canonical_home.mjs';
@@ -141,7 +142,7 @@ async function main() {
           `${cyan('home')} — stores runtime, shims, caches (default: ${cyan('~/.happier-stack')})`,
           `${cyan('workspace')} — where component checkouts live (default: ${cyan('~/.happier-stack/workspace')})`,
           `${cyan('runtime')} — stable install used by services/SwiftBar (default: ${cyan('~/.happier-stack/runtime')})`,
-          `${cyan('shims')} — installs ${cyan('hstack')} / ${cyan('happier')} under ${cyan('~/.happier-stack/bin')}`,
+          `${cyan('shims')} — installs ${cyan('hstack')} / ${cyan(productIdentity.commandName)} under ${cyan('~/.happier-stack/bin')}`,
         ]),
         '',
         sectionTitle('notes:'),
@@ -327,7 +328,7 @@ async function main() {
   }
 
   const hstackShimPath = join(homeDir, 'bin', 'hstack');
-  const happierShimPath = join(homeDir, 'bin', 'happier');
+  const happierShimPath = join(homeDir, 'bin', productIdentity.commandName);
   const legacyHappyShimPath = join(homeDir, 'bin', 'happy');
   const shim = [
     '#!/bin/bash',
@@ -412,7 +413,7 @@ async function main() {
 
   await writeExecutable(hstackShimPath, shim);
 
-  // Convenience shim for the Happier CLI (avoid clashing with Happy stacks' `happy`).
+  // Convenience shim for the product CLI (avoid clashing with Happy stacks' `happy` and an installed upstream `happier`).
   await writeExecutable(
     happierShimPath,
     `#!/bin/bash\nset -euo pipefail\nexec "${hstackShimPath}" happier "$@"\n`
@@ -446,7 +447,7 @@ async function main() {
 
   if (!argv.includes('--install-path') || !didInstallPath) {
     console.log(sectionTitle('PATH'));
-    console.log(dim('To use `hstack` / `happier` from any terminal, add shims to PATH:'));
+    console.log(dim(`To use \`hstack\` / \`${productIdentity.commandName}\` from any terminal, add shims to PATH:`));
     console.log(cmd(`export PATH="${join(homeDir, 'bin')}:$PATH"`));
     console.log(dim(`(or re-run: ${cmd('hstack init --install-path')})`));
     console.log('');

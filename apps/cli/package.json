@@ -64,15 +64,15 @@
     }
   },
   "bin": {
-    "happier": "./bin/happier.mjs",
-    "happier-dev": "./bin/happier-dev.mjs",
-    "happier-mcp": "./bin/happier-mcp.mjs"
+    "happiest": "./bin/happiest.mjs",
+    "happiest-source": "./bin/happiest-source.mjs",
+    "happiest-mcp": "./bin/happiest-mcp.mjs"
   },
   "files": [
     "dist",
     "dist/**",
-    "package-dist",
-    "package-dist/**",
+    "happiest-runtime",
+    "happiest-runtime/**",
     "bin",
     "scripts/**/*.cjs",
     "scripts/**/*.mjs",
@@ -101,7 +101,7 @@
     "test:import-cycles": "node scripts/importCycleGuard.mjs",
     "test:integration": "node scripts/runVitestShards.mjs --config vitest.integration.config.ts",
     "test:slow": "vitest run --config vitest.slow.config.ts",
-    "start": "$npm_execpath run build && node ./bin/happier.mjs",
+    "start": "$npm_execpath run build && node ./bin/happiest.mjs",
     "dev": "node scripts/buildSharedDeps.mjs --source-dev && tsx src/index.ts",
     "dev:local-server": "$npm_execpath run build && tsx --env-file .env.dev-local-server src/index.ts",
     "dev:integration-test-env": "$npm_execpath run build && tsx --env-file .env.integration-test src/index.ts",

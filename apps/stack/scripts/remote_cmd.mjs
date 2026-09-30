@@ -1,6 +1,7 @@
 import './utils/env/env.mjs';
 
 import { pathToFileURL } from 'node:url';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { getReleaseRingCatalogEntry, normalizePublicReleaseRingId } from '@happier-dev/release-runtime/releaseRings';
 import { run } from './utils/proc/proc.mjs';
 import { printResult, wantsHelp, wantsJson } from './utils/cli/cli.mjs';
@@ -70,7 +71,7 @@ function assertPublicChannel(channel, source = '--channel') {
 export async function runRemoteDaemonSetupWithDeps(argvRaw, deps = {}) {
   const resolvedDeps = {
     runLocalMachineBootstrap: async ({ args }) => {
-      await run('happier', args, { env: process.env });
+      await run(productIdentity.commandName, args, { env: process.env });
     },
     ...deps,
   };
@@ -227,7 +228,7 @@ async function runRemoteDaemonSetup(argvRaw) {
 export async function runRemoteServerSetupWithDeps(argvRaw, deps = {}) {
   const resolvedDeps = {
     runRelayHostInstall: async ({ args }) => {
-      await run('happier', args, { env: process.env });
+      await run(productIdentity.commandName, args, { env: process.env });
     },
     ...deps,
   };

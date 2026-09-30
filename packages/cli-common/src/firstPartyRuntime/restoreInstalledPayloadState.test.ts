@@ -44,9 +44,9 @@ describe('captureInstalledPayloadStateForActivation', () => {
     // Preview is the default channel: its update rewrites two launchers (`happiest` and `happiest-preview`).
     await writeDefaultManagedReleaseChannel({ processEnv: env, releaseChannel: 'preview' });
     const payloadRoot = join(homeDir, 'payload');
-    await mkdir(join(payloadRoot, 'package-dist'), { recursive: true });
+    await mkdir(join(payloadRoot, 'happiest-runtime'), { recursive: true });
     await writeFile(join(payloadRoot, 'happiest'), 'binary-1.0.0-preview.1', 'utf8');
-    await writeFile(join(payloadRoot, 'package-dist', 'index.mjs'), 'export {};\n', 'utf8');
+    await writeFile(join(payloadRoot, 'happiest-runtime', 'index.mjs'), 'export {};\n', 'utf8');
     await installVersionedPayload({
       componentId: 'happier-cli', channel: 'preview', versionId: '1.0.0-preview.1', processEnv: env, payloadRoot,
       selectAsDefaultReleaseChannel: true,

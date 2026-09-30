@@ -11,7 +11,7 @@ const execFileMock = vi.fn((...args: any[]) => {
 });
 const resolveDaemonLaunchSpecMock = vi.fn(async (..._args: any[]) => ({
   filePath: '/usr/bin/node',
-  args: ['--no-warnings', '--no-deprecation', '/opt/happier/package-dist/index.mjs', 'daemon', 'start-sync'],
+  args: ['--no-warnings', '--no-deprecation', '/opt/happier/happiest-runtime/index.mjs', 'daemon', 'start-sync'],
 }));
 
 vi.mock('child_process', () => ({
@@ -105,7 +105,7 @@ describe('spawnDetachedDaemonStartSync', () => {
         '/usr/bin/node',
         '--no-warnings',
         '--no-deprecation',
-        '/opt/happier/package-dist/index.mjs',
+        '/opt/happier/happiest-runtime/index.mjs',
         'daemon',
         'start-sync',
       ],
@@ -141,7 +141,7 @@ describe('spawnDetachedDaemonStartSync', () => {
 
     expect(spawnMock).toHaveBeenCalledWith(
       '/usr/bin/node',
-      ['--no-warnings', '--no-deprecation', '/opt/happier/package-dist/index.mjs', 'daemon', 'start-sync'],
+      ['--no-warnings', '--no-deprecation', '/opt/happier/happiest-runtime/index.mjs', 'daemon', 'start-sync'],
       expect.objectContaining({
         detached: true,
         stdio: 'ignore',

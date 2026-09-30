@@ -32,7 +32,7 @@ function runHstack(repoRoot, args, extraEnv = {}) {
 async function writeHappierStub({ dir, logPath }) {
   const binDir = join(dir, 'bin');
   await mkdir(binDir, { recursive: true });
-  const stubPath = join(binDir, 'happier');
+  const stubPath = join(binDir, 'happiest');
 
   const stubSource = [
     '#!/usr/bin/env node',

@@ -17,6 +17,7 @@ import {
 } from 'node:fs/promises';
 import { homedir, tmpdir } from 'node:os';
 import { basename, dirname, join, win32 as win32Path } from 'node:path';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { parseArgs } from './utils/cli/args.mjs';
 import { printResult, wantsHelp, wantsJson } from './utils/cli/cli.mjs';
@@ -35,13 +36,16 @@ import {
   buildServiceDefinition,
   buildWindowsScheduledTaskPowerShellAction,
   planServiceAction,
+  qualifyWindowsScheduledTaskName,
   renderSystemdServiceUnit,
   renderWindowsScheduledTaskWrapperPs1,
   resolveServiceBackend,
 } from '@happier-dev/cli-common/service';
 import {
+  RELAY_RUNTIME_SERVICE_BASE_NAME,
   resolveConfiguredRelayRuntimeBinaryOverride,
   resolveConfiguredRelayRuntimePaths,
+  resolveRelayRuntimeDefaults,
 } from '@happier-dev/cli-common/firstPartyRuntime/relayRuntime';
 import {
   mergeSelfHostServerEnvText,
@@ -52,6 +56,7 @@ import {
 import {
   assertPackagedServerRuntimeClosure,
   relocateServerRuntimeArtifactClosure,
+  resolveServerRuntimeExecutableNames,
 } from '@happier-dev/cli-common/firstPartyRuntime/serverRuntimeArtifactLayout';
 import { commandExistsOnPath } from '@happier-dev/cli-common/process';
 import { DEFAULT_MINISIGN_PUBLIC_KEY } from '@happier-dev/release-runtime/minisign';
@@ -69,16 +74,11 @@ import { maybeInstallCompanionCli } from './self_host/install_companion_cli.mjs'
 import { listVersionedDirectoryIdsNewestFirst, pruneVersionedDirectories } from './self_host/version_retention.mjs';
 
 const SUPPORTED_CHANNELS = new Set(PUBLIC_RELEASE_RING_IDS);
+const { serverHost: DEFAULT_SERVER_HOST, serverPort: DEFAULT_SERVER_PORT } = resolveRelayRuntimeDefaults();
+const DEFAULT_UPDATER_LABEL = `${productIdentity.commandName}-self-host-updater`;
+const SELF_HOST_DISPLAY_NAME = `${productIdentity.productName} Self-Host`;
 const DEFAULTS = Object.freeze({
   githubRepo: 'happier-dev/happier',
-  installRoot: '/opt/happier',
-  binDir: '/usr/local/bin',
-  configDir: '/etc/happier',
-  dataDir: '/var/lib/happier',
-  logDir: '/var/log/happier',
-  serviceName: 'happier-server',
-  serverHost: '127.0.0.1',
-  serverPort: 3005,
   healthCheckTimeoutMs: 90_000,
   autoUpdateIntervalMinutes: 1440,
   uiWebProduct: 'happier-ui-web',
@@ -94,38 +94,14 @@ function resolveSelfHostReleaseSuffix(channel) {
   return entry.rollingReleaseSuffix;
 }
 
-function appendSelfHostReleaseSuffix(baseValue, channel) {
-  return channel === 'stable' ? baseValue : `${baseValue}-${resolveSelfHostReleaseSuffix(channel)}`;
-}
-
 export function resolveSelfHostDefaults({ platform = process.platform, mode = 'user', channel = 'stable', homeDir = homedir() } = {}) {
-  const p = String(platform ?? '').trim() || process.platform;
-  const m = String(mode ?? '').trim().toLowerCase() === 'system' ? 'system' : 'user';
-  const normalizedChannel = normalizeChannel(channel);
-  const home = String(homeDir ?? '').trim() || homedir();
-
-  if (m === 'system') {
-    return {
-      installRoot: appendSelfHostReleaseSuffix(DEFAULTS.installRoot, normalizedChannel),
-      binDir: DEFAULTS.binDir,
-      configDir: appendSelfHostReleaseSuffix(DEFAULTS.configDir, normalizedChannel),
-      dataDir: appendSelfHostReleaseSuffix(DEFAULTS.dataDir, normalizedChannel),
-      logDir: appendSelfHostReleaseSuffix(DEFAULTS.logDir, normalizedChannel),
-      serviceName: appendSelfHostReleaseSuffix(DEFAULTS.serviceName, normalizedChannel),
-    };
-  }
-
-  const happierHome = p === 'win32' ? `${home}\\.happier` : join(home, '.happier');
-  const installRootBase = p === 'win32' ? `${happierHome}\\self-host` : join(happierHome, 'self-host');
-  const installRoot = appendSelfHostReleaseSuffix(installRootBase, normalizedChannel);
-  return {
-    installRoot,
-    binDir: p === 'win32' ? `${happierHome}\\bin` : join(happierHome, 'bin'),
-    configDir: p === 'win32' ? `${installRoot}\\config` : join(installRoot, 'config'),
-    dataDir: p === 'win32' ? `${installRoot}\\data` : join(installRoot, 'data'),
-    logDir: p === 'win32' ? `${installRoot}\\logs` : join(installRoot, 'logs'),
-    serviceName: appendSelfHostReleaseSuffix(DEFAULTS.serviceName, normalizedChannel),
-  };
+  const { installRoot, binDir, configDir, dataDir, logDir, serviceName } = resolveRelayRuntimeDefaults({
+    platform: String(platform ?? '').trim() || process.platform,
+    mode,
+    channel: normalizeChannel(channel),
+    homeDir: String(homeDir ?? '').trim() || homedir(),
+  });
+  return { installRoot, binDir, configDir, dataDir, logDir, serviceName };
 }
 
 function parseBoolean(raw, fallback = false) {
@@ -136,7 +112,7 @@ function parseBoolean(raw, fallback = false) {
   return fallback;
 }
 
-function parsePort(raw, fallback = DEFAULTS.serverPort) {
+function parsePort(raw, fallback = DEFAULT_SERVER_PORT) {
   const value = Number(String(raw ?? '').trim());
   if (!Number.isFinite(value)) return fallback;
   const port = Math.floor(value);
@@ -170,7 +146,7 @@ export function resolveSelfHostHealthTimeoutMs(env = process.env) {
 }
 
 export function resolveSelfHostEffectiveServerPort({ config, env } = {}) {
-  const fallback = parsePort(config?.serverPort, DEFAULTS.serverPort);
+  const fallback = parsePort(config?.serverPort, DEFAULT_SERVER_PORT);
   return parsePort(env?.PORT, fallback);
 }
 
@@ -373,13 +349,13 @@ export function resolveConfig({ channel, mode = 'user', platform = process.platf
   const dataDir = configuredPaths.dataDir;
   const logDir = configuredPaths.logDir;
   const serviceName = String(process.env.HAPPIEST_SELF_HOST_SERVICE_NAME ?? defaults.serviceName).trim() || defaults.serviceName;
-  const serverHost = String(process.env.HAPPIER_SERVER_HOST ?? DEFAULTS.serverHost).trim();
-  const serverPort = parsePort(process.env.HAPPIER_SERVER_PORT, DEFAULTS.serverPort);
+  const serverHost = String(process.env.HAPPIER_SERVER_HOST ?? DEFAULT_SERVER_HOST).trim();
+  const serverPort = parsePort(process.env.HAPPIER_SERVER_PORT, DEFAULT_SERVER_PORT);
   const githubRepo = String(process.env.HAPPIEST_GITHUB_REPO ?? DEFAULTS.githubRepo).trim();
   const autoUpdate = resolveSelfHostAutoUpdateDefault(process.env);
   const autoUpdateIntervalMinutes = resolveSelfHostAutoUpdateIntervalMinutes(process.env);
   const autoUpdateAt = resolveSelfHostAutoUpdateAt(process.env);
-  const serverBinaryName = platform === 'win32' ? 'happier-server.exe' : 'happier-server';
+  const serverBinaryName = resolveServerRuntimeExecutableNames(platform).server;
   const uiWebRootDir = join(installRoot, 'ui-web');
 
   return {
@@ -749,7 +725,7 @@ export function renderUpdaterSystemdUnit({
   stderrPath,
   wantedBy,
 } = {}) {
-  const label = String(updaterLabel ?? '').trim() || 'happier-self-host-updater';
+  const label = String(updaterLabel ?? '').trim() || DEFAULT_UPDATER_LABEL;
   const hstack = String(hstackPath ?? '').trim();
   if (!hstack) throw new Error('[self-host] missing hstackPath for updater unit');
   const ch = displayChannel(channel);
@@ -779,7 +755,7 @@ export function renderUpdaterSystemdUnit({
 }
 
 export function renderUpdaterSystemdTimerUnit({ updaterLabel, intervalMinutes = 1440, at } = {}) {
-  const label = String(updaterLabel ?? '').trim() || 'happier-self-host-updater';
+  const label = String(updaterLabel ?? '').trim() || DEFAULT_UPDATER_LABEL;
   const parsedAt = parseDailyAtTime(at);
   const minutesRaw = Number(intervalMinutes);
   const minutes = Number.isFinite(minutesRaw) ? Math.max(15, Math.floor(minutesRaw)) : 1440;
@@ -820,7 +796,7 @@ export function renderUpdaterLaunchdPlistXml({
   stdoutPath,
   stderrPath,
 } = {}) {
-  const label = String(updaterLabel ?? '').trim() || 'happier-self-host-updater';
+  const label = String(updaterLabel ?? '').trim() || DEFAULT_UPDATER_LABEL;
   const hstack = String(hstackPath ?? '').trim();
   if (!hstack) throw new Error('[self-host] missing hstackPath for updater launchd plist');
   const ch = displayChannel(channel);
@@ -864,7 +840,7 @@ export function renderUpdaterScheduledTaskWrapperPs1({
   stdoutPath,
   stderrPath,
 } = {}) {
-  const label = String(updaterLabel ?? '').trim() || 'happier-self-host-updater';
+  const label = String(updaterLabel ?? '').trim() || DEFAULT_UPDATER_LABEL;
   const hstack = String(hstackPath ?? '').trim();
   if (!hstack) throw new Error('[self-host] missing hstackPath for updater scheduled task wrapper');
   const ch = displayChannel(channel);
@@ -962,9 +938,9 @@ function resolveAutoUpdateAt(argv, fallback) {
 }
 
 function resolveUpdaterLabel(config) {
-  const override = String(process.env.HAPPIER_SELF_HOST_UPDATER_LABEL ?? '').trim();
+  const override = String(process.env.HAPPIEST_SELF_HOST_UPDATER_LABEL ?? '').trim();
   if (override) return override;
-  const base = String(config?.serviceName ?? '').trim() || 'happier-server';
+  const base = String(config?.serviceName ?? '').trim() || RELAY_RUNTIME_SERVICE_BASE_NAME;
   return `${base}-updater`;
 }
 
@@ -988,7 +964,7 @@ async function installAutoUpdateJob({ config, enabled, intervalMinutes, at }) {
 
   const baseSpec = {
     label: updaterLabel,
-    description: `Happier Self-Host (${updaterLabel})`,
+    description: `${SELF_HOST_DISPLAY_NAME} (${updaterLabel})`,
     programArgs: [hstackPath],
     workingDirectory: config.installRoot,
     env: {},
@@ -1061,7 +1037,7 @@ async function installAutoUpdateJob({ config, enabled, intervalMinutes, at }) {
     stdoutPath,
     stderrPath,
   });
-  const name = `Happier\\${updaterLabel}`;
+  const name = qualifyWindowsScheduledTaskName(updaterLabel);
   const args = buildUpdaterScheduledTaskCreateArgs({
     backend,
     taskName: name,
@@ -1088,7 +1064,7 @@ async function uninstallAutoUpdateJob({ config }) {
   const backend = resolveServiceBackend({ platform: config.platform, mode: config.mode });
   const baseSpec = {
     label: updaterLabel,
-    description: `Happier Self-Host (${updaterLabel})`,
+    description: `${SELF_HOST_DISPLAY_NAME} (${updaterLabel})`,
     programArgs: [hstackPath],
     workingDirectory: config.installRoot,
     env: {},
@@ -1127,7 +1103,7 @@ async function uninstallAutoUpdateJob({ config }) {
     return { uninstalled: true, backend, label: updaterLabel };
   }
 
-  const name = `Happier\\${updaterLabel}`;
+  const name = qualifyWindowsScheduledTaskName(updaterLabel);
   const plan = {
     writes: [],
     commands: [
@@ -1727,7 +1703,7 @@ async function writeSelfHostState(config, statePatch) {
 function buildSelfHostServerServiceSpec({ config, envText }) {
   return {
     label: config.serviceName,
-    description: `Happier Self-Host (${config.serviceName})`,
+    description: `${SELF_HOST_DISPLAY_NAME} (${config.serviceName})`,
     programArgs: [config.serverBinaryPath],
     workingDirectory: config.installRoot,
     env: parseEnvText(envText),
@@ -2056,7 +2032,7 @@ async function cmdInstall({ channel, mode, argv, json }) {
       cli: cliResult,
     },
     text: [
-      `${green('✓')} Happier Self-Host installed`,
+      `${green('✓')} ${SELF_HOST_DISPLAY_NAME} installed`,
       `- mode: ${cyan(mode)}`,
       `- service: ${cyan(config.serviceName)}`,
       `- version: ${cyan(installResult.version || 'unknown')}`,
@@ -2111,7 +2087,7 @@ async function cmdStatus({ channel, mode, json }) {
       enabled = null;
       updaterEnabled = null;
     } else if (config.platform === 'win32' && commandExists('schtasks')) {
-      const query = runCommand('schtasks', ['/Query', '/TN', `Happier\\${config.serviceName}`, '/FO', 'LIST', '/V'], {
+      const query = runCommand('schtasks', ['/Query', '/TN', qualifyWindowsScheduledTaskName(config.serviceName), '/FO', 'LIST', '/V'], {
         allowFail: true,
         stdio: 'pipe',
       });
@@ -2119,7 +2095,7 @@ async function cmdStatus({ channel, mode, json }) {
       active = /Status:\s*Running/i.test(out) ? true : /Status:/i.test(out) ? false : null;
       enabled = /Scheduled Task State:\s*Enabled/i.test(out) ? true : /Scheduled Task State:/i.test(out) ? false : null;
 
-      const updaterQuery = runCommand('schtasks', ['/Query', '/TN', `Happier\\${updaterLabel}`, '/FO', 'LIST', '/V'], {
+      const updaterQuery = runCommand('schtasks', ['/Query', '/TN', qualifyWindowsScheduledTaskName(updaterLabel), '/FO', 'LIST', '/V'], {
         allowFail: true,
         stdio: 'pipe',
       });
@@ -2592,7 +2568,7 @@ async function cmdConfig({ channel, mode, argv, json, output }) {
 
 export function usageText() {
   return [
-    banner('self-host', { subtitle: 'Happier Self-Host guided installation flow.' }),
+    banner('self-host', { subtitle: `${SELF_HOST_DISPLAY_NAME} guided installation flow.` }),
     '',
     sectionTitle('usage:'),
     `  ${cyan('hstack self-host')} install [--mode=user|system] [--without-cli] [--without-ui] [--channel=stable|preview|dev] [--auto-update|--no-auto-update] [--auto-update-interval=<minutes>] [--auto-update-at=<HH:MM>] [--env KEY=VALUE]... [--non-interactive] [--json]`,
@@ -2605,7 +2581,7 @@ export function usageText() {
     '',
     sectionTitle('notes:'),
     '- works without a repository checkout (binary-safe flow).',
-    `- runtime paths are configurable via env vars (${dim('HAPPIER_SELF_HOST_*')}).`,
+    `- runtime paths are configurable via env vars (${dim('HAPPIEST_SELF_HOST_*')}).`,
   ].join('\n');
 }
 
@@ -2633,7 +2609,7 @@ function resolveRelayHostForwardSupport(env = process.env) {
   }
 
   try {
-    const probe = spawnSync('happier', ['relay', 'host', '--help'], {
+    const probe = spawnSync(productIdentity.commandName, ['relay', 'host', '--help'], {
       env,
       stdio: 'ignore',
       encoding: 'utf-8',
@@ -2653,7 +2629,7 @@ export async function runSelfHostCli(argv = process.argv.slice(2), { configOutpu
     && shouldAttemptRelayHostForward(process.env)
     && resolveRelayHostForwardSupport(process.env)
   ) {
-    const forwarded = spawnSync('happier', ['relay', 'host', ...resolveRelayHostForwardedArgv(argv)], {
+    const forwarded = spawnSync(productIdentity.commandName, ['relay', 'host', ...resolveRelayHostForwardedArgv(argv)], {
       env: process.env,
       stdio: 'inherit',
       encoding: 'utf-8',
@@ -2662,7 +2638,7 @@ export async function runSelfHostCli(argv = process.argv.slice(2), { configOutpu
       throw forwarded.error;
     }
     if ((forwarded.status ?? 1) !== 0) {
-      throw new Error(`[self-host] forwarded command failed (happier relay host), exit code: ${forwarded.status ?? 1}`);
+      throw new Error(`[self-host] forwarded command failed (${productIdentity.commandName} relay host), exit code: ${forwarded.status ?? 1}`);
     }
     return;
   }

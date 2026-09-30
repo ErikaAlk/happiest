@@ -3,6 +3,7 @@ const fs = require("node:fs");
 const {
   getSentryExpoConfig
 } = require("@sentry/react-native/metro");
+const { productIdentity } = require("@happier-dev/release-runtime/productIdentity");
 
 const generatedWorkletModulePrefixes = [
   "react-native-worklets/__generatedWorklets/",
@@ -206,7 +207,9 @@ const nextBuildArtifactsBlockList = /[\\/]\.next[\\/]/;
 const transientGeneratedDirectoriesBlockList = /[\\/](?:\.tmp\.[^\\/]+|dist\.__finalize_backup__\.[^\\/]+)(?:[\\/]|$)/;
 // CLI runtime snapshots are generated deployment artifacts, not application inputs. In stack runs,
 // Expo watches the CLI workspace and otherwise crawls every retained snapshot on each platform.
-const cliRunnerSnapshotsBlockList = /[\\/]apps[\\/]cli[\\/]\.runner-snapshots(?:[\\/]|$)/;
+const cliRunnerSnapshotsBlockList = new RegExp(
+  `[\\\\/]apps[\\\\/]cli[\\\\/]${productIdentity.runnerSnapshotsDirName.replaceAll(".", "\\.")}(?:[\\\\/]|$)`,
+);
 // Avoid scanning duplicate workspace-local `node_modules/**` trees (typically symlink-heavy) when Metro falls back
 // to the native `find` crawler (no Watchman). We still keep the monorepo root `node_modules` and `apps/ui/node_modules`.
 const workspaceNodeModulesBlockList =

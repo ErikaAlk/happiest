@@ -48,11 +48,17 @@ describe('apps/cli published script surface', () => {
       const rmDistPath = copyCliScriptFixture({ packageRoot, relativePath: 'rmDist.mjs' });
       const syncPackageDistPath = copyCliScriptFixture({ packageRoot, relativePath: 'syncPackageDist.mjs' });
       copyBundledCliCommonLockSurface(packageRoot);
+      const releaseRuntimeSource = resolve(process.cwd(), '..', '..', 'packages', 'release-runtime');
+      const bundledReleaseRuntime = resolve(packageRoot, 'node_modules', '@happier-dev', 'release-runtime');
+      mkdirSync(join(bundledReleaseRuntime, 'dist'), { recursive: true });
+      for (const relativePath of ['package.json', 'productIdentity.cjs', 'dist/productIdentity.js']) {
+        cpSync(resolve(releaseRuntimeSource, relativePath), resolve(bundledReleaseRuntime, relativePath));
+      }
 
       mkdirSync(join(packageRoot, 'dist'), { recursive: true });
-      mkdirSync(join(packageRoot, 'package-dist'), { recursive: true });
+      mkdirSync(join(packageRoot, 'happiest-runtime'), { recursive: true });
       writeFileSync(join(packageRoot, 'dist', 'index.mjs'), 'export const next = true;\n', 'utf8');
-      writeFileSync(join(packageRoot, 'package-dist', 'index.mjs'), 'export const previous = true;\n', 'utf8');
+      writeFileSync(join(packageRoot, 'happiest-runtime', 'index.mjs'), 'export const previous = true;\n', 'utf8');
 
       const runNative = (source: string) => spawnSync(process.execPath, ['--input-type=module', '-e', source], {
         cwd: packageRoot,
@@ -65,7 +71,7 @@ describe('apps/cli published script surface', () => {
       expect(removed.status, removed.stderr).toBe(0);
 
       expect(existsSync(join(packageRoot, 'dist', 'index.mjs'))).toBe(false);
-      expect(existsSync(join(packageRoot, 'package-dist', 'index.mjs'))).toBe(true);
+      expect(existsSync(join(packageRoot, 'happiest-runtime', 'index.mjs'))).toBe(true);
 
       mkdirSync(join(packageRoot, 'dist'), { recursive: true });
       writeFileSync(join(packageRoot, 'dist', 'index.mjs'), 'export const refreshed = true;\n', 'utf8');
@@ -76,8 +82,8 @@ describe('apps/cli published script surface', () => {
         + `process.stdout.write(JSON.stringify(result));`,
       );
       expect(synced.status, synced.stderr).toBe(0);
-      expect(JSON.parse(synced.stdout).packageDistDir).toBe(join(packageRoot, 'package-dist'));
-      expect(existsSync(join(packageRoot, 'package-dist', 'index.mjs'))).toBe(true);
+      expect(JSON.parse(synced.stdout).packageDistDir).toBe(join(packageRoot, 'happiest-runtime'));
+      expect(existsSync(join(packageRoot, 'happiest-runtime', 'index.mjs'))).toBe(true);
     } finally {
       rmSync(packageRoot, { recursive: true, force: true });
     }

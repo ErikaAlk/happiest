@@ -28,7 +28,7 @@ const {
     previousPath: '/home/test/.happier/cli-preview/previous',
     versionsDir: '/home/test/.happier/cli-preview/versions',
     binaryPath: '/home/test/.happier/cli-preview/current/happier',
-    nodeEntrypointPath: '/home/test/.happier/cli-preview/current/package-dist/index.mjs',
+    nodeEntrypointPath: '/home/test/.happier/cli-preview/current/happiest-runtime/index.mjs',
     shimPaths: ['/home/test/.happier/bin/hprev'],
   })),
   migrationEnvSnapshots: [] as Array<Record<string, string | undefined>>,
@@ -72,7 +72,7 @@ describe('happier self __install-payload', () => {
       previousPath: '/home/test/.happier/cli-preview/previous',
       versionsDir: '/home/test/.happier/cli-preview/versions',
       binaryPath: '/home/test/.happier/cli-preview/current/happier',
-      nodeEntrypointPath: '/home/test/.happier/cli-preview/current/package-dist/index.mjs',
+      nodeEntrypointPath: '/home/test/.happier/cli-preview/current/happiest-runtime/index.mjs',
       shimPaths: ['/home/test/.happier/bin/hprev'],
     });
     migrationEnvSnapshots.length = 0;

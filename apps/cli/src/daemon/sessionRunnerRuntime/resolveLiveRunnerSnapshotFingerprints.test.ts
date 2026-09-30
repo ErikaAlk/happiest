@@ -4,7 +4,7 @@ import { decidePinnedRunnerSnapshotPrune } from '@/utils/pinnedRunnerSnapshotPru
 
 import { resolveLiveRunnerSnapshotFingerprints } from './resolveLiveRunnerSnapshotFingerprints';
 
-const SNAPSHOT_ROOT = '/Users/alice/dev/happier/apps/cli/.runner-snapshots';
+const SNAPSHOT_ROOT = '/Users/alice/dev/happiest/apps/cli/.happiest-runner-snapshots';
 
 describe('resolveLiveRunnerSnapshotFingerprints', () => {
   it('collects snapshot fingerprints from live runner process commands', () => {

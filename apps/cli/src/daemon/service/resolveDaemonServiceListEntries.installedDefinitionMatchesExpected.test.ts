@@ -213,7 +213,7 @@ describe('resolveDaemonServiceListEntries', () => {
         webappUrl: 'http://127.0.0.1:3005',
         publicServerUrl: 'http://127.0.0.1:3005',
         nodePath: 'C:\\Program Files\\nodejs\\node.exe',
-        entryPath: 'C:\\Users\\tester\\.happier\\cli-preview\\current\\package-dist\\index.mjs',
+        entryPath: 'C:\\Users\\tester\\.happier\\cli-preview\\current\\happiest-runtime\\index.mjs',
       };
 
       const expectedPlan = planDaemonServiceInstall({

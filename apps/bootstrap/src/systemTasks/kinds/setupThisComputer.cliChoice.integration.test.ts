@@ -70,24 +70,24 @@ async function createComputer(options: Readonly<{ brokenNpmCli?: boolean }> = {}
   const logPath = join(root, 'cli.log');
   await mkdir(home, { recursive: true });
 
-  // An npm global install: `<prefix>/bin/happier` → the package's own entry, with its package.json.
+  // An npm global install: `<prefix>/bin/happiest` → the package's own entry, with its package.json.
   const packageRoot = join(root, 'npm-global', 'lib', 'node_modules', '@happier-dev', 'cli');
   const npmBin = join(root, 'npm-global', 'bin');
-  const npmCli = join(npmBin, 'happier');
+  const npmCli = join(npmBin, 'happiest');
   await mkdir(join(packageRoot, 'bin'), { recursive: true });
   await mkdir(npmBin, { recursive: true });
   await writeFile(join(packageRoot, 'package.json'), JSON.stringify({ name: '@happier-dev/cli', version: NPM_VERSION }));
-  await writeFile(join(packageRoot, 'bin', 'happier.cjs'), options.brokenNpmCli
+  await writeFile(join(packageRoot, 'bin', 'happiest.cjs'), options.brokenNpmCli
     // A CLI that answers nothing setup can read (a pre-0.2 build, or one that errors).
     ? `#!${process.execPath}\nprocess.exit(3);\n`
     : fakeCliScript({ version: NPM_VERSION, logPath, dryRun: { ok: true, plan: {} } }));
-  await chmod(join(packageRoot, 'bin', 'happier.cjs'), 0o755);
-  await symlink(join(packageRoot, 'bin', 'happier.cjs'), npmCli);
+  await chmod(join(packageRoot, 'bin', 'happiest.cjs'), 0o755);
+  await symlink(join(packageRoot, 'bin', 'happiest.cjs'), npmCli);
 
   // The managed release payload; its CLI's dry-run proposes switching the service off the npm CLI.
   const payloadRoot = join(root, 'payload');
-  await mkdir(join(payloadRoot, 'package-dist'), { recursive: true });
-  await writeFile(join(payloadRoot, 'package-dist', 'index.mjs'), 'export {};\n');
+  await mkdir(join(payloadRoot, 'happiest-runtime'), { recursive: true });
+  await writeFile(join(payloadRoot, 'happiest-runtime', 'index.mjs'), 'export {};\n');
   const managedShim = join(home, '.happiest', 'bin', 'happiest');
   await writeFile(join(payloadRoot, 'happiest'), fakeCliScript({
     version: MANAGED_VERSION,

@@ -5,6 +5,8 @@ import { join, resolve } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
+import { qualifyWindowsScheduledTaskName } from '@happier-dev/cli-common/service';
+
 const SELF_HOST_INSTALL_TIMEOUT_MS = 420_000;
 const SELF_HOST_TEST_TIMEOUT_MS = 45 * 60_000;
 
@@ -132,7 +134,7 @@ test(
     const serverOutLog = join(logDir, 'server.out.log');
     const serverErrLog = join(logDir, 'server.err.log');
 
-    const taskName = `Happier\\${serviceName}`;
+    const taskName = qualifyWindowsScheduledTaskName(serviceName);
 
     let installSucceeded = false;
     t.after(() => {

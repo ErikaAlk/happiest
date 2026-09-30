@@ -3,6 +3,7 @@ import { dirname, join, resolve, sep } from 'node:path';
 import { existsSync } from 'node:fs';
 import { chmod, lstat, mkdir, readFile, readdir, realpath, rm, stat, unlink, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { pathExists } from '../fs/fs.mjs';
 import { writeJsonAtomic } from '../fs/json.mjs';
@@ -905,7 +906,7 @@ export async function ensureHappyCliLocalNpmLinked(rootDir, { npmLinkCli, quiet 
   await mkdir(binDir, { recursive: true });
 
   const legacyHappyShim = join(binDir, 'happy');
-  const happierShim = join(binDir, 'happier');
+  const happierShim = join(binDir, productIdentity.commandName);
 
   const shim = `#!/bin/bash
 set -euo pipefail
@@ -939,7 +940,7 @@ exit 1
     return true;
   };
 
-  // Install the Happier CLI shim under `happier` (avoid clashing with Happy's `happy` shim).
+  // Install the CLI shim under the product command name (avoid clashing with Happy's `happy` shim and an installed upstream `happier`).
   await writeIfChanged(happierShim, shim);
   await chmod(happierShim, 0o755).catch(() => {});
 

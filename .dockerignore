@@ -31,8 +31,8 @@ apps/ui/ios
 apps/ui/src-tauri/target
 apps/cli/.npm-cache
 apps/cli/.restore.*
-apps/cli/.runner-snapshots
-apps/cli/package-dist
+apps/cli/.happiest-runner-snapshots
+apps/cli/happiest-runtime
 apps/cli/tmp
 apps/cli/*.tgz
 packages/sherpa-native/android/build

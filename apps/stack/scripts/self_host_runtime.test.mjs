@@ -6,6 +6,10 @@ import test from 'node:test';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
+import { getFirstPartyComponentCatalogEntry } from '@happier-dev/cli-common/firstPartyRuntime';
+import { resolveRelayRuntimeDefaults } from '@happier-dev/cli-common/firstPartyRuntime/relayRuntime';
+import { resolveServerRuntimeExecutableNames } from '@happier-dev/cli-common/firstPartyRuntime/serverRuntimeArtifactLayout';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import * as selfHostRuntimeModule from './self_host_runtime.mjs';
 
 import {
@@ -35,6 +39,17 @@ import {
   resolveSelfHostServerInstallFromReleaseParams,
 } from './self_host_runtime.mjs';
 import { buildServiceDefinition, resolveServiceBackend } from './utils/service/service_manager.mjs';
+
+const SERVER_BINARY_NAME = getFirstPartyComponentCatalogEntry('happier-server').executableBaseName;
+// File names of a server payload on the platform running the tests (`.exe` suffix on Windows).
+const { server: SERVER_BINARY_FILE, migrate: MIGRATE_BINARY_FILE } = resolveServerRuntimeExecutableNames();
+const SYSTEM_DEFAULTS = resolveRelayRuntimeDefaults({ platform: 'linux', mode: 'system' });
+const SERVICE_NAME = SYSTEM_DEFAULTS.serviceName;
+const UPDATER_LABEL = `${SERVICE_NAME}-updater`;
+const SELF_HOST_DISPLAY_NAME = `${productIdentity.productName} Self-Host`;
+const POSIX_HOME_DIR = `/home/me/${productIdentity.homeDirName}`;
+const MACOS_HOME_DIR = `/Users/me/${productIdentity.homeDirName}`;
+const WINDOWS_HOME_DIR = `C:\\\\Users\\\\me\\\\${productIdentity.homeDirName}`;
 
 function b64(buf) {
   return Buffer.from(buf).toString('base64');
@@ -98,7 +113,7 @@ test('local self-host runtime promotion exposes the server-embedded UI to the po
     await rm(tmp, { recursive: true, force: true });
   });
 
-  const binaryName = 'happier-server';
+  const binaryName = SERVER_BINARY_FILE;
   const payloadRoot = join(tmp, 'payload');
   const sourceBinaryPath = await createLocalSelfHostRuntimePayloadRoot({ rootDir: payloadRoot, binaryName });
   await mkdir(join(payloadRoot, 'ui-web', 'current'), { recursive: true });
@@ -132,15 +147,15 @@ test('local self-host runtime promotion keeps the complete migration closure bes
     await rm(tmp, { recursive: true, force: true });
   });
 
-  const binaryName = 'happier-server';
+  const binaryName = SERVER_BINARY_FILE;
   const payloadRoot = join(tmp, 'payload');
   const sourceBinaryPath = await createLocalSelfHostRuntimePayloadRoot({ rootDir: payloadRoot, binaryName });
   await mkdir(join(payloadRoot, 'runtime'), { recursive: true });
   await mkdir(join(payloadRoot, 'prisma', 'migrations'), { recursive: true });
   await writeFile(join(payloadRoot, 'runtime', 'prisma-migrate'), 'runner\n', 'utf8');
   await writeFile(join(payloadRoot, 'prisma', 'migrations', 'migration.sql'), '-- migration\n', 'utf8');
-  await writeFile(join(payloadRoot, 'happier-server-migrate'), '#!/bin/sh\nexit 0\n', 'utf8');
-  await chmod(join(payloadRoot, 'happier-server-migrate'), 0o755);
+  await writeFile(join(payloadRoot, MIGRATE_BINARY_FILE), '#!/bin/sh\nexit 0\n', 'utf8');
+  await chmod(join(payloadRoot, MIGRATE_BINARY_FILE), 0o755);
 
   const installRoot = join(tmp, 'install');
   const config = {
@@ -155,7 +170,7 @@ test('local self-host runtime promotion keeps the complete migration closure bes
 
   assert.equal(await readFile(join(installRoot, 'bin', 'runtime', 'prisma-migrate'), 'utf8'), 'runner\n');
   assert.equal(await readFile(join(installRoot, 'bin', 'prisma', 'migrations', 'migration.sql'), 'utf8'), '-- migration\n');
-  assert.match(await readFile(join(installRoot, 'bin', 'happier-server-migrate'), 'utf8'), /exit 0/);
+  assert.match(await readFile(join(installRoot, 'bin', MIGRATE_BINARY_FILE), 'utf8'), /exit 0/);
 });
 
 test('managed UI activation fails closed when the server payload has no embedded UI', async () => {
@@ -197,12 +212,12 @@ test('self-host install-time migration delegates to the canonical provider plan'
   const calls = [];
   const env = {
     HAPPIER_SQLITE_AUTO_MIGRATE: '0',
-    HAPPIER_SQLITE_MIGRATIONS_DIR: '/var/lib/happier/migrations/sqlite',
-    DATABASE_URL: 'file:/var/lib/happier/happier-server-light.sqlite',
+    HAPPIER_SQLITE_MIGRATIONS_DIR: `${SYSTEM_DEFAULTS.dataDir}/migrations/sqlite`,
+    DATABASE_URL: `file:${SYSTEM_DEFAULTS.dataDir}/happier-server-light.sqlite`,
   };
   const config = {
-    installRoot: '/opt/happier',
-    serverBinaryPath: '/opt/happier/bin/happier-server',
+    installRoot: SYSTEM_DEFAULTS.installRoot,
+    serverBinaryPath: `${SYSTEM_DEFAULTS.installRoot}/bin/${SERVER_BINARY_NAME}`,
   };
 
   await selfHostRuntimeModule.applySelfHostServerMigrationsAtInstallTime({
@@ -235,7 +250,7 @@ test('self-host install-time migration delegates to the canonical provider plan'
       return { status: 0 };
     },
   });
-  assert.equal(calls[0].cmd, '/opt/happier/bin/happier-server-migrate');
+  assert.equal(calls[0].cmd, join(SYSTEM_DEFAULTS.installRoot, 'bin', MIGRATE_BINARY_FILE));
   assert.deepEqual(calls[0].args, []);
 });
 
@@ -244,8 +259,8 @@ test('self-host install-time SQLite migration preserves canonical binary failure
   await assert.rejects(
     selfHostRuntimeModule.applySelfHostServerMigrationsAtInstallTime({
       config: {
-        installRoot: '/opt/happier',
-        serverBinaryPath: '/opt/happier/bin/happier-server',
+        installRoot: SYSTEM_DEFAULTS.installRoot,
+        serverBinaryPath: `${SYSTEM_DEFAULTS.installRoot}/bin/${SERVER_BINARY_NAME}`,
       },
       env: { HAPPIER_SQLITE_AUTO_MIGRATE: '0' },
       runCommandImpl: () => {
@@ -298,7 +313,7 @@ test('self-host release installer reports archive source url', async (t) => {
   await writeFile(join(rootDir, 'node_modules', '.prisma', 'client', 'query_engine.so'), 'engine', 'utf-8');
   await writeFile(join(rootDir, 'node_modules', '@prisma', 'client', 'index.js'), 'module.exports = {};\n', 'utf-8');
 
-  const binaryName = 'happier-server';
+  const binaryName = SERVER_BINARY_FILE;
   const binaryPath = join(rootDir, binaryName);
   await writeFile(binaryPath, '#!/bin/sh\necho ok\n', 'utf-8');
   spawnSync('bash', ['-lc', `chmod +x "${binaryPath.replaceAll('"', '\\"')}"`], { stdio: 'ignore' });
@@ -384,7 +399,7 @@ test('self-host release installer fails closed when packaged node_modules sideca
   await mkdir(join(rootDir, 'generated'), { recursive: true });
   await writeFile(join(rootDir, 'generated', 'dummy.txt'), 'ok', 'utf-8');
 
-  const binaryName = 'happier-server';
+  const binaryName = SERVER_BINARY_FILE;
   const binaryPath = join(rootDir, binaryName);
   await writeFile(binaryPath, '#!/bin/sh\necho ok\n', 'utf-8');
   spawnSync('bash', ['-lc', `chmod +x "${binaryPath.replaceAll('"', '\\"')}"`], { stdio: 'ignore' });
@@ -479,7 +494,7 @@ test('self-host release installer fails closed when packaged Prisma sidecar set 
       await writeFile(join(rootDir, 'generated', 'dummy.txt'), 'ok', 'utf-8');
       await testCase.setup(rootDir);
 
-      const binaryName = 'happier-server';
+      const binaryName = SERVER_BINARY_FILE;
       const binaryPath = join(rootDir, binaryName);
       await writeFile(binaryPath, '#!/bin/sh\necho ok\n', 'utf-8');
       spawnSync('bash', ['-lc', `chmod +x "${binaryPath.replaceAll('"', '\\"')}"`], { stdio: 'ignore' });
@@ -545,7 +560,7 @@ test('self-host release update preserves the last known-good runtime when bundle
   });
 
   const installRoot = join(tmp, 'install');
-  const binaryName = 'happier-server';
+  const binaryName = SERVER_BINARY_FILE;
   const config = {
     platform: process.platform,
     dataDir: join(installRoot, 'data'),
@@ -643,7 +658,7 @@ test('self-host release update rolls back promoted sidecars when binary install 
   });
 
   const installRoot = join(tmp, 'install');
-  const binaryName = 'happier-server';
+  const binaryName = SERVER_BINARY_FILE;
   const config = {
     platform: process.platform,
     dataDir: join(installRoot, 'data'),
@@ -740,7 +755,7 @@ test('self-host release update fails closed if the process dies after sidecar pr
   });
 
   const installRoot = join(tmp, 'install');
-  const binaryName = 'happier-server';
+  const binaryName = SERVER_BINARY_FILE;
   const config = {
     platform: process.platform,
     dataDir: join(installRoot, 'data'),
@@ -804,7 +819,7 @@ test('self-host release update fails closed if the process dies after sidecar pr
       'const pubkeyFile = process.env.HAPPIER_TEST_SELF_HOST_PUBKEY ?? "";',
       'await installSelfHostBinaryFromBundle({',
       '  bundle,',
-      '  binaryName: "happier-server",',
+      `  binaryName: ${JSON.stringify(SERVER_BINARY_FILE)},`,
       '  config,',
       '  pubkeyFile,',
       '  beforeBinaryInstall: async () => { process.exit(17); },',
@@ -867,7 +882,7 @@ test('self-host release installer ignores extra root entries when extracting bun
   const extraRootEntry = '000-root-metadata';
   await writeFile(join(staging, extraRootEntry), 'metadata', 'utf-8');
 
-  const binaryName = 'happier-server';
+  const binaryName = SERVER_BINARY_FILE;
   const binaryPath = join(rootDir, binaryName);
   await writeFile(binaryPath, '#!/bin/sh\necho ok\n', 'utf-8');
   spawnSync('bash', ['-lc', `chmod +x "${binaryPath.replaceAll('"', '\\"')}"`], { stdio: 'ignore' });
@@ -934,7 +949,7 @@ test('installSelfHostBinaryFromLocalPath prunes older retained local versions af
   });
 
   const installRoot = join(tmp, 'install');
-  const binaryName = 'happier-server';
+  const binaryName = SERVER_BINARY_FILE;
   const config = {
     platform: process.platform,
     dataDir: join(installRoot, 'data'),
@@ -982,7 +997,7 @@ test('installSelfHostBinaryFromLocalPath runs the pre-promotion hook before muta
   });
 
   const installRoot = join(tmp, 'install');
-  const binaryName = 'happier-server';
+  const binaryName = SERVER_BINARY_FILE;
   const config = {
     platform: process.platform,
     dataDir: join(installRoot, 'data'),
@@ -1074,12 +1089,12 @@ test('runSelfHostRuntimeMutationWithServiceRecovery restores the previous servic
   const config = {
     platform: 'linux',
     mode: 'user',
-    serviceName: 'happier-self-host-preview',
+    serviceName: `${SERVICE_NAME}-preview`,
     installRoot: join(tempRoot, 'install'),
     versionsDir: join(tempRoot, 'install', 'versions'),
     configDir: join(tempRoot, 'install', 'config'),
     configEnvPath: join(tempRoot, 'install', 'config', 'server.env'),
-    serverBinaryPath: join(tempRoot, 'install', 'bin', 'happier-server'),
+    serverBinaryPath: join(tempRoot, 'install', 'bin', SERVER_BINARY_NAME),
     serverStdoutLogPath: join(tempRoot, 'install', 'logs', 'server.out.log'),
     serverStderrLogPath: join(tempRoot, 'install', 'logs', 'server.err.log'),
   };
@@ -1103,7 +1118,7 @@ test('runSelfHostRuntimeMutationWithServiceRecovery restores the previous servic
     homeDir: tempRoot,
     spec: {
       label: config.serviceName,
-      description: `Happier Self-Host (${config.serviceName})`,
+      description: `${SELF_HOST_DISPLAY_NAME} (${config.serviceName})`,
       programArgs: [config.serverBinaryPath],
       workingDirectory: config.installRoot,
       env: {},
@@ -1187,12 +1202,12 @@ test('runSelfHostRuntimeMutationWithServiceRecovery does not recreate env or rei
   const config = {
     platform: 'linux',
     mode: 'user',
-    serviceName: 'happier-self-host-preview',
+    serviceName: `${SERVICE_NAME}-preview`,
     installRoot: join(tempRoot, 'install'),
     versionsDir: join(tempRoot, 'install', 'versions'),
     configDir: join(tempRoot, 'install', 'config'),
     configEnvPath: join(tempRoot, 'install', 'config', 'server.env'),
-    serverBinaryPath: join(tempRoot, 'install', 'bin', 'happier-server'),
+    serverBinaryPath: join(tempRoot, 'install', 'bin', SERVER_BINARY_NAME),
     serverStdoutLogPath: join(tempRoot, 'install', 'logs', 'server.out.log'),
     serverStderrLogPath: join(tempRoot, 'install', 'logs', 'server.err.log'),
   };
@@ -1268,13 +1283,13 @@ test('runSelfHostRuntimeMutationWithServiceRecovery restores promoted runtime, u
   const config = {
     platform: 'linux',
     mode: 'user',
-    serviceName: 'happier-self-host-preview',
+    serviceName: `${SERVICE_NAME}-preview`,
     installRoot: join(tempRoot, 'install'),
     versionsDir: join(tempRoot, 'install', 'versions'),
     configDir: join(tempRoot, 'install', 'config'),
     configEnvPath: join(tempRoot, 'install', 'config', 'server.env'),
-    serverBinaryPath: join(tempRoot, 'install', 'bin', 'happier-server'),
-    serverPreviousBinaryPath: join(tempRoot, 'install', 'bin', 'happier-server.previous'),
+    serverBinaryPath: join(tempRoot, 'install', 'bin', SERVER_BINARY_FILE),
+    serverPreviousBinaryPath: join(tempRoot, 'install', 'bin', `${SERVER_BINARY_FILE}.previous`),
     dataDir: join(tempRoot, 'install', 'data'),
     uiWebRootDir: join(tempRoot, 'install', 'ui-web'),
     uiWebVersionsDir: join(tempRoot, 'install', 'ui-web', 'versions'),
@@ -1311,7 +1326,7 @@ test('runSelfHostRuntimeMutationWithServiceRecovery restores promoted runtime, u
     homeDir: tempRoot,
     spec: {
       label: config.serviceName,
-      description: `Happier Self-Host (${config.serviceName})`,
+      description: `${SELF_HOST_DISPLAY_NAME} (${config.serviceName})`,
       programArgs: [config.serverBinaryPath],
       workingDirectory: config.installRoot,
       env: {},
@@ -1325,7 +1340,7 @@ test('runSelfHostRuntimeMutationWithServiceRecovery restores promoted runtime, u
   const sourceRoot = await mkdtemp(join(tempRoot, 'source-runtime-'));
   const sourceBinaryPath = await createLocalSelfHostRuntimePayloadRoot({
     rootDir: sourceRoot,
-    binaryName: 'happier-server',
+    binaryName: SERVER_BINARY_FILE,
     binaryText: '#!/bin/sh\necho new-runtime\n',
   });
 
@@ -1335,7 +1350,7 @@ test('runSelfHostRuntimeMutationWithServiceRecovery restores promoted runtime, u
       mutateRuntime: async ({ beforeRuntimePromote }) => {
         await selfHostRuntimeModule.installSelfHostBinaryFromLocalPath({
           sourceBinaryPath,
-          binaryName: 'happier-server',
+          binaryName: SERVER_BINARY_FILE,
           config,
           beforeRuntimePromote,
           afterPromote: async () => {
@@ -1390,25 +1405,25 @@ test('resolveSelfHostServerInstallFromReleaseParams carries the local server bin
   const config = {
     platform: 'linux',
     versionsDir: '/tmp/versions',
-    serverBinaryPath: '/tmp/bin/happier-server',
+    serverBinaryPath: `/tmp/bin/${SERVER_BINARY_NAME}`,
   };
   const beforeRuntimePromote = async () => {};
 
   const params = resolveSelfHostServerInstallFromReleaseParams({
     product: 'happier-server',
-    binaryName: 'happier-server',
+    binaryName: SERVER_BINARY_NAME,
     config,
     env: {
-      HAPPIEST_SELF_HOST_SERVER_BINARY: '/tmp/local/happier-server',
+      HAPPIEST_SELF_HOST_SERVER_BINARY: `/tmp/local/${SERVER_BINARY_NAME}`,
     },
     beforeRuntimePromote,
   });
 
   assert.deepEqual(params, {
     product: 'happier-server',
-    binaryName: 'happier-server',
+    binaryName: SERVER_BINARY_NAME,
     config,
-    explicitBinaryPath: '/tmp/local/happier-server',
+    explicitBinaryPath: `/tmp/local/${SERVER_BINARY_NAME}`,
     beforeRuntimePromote,
   });
 });
@@ -1431,10 +1446,10 @@ test('installBinaryAtomically swaps a running binary on Linux without ETXTBSY', 
     spawnSync('bash', ['-lc', `rm -rf "${tmp.replaceAll('"', '\\"')}"`], { stdio: 'ignore' });
   });
 
-  const targetBinaryPath = join(tmp, 'bin', 'happier-server');
-  const previousBinaryPath = join(tmp, 'bin', 'happier-server.previous');
-  const versioned1 = join(tmp, 'versions', 'happier-server-1');
-  const versioned2 = join(tmp, 'versions', 'happier-server-2');
+  const targetBinaryPath = join(tmp, 'bin', SERVER_BINARY_NAME);
+  const previousBinaryPath = join(tmp, 'bin', `${SERVER_BINARY_NAME}.previous`);
+  const versioned1 = join(tmp, 'versions', `${SERVER_BINARY_NAME}-1`);
+  const versioned2 = join(tmp, 'versions', `${SERVER_BINARY_NAME}-2`);
 
   await installBinaryAtomically({
     sourceBinaryPath: sleepPath,
@@ -1472,10 +1487,21 @@ test('resolveSelfHostEffectiveServerPort prefers PORT override', async () => {
 
   assert.equal(
     mod.resolveSelfHostEffectiveServerPort({
-      config: { serverPort: 3005 },
+      config: { serverPort: productIdentity.relayDefaultPort },
       env: { PORT: '3999' },
     }),
     3999,
+  );
+});
+
+test('resolveSelfHostEffectiveServerPort falls back to the product identity relay port', () => {
+  assert.equal(
+    selfHostRuntimeModule.resolveSelfHostEffectiveServerPort({ config: {}, env: {} }),
+    productIdentity.relayDefaultPort,
+  );
+  assert.equal(
+    selfHostRuntimeModule.resolveSelfHostEffectiveServerPort({ config: { serverPort: 'abc' }, env: { PORT: '70000' } }),
+    productIdentity.relayDefaultPort,
   );
 });
 
@@ -1524,33 +1550,47 @@ test('pickReleaseAsset supports windows tar.gz artifacts', () => {
 });
 
 test('renderServerServiceUnit references configured binary and env file', () => {
+  const binaryPath = `${SYSTEM_DEFAULTS.installRoot}/bin/${SERVER_BINARY_NAME}`;
+  const envFilePath = `${SYSTEM_DEFAULTS.configDir}/server.env`;
+  const logPath = `${SYSTEM_DEFAULTS.logDir}/server.log`;
   const unit = renderServerServiceUnit({
-    serviceName: 'happier-server',
-    binaryPath: '/opt/happier/bin/happier-server',
-    envFilePath: '/etc/happier/server.env',
-    workingDirectory: '/opt/happier',
-    logPath: '/var/log/happier/server.log',
+    serviceName: SERVICE_NAME,
+    binaryPath,
+    envFilePath,
+    workingDirectory: SYSTEM_DEFAULTS.installRoot,
+    logPath,
   });
-  assert.match(unit, /ExecStart=\/opt\/happier\/bin\/happier-server/);
-  assert.match(unit, /EnvironmentFile=\/etc\/happier\/server.env/);
-  assert.match(unit, /WorkingDirectory=\/opt\/happier/);
-  assert.match(unit, /StandardOutput=append:\/var\/log\/happier\/server.log/);
+  assert.ok(unit.includes(`ExecStart=${binaryPath}`));
+  assert.ok(unit.includes(`EnvironmentFile=${envFilePath}`));
+  assert.ok(unit.includes(`WorkingDirectory=${SYSTEM_DEFAULTS.installRoot}`));
+  assert.ok(unit.includes(`StandardOutput=append:${logPath}`));
 });
 
 test('resolveSelfHostDefaults uses user-mode paths by default', () => {
   const cfg = resolveSelfHostDefaults({ platform: 'linux', mode: 'user', homeDir: '/home/me' });
-  assert.equal(cfg.installRoot, '/home/me/.happier/self-host');
-  assert.equal(cfg.binDir, '/home/me/.happier/bin');
-  assert.equal(cfg.configDir, '/home/me/.happier/self-host/config');
+  assert.equal(cfg.installRoot, `${POSIX_HOME_DIR}/self-host`);
+  assert.equal(cfg.binDir, `${POSIX_HOME_DIR}/bin`);
+  assert.equal(cfg.configDir, `${POSIX_HOME_DIR}/self-host/config`);
+  assert.equal(cfg.serviceName, SERVICE_NAME);
 });
 
 test('resolveSelfHostDefaults isolates publicdev into a side-by-side self-host root and service name', () => {
   const cfg = resolveSelfHostDefaults({ platform: 'linux', mode: 'user', channel: 'publicdev', homeDir: '/home/me' });
-  assert.equal(cfg.installRoot, '/home/me/.happier/self-host-dev');
-  assert.equal(cfg.configDir, '/home/me/.happier/self-host-dev/config');
-  assert.equal(cfg.dataDir, '/home/me/.happier/self-host-dev/data');
-  assert.equal(cfg.logDir, '/home/me/.happier/self-host-dev/logs');
-  assert.equal(cfg.serviceName, 'happier-server-dev');
+  assert.equal(cfg.installRoot, `${POSIX_HOME_DIR}/self-host-dev`);
+  assert.equal(cfg.configDir, `${POSIX_HOME_DIR}/self-host-dev/config`);
+  assert.equal(cfg.dataDir, `${POSIX_HOME_DIR}/self-host-dev/data`);
+  assert.equal(cfg.logDir, `${POSIX_HOME_DIR}/self-host-dev/logs`);
+  assert.equal(cfg.serviceName, `${SERVICE_NAME}-dev`);
+});
+
+test('resolveSelfHostDefaults places system-mode directories under the product identity system directory', () => {
+  const cfg = resolveSelfHostDefaults({ platform: 'linux', mode: 'system', channel: 'preview', homeDir: '/home/me' });
+  assert.equal(cfg.installRoot, `/opt/${productIdentity.systemDirName}-preview`);
+  assert.equal(cfg.binDir, '/usr/local/bin');
+  assert.equal(cfg.configDir, `/etc/${productIdentity.systemDirName}-preview`);
+  assert.equal(cfg.dataDir, `/var/lib/${productIdentity.systemDirName}-preview`);
+  assert.equal(cfg.logDir, `/var/log/${productIdentity.systemDirName}-preview`);
+  assert.equal(cfg.serviceName, `${SERVICE_NAME}-preview`);
 });
 
 test('resolveConfig defaults serviceName to the channel-suffixed self-host defaults', () => {
@@ -1561,9 +1601,33 @@ test('resolveConfig defaults serviceName to the channel-suffixed self-host defau
   process.env.HAPPIEST_SELF_HOST_SERVICE_NAME = '';
   try {
     const cfg = selfHostRuntimeModule.resolveConfig({ platform: 'linux', mode: 'user', channel: 'publicdev' });
-    assert.equal(cfg.serviceName, 'happier-server-dev');
+    assert.equal(cfg.serviceName, `${SERVICE_NAME}-dev`);
   } finally {
     process.env.HAPPIEST_SELF_HOST_SERVICE_NAME = previous.HAPPIEST_SELF_HOST_SERVICE_NAME;
+  }
+});
+
+test('resolveConfig takes the server binary name, host and port from the product identity', () => {
+  const previous = {
+    HAPPIER_SERVER_HOST: process.env.HAPPIER_SERVER_HOST,
+    HAPPIER_SERVER_PORT: process.env.HAPPIER_SERVER_PORT,
+  };
+
+  delete process.env.HAPPIER_SERVER_HOST;
+  delete process.env.HAPPIER_SERVER_PORT;
+  try {
+    const linux = selfHostRuntimeModule.resolveConfig({ platform: 'linux', mode: 'user', channel: 'stable' });
+    assert.equal(linux.serverBinaryName, SERVER_BINARY_NAME);
+    assert.equal(linux.serverHost, '127.0.0.1');
+    assert.equal(linux.serverPort, productIdentity.relayDefaultPort);
+
+    const windows = selfHostRuntimeModule.resolveConfig({ platform: 'win32', mode: 'user', channel: 'stable' });
+    assert.equal(windows.serverBinaryName, `${SERVER_BINARY_NAME}.exe`);
+  } finally {
+    if (previous.HAPPIER_SERVER_HOST === undefined) delete process.env.HAPPIER_SERVER_HOST;
+    else process.env.HAPPIER_SERVER_HOST = previous.HAPPIER_SERVER_HOST;
+    if (previous.HAPPIER_SERVER_PORT === undefined) delete process.env.HAPPIER_SERVER_PORT;
+    else process.env.HAPPIER_SERVER_PORT = previous.HAPPIER_SERVER_PORT;
   }
 });
 
@@ -1622,34 +1686,35 @@ test('resolveMinisignPublicKeyText prefers inline override and otherwise returns
 
 test('renderServerEnvFile emits sqlite/local defaults for self-host mode', () => {
   const envText = renderServerEnvFile({
-    port: 3005,
+    port: productIdentity.relayDefaultPort,
     host: '127.0.0.1',
-    dataDir: '/var/lib/happier',
-    filesDir: '/var/lib/happier/files',
-    dbDir: '/var/lib/happier/pglite',
+    dataDir: SYSTEM_DEFAULTS.dataDir,
+    filesDir: `${SYSTEM_DEFAULTS.dataDir}/files`,
+    dbDir: `${SYSTEM_DEFAULTS.dataDir}/pglite`,
   });
-  assert.match(envText, /PORT=3005/);
+  const dataDir = SYSTEM_DEFAULTS.dataDir;
+  assert.ok(envText.includes(`PORT=${productIdentity.relayDefaultPort}`));
   assert.match(envText, /METRICS_ENABLED=false/);
   assert.match(envText, /HAPPIER_DB_PROVIDER=sqlite/);
-  assert.match(envText, /DATABASE_URL=file:\/\/\/var\/lib\/happier\/happier-server-light\.sqlite/);
+  assert.ok(envText.includes(`DATABASE_URL=file://${dataDir}/happier-server-light.sqlite`));
   assert.match(envText, /HAPPIER_FILES_BACKEND=local/);
   assert.match(envText, /HAPPIER_SQLITE_AUTO_MIGRATE=1/);
-  assert.match(envText, /HAPPIER_SQLITE_MIGRATIONS_DIR=\/var\/lib\/happier\/migrations\/sqlite/);
-  assert.match(envText, /HAPPIER_SERVER_LIGHT_DATA_DIR=\/var\/lib\/happier/);
-  assert.match(envText, /HAPPIER_SERVER_LIGHT_FILES_DIR=\/var\/lib\/happier\/files/);
-  assert.match(envText, /HAPPIER_SERVER_LIGHT_DB_DIR=\/var\/lib\/happier\/pglite/);
+  assert.ok(envText.includes(`HAPPIER_SQLITE_MIGRATIONS_DIR=${dataDir}/migrations/sqlite`));
+  assert.ok(envText.includes(`HAPPIER_SERVER_LIGHT_DATA_DIR=${dataDir}`));
+  assert.ok(envText.includes(`HAPPIER_SERVER_LIGHT_FILES_DIR=${dataDir}/files`));
+  assert.ok(envText.includes(`HAPPIER_SERVER_LIGHT_DB_DIR=${dataDir}/pglite`));
 });
 
 test('renderServerEnvFile includes ui bundle directory when provided', () => {
   const envText = renderServerEnvFile({
-    port: 3005,
+    port: productIdentity.relayDefaultPort,
     host: '127.0.0.1',
-    dataDir: '/var/lib/happier',
-    filesDir: '/var/lib/happier/files',
-    dbDir: '/var/lib/happier/pglite',
-    uiDir: '/var/lib/happier/ui-web/current',
+    dataDir: SYSTEM_DEFAULTS.dataDir,
+    filesDir: `${SYSTEM_DEFAULTS.dataDir}/files`,
+    dbDir: `${SYSTEM_DEFAULTS.dataDir}/pglite`,
+    uiDir: `${SYSTEM_DEFAULTS.dataDir}/ui-web/current`,
   });
-  assert.match(envText, /HAPPIER_SERVER_UI_DIR=\/var\/lib\/happier\/ui-web\/current/);
+  assert.ok(envText.includes(`HAPPIER_SERVER_UI_DIR=${SYSTEM_DEFAULTS.dataDir}/ui-web/current`));
 });
 
 test('renderServerEnvFile includes PRISMA_QUERY_ENGINE_LIBRARY when a packaged sqlite engine is present', async () => {
@@ -1659,14 +1724,14 @@ test('renderServerEnvFile includes PRISMA_QUERY_ENGINE_LIBRARY when a packaged s
   await writeFile(enginePath, 'stub', 'utf-8');
 
   const envText = renderServerEnvFile({
-    port: 3005,
+    port: productIdentity.relayDefaultPort,
     host: '127.0.0.1',
     platform: 'darwin',
     arch: 'arm64',
     serverBinDir,
-    dataDir: '/var/lib/happier',
-    filesDir: '/var/lib/happier/files',
-    dbDir: '/var/lib/happier/pglite',
+    dataDir: SYSTEM_DEFAULTS.dataDir,
+    filesDir: `${SYSTEM_DEFAULTS.dataDir}/files`,
+    dbDir: `${SYSTEM_DEFAULTS.dataDir}/pglite`,
   });
   assert.match(envText, /PRISMA_CLIENT_ENGINE_TYPE=library/);
   assert.match(envText, new RegExp(`PRISMA_QUERY_ENGINE_LIBRARY=${enginePath.replaceAll('\\\\', '\\\\\\\\')}`));
@@ -1680,14 +1745,14 @@ test('renderServerEnvFile includes PRISMA_QUERY_ENGINE_LIBRARY for packaged post
   await writeFile(enginePath, 'stub', 'utf-8');
 
   const envText = renderServerEnvFile({
-    port: 3005,
+    port: productIdentity.relayDefaultPort,
     host: '127.0.0.1',
     platform: 'linux',
     arch: 'arm64',
     serverBinDir,
-    dataDir: '/var/lib/happier',
-    filesDir: '/var/lib/happier/files',
-    dbDir: '/var/lib/happier/pglite',
+    dataDir: SYSTEM_DEFAULTS.dataDir,
+    filesDir: `${SYSTEM_DEFAULTS.dataDir}/files`,
+    dbDir: `${SYSTEM_DEFAULTS.dataDir}/pglite`,
   });
   assert.match(envText, /PRISMA_CLIENT_ENGINE_TYPE=library/);
   assert.match(envText, new RegExp(`PRISMA_QUERY_ENGINE_LIBRARY=${enginePath.replaceAll('\\\\', '\\\\\\\\')}`));
@@ -1696,7 +1761,7 @@ test('renderServerEnvFile includes PRISMA_QUERY_ENGINE_LIBRARY for packaged post
 
 test('renderServerEnvFile uses Prisma-compatible sqlite DATABASE_URL semantics on Windows', () => {
   const envText = renderServerEnvFile({
-    port: 3005,
+    port: productIdentity.relayDefaultPort,
     host: '127.0.0.1',
     platform: 'win32',
     dataDir: 'C:\\\\Users\\\\me\\\\Happier QA\\\\self-host\\\\data',
@@ -1733,30 +1798,30 @@ test('resolveSelfHostAutoUpdateIntervalMinutes provides a safe default and bound
 
 test('renderUpdaterSystemdUnit runs self-host update without restart loops', () => {
   const unit = renderUpdaterSystemdUnit({
-    updaterLabel: 'happier-server-updater',
-    hstackPath: '/home/me/.happier/bin/hstack',
+    updaterLabel: UPDATER_LABEL,
+    hstackPath: `${POSIX_HOME_DIR}/bin/hstack`,
     channel: 'publicdev',
     mode: 'user',
-    workingDirectory: '/home/me/.happier/self-host',
-    stdoutPath: '/home/me/.happier/self-host/logs/updater.out.log',
-    stderrPath: '/home/me/.happier/self-host/logs/updater.err.log',
+    workingDirectory: `${POSIX_HOME_DIR}/self-host`,
+    stdoutPath: `${POSIX_HOME_DIR}/self-host/logs/updater.out.log`,
+    stderrPath: `${POSIX_HOME_DIR}/self-host/logs/updater.err.log`,
     wantedBy: 'default.target',
   });
-  assert.match(unit, /ExecStart=\/home\/me\/\.happier\/bin\/hstack self-host update --channel=dev --mode=user --non-interactive/);
+  assert.ok(unit.includes(`ExecStart=${POSIX_HOME_DIR}/bin/hstack self-host update --channel=dev --mode=user --non-interactive`));
   assert.match(unit, /Restart=no/);
   assert.match(unit, /WantedBy=default\.target/);
 });
 
 test('renderUpdaterLaunchdPlistXml runs self-host update without keepalive loops', () => {
   const plist = renderUpdaterLaunchdPlistXml({
-    updaterLabel: 'happier-server-updater',
-    hstackPath: '/Users/me/.happier/bin/hstack',
+    updaterLabel: UPDATER_LABEL,
+    hstackPath: `${MACOS_HOME_DIR}/bin/hstack`,
     channel: 'preview',
     mode: 'user',
     intervalMinutes: 60,
-    workingDirectory: '/Users/me/.happier/self-host',
-    stdoutPath: '/Users/me/.happier/self-host/logs/updater.out.log',
-    stderrPath: '/Users/me/.happier/self-host/logs/updater.err.log',
+    workingDirectory: `${MACOS_HOME_DIR}/self-host`,
+    stdoutPath: `${MACOS_HOME_DIR}/self-host/logs/updater.out.log`,
+    stderrPath: `${MACOS_HOME_DIR}/self-host/logs/updater.err.log`,
   });
 
   assert.match(plist, /<key>RunAtLoad<\/key>\s*<true\/>/);
@@ -1764,7 +1829,7 @@ test('renderUpdaterLaunchdPlistXml runs self-host update without keepalive loops
   assert.doesNotMatch(plist, /<key>StartCalendarInterval<\/key>/);
   assert.doesNotMatch(plist, /<key>KeepAlive<\/key>/);
   assert.match(plist, /<key>PATH<\/key>/);
-  assert.match(plist, /<string>\/Users\/me\/\.happier\/bin\/hstack<\/string>/);
+  assert.ok(plist.includes(`<string>${MACOS_HOME_DIR}/bin/hstack</string>`));
   assert.match(plist, /<string>self-host<\/string>/);
   assert.match(plist, /<string>update<\/string>/);
   assert.match(plist, /<string>--channel=preview<\/string>/);
@@ -1774,14 +1839,14 @@ test('renderUpdaterLaunchdPlistXml runs self-host update without keepalive loops
 
 test('renderUpdaterLaunchdPlistXml supports daily time-of-day schedules', () => {
   const plist = renderUpdaterLaunchdPlistXml({
-    updaterLabel: 'happier-server-updater',
-    hstackPath: '/Users/me/.happier/bin/hstack',
+    updaterLabel: UPDATER_LABEL,
+    hstackPath: `${MACOS_HOME_DIR}/bin/hstack`,
     channel: 'stable',
     mode: 'user',
     at: '03:15',
-    workingDirectory: '/Users/me/.happier/self-host',
-    stdoutPath: '/Users/me/.happier/self-host/logs/updater.out.log',
-    stderrPath: '/Users/me/.happier/self-host/logs/updater.err.log',
+    workingDirectory: `${MACOS_HOME_DIR}/self-host`,
+    stdoutPath: `${MACOS_HOME_DIR}/self-host/logs/updater.out.log`,
+    stderrPath: `${MACOS_HOME_DIR}/self-host/logs/updater.err.log`,
   });
   assert.match(plist, /<key>StartCalendarInterval<\/key>/);
   assert.match(plist, /<key>Hour<\/key>\s*<integer>3<\/integer>/);
@@ -1791,34 +1856,52 @@ test('renderUpdaterLaunchdPlistXml supports daily time-of-day schedules', () => 
 
 test('renderUpdaterSystemdTimerUnit schedules periodic updater runs', () => {
   const timer = renderUpdaterSystemdTimerUnit({
-    updaterLabel: 'happier-server-updater',
+    updaterLabel: UPDATER_LABEL,
     intervalMinutes: 60,
   });
   assert.match(timer, /OnUnitActiveSec=60m/);
   assert.doesNotMatch(timer, /OnCalendar=/);
-  assert.match(timer, /Unit=happier-server-updater\.service/);
+  assert.ok(timer.includes(`Unit=${UPDATER_LABEL}.service`));
   assert.match(timer, /WantedBy=timers\.target/);
 });
 
 test('renderUpdaterSystemdTimerUnit supports daily time-of-day schedules', () => {
   const timer = renderUpdaterSystemdTimerUnit({
-    updaterLabel: 'happier-server-updater',
+    updaterLabel: UPDATER_LABEL,
     at: '03:15',
   });
   assert.match(timer, /OnCalendar=\*-\*-\*\s+03:15:00/);
   assert.doesNotMatch(timer, /OnUnitActiveSec=/);
-  assert.match(timer, /Unit=happier-server-updater\.service/);
+  assert.ok(timer.includes(`Unit=${UPDATER_LABEL}.service`));
+});
+
+test('updater units default their label to the product command name', () => {
+  const defaultLabel = `${productIdentity.commandName}-self-host-updater`;
+  const timer = renderUpdaterSystemdTimerUnit({ intervalMinutes: 60 });
+  assert.ok(timer.includes(`Unit=${defaultLabel}.service`));
+  const unit = renderUpdaterSystemdUnit({
+    hstackPath: `${POSIX_HOME_DIR}/bin/hstack`,
+    channel: 'stable',
+    mode: 'user',
+  });
+  assert.ok(unit.includes(`Description=${defaultLabel} (auto-update)`));
+  const plist = renderUpdaterLaunchdPlistXml({
+    hstackPath: `${MACOS_HOME_DIR}/bin/hstack`,
+    channel: 'stable',
+    mode: 'user',
+  });
+  assert.ok(plist.includes(`<string>${defaultLabel}</string>`));
 });
 
 test('renderUpdaterScheduledTaskWrapperPs1 runs self-host update without node dependencies', () => {
   const wrapper = renderUpdaterScheduledTaskWrapperPs1({
-    updaterLabel: 'happier-server-updater',
-    hstackPath: 'C:\\\\Users\\\\me\\\\.happier\\\\bin\\\\hstack.exe',
+    updaterLabel: UPDATER_LABEL,
+    hstackPath: `${WINDOWS_HOME_DIR}\\\\bin\\\\hstack.exe`,
     channel: 'publicdev',
     mode: 'user',
-    workingDirectory: 'C:\\\\Users\\\\me\\\\.happier\\\\self-host',
-    stdoutPath: 'C:\\\\Users\\\\me\\\\.happier\\\\self-host\\\\logs\\\\updater.out.log',
-    stderrPath: 'C:\\\\Users\\\\me\\\\.happier\\\\self-host\\\\logs\\\\updater.err.log',
+    workingDirectory: `${WINDOWS_HOME_DIR}\\\\self-host`,
+    stdoutPath: `${WINDOWS_HOME_DIR}\\\\self-host\\\\logs\\\\updater.out.log`,
+    stderrPath: `${WINDOWS_HOME_DIR}\\\\self-host\\\\logs\\\\updater.err.log`,
   });
 
   assert.match(
@@ -1832,13 +1915,13 @@ test('renderSelfHostStatusText reports dev as the public channel label for the p
     {
       channel: 'publicdev',
       mode: 'user',
-      serviceName: 'happier-server-dev',
-      serverUrl: 'http://127.0.0.1:3005',
+      serviceName: `${SERVICE_NAME}-dev`,
+      serverUrl: `http://127.0.0.1:${productIdentity.relayDefaultPort}`,
       healthy: true,
       service: { active: true, enabled: true },
       versions: { server: '1.2.3-dev.1', uiWeb: '9.9.9-dev.2' },
       autoUpdate: {
-        label: 'happier-server-dev-updater',
+        label: `${SERVICE_NAME}-dev-updater`,
         job: { active: true, enabled: true },
         configured: { enabled: true, intervalMinutes: 60 },
       },
@@ -1848,7 +1931,7 @@ test('renderSelfHostStatusText reports dev as the public channel label for the p
   );
 
   assert.match(text, /channel:\s*dev/);
-  assert.match(text, /service:\s*happier-server-dev/);
+  assert.match(text, new RegExp(`service:\\s*${SERVICE_NAME}-dev`));
 });
 
 test('resolveSelfHostReleaseTargets maps the publicdev ring to dev rolling tags', () => {
@@ -1866,8 +1949,8 @@ test('resolveSelfHostReleaseTargets preserves stable release tags without fallba
 test('buildUpdaterScheduledTaskCreateArgs uses DAILY schedule when at is provided', () => {
   const args = buildUpdaterScheduledTaskCreateArgs({
     backend: 'schtasks-user',
-    taskName: 'Happier\\\\happier-server-updater',
-    definitionPath: 'C:\\\\Users\\\\me\\\\.happier\\\\self-host\\\\services\\\\happier-server-updater.ps1',
+    taskName: `${productIdentity.windowsTaskFolder}\\\\${UPDATER_LABEL}`,
+    definitionPath: `${WINDOWS_HOME_DIR}\\\\self-host\\\\services\\\\${UPDATER_LABEL}.ps1`,
     at: '03:15',
   });
   assert.ok(args.includes('DAILY'));
@@ -1878,19 +1961,19 @@ test('buildUpdaterScheduledTaskCreateArgs uses DAILY schedule when at is provide
 test('buildUpdaterScheduledTaskCreateArgs uses hidden non-interactive PowerShell on Windows', () => {
   const args = buildUpdaterScheduledTaskCreateArgs({
     backend: 'schtasks-user',
-    taskName: 'Happier\\\\happier-server-updater',
-    definitionPath: 'C:\\\\Users\\\\me\\\\.happier\\\\self-host\\\\services\\\\happier-server-updater.ps1',
+    taskName: `${productIdentity.windowsTaskFolder}\\\\${UPDATER_LABEL}`,
+    definitionPath: `${WINDOWS_HOME_DIR}\\\\self-host\\\\services\\\\${UPDATER_LABEL}.ps1`,
   });
-  assert.equal(args[args.indexOf('/TR') + 1], 'powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\\\\Users\\\\me\\\\.happier\\\\self-host\\\\services\\\\happier-server-updater.ps1"');
+  assert.equal(args[args.indexOf('/TR') + 1], `powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File "${WINDOWS_HOME_DIR}\\\\self-host\\\\services\\\\${UPDATER_LABEL}.ps1"`);
 });
 
 test('mergeEnvTextWithDefaults preserves overrides while backfilling new default keys', () => {
   const defaults = renderServerEnvFile({
-    port: 3005,
+    port: productIdentity.relayDefaultPort,
     host: '127.0.0.1',
-    dataDir: '/var/lib/happier',
-    filesDir: '/var/lib/happier/files',
-    dbDir: '/var/lib/happier/pglite',
+    dataDir: SYSTEM_DEFAULTS.dataDir,
+    filesDir: `${SYSTEM_DEFAULTS.dataDir}/files`,
+    dbDir: `${SYSTEM_DEFAULTS.dataDir}/pglite`,
   });
   const existing = [
     ...defaults
@@ -1904,7 +1987,7 @@ test('mergeEnvTextWithDefaults preserves overrides while backfilling new default
   const merged = mergeEnvTextWithDefaults(existing, defaults);
   assert.match(merged, /PORT=7777/);
   assert.match(merged, /HAPPIER_SQLITE_AUTO_MIGRATE=1/);
-  assert.match(merged, /HAPPIER_SQLITE_MIGRATIONS_DIR=\/var\/lib\/happier\/migrations\/sqlite/);
+  assert.ok(merged.includes(`HAPPIER_SQLITE_MIGRATIONS_DIR=${SYSTEM_DEFAULTS.dataDir}/migrations/sqlite`));
   assert.match(merged, /FOO=bar/);
 });
 
@@ -1913,13 +1996,13 @@ test('renderSelfHostStatusText reports versions, health, and auto-update config 
     {
       channel: 'preview',
       mode: 'user',
-      serviceName: 'happier-server',
-      serverUrl: 'http://127.0.0.1:3005',
+      serviceName: SERVICE_NAME,
+      serverUrl: `http://127.0.0.1:${productIdentity.relayDefaultPort}`,
       healthy: true,
       service: { active: true, enabled: true },
       versions: { server: '1.2.3-preview.1', uiWeb: '9.9.9-preview.2' },
       autoUpdate: {
-        label: 'happier-server-updater',
+        label: UPDATER_LABEL,
         job: { active: true, enabled: true },
         configured: { enabled: true, intervalMinutes: 60 },
       },
@@ -1930,7 +2013,7 @@ test('renderSelfHostStatusText reports versions, health, and auto-update config 
 
   assert.match(text, /channel:\s*preview/);
   assert.match(text, /mode:\s*user/);
-  assert.match(text, /url:\s*http:\/\/127\.0\.0\.1:3005/);
+  assert.match(text, new RegExp(`url:\\s*http://127\\.0\\.0\\.1:${productIdentity.relayDefaultPort}`));
   assert.match(text, /health:\s*ok/);
   assert.match(text, /server:\s*1\.2\.3-preview\.1/);
   assert.match(text, /ui-web:\s*9\.9\.9-preview\.2/);
@@ -1943,13 +2026,13 @@ test('renderSelfHostStatusText shows disabled auto-update config even if job sta
     {
       channel: 'stable',
       mode: 'user',
-      serviceName: 'happier-server',
-      serverUrl: 'http://127.0.0.1:3005',
+      serviceName: SERVICE_NAME,
+      serverUrl: `http://127.0.0.1:${productIdentity.relayDefaultPort}`,
       healthy: false,
       service: { active: null, enabled: null },
       versions: { server: null, uiWeb: null },
       autoUpdate: {
-        label: 'happier-server-updater',
+        label: UPDATER_LABEL,
         job: { active: null, enabled: null },
         configured: { enabled: false, intervalMinutes: 1440 },
       },
@@ -1967,14 +2050,14 @@ test('buildSelfHostDoctorChecks does not require external minisign and includes 
     {
       platform: 'linux',
       mode: 'user',
-      serverBinaryPath: '/home/me/.happier/self-host/bin/happier-server',
-      configEnvPath: '/home/me/.happier/self-host/config/server.env',
-      uiWebCurrentDir: '/home/me/.happier/self-host/ui-web/current',
+      serverBinaryPath: `${POSIX_HOME_DIR}/self-host/bin/${SERVER_BINARY_NAME}`,
+      configEnvPath: `${POSIX_HOME_DIR}/self-host/config/server.env`,
+      uiWebCurrentDir: `${POSIX_HOME_DIR}/self-host/ui-web/current`,
     },
     {
       state: { uiWeb: { installed: true } },
       commandExists: (name) => name === 'systemctl',
-      pathExists: (p) => p.endsWith('happier-server') || p.endsWith('server.env') || p.endsWith('index.html'),
+      pathExists: (p) => p.endsWith(SERVER_BINARY_NAME) || p.endsWith('server.env') || p.endsWith('index.html'),
     },
   );
 
@@ -1988,9 +2071,9 @@ test('buildSelfHostDoctorChecks flags missing ui-web bundle when state expects u
     {
       platform: 'linux',
       mode: 'user',
-      serverBinaryPath: '/home/me/.happier/self-host/bin/happier-server',
-      configEnvPath: '/home/me/.happier/self-host/config/server.env',
-      uiWebCurrentDir: '/home/me/.happier/self-host/ui-web/current',
+      serverBinaryPath: `${POSIX_HOME_DIR}/self-host/bin/${SERVER_BINARY_NAME}`,
+      configEnvPath: `${POSIX_HOME_DIR}/self-host/config/server.env`,
+      uiWebCurrentDir: `${POSIX_HOME_DIR}/self-host/ui-web/current`,
     },
     {
       state: { uiWeb: { installed: true } },
@@ -2026,9 +2109,9 @@ test('buildSelfHostDoctorChecks resolves Windows PATHEXT commands without an ext
   const checks = buildSelfHostDoctorChecks({
     platform: 'win32',
     mode: 'user',
-    serverBinaryPath: 'C:\\happier\\happier-server.exe',
-    configEnvPath: 'C:\\happier\\server.env',
-    uiWebCurrentDir: 'C:\\happier\\ui-web',
+    serverBinaryPath: `C:\\${productIdentity.commandName}\\${SERVER_BINARY_NAME}.exe`,
+    configEnvPath: `C:\\${productIdentity.commandName}\\server.env`,
+    uiWebCurrentDir: `C:\\${productIdentity.commandName}\\ui-web`,
   }, {
     state: { uiWeb: { installed: false } },
     pathExists: () => true,

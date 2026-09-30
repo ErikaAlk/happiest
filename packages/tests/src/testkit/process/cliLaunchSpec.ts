@@ -1,6 +1,8 @@
 import { existsSync, lstatSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 import { repoRootDir } from '../paths';
 import { ensureCliDistSnapshotEntrypoint, ensureCliSharedDepsBuilt } from './cliDist';
 import { ensureCliDistSnapshotNodeModules } from './cliDistSnapshotNodeModules';
@@ -32,7 +34,7 @@ function resolveCliTsconfigPath(snapshotDir: string): string {
 
 function resolvePreparedDistSnapshotEntrypoint(snapshotDir: string): string {
   const packageEntrypoint = resolve(snapshotDir, 'dist', 'index.mjs');
-  const releaseEntrypoint = resolve(snapshotDir, 'package-dist', 'index.mjs');
+  const releaseEntrypoint = resolve(snapshotDir, productIdentity.cliRuntimeDirName, 'index.mjs');
   const entrypoint = existsSync(packageEntrypoint) ? packageEntrypoint : releaseEntrypoint;
   const readyMarker = resolve(snapshotDir, '.cli-dist-snapshot.ready.json');
   const nodeModulesDir = resolve(snapshotDir, 'node_modules');

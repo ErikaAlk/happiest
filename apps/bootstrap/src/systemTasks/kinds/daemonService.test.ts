@@ -163,10 +163,10 @@ describe('daemonService system task handlers', () => {
     const packageRoot = join(home, 'npm-global', 'lib', 'node_modules', '@happier-dev', 'cli');
     mkdirSync(join(packageRoot, 'bin'), { recursive: true });
     writeFileSync(join(packageRoot, 'package.json'), JSON.stringify({ name: '@happier-dev/cli' }), 'utf8');
-    writeFileSync(join(packageRoot, 'bin', 'happier.mjs'), '#!/bin/sh\n', 'utf8');
-    chmodSync(join(packageRoot, 'bin', 'happier.mjs'), 0o755);
+    writeFileSync(join(packageRoot, 'bin', 'happiest.mjs'), '#!/bin/sh\n', 'utf8');
+    chmodSync(join(packageRoot, 'bin', 'happiest.mjs'), 0o755);
     mkdirSync(npmBin, { recursive: true });
-    symlinkSync(join(packageRoot, 'bin', 'happier.mjs'), join(npmBin, 'happier'));
+    symlinkSync(join(packageRoot, 'bin', 'happiest.mjs'), join(npmBin, 'happiest'));
     vi.stubEnv('HAPPIEST_HOME_DIR', join(home, 'happier'));
     vi.stubEnv('PATH', npmBin);
     onTestFinished(() => {
@@ -174,7 +174,7 @@ describe('daemonService system task handlers', () => {
       rmSync(home, { recursive: true, force: true });
     });
     const otherCli = {
-      command: join(npmBin, 'happier'),
+      command: join(npmBin, 'happiest'),
       origin: 'npm',
       removalCommand: 'npm uninstall -g @happier-dev/cli',
       updateCommand: 'npm install -g @happier-dev/cli@latest',
@@ -185,7 +185,7 @@ describe('daemonService system task handlers', () => {
     const { result: managed } = await collectResult(createDaemonServiceStatusHandler(), { target: { kind: 'local' } });
     expect(managed).toMatchObject({ cli: { choice: { mode: 'managed', otherCli } } });
 
-    await writeHappierCliChoice({ choice: { mode: 'own', command: join(npmBin, 'happier') }, processEnv: process.env });
+    await writeHappierCliChoice({ choice: { mode: 'own', command: join(npmBin, 'happiest') }, processEnv: process.env });
     runLocalHappierJsonCommandMock.mockResolvedValueOnce(AMBIENT_STATUS_JSON);
     const { result: own } = await collectResult(createDaemonServiceStatusHandler(), { target: { kind: 'local' } });
     expect(own).toMatchObject({ cli: { choice: { mode: 'own', otherCli } } });
@@ -226,8 +226,8 @@ describe('daemonService system task handlers', () => {
     const home = mkdtempSync(join(tmpdir(), 'hsetup-status-cli-choice-required-'));
     const npmBin = join(home, 'npm-global', 'bin');
     mkdirSync(npmBin, { recursive: true });
-    writeFileSync(join(npmBin, 'happier'), '#!/bin/sh\n', 'utf8');
-    chmodSync(join(npmBin, 'happier'), 0o755);
+    writeFileSync(join(npmBin, 'happiest'), '#!/bin/sh\n', 'utf8');
+    chmodSync(join(npmBin, 'happiest'), 0o755);
     vi.stubEnv('HAPPIEST_HOME_DIR', join(home, 'happier'));
     vi.stubEnv('HAPPIER_STACK_REPO_DIR', join(home, 'elsewhere'));
     vi.stubEnv('HAPPIEST_BOOTSTRAP_CLI_PATH', '');

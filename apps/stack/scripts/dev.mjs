@@ -3,6 +3,7 @@ import { parseArgs } from './utils/cli/args.mjs';
 import { killProcessTree } from './utils/proc/proc.mjs';
 import { spawnProc } from './utils/proc/proc.mjs';
 import { getComponentDir, getDefaultAutostartPaths, getRootDir } from './utils/paths/paths.mjs';
+import { getCliBinPath } from './utils/paths/cli_bin.mjs';
 import { killPortListeners, observeTcpPortAvailability } from './utils/net/ports.mjs';
 import { fetchHappierHealth, getServerComponentName } from './utils/server/server.mjs';
 import { resolveServerShutdownGraceMs } from './utils/server/shutdown_grace.mjs';
@@ -219,7 +220,7 @@ async function main() {
 	  const uiDir = getComponentDir(rootDir, 'happier-ui');
 	  const cliDir = getComponentDir(rootDir, 'happier-cli');
 
-	  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+	  const cliBin = getCliBinPath(cliDir);
   const autostart = getDefaultAutostartPaths();
   const baseEnv = { ...process.env };
   const parentServerRestartPreflightAlreadyDone = String(

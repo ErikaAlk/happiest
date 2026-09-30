@@ -4,6 +4,8 @@ import test from 'node:test';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
+import { qualifyWindowsScheduledTaskName } from '@happier-dev/cli-common/service';
+
 import { buildServiceDefinition, planServiceAction, stopService, uninstallService } from './service_manager.mjs';
 
 test('planServiceAction plans a systemd user install', () => {
@@ -155,6 +157,8 @@ test('uninstallService removes definitions only after backend-confirmed teardown
             } else {
               assert.match(invocations, /Get-ScheduledTask/);
               assert.doesNotMatch(invocations, /Stop-ScheduledTask|Unregister-ScheduledTask/);
+              // The task lives in the same product folder the self-host status and updater commands query.
+              assert.equal((await operation).taskName, qualifyWindowsScheduledTaskName(spec.label));
             }
           }
         } finally {

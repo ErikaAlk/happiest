@@ -39,14 +39,14 @@ describe('rmDist', () => {
     expect(resolveDistDir(['node', 'rmDist.mjs', './dist'])).toBe('dist');
   });
 
-  it('keeps the previous package-dist entrypoint available while removing dist', async () => {
-    const rootDir = createTempDirSync('happier-cli-rm-dist-preserve-package-dist-');
+  it('keeps the previous happiest-runtime entrypoint available while removing dist', async () => {
+    const rootDir = createTempDirSync('happier-cli-rm-dist-preserve-happiest-runtime-');
     const originalCwd = process.cwd();
     try {
       mkdirSync(join(rootDir, 'dist'), { recursive: true });
-      mkdirSync(join(rootDir, 'package-dist'), { recursive: true });
+      mkdirSync(join(rootDir, 'happiest-runtime'), { recursive: true });
       writeFileSync(join(rootDir, 'dist', 'index.mjs'), 'export const staleDist = true;\n', 'utf8');
-      writeFileSync(join(rootDir, 'package-dist', 'index.mjs'), 'export const previous = true;\n', 'utf8');
+      writeFileSync(join(rootDir, 'happiest-runtime', 'index.mjs'), 'export const previous = true;\n', 'utf8');
       process.chdir(rootDir);
 
       await main(['node', 'rmDist.mjs'], {
@@ -54,7 +54,7 @@ describe('rmDist', () => {
       });
 
       expect(existsSync(join(rootDir, 'dist', 'index.mjs'))).toBe(false);
-      expect(existsSync(join(rootDir, 'package-dist', 'index.mjs'))).toBe(true);
+      expect(existsSync(join(rootDir, 'happiest-runtime', 'index.mjs'))).toBe(true);
     } finally {
       process.chdir(originalCwd);
       rmSync(rootDir, { recursive: true, force: true });
@@ -66,8 +66,8 @@ describe('rmDist', () => {
     const originalCwd = process.cwd();
     try {
       mkdirSync(join(rootDir, 'dist'), { recursive: true });
-      mkdirSync(join(rootDir, 'package-dist'), { recursive: true });
-      writeFileSync(join(rootDir, 'package-dist', 'index.mjs'), 'export const previous = true;\n', 'utf8');
+      mkdirSync(join(rootDir, 'happiest-runtime'), { recursive: true });
+      writeFileSync(join(rootDir, 'happiest-runtime', 'index.mjs'), 'export const previous = true;\n', 'utf8');
       process.chdir(rootDir);
 
       const lockPath = resolve(rootDir, '.project', 'tmp', 'cli-dist-build.lock');
@@ -81,7 +81,7 @@ describe('rmDist', () => {
               lockStaleAfterMs: 1_000,
             }),
           ).rejects.toThrow(/Timed out waiting for workspace bundle lock/);
-          expect(existsSync(join(rootDir, 'package-dist', 'index.mjs'))).toBe(true);
+          expect(existsSync(join(rootDir, 'happiest-runtime', 'index.mjs'))).toBe(true);
         },
         {
           lockPath,

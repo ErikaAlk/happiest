@@ -21,7 +21,7 @@ import { createStepPrinter } from './utils/cli/progress.mjs';
  * Install/setup the local stack:
  * - ensure the Happier monorepo exists (optionally clone if missing)
  * - install dependencies where needed (yarn)
- * - build happier-cli (optional) and install `happier`/`hstack` shims under `<homeDir>/bin`
+ * - build happier-cli (optional) and install `happiest`/`hstack` shims under `<homeDir>/bin`
  * - build the web UI bundle (so `run` can serve it)
  * - optional macOS autostart (LaunchAgent)
  */

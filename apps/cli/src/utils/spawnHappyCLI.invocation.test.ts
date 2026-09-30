@@ -102,7 +102,7 @@ describe('happier-cli subprocess invocation', () => {
         });
     });
 
-    it('prefers package-dist entrypoint when dist is absent in a packaged runtime', async () => {
+    it('prefers happiest-runtime entrypoint when dist is absent in a packaged runtime', async () => {
         envScope.patch({
             HAPPIER_CLI_SUBPROCESS_PREFER_TSX: '0',
             HAPPIER_CLI_SUBPROCESS_ALLOW_TSX_FALLBACK: '0',
@@ -119,7 +119,7 @@ describe('happier-cli subprocess invocation', () => {
             return {
                 ...actual,
                 existsSync: (path: string) => {
-                    if (path.endsWith('package-dist/index.mjs')) return true;
+                    if (path.endsWith('happiest-runtime/index.mjs')) return true;
                     if (path.endsWith('dist/index.mjs')) return false;
                     return actual.existsSync(path);
                 },
@@ -134,12 +134,12 @@ describe('happier-cli subprocess invocation', () => {
             expect.arrayContaining([
                 '--no-warnings',
                 '--no-deprecation',
-                expect.stringMatching(/package-dist[\\/]index\.mjs$/),
+                expect.stringMatching(/happiest-runtime[\\/]index\.mjs$/),
                 'daemon',
                 'start-sync',
             ]),
         );
-        expect(inv.argv[2]).toMatch(/package-dist[\\/]index\.mjs$/);
+        expect(inv.argv[2]).toMatch(/happiest-runtime[\\/]index\.mjs$/);
     });
 
     it('falls back to tsx source entrypoint in dev mode when dist entrypoint is missing', async () => {

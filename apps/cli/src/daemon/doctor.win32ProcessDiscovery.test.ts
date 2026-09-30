@@ -38,7 +38,7 @@ describe('doctor win32 process discovery', () => {
 
     it('enriches generic MainThread candidates with Win32_Process command lines during startup discovery', async () => {
         psListMock.mockResolvedValue([
-            { pid: 17692, ppid: 1, name: 'happier.exe' },
+            { pid: 17692, ppid: 1, name: 'happiest.exe' },
             { pid: 26316, ppid: 17692, name: 'MainThread' },
             { pid: 99999, ppid: 1, name: 'notepad.exe' },
         ]);
@@ -46,14 +46,14 @@ describe('doctor win32 process discovery', () => {
             JSON.stringify([
                 {
                     ProcessId: 17692,
-                    Name: 'happier.exe',
-                    CommandLine: '"C:\\hq\\windetachedfix-015\\happier-v0.2.4-windows-x64\\happier.exe" daemon start-sync',
+                    Name: 'happiest.exe',
+                    CommandLine: '"C:\\hq\\windetachedfix-015\\happier-v0.2.4-windows-x64\\happiest.exe" daemon start-sync',
                 },
                 {
                     ProcessId: 26316,
                     Name: 'MainThread',
                     CommandLine:
-                        '"C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe" "C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs" opencode --happy-starting-mode remote --started-by daemon',
+                        '"C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe" "C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest-runtime\\index.mjs" opencode --happy-starting-mode remote --started-by daemon',
                 },
             ]),
         );
@@ -63,13 +63,13 @@ describe('doctor win32 process discovery', () => {
         await expect(findAllHappyProcesses()).resolves.toEqual([
             {
                 pid: 17692,
-                command: '"C:\\hq\\windetachedfix-015\\happier-v0.2.4-windows-x64\\happier.exe" daemon start-sync',
+                command: '"C:\\hq\\windetachedfix-015\\happier-v0.2.4-windows-x64\\happiest.exe" daemon start-sync',
                 type: 'daemon',
             },
             {
                 pid: 26316,
                 command:
-                    '"C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe" "C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs" opencode --happy-starting-mode remote --started-by daemon',
+                    '"C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe" "C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest-runtime\\index.mjs" opencode --happy-starting-mode remote --started-by daemon',
                 type: 'daemon-spawned-session',
             },
         ]);
@@ -85,14 +85,14 @@ describe('doctor win32 process discovery', () => {
                 JSON.stringify([
                     {
                         ProcessId: 17692,
-                        Name: 'happier.exe',
-                        CommandLine: '"C:\\hq\\windetachedfix-017\\happier-v0.2.4-windows-x64\\happier.exe" daemon start-sync',
+                        Name: 'happiest.exe',
+                        CommandLine: '"C:\\hq\\windetachedfix-017\\happier-v0.2.4-windows-x64\\happiest.exe" daemon start-sync',
                     },
                     {
                         ProcessId: 26316,
-                        Name: 'happier.exe',
+                        Name: 'happiest.exe',
                         CommandLine:
-                            '"C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe" "C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs" opencode --happy-starting-mode remote --started-by daemon',
+                            '"C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe" "C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest-runtime\\index.mjs" opencode --happy-starting-mode remote --started-by daemon',
                     },
                 ]),
             );
@@ -102,13 +102,13 @@ describe('doctor win32 process discovery', () => {
         await expect(findAllHappyProcesses()).resolves.toEqual([
             {
                 pid: 17692,
-                command: '"C:\\hq\\windetachedfix-017\\happier-v0.2.4-windows-x64\\happier.exe" daemon start-sync',
+                command: '"C:\\hq\\windetachedfix-017\\happier-v0.2.4-windows-x64\\happiest.exe" daemon start-sync',
                 type: 'daemon',
             },
             {
                 pid: 26316,
                 command:
-                    '"C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe" "C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs" opencode --happy-starting-mode remote --started-by daemon',
+                    '"C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe" "C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest-runtime\\index.mjs" opencode --happy-starting-mode remote --started-by daemon',
                 type: 'daemon-spawned-session',
             },
         ]);
@@ -120,7 +120,7 @@ describe('doctor win32 process discovery', () => {
                 ProcessId: 26316,
                 Name: 'MainThread',
                 CommandLine:
-                    '"C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe" "C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs" opencode --happy-starting-mode remote --started-by daemon --existing-session session-123',
+                    '"C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe" "C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest-runtime\\index.mjs" opencode --happy-starting-mode remote --started-by daemon --existing-session session-123',
             }),
         );
 
@@ -129,7 +129,7 @@ describe('doctor win32 process discovery', () => {
         await expect(findHappyProcessByPid(26316)).resolves.toEqual({
             pid: 26316,
             command:
-                '"C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe" "C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs" opencode --happy-starting-mode remote --started-by daemon --existing-session session-123',
+                '"C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe" "C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest-runtime\\index.mjs" opencode --happy-starting-mode remote --started-by daemon --existing-session session-123',
             type: 'daemon-spawned-session',
         });
     });

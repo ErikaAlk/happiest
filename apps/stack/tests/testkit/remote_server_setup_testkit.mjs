@@ -7,7 +7,7 @@ const stackRoot = resolveStackRootFromMeta(import.meta.url);
 function writeFakeHappier({ tmp }) {
   return writeLoggedJsonBin({
     root: tmp,
-    name: 'happier',
+    name: 'happiest',
     logEnvVar: 'REMOTE_SERVER_SETUP_LOG',
     body: 'process.exit(0);',
   });

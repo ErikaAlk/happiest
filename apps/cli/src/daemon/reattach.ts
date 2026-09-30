@@ -14,6 +14,7 @@ import type { SpawnSessionOptions } from '@/rpc/handlers/registerSessionHandlers
 import { resolveSessionRuntimeSnapshot } from './sessions/runtimeSnapshot/resolveSessionRuntimeSnapshot';
 import { extractResumeIdFromCommand } from './sessions/extractResumeIdFromCommand';
 import { readProcessInstanceFingerprintSync } from '@happier-dev/cli-common/processInstance';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 type AdoptSessionsFromMarkersResult = Readonly<{
   adopted: number;
@@ -57,7 +58,7 @@ function resolveCliRuntimeRootFromEntrypoint(pathLike: string | undefined): stri
   if (!normalized) return null;
 
   const normalizedPath = normalizePathLike(normalized);
-  const packageDistMarker = '/package-dist/';
+  const packageDistMarker = `/${productIdentity.cliRuntimeDirName}/`;
   const distMarker = '/dist/';
   const srcMarker = '/src/';
   const packageDistIndex = normalizedPath.indexOf(packageDistMarker);

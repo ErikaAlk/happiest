@@ -12,9 +12,9 @@ import { syncInstalledFirstPartyShims } from './syncInstalledFirstPartyShims';
 async function createStagedPayload(rootDir: string, versionId: string, contents: string): Promise<string> {
   const stagedPayloadPath = join(rootDir, `stage-${versionId}`);
   await mkdir(stagedPayloadPath, { recursive: true });
-  await mkdir(join(stagedPayloadPath, 'package-dist'), { recursive: true });
+  await mkdir(join(stagedPayloadPath, 'happiest-runtime'), { recursive: true });
   await writeFile(join(stagedPayloadPath, 'happiest'), contents, 'utf8');
-  await writeFile(join(stagedPayloadPath, 'package-dist', 'index.mjs'), `export default ${JSON.stringify(versionId)};\n`, 'utf8');
+  await writeFile(join(stagedPayloadPath, 'happiest-runtime', 'index.mjs'), `export default ${JSON.stringify(versionId)};\n`, 'utf8');
   return stagedPayloadPath;
 }
 

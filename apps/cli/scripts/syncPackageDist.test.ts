@@ -44,11 +44,11 @@ describe('syncPackageDist', () => {
     }
   });
 
-  it('preserves the previous package-dist when replacement copy fails', () => {
-    const packageRoot = createTempDirSync('happier-cli-sync-package-dist-');
+  it('preserves the previous happiest-runtime when replacement copy fails', () => {
+    const packageRoot = createTempDirSync('happier-cli-sync-happiest-runtime-');
     try {
       const distDir = join(packageRoot, 'dist');
-      const packageDistDir = join(packageRoot, 'package-dist');
+      const packageDistDir = join(packageRoot, 'happiest-runtime');
       mkdirSync(distDir, { recursive: true });
       mkdirSync(packageDistDir, { recursive: true });
       writeFileSync(join(distDir, 'index.mjs'), 'export const next = true;\n', 'utf8');
@@ -73,11 +73,11 @@ describe('syncPackageDist', () => {
     }
   });
 
-  it('waits for the shared CLI build lock before promoting package-dist', async () => {
-    const packageRoot = createTempDirSync('happier-cli-sync-package-dist-lock-');
+  it('waits for the shared CLI build lock before promoting happiest-runtime', async () => {
+    const packageRoot = createTempDirSync('happier-cli-sync-happiest-runtime-lock-');
     try {
       const distDir = join(packageRoot, 'dist');
-      const packageDistDir = join(packageRoot, 'package-dist');
+      const packageDistDir = join(packageRoot, 'happiest-runtime');
       mkdirSync(distDir, { recursive: true });
       mkdirSync(packageDistDir, { recursive: true });
       writeFileSync(join(distDir, 'index.mjs'), 'export const next = true;\n', 'utf8');
@@ -110,7 +110,7 @@ describe('syncPackageDist', () => {
   });
 
   it('rejects incomplete write filesystem adapters instead of mixing fake and real promotion operations', () => {
-    const packageRoot = createTempDirSync('happier-cli-sync-package-dist-incomplete-fs-');
+    const packageRoot = createTempDirSync('happier-cli-sync-happiest-runtime-incomplete-fs-');
     try {
       mkdirSync(join(packageRoot, 'dist'), { recursive: true });
 
@@ -127,11 +127,11 @@ describe('syncPackageDist', () => {
     }
   });
 
-  it('can skip package-dist promotion for a staged dist build', () => {
-    const packageRoot = createTempDirSync('happier-cli-sync-package-dist-skip-');
+  it('can skip happiest-runtime promotion for a staged dist build', () => {
+    const packageRoot = createTempDirSync('happier-cli-sync-happiest-runtime-skip-');
     try {
       const stagedDistDir = join(packageRoot, '.tmp.cli-dist-build');
-      const packageDistDir = join(packageRoot, 'package-dist');
+      const packageDistDir = join(packageRoot, 'happiest-runtime');
       mkdirSync(stagedDistDir, { recursive: true });
       mkdirSync(packageDistDir, { recursive: true });
       writeFileSync(join(stagedDistDir, 'index.mjs'), 'export const next = true;\n', 'utf8');

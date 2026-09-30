@@ -486,7 +486,7 @@ describe('daemonServiceInventory', () => {
                 webappUrl: 'https://app.happier.dev',
                 publicServerUrl: 'https://api.happier.dev',
                 nodePath: 'C:\\Users\\test_qa\\.happier\\tools\\js-runtime\\current\\runtime\\node.exe',
-                entryPath: 'C:\\Users\\test_qa\\.happier\\cli-preview\\current\\package-dist\\index.mjs',
+                entryPath: 'C:\\Users\\test_qa\\.happier\\cli-preview\\current\\happiest-runtime\\index.mjs',
             };
 
             const result = hasInstalledBackgroundServiceConflictForCurrentInstallation({

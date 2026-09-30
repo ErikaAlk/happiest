@@ -63,7 +63,7 @@ describe('buildCgroupSelfMigratingHappyCliLaunchSpec', () => {
       '0::/user.slice/user-501.slice/user@501.service/app.slice/happier-daemon.default.service\n',
       'utf8',
     );
-    const immutableEntrypoint = '/runtime/.runner-snapshots/0123456789abcdef/index.mjs';
+    const immutableEntrypoint = '/runtime/.happiest-runner-snapshots/0123456789abcdef/index.mjs';
 
     const result = await buildCgroupSelfMigratingHappyCliLaunchSpec({
       args: ['codex', '--happy-terminal-mode', 'plain'],

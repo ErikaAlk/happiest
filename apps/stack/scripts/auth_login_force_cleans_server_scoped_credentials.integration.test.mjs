@@ -62,7 +62,7 @@ async function writeRuntimeCliSnapshot({ fixture, snapshotId, script }) {
         'fi',
       ].join('\n'),
       artifactFingerprint: `cli-${snapshotId}`,
-      nodeEntrypoint: 'cli/package-dist/index.mjs',
+      nodeEntrypoint: 'cli/happiest-runtime/index.mjs',
       nodeContent: 'export {};\n',
     },
   });

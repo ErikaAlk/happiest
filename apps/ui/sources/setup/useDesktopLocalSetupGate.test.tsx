@@ -1015,12 +1015,12 @@ describe('useDesktopLocalSetupGate — override-CLI approval is attended, never 
 
         let declined: boolean | undefined;
         await renderer.act(async () => {
-            declined = await state.setupTaskOptions?.onUnmanagedCliConsentRequired?.({ cliCommand: '/repo/apps/cli/bin/happier.mjs' });
+            declined = await state.setupTaskOptions?.onUnmanagedCliConsentRequired?.({ cliCommand: '/repo/apps/cli/bin/happiest.mjs' });
         });
 
         expect(declined).toBe(false);
         expect(spies.presentUnmanagedCliConsent).toHaveBeenCalledTimes(1);
-        expect(spies.presentUnmanagedCliConsent.mock.calls[0]?.[0]).toEqual({ cliCommand: '/repo/apps/cli/bin/happier.mjs' });
+        expect(spies.presentUnmanagedCliConsent.mock.calls[0]?.[0]).toEqual({ cliCommand: '/repo/apps/cli/bin/happiest.mjs' });
         // Setup is deferred, not retried: the panel steps aside and the drift banner carries it.
         expect(observedGate?.snapshot.presentation).toBe('hidden');
     });
@@ -1060,7 +1060,7 @@ describe('useDesktopLocalSetupGate — override-CLI approval is attended, never 
         await renderGate();
         let approved: boolean | undefined;
         await renderer.act(async () => {
-            approved = await state.setupTaskOptions?.onUnmanagedCliConsentRequired?.({ cliCommand: '/repo/apps/cli/bin/happier.mjs' });
+            approved = await state.setupTaskOptions?.onUnmanagedCliConsentRequired?.({ cliCommand: '/repo/apps/cli/bin/happiest.mjs' });
         });
 
         expect(approved).toBe(true);

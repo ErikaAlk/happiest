@@ -1,4 +1,6 @@
 import { basename, dirname, join } from 'node:path';
+import { resolveFirstPartyComponentPublicReleaseVariant } from '@happier-dev/cli-common/firstPartyRuntime';
+import { PUBLIC_RELEASE_RING_IDS } from '@happier-dev/release-runtime/releaseRings';
 
 import { projectPath, projectPathFromModuleUrl } from '@/projectPath';
 
@@ -13,9 +15,10 @@ function isRuntimeExecutablePath(pathLike: string): boolean {
 
 function resolveCliInstallRootNameFromShim(executableBase: string): string | null {
   const normalizedBase = executableBase.toLowerCase().replace(/\.exe$/u, '');
-  if (normalizedBase === 'happier') return 'cli';
-  if (normalizedBase === 'hprev') return 'cli-preview';
-  if (normalizedBase === 'hdev') return 'cli-dev';
+  for (const channel of PUBLIC_RELEASE_RING_IDS) {
+    const variant = resolveFirstPartyComponentPublicReleaseVariant({ componentId: 'happier-cli', channel });
+    if (variant.installShims.includes(normalizedBase)) return variant.installRootName;
+  }
   return null;
 }
 

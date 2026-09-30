@@ -1253,7 +1253,7 @@ describe('reattachTrackedSessionsFromMarkers', () => {
         pid: 12345,
         type: 'daemon-spawned-session',
         command:
-          'C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs opencode --happy-starting-mode remote --started-by daemon',
+          'C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest-runtime\\index.mjs opencode --happy-starting-mode remote --started-by daemon',
       } as any,
     ]);
     vi.spyOn(process, 'kill').mockImplementation(() => true);
@@ -1272,9 +1272,9 @@ describe('reattachTrackedSessionsFromMarkers', () => {
         },
         reattachedFromDiskMarker: true,
         processCommand:
-          'C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs opencode --happy-starting-mode remote --started-by daemon',
+          'C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest-runtime\\index.mjs opencode --happy-starting-mode remote --started-by daemon',
         processCommandHash:
-          'hash:C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs opencode --happy-starting-mode remote --started-by daemon',
+          'hash:C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest-runtime\\index.mjs opencode --happy-starting-mode remote --started-by daemon',
       }),
     );
     expect(writeSessionMarker).toHaveBeenCalledWith({
@@ -1283,9 +1283,9 @@ describe('reattachTrackedSessionsFromMarkers', () => {
       startedBy: 'daemon',
       cwd: '/tmp/project',
       processCommandHash:
-        'hash:C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs opencode --happy-starting-mode remote --started-by daemon',
+        'hash:C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest-runtime\\index.mjs opencode --happy-starting-mode remote --started-by daemon',
       processCommand:
-        'C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs opencode --happy-starting-mode remote --started-by daemon',
+        'C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest-runtime\\index.mjs opencode --happy-starting-mode remote --started-by daemon',
       respawn: {
         version: 1,
         directory: '/tmp/project',
@@ -1318,7 +1318,7 @@ describe('reattachTrackedSessionsFromMarkers', () => {
       {
         pid: 12345,
         type: 'user-session',
-        command: 'C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe',
+        command: 'C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe',
       } as any,
     ]);
     vi.spyOn(process, 'kill').mockImplementation(() => true);
@@ -1371,7 +1371,7 @@ describe('reattachTrackedSessionsFromMarkers', () => {
         pid: 12345,
         type: 'user-session',
         command:
-          'C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs opencode --happy-starting-mode remote --started-by daemon --existing-session session-123',
+          'C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest-runtime\\index.mjs opencode --happy-starting-mode remote --started-by daemon --existing-session session-123',
       } as any,
     ]);
     vi.spyOn(process, 'kill').mockImplementation(() => true);
@@ -1395,9 +1395,9 @@ describe('reattachTrackedSessionsFromMarkers', () => {
         },
         reattachedFromDiskMarker: true,
         processCommand:
-          'C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs opencode --happy-starting-mode remote --started-by daemon --existing-session session-123',
+          'C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest-runtime\\index.mjs opencode --happy-starting-mode remote --started-by daemon --existing-session session-123',
         processCommandHash:
-          'hash:C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs opencode --happy-starting-mode remote --started-by daemon --existing-session session-123',
+          'hash:C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest-runtime\\index.mjs opencode --happy-starting-mode remote --started-by daemon --existing-session session-123',
       }),
     );
     expect(writeSessionMarker).toHaveBeenCalledWith({
@@ -1406,9 +1406,9 @@ describe('reattachTrackedSessionsFromMarkers', () => {
       startedBy: 'daemon',
       cwd: '/tmp/project',
       processCommandHash:
-        'hash:C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs opencode --happy-starting-mode remote --started-by daemon --existing-session session-123',
+        'hash:C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest-runtime\\index.mjs opencode --happy-starting-mode remote --started-by daemon --existing-session session-123',
       processCommand:
-        'C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs opencode --happy-starting-mode remote --started-by daemon --existing-session session-123',
+        'C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happiest-runtime\\index.mjs opencode --happy-starting-mode remote --started-by daemon --existing-session session-123',
       respawn: expect.objectContaining({
         version: 1,
         directory: '/tmp/project',
@@ -1493,7 +1493,7 @@ describe('reattachTrackedSessionsFromMarkers', () => {
         type: 'daemon-spawned-session',
         cwd: '/tmp/project',
         command:
-          '/Users/other/happier/cli-preview/current/package-dist/index.mjs claude --happy-starting-mode remote --started-by daemon',
+          '/Users/other/happier/cli-preview/current/happiest-runtime/index.mjs claude --happy-starting-mode remote --started-by daemon',
       } satisfies HappyProcessInfo,
     ]);
     vi.spyOn(process, 'kill').mockImplementation(() => true);
@@ -1589,7 +1589,7 @@ describe('reattachTrackedSessionsFromMarkers', () => {
         type: 'user-session',
         cwd: '/tmp/project',
         command:
-          'node "/Users/other/happier/cli-preview/current/package-dist/index.mjs" claude "--happy-starting-mode" "remote" "--started-by" "daemon"',
+          'node "/Users/other/happier/cli-preview/current/happiest-runtime/index.mjs" claude "--happy-starting-mode" "remote" "--started-by" "daemon"',
       } as any,
     ]);
     vi.spyOn(process, 'kill').mockImplementation(() => true);

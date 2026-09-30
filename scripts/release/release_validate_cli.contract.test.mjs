@@ -340,7 +340,7 @@ test('release-validate materializes cli-update local-build targets before runnin
       if (args[0] === '-tzf') {
         return [
           'package/dist/index.mjs',
-          'package/package-dist/index.mjs',
+          'package/happiest-runtime/index.mjs',
         ].join('\n');
       }
     },
@@ -399,7 +399,7 @@ test('release-validate rejects malformed cli-update local-build packs before run
             return `${tarballPath}\n`;
           }
           if (args[0] === '-tzf') {
-            return 'package/bin/happier.mjs\n';
+            return 'package/bin/happiest.mjs\n';
           }
         },
       }),

@@ -82,22 +82,22 @@ resolve_happier_prefix_from_npm_global_package() {
 ensure_happier_command_from_global_cli_package() {
   local npm_global_root=""
   npm_global_root="$(npm root -g 2>/dev/null || true)"
-  local expected="$npm_global_root/@happier-dev/cli/bin/happier.mjs"
+  local expected="$npm_global_root/@happier-dev/cli/bin/happiest.mjs"
   if [[ ! -f "$expected" ]]; then
-    echo "[remote-server] expected packaged happier bin at: $expected" >&2
+    echo "[remote-server] expected packaged happiest bin at: $expected" >&2
     exit 1
   fi
   chmod +x "$expected" >/dev/null 2>&1 || true
-  ln -sf "$expected" /usr/local/bin/happier
+  ln -sf "$expected" /usr/local/bin/happiest
 }
 
 ensure_happier_command_from_npx_spec() {
-  cat > /usr/local/bin/happier <<EOF
+  cat > /usr/local/bin/happiest <<EOF
 #!/usr/bin/env bash
 set -euo pipefail
-exec npx --yes -p "${HAPPIER_NPM_SPEC}" happier "\$@"
+exec npx --yes -p "${HAPPIER_NPM_SPEC}" happiest "\$@"
 EOF
-  chmod 755 /usr/local/bin/happier
+  chmod 755 /usr/local/bin/happiest
 }
 
 if [[ -n "$HSTACK_TGZ" && -f "$HSTACK_TGZ" ]]; then
@@ -117,7 +117,7 @@ if [[ -n "$HAPPIER_TGZ" && -f "$HAPPIER_TGZ" ]]; then
   ensure_happier_command_from_global_cli_package
 elif [[ "$HAPPIER_CLI_INSTALL_MODE" == "npx" ]]; then
   echo "[remote-server] running happier-cli via npx: $HAPPIER_NPM_SPEC"
-  HAPPIER_PREFIX=(npx --yes -p "$HAPPIER_NPM_SPEC" happier)
+  HAPPIER_PREFIX=(npx --yes -p "$HAPPIER_NPM_SPEC" happiest)
   ensure_happier_command_from_npx_spec
 else
   echo "[remote-server] installing happier-cli from npm: $HAPPIER_NPM_SPEC"
@@ -268,9 +268,9 @@ echo "[remote-server] checking remote server health..."
 ssh "$REMOTE_SSH_TARGET" "curl -fsS http://127.0.0.1:${REMOTE_SERVER_PORT}/v1/version" >/dev/null
 
 echo "[remote-server] checking remote server config reflects postgres..."
-remote_config_env_path="/etc/happier/server.env"
+remote_config_env_path="/etc/happiest/server.env"
 if [[ "$remote_channel_flag" == "preview" ]]; then
-  remote_config_env_path="/etc/happier-preview/server.env"
+  remote_config_env_path="/etc/happiest-preview/server.env"
 fi
 
 remote_config_env_text="$(ssh "$REMOTE_SSH_TARGET" "bash -lc 'sudo -n cat \"$remote_config_env_path\"'")"

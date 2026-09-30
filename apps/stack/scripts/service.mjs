@@ -1,5 +1,6 @@
 import './utils/env/env.mjs';
 import { run, runCapture } from './utils/proc/proc.mjs';
+import { getCliBinPath } from './utils/paths/cli_bin.mjs';
 import {
   getComponentDir,
   getDefaultAutostartPaths,
@@ -11,6 +12,7 @@ import {
 import { getInternalServerUrl, getPublicServerUrlEnvOverride } from './utils/server/urls.mjs';
 import { resolveServerUrls } from './utils/server/urls.mjs';
 import { installService as installManagedService, uninstallService as uninstallManagedService } from './utils/service/service_manager.mjs';
+import { qualifyWindowsScheduledTaskName } from '@happier-dev/cli-common/service';
 import { getCanonicalHomeDir } from './utils/env/config.mjs';
 import { isSandboxed, sandboxAllowsGlobalSideEffects } from './utils/env/sandbox.mjs';
 import { expandHome } from './utils/paths/canonical_home.mjs';
@@ -382,7 +384,7 @@ export async function postStartDiagnostics() {
   const publicServerUrlSource = String(resolvedUrls?.publicServerUrlSource ?? '').trim();
 
   const cliDir = getComponentDir(rootDir, 'happier-cli');
-  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+  const cliBin = getCliBinPath(cliDir);
 
   const credentialPaths = resolveStackCredentialPaths({ cliHomeDir, serverUrl: internalUrl, env: scopedEnv });
   const existingCredentialPath = findExistingStackCredentialPath({ cliHomeDir, serverUrl: internalUrl, env: scopedEnv });
@@ -673,8 +675,8 @@ export async function stopServiceWithCanonicalCleanup({
     stopAttribution: { requestedBy, reason },
   }, async () => {
     if (platform === 'win32') {
-      await runImpl('schtasks', ['/End', '/TN', `Happier\\${defaults.label}`]).catch(() => {});
-      if (disable) await runImpl('schtasks', ['/Change', '/TN', `Happier\\${defaults.label}`, '/Disable']).catch(() => {});
+      await runImpl('schtasks', ['/End', '/TN', qualifyWindowsScheduledTaskName(defaults.label)]).catch(() => {});
+      if (disable) await runImpl('schtasks', ['/Change', '/TN', qualifyWindowsScheduledTaskName(defaults.label), '/Disable']).catch(() => {});
       return;
     }
     if (platform === 'darwin') {
@@ -783,7 +785,7 @@ async function main() {
 
         if (process.platform === 'win32') {
           const { label, stdoutPath, stderrPath } = getDefaultAutostartPaths();
-          const taskName = `Happier\\${label}`;
+          const taskName = qualifyWindowsScheduledTaskName(label);
           let schtasksStatus = null;
           try {
             schtasksStatus = await runCapture('schtasks', ['/Query', '/TN', taskName, '/FO', 'LIST', '/V']);
@@ -818,7 +820,7 @@ async function main() {
       } else {
         if (process.platform === 'win32') {
           const { label } = getDefaultAutostartPaths();
-          await run('schtasks', ['/Query', '/TN', `Happier\\${label}`]);
+          await run('schtasks', ['/Query', '/TN', qualifyWindowsScheduledTaskName(label)]);
           return;
         }
         if (process.platform === 'darwin') {
@@ -836,7 +838,7 @@ async function main() {
     case 'start':
       if (process.platform === 'win32') {
         const { label } = getDefaultAutostartPaths();
-        await run('schtasks', ['/Run', '/TN', `Happier\\${label}`]).catch(() => {});
+        await run('schtasks', ['/Run', '/TN', qualifyWindowsScheduledTaskName(label)]).catch(() => {});
         await postStartDiagnostics();
         if (json) printResult({ json, data: { ok: true, action: 'start' } });
         return;
@@ -868,7 +870,7 @@ async function main() {
       await stopServiceWithCanonicalCleanup({ rootDir, mode, json, persistent: false, requestedBy: 'service restart', reason: 'explicit service restart' });
       if (process.platform === 'win32') {
         const { label } = getDefaultAutostartPaths();
-        await run('schtasks', ['/Run', '/TN', `Happier\\${label}`]).catch(() => {});
+        await run('schtasks', ['/Run', '/TN', qualifyWindowsScheduledTaskName(label)]).catch(() => {});
         await postStartDiagnostics();
         if (json) printResult({ json, data: { ok: true, action: 'restart' } });
         return;
@@ -896,8 +898,8 @@ async function main() {
     case 'enable':
       if (process.platform === 'win32') {
         const { label } = getDefaultAutostartPaths();
-        await run('schtasks', ['/Change', '/TN', `Happier\\${label}`, '/Enable']).catch(() => {});
-        await run('schtasks', ['/Run', '/TN', `Happier\\${label}`]).catch(() => {});
+        await run('schtasks', ['/Change', '/TN', qualifyWindowsScheduledTaskName(label), '/Enable']).catch(() => {});
+        await run('schtasks', ['/Run', '/TN', qualifyWindowsScheduledTaskName(label)]).catch(() => {});
         await postStartDiagnostics();
         if (json) printResult({ json, data: { ok: true, action: 'enable' } });
         return;

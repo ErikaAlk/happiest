@@ -1,10 +1,11 @@
 import { parseAndStripTerminalRuntimeFlags, type TerminalRuntimeFlags } from '@/terminal/runtime/terminalRuntimeFlags';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 function isCliEntrypointPath(arg: string): boolean {
     const normalized = String(arg ?? '').trim().replaceAll('\\', '/');
     if (!normalized) return false;
     return (
-        normalized.endsWith('/package-dist/index.mjs') ||
+        normalized.endsWith(`/${productIdentity.cliRuntimeDirName}/index.mjs`) ||
         normalized.endsWith('/dist/index.mjs') ||
         normalized.endsWith('/apps/cli/src/index.ts')
     );

@@ -72,8 +72,8 @@ async function createSnapshotPayload(stackBaseDir, snapshotId, filesByComponent,
     daemon: {
       content: filesByComponent.cli?.['happier'] ?? '#!/bin/sh\necho old daemon\n',
       artifactFingerprint: 'daemon-old',
-      nodeEntrypoint: 'cli/package-dist/index.mjs',
-      nodeContent: filesByComponent.cli?.['package-dist/index.mjs'] ?? "console.log('old daemon');\n",
+      nodeEntrypoint: 'cli/happiest-runtime/index.mjs',
+      nodeContent: filesByComponent.cli?.['happiest-runtime/index.mjs'] ?? "console.log('old daemon');\n",
     },
   });
   return snapshotDir;

@@ -64,7 +64,7 @@ describe('collectWindowsServiceLaunchDiagnostics', () => {
     const stderrPath = join(homeDir, 'logs', 'daemon-service.default.err.log');
     await writeFile(stderrPath, [
       'node:internal/modules/cjs/loader:1459',
-      "Error: Cannot find module 'C:\\Users\\test_qa\\.happier\\cli\\current\\package-dist\\index.mjs'",
+      "Error: Cannot find module 'C:\\Users\\test_qa\\.happier\\cli\\current\\happiest-runtime\\index.mjs'",
       "    at Module._resolveFilename (node:internal/modules/cjs/loader:1456:15)",
       "code: 'MODULE_NOT_FOUND'",
     ].join('\n'), 'utf8');

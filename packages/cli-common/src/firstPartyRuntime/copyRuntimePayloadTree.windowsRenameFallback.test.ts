@@ -80,9 +80,9 @@ describe('replaceRuntimePayloadTree Windows rename fallback', () => {
             rmMock.mockImplementation((target, options) => rmDelegate.current!(target, options));
             renameFailureTargets.add(destinationPath);
 
-            await mkdir(join(sourcePath, 'package-dist'), { recursive: true });
+            await mkdir(join(sourcePath, 'happiest-runtime'), { recursive: true });
             await writeFile(join(sourcePath, 'happier.exe'), 'runtime-binary', 'utf8');
-            await writeFile(join(sourcePath, 'package-dist', 'index.mjs'), 'export default "ok";\n', 'utf8');
+            await writeFile(join(sourcePath, 'happiest-runtime', 'index.mjs'), 'export default "ok";\n', 'utf8');
 
             try {
                 const { replaceRuntimePayloadTree } = await import('./copyRuntimePayloadTree');
@@ -92,7 +92,7 @@ describe('replaceRuntimePayloadTree Windows rename fallback', () => {
                 });
 
                 expect(await readFile(join(destinationPath, 'happier.exe'), 'utf8')).toBe('runtime-binary');
-                expect(await readFile(join(destinationPath, 'package-dist', 'index.mjs'), 'utf8')).toContain('ok');
+                expect(await readFile(join(destinationPath, 'happiest-runtime', 'index.mjs'), 'utf8')).toContain('ok');
                 expect(existsSync(sourcePath)).toBe(true);
             } finally {
                 await rm(workspace, { recursive: true, force: true });
@@ -113,9 +113,9 @@ describe('replaceRuntimePayloadTree Windows rename fallback', () => {
             renameMock.mockImplementation((from, to) => renameDelegate.current!(from, to));
             rmMock.mockImplementation((target, options) => rmDelegate.current!(target, options));
 
-            await mkdir(join(sourcePath, 'package-dist'), { recursive: true });
+            await mkdir(join(sourcePath, 'happiest-runtime'), { recursive: true });
             await writeFile(join(sourcePath, 'happier.exe'), 'runtime-binary', 'utf8');
-            await writeFile(join(sourcePath, 'package-dist', 'index.mjs'), 'export default "ok";\n', 'utf8');
+            await writeFile(join(sourcePath, 'happiest-runtime', 'index.mjs'), 'export default "ok";\n', 'utf8');
 
             try {
                 const { replaceRuntimePayloadTree } = await import('./copyRuntimePayloadTree');
@@ -126,7 +126,7 @@ describe('replaceRuntimePayloadTree Windows rename fallback', () => {
                 });
 
                 expect(await readFile(join(destinationPath, 'happier.exe'), 'utf8')).toBe('runtime-binary');
-                expect(await readFile(join(destinationPath, 'package-dist', 'index.mjs'), 'utf8')).toContain('ok');
+                expect(await readFile(join(destinationPath, 'happiest-runtime', 'index.mjs'), 'utf8')).toContain('ok');
                 expect(existsSync(sourcePath)).toBe(false);
             } finally {
                 await rm(workspace, { recursive: true, force: true });
@@ -148,10 +148,10 @@ describe('replaceRuntimePayloadTree Windows rename fallback', () => {
             rmMock.mockImplementation((target, options) => rmDelegate.current!(target, options));
             readdirMock.mockImplementation((target, options) => readdirDelegate.current!(target, options));
 
-            await mkdir(join(sourcePath, 'package-dist'), { recursive: true });
+            await mkdir(join(sourcePath, 'happiest-runtime'), { recursive: true });
             await mkdir(join(sourcePath, 'node_modules', 'large-package', 'nested'), { recursive: true });
             await writeFile(join(sourcePath, 'happier.exe'), 'runtime-binary', 'utf8');
-            await writeFile(join(sourcePath, 'package-dist', 'index.mjs'), 'export default "ok";\n', 'utf8');
+            await writeFile(join(sourcePath, 'happiest-runtime', 'index.mjs'), 'export default "ok";\n', 'utf8');
             await writeFile(join(sourcePath, 'node_modules', 'large-package', 'nested', 'index.js'), 'module.exports = 1;\n', 'utf8');
 
             try {
@@ -198,9 +198,9 @@ describe('replaceRuntimePayloadTree Windows rename fallback', () => {
                 return rmDelegate.current!(target, options);
             });
 
-            await mkdir(join(sourcePath, 'package-dist'), { recursive: true });
+            await mkdir(join(sourcePath, 'happiest-runtime'), { recursive: true });
             await writeFile(join(sourcePath, 'happier.exe'), 'runtime-binary', 'utf8');
-            await writeFile(join(sourcePath, 'package-dist', 'index.mjs'), 'export default "ok";\n', 'utf8');
+            await writeFile(join(sourcePath, 'happiest-runtime', 'index.mjs'), 'export default "ok";\n', 'utf8');
             await mkdir(destinationPath, { recursive: true });
             await writeFile(join(destinationPath, 'happier.exe'), 'old-runtime-binary', 'utf8');
 
@@ -214,7 +214,7 @@ describe('replaceRuntimePayloadTree Windows rename fallback', () => {
                 ).resolves.toBeUndefined();
 
                 expect(await readFile(join(destinationPath, 'happier.exe'), 'utf8')).toBe('runtime-binary');
-                expect(await readFile(join(destinationPath, 'package-dist', 'index.mjs'), 'utf8')).toContain('ok');
+                expect(await readFile(join(destinationPath, 'happiest-runtime', 'index.mjs'), 'utf8')).toContain('ok');
                 expect(existsSync(sourcePath)).toBe(true);
             } finally {
                 await rm(workspace, { recursive: true, force: true });

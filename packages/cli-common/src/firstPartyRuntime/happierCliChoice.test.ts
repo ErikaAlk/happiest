@@ -72,28 +72,28 @@ posixOnly('a happier this app did not install (R12)', () => {
         const binDir = join(homeDir, '.happier', 'bin');
         const npmBin = join(homeDir, 'npm-global', 'bin');
         await mkdir(npmBin, { recursive: true });
-        await writeExecutable(join(npmBin, 'happier'));
+        await writeExecutable(join(npmBin, 'happiest'));
 
         expect(resolveForeignHappierCli({ binDir, processEnv: { HOME: homeDir, PATH: `/usr/bin:${npmBin}` } }))
-            .toBe(join(npmBin, 'happier'));
+            .toBe(join(npmBin, 'happiest'));
 
         const versionDir = join(homeDir, '.happier', 'cli', 'versions', '1.0.0');
         await mkdir(versionDir, { recursive: true });
         await mkdir(binDir, { recursive: true });
-        await writeExecutable(join(versionDir, 'happier'));
-        await symlink(join(versionDir, 'happier'), join(binDir, 'happier'));
+        await writeExecutable(join(versionDir, 'happiest'));
+        await symlink(join(versionDir, 'happiest'), join(binDir, 'happiest'));
         const localBin = join(homeDir, '.local', 'bin');
         await mkdir(localBin, { recursive: true });
-        await symlink(join(binDir, 'happier'), join(localBin, 'happier'));
+        await symlink(join(binDir, 'happiest'), join(localBin, 'happiest'));
 
         expect(resolveForeignHappierCli({ binDir, processEnv: { HOME: homeDir, PATH: localBin } })).toBeNull();
         expect(resolveForeignHappierCli({ binDir, processEnv: { HOME: homeDir, PATH: '/nonexistent' } })).toBeNull();
         // R13(b): after "Let Happier manage it" the managed shim (or the installer link to it) answers
         // first; the copy the person may remove is still found behind it.
         expect(resolveForeignHappierCli({ binDir, processEnv: { HOME: homeDir, PATH: `${binDir}:${npmBin}` } }))
-            .toBe(join(npmBin, 'happier'));
+            .toBe(join(npmBin, 'happiest'));
         expect(resolveForeignHappierCli({ binDir, processEnv: { HOME: homeDir, PATH: `${localBin}:${binDir}:${npmBin}` } }))
-            .toBe(join(npmBin, 'happier'));
+            .toBe(join(npmBin, 'happiest'));
     });
 
     it('on Windows finds the npm command shim behind the managed happier.exe, through PATHEXT (R13)', async () => {
@@ -102,14 +102,14 @@ posixOnly('a happier this app did not install (R12)', () => {
         const npmDir = join(homeDir, 'AppData', 'Roaming', 'npm');
         await mkdir(binDir, { recursive: true });
         await mkdir(npmDir, { recursive: true });
-        await writeExecutable(join(binDir, 'happier.exe'));
-        await writeFile(join(npmDir, 'happier.cmd'), '@ECHO off\r\n', 'utf8');
+        await writeExecutable(join(binDir, 'happiest.exe'));
+        await writeFile(join(npmDir, 'happiest.cmd'), '@ECHO off\r\n', 'utf8');
         const realPlatform = process.platform;
         Object.defineProperty(process, 'platform', { value: 'win32', configurable: true });
         try {
             // `Path` spelled the Windows way; the delimiter is this host's, as node:path reports it.
             expect(resolveForeignHappierCli({ binDir, processEnv: { Path: `${binDir}${delimiter}${npmDir}`, PATHEXT: '.EXE;.CMD' } }))
-                .toBe(join(npmDir, 'happier.cmd'));
+                .toBe(join(npmDir, 'happiest.cmd'));
             expect(resolveForeignHappierCli({ binDir, processEnv: { Path: binDir, PATHEXT: '.EXE;.CMD' } })).toBeNull();
         } finally {
             Object.defineProperty(process, 'platform', { value: realPlatform, configurable: true });
@@ -122,18 +122,18 @@ posixOnly('a happier this app did not install (R12)', () => {
         const npmBin = join(homeDir, 'npm-global', 'bin');
         const localBin = join(homeDir, '.local', 'bin');
         await mkdir(npmBin, { recursive: true });
-        await writeExecutable(join(npmBin, 'happier'));
+        await writeExecutable(join(npmBin, 'happiest'));
         await mkdir(binDir, { recursive: true });
-        await writeExecutable(join(binDir, 'happier'));
+        await writeExecutable(join(binDir, 'happiest'));
         await mkdir(localBin, { recursive: true });
-        await symlink(join(binDir, 'happier'), join(localBin, 'happier'));
+        await symlink(join(binDir, 'happiest'), join(localBin, 'happiest'));
         const terminal = (PATH: string) => resolveTerminalHappierCli({ binDir, processEnv: { HOME: homeDir, PATH } });
 
-        expect(terminal(`${npmBin}:${localBin}`)).toEqual({ command: join(npmBin, 'happier'), managed: false, desktopExposed: false });
+        expect(terminal(`${npmBin}:${localBin}`)).toEqual({ command: join(npmBin, 'happiest'), managed: false, desktopExposed: false });
         // Desktop's own line exposes the managed bin dir itself; "Keep my own" takes that line back.
-        expect(terminal(`${binDir}:${npmBin}`)).toEqual({ command: join(binDir, 'happier'), managed: true, desktopExposed: true });
+        expect(terminal(`${binDir}:${npmBin}`)).toEqual({ command: join(binDir, 'happiest'), managed: true, desktopExposed: true });
         // The installer's link is not Desktop's to remove.
-        expect(terminal(`${localBin}:${npmBin}`)).toEqual({ command: join(localBin, 'happier'), managed: true, desktopExposed: false });
+        expect(terminal(`${localBin}:${npmBin}`)).toEqual({ command: join(localBin, 'happiest'), managed: true, desktopExposed: false });
         expect(terminal('/nonexistent')).toBeNull();
     });
 
@@ -141,15 +141,15 @@ posixOnly('a happier this app did not install (R12)', () => {
         const homeDir = await createHome();
         const binDir = join(homeDir, '.happier', 'bin');
         await mkdir(binDir, { recursive: true });
-        await writeExecutable(join(binDir, 'happier.exe'));
+        await writeExecutable(join(binDir, 'happiest.exe'));
         const realPlatform = process.platform;
         Object.defineProperty(process, 'platform', { value: 'win32', configurable: true });
         try {
             const terminal = (extra: Record<string, string>) => resolveTerminalHappierCli({ binDir, processEnv: { Path: binDir, PATHEXT: '.EXE', ...extra } });
             // The PowerShell installer's own entry.
             expect(terminal({})).toMatchObject({ managed: true, desktopExposed: false });
-            expect(terminal({ HAPPIER_DESKTOP_PATH_ENTRIES: binDir.toUpperCase() })).toMatchObject({ managed: true, desktopExposed: true });
-            expect(terminal({ HAPPIER_DESKTOP_PATH_MOVES: `${binDir}|C:\\npm` })).toMatchObject({ managed: true, desktopExposed: true });
+            expect(terminal({ HAPPIEST_DESKTOP_PATH_ENTRIES: binDir.toUpperCase() })).toMatchObject({ managed: true, desktopExposed: true });
+            expect(terminal({ HAPPIEST_DESKTOP_PATH_MOVES: `${binDir}|C:\\npm` })).toMatchObject({ managed: true, desktopExposed: true });
         } finally {
             Object.defineProperty(process, 'platform', { value: realPlatform, configurable: true });
         }
@@ -161,11 +161,11 @@ posixOnly('a happier this app did not install (R12)', () => {
         const packageRoot = join(prefix, 'lib', 'node_modules', '@happier-dev', 'cli');
         await mkdir(join(packageRoot, 'bin'), { recursive: true });
         await writeFile(join(packageRoot, 'package.json'), JSON.stringify({ name: '@happier-dev/cli', version: '0.2.13' }), 'utf8');
-        await writeExecutable(join(packageRoot, 'bin', 'happier.mjs'));
+        await writeExecutable(join(packageRoot, 'bin', 'happiest.mjs'));
         await mkdir(join(prefix, 'bin'), { recursive: true });
-        await symlink(join(packageRoot, 'bin', 'happier.mjs'), join(prefix, 'bin', 'happier'));
+        await symlink(join(packageRoot, 'bin', 'happiest.mjs'), join(prefix, 'bin', 'happiest'));
 
-        expect(describeHappierCliOrigin(join(prefix, 'bin', 'happier'))).toEqual({
+        expect(describeHappierCliOrigin(join(prefix, 'bin', 'happiest'))).toEqual({
             kind: 'npm',
             packageName: '@happier-dev/cli',
             removalCommand: 'npm uninstall -g @happier-dev/cli',
@@ -180,12 +180,12 @@ posixOnly('a happier this app did not install (R12)', () => {
         await mkdir(join(packageRoot, 'bin'), { recursive: true });
         await writeFile(join(packageRoot, 'package.json'), JSON.stringify({ name: '@happier-dev/cli' }), 'utf8');
         await writeFile(
-            join(npmDir, 'happier.cmd'),
-            '@ECHO off\r\nGOTO start\r\n:find_dp0\r\nSET dp0=%~dp0\r\nEXIT /b\r\n:start\r\nSETLOCAL\r\nCALL :find_dp0\r\n"%_prog%"  "%dp0%\\node_modules\\@happier-dev\\cli\\bin\\happier.mjs" %*\r\n',
+            join(npmDir, 'happiest.cmd'),
+            '@ECHO off\r\nGOTO start\r\n:find_dp0\r\nSET dp0=%~dp0\r\nEXIT /b\r\n:start\r\nSETLOCAL\r\nCALL :find_dp0\r\n"%_prog%"  "%dp0%\\node_modules\\@happier-dev\\cli\\bin\\happiest.mjs" %*\r\n',
             'utf8',
         );
 
-        expect(describeHappierCliOrigin(join(npmDir, 'happier.cmd'))).toMatchObject({
+        expect(describeHappierCliOrigin(join(npmDir, 'happiest.cmd'))).toMatchObject({
             kind: 'npm',
             packageName: '@happier-dev/cli',
             removalCommand: 'npm uninstall -g @happier-dev/cli',

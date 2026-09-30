@@ -45,9 +45,9 @@ describe('self command helpers', () => {
   });
 
   it('infers preview and dev from the invoked shim name when no explicit channel is set', () => {
-    expect(parseSelfChannel([], '/opt/happier/bin/hprev')).toBe('preview');
-    expect(parseSelfChannel([], '/opt/happier/bin/hdev')).toBe('publicdev');
-    expect(parseSelfChannel([], '/opt/happier/bin/happier')).toBe('stable');
+    expect(parseSelfChannel([], '/opt/happier/bin/happiest-preview')).toBe('preview');
+    expect(parseSelfChannel([], '/opt/happier/bin/happiest-dev')).toBe('publicdev');
+    expect(parseSelfChannel([], '/opt/happier/bin/happiest')).toBe('stable');
   });
 
   it('builds npm spec from channel and override', () => {
@@ -79,8 +79,8 @@ describe('self command helpers', () => {
   });
 
   it('detects npm install source from node_modules paths', () => {
-    expect(detectInstallSource('/usr/local/lib/node_modules/@happier-dev/cli/bin/happier.mjs')).toBe('npm');
-    expect(detectInstallSource('/Users/me/.nvm/versions/node/v22/lib/node_modules/@happier-dev/cli/bin/happier.mjs')).toBe('npm');
+    expect(detectInstallSource('/usr/local/lib/node_modules/@happier-dev/cli/bin/happiest.mjs')).toBe('npm');
+    expect(detectInstallSource('/Users/me/.nvm/versions/node/v22/lib/node_modules/@happier-dev/cli/bin/happiest.mjs')).toBe('npm');
   });
 
   it('detects binary install source from standalone executable paths', () => {

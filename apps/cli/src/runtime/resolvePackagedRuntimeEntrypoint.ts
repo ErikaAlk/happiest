@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import {
   readDefaultManagedReleaseChannelSync,
@@ -19,14 +20,7 @@ const MANAGED_CLI_SHIM_INSTALLS = new Map(
       componentId: 'happier-cli',
       channel,
     });
-    const legacyShimAliases =
-      channel === 'preview'
-        ? ['happier-preview']
-        : channel === 'publicdev'
-          ? ['happier-dev']
-          : [];
-    const shimNames = [...variant.installShims, ...legacyShimAliases];
-    return shimNames.map((shimName) => [
+    return variant.installShims.map((shimName) => [
       normalizeExecutableBase(shimName),
       { channel, installRootName: variant.installRootName },
     ] as const);
@@ -158,8 +152,8 @@ export function resolvePackagedRuntimeEntrypoint(
     const isSnapshotRoot = isRunnerSnapshotRuntimeRoot(root);
     if (options.packageDistOnly) {
       const candidates = isSnapshotRoot
-        ? [join(root, normalizedRelativePath), join(root, 'package-dist', normalizedRelativePath)]
-        : [join(root, 'package-dist', normalizedRelativePath)];
+        ? [join(root, normalizedRelativePath), join(root, productIdentity.cliRuntimeDirName, normalizedRelativePath)]
+        : [join(root, productIdentity.cliRuntimeDirName, normalizedRelativePath)];
       firstCandidate ??= candidates[0] ?? null;
       for (const candidate of candidates) {
         if (existsSync(candidate)) {
@@ -170,7 +164,7 @@ export function resolvePackagedRuntimeEntrypoint(
     }
     const candidates = [
       ...(isSnapshotRoot ? [join(root, normalizedRelativePath)] : []),
-      join(root, 'package-dist', normalizedRelativePath),
+      join(root, productIdentity.cliRuntimeDirName, normalizedRelativePath),
       join(root, 'dist', normalizedRelativePath),
     ];
     firstCandidate ??= candidates[0] ?? null;
@@ -182,5 +176,5 @@ export function resolvePackagedRuntimeEntrypoint(
     }
   }
 
-  return firstCandidate ?? join(projectPath(), 'package-dist', normalizedRelativePath);
+  return firstCandidate ?? join(projectPath(), productIdentity.cliRuntimeDirName, normalizedRelativePath);
 }

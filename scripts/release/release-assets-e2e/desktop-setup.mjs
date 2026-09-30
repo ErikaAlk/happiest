@@ -3,10 +3,10 @@
 // desktop-setup suite — what a user hits when they download the desktop app (release validation
 // layers 2 and 3). The hsetup under test is extracted from the Linux desktop artifact itself and
 // drives `setup.thisComputer.v1` headlessly over its JSON-lines protocol against a relay, on a
-// systemd machine that starts with no Happier CLI, daemon or service. See README.md.
+// systemd machine that starts with no Happiest CLI, daemon or service. See README.md.
 //
 //   fresh-setup  (desktop1): hsetup acquires the CLI from the staged release (not GitHub), pairs,
-//                installs + starts the systemd user service, exposes `happier`; the machine then
+//                installs + starts the systemd user service, exposes `happiest`; the machine then
 //                answers a relay-routed `capabilities.describe` (INV10) and converges (INV8).
 //   upgrade      (desktop2): the previous published hsetup + CLI set the machine up; the new
 //                hsetup setup and `cli.update.v1` must leave the daemon restarted on the new CLI,
@@ -56,7 +56,7 @@ function scenarioStatus(checks) {
  * The fresh-download contract, decided from what the run observed.
  * @param {{
  *   expectedCliVersion: string;
- *   precondition: { happierOnPath: string; happierHomeExists: boolean; userUnits: string };
+ *   precondition: { happiestOnPath: string; happiestHomeExists: boolean; userUnits: string };
  *   inspection: { exitCode: unknown; result: any; prompts: { kind: string }[] };
  *   setup: { exitCode: unknown; result: any; prompts: { kind: string }[] };
  *   feedServedArchive: boolean;
@@ -74,14 +74,14 @@ export function evaluateFreshSetup(observed) {
   const status = observed.status ?? {};
   const convergence = status.runtimeConvergence ?? {};
   return [
-    { check: 'machine starts with no CLI, no ~/.happier and no user service', pass: !observed.precondition.happierOnPath && !observed.precondition.happierHomeExists && !observed.precondition.userUnits, detail: observed.precondition },
+    { check: 'machine starts with no CLI, no ~/.happiest and no user service', pass: !observed.precondition.happiestOnPath && !observed.precondition.happiestHomeExists && !observed.precondition.userUnits, detail: observed.precondition },
     { check: 'first-launch inspection (daemon.service.status.v1) succeeds without prompting', pass: observed.inspection.exitCode === 0 && observed.inspection.result?.ok === true && observed.inspection.prompts.length === 0, detail: observed.inspection.result?.error ?? observed.inspection.prompts.map((prompt) => prompt.kind) },
     { check: 'setup.thisComputer.v1 succeeds', pass: observed.setup.exitCode === 0 && observed.setup.result?.ok === true, detail: observed.setup.result?.error ?? null },
     { check: 'the only prompt is the pairing approval', pass: observed.setup.prompts.length === 1 && observed.setup.prompts[0]?.kind === 'setup.pairThisComputer', detail: observed.setup.prompts.map((prompt) => prompt.kind) },
     { check: 'CLI is managed and is the build under test', pass: data.cliProvenance === 'managed' && data.cliVersion === observed.expectedCliVersion, detail: { cliProvenance: data.cliProvenance, cliVersion: data.cliVersion, expected: observed.expectedCliVersion } },
     { check: 'CLI archive came from the staged release feed', pass: observed.feedServedArchive },
     { check: 'service was installed by setup', pass: data.serviceAction === 'install', detail: data.serviceAction },
-    { check: '`happier` on a login PATH is the managed shim', pass: observed.pathCommand === `${MACHINE_HOME}/.happier/bin/happier` && observed.pathCommandResolved.startsWith(`${MACHINE_HOME}/.happier/`) && observed.pathVersion === observed.expectedCliVersion, detail: { command: observed.pathCommand, resolved: observed.pathCommandResolved, version: observed.pathVersion } },
+    { check: '`happiest` on a login PATH is the managed shim', pass: observed.pathCommand === `${MACHINE_HOME}/.happiest/bin/happiest` && observed.pathCommandResolved.startsWith(`${MACHINE_HOME}/.happiest/`) && observed.pathVersion === observed.expectedCliVersion, detail: { command: observed.pathCommand, resolved: observed.pathCommandResolved, version: observed.pathVersion } },
     { check: 'systemd user service is enabled and active', pass: observed.systemd.active === 'active' && observed.systemd.enabled === 'enabled', detail: observed.systemd },
     { check: 'daemon status: service installed, running, service-managed', pass: status.service?.installed === true && status.service?.running === true && status.daemon?.serviceManaged === true, detail: { service: status.service, serviceManaged: status.daemon?.serviceManaged } },
     { check: 'runtimeConvergence proves the running daemon (INV8)', pass: convergence.controlReachable === true && convergence.serviceOwnsRunningDaemon === true && convergence.machineIdMatches === true && convergence.cliVersionMatches === true, detail: convergence },
@@ -260,7 +260,7 @@ async function main() {
   writeFileSync(join(feedDir, 'current'), 'new\n');
   writeFileSync(join(feedDir, 'requests.log'), '');
   execFileSync('tar', ['-xzf', join(feedDir, 'stages', 'new', newCli.archive), '-C', approverDir]);
-  const approverCli = `/opt/approver-cli/happier-v${newCli.version}-linux-x64/happier`;
+  const approverCli = `/opt/approver-cli/happier-v${newCli.version}-linux-x64/happiest`;
   const authorizedKeys = join(workDir, 'authorized_keys');
   writeFileSync(authorizedKeys, '');
   const envFile = join(workDir, 'compose.env');
@@ -307,7 +307,7 @@ async function main() {
       onLine: (line) => log(`${machine} ${which} ${kind}: ${line.length > 400 ? `${line.slice(0, 400)}…` : line}`),
     });
   const daemonStatus = (/** @type {string} */ machine) => {
-    const out = execAs(machine, '"$HOME/.happier/bin/happier" daemon status --json', { allowFailure: true });
+    const out = execAs(machine, '"$HOME/.happiest/bin/happiest" daemon status --json', { allowFailure: true });
     return parseLastJsonObject(out.stdout);
   };
   const probe = (/** @type {string} */ machine, /** @type {any} */ status) => {
@@ -377,9 +377,9 @@ async function main() {
       const machine = 'desktop1';
       log('fresh-setup: desktop1');
       const precondition = {
-        happierOnPath: execAs(machine, 'command -v happier || true').stdout.trim(),
-        happierHomeExists: execAs(machine, 'test -e "$HOME/.happier"', { allowFailure: true }).status === 0,
-        userUnits: execAs(machine, "systemctl --user list-unit-files --no-legend 'happier*' 2>/dev/null || true").stdout.trim(),
+        happiestOnPath: execAs(machine, 'command -v happiest || true').stdout.trim(),
+        happiestHomeExists: execAs(machine, 'test -e "$HOME/.happiest"', { allowFailure: true }).status === 0,
+        userUnits: execAs(machine, "systemctl --user list-unit-files --no-legend 'happiest*' 2>/dev/null || true").stdout.trim(),
       };
       setStage('new');
       // First launch order (desktopSetupCoordinator): the warm-up inspection acquires the managed CLI
@@ -387,7 +387,7 @@ async function main() {
       const inspection = await hsetup(machine, 'new', 'daemon.service.status.v1', inspectionParams, { approvePairing, serviceConsent: 'decline' });
       const setup = await hsetup(machine, 'new', 'setup.thisComputer.v1', setupParams, { approvePairing, serviceConsent: 'decline' });
       const status = daemonStatus(machine);
-      const pathCommand = execAs(machine, 'command -v happier || true').stdout.trim();
+      const pathCommand = execAs(machine, 'command -v happiest || true').stdout.trim();
       const observed = {
         expectedCliVersion: newCli.version,
         precondition,
@@ -396,7 +396,7 @@ async function main() {
         feedServedArchive: feedServed('new', newCli.archive),
         pathCommand,
         pathCommandResolved: pathCommand ? execAs(machine, `readlink -f '${pathCommand}'`).stdout.trim() : '',
-        pathVersion: execAs(machine, 'happier --version 2>/dev/null | head -n 1 || true').stdout.trim(),
+        pathVersion: execAs(machine, 'happiest --version 2>/dev/null | head -n 1 || true').stdout.trim(),
         status,
         systemd: systemdState(machine, status),
         probe: probe(machine, status),

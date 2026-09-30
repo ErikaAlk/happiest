@@ -1,5 +1,7 @@
 import type { HappyCliSubprocessLaunchSpec } from '@/utils/spawnHappyCLI';
 import { buildHappyCliSubprocessLaunchSpec } from '@/utils/spawnHappyCLI';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+import { resolveRuntimeRootFromPackagedBinaryPath } from '@/runtime/resolveRuntimeEntrypointArgv';
 
 import type {
   SessionRunnerEntrypointIdentity,
@@ -54,7 +56,7 @@ function isMutableEntrypointPointer(pathLike: string): boolean {
 
 /**
  * Pinned dist runner snapshots (`spawnHappyCLI.ts#copyCliDistToPinnedSnapshot`) copy the dist
- * closure into `.runner-snapshots/<distClosureFingerprint>/` with the entrypoint at the snapshot
+ * closure into the product's runner snapshot directory with the entrypoint at the snapshot
  * root (`<fingerprint>/index.mjs`, no `/dist/` segment). The fingerprint directory is
  * content-addressed and immutable, so it IS the code generation: equal fingerprints attest the
  * same build, different fingerprints attest different builds. This was the 2026-07-10 zero-roll
@@ -63,8 +65,10 @@ function isMutableEntrypointPointer(pathLike: string): boolean {
  */
 function resolveRunnerSnapshotFingerprint(pathLike: string): string | null {
   const normalized = normalizeComparablePath(pathLike);
-  const match = /\/\.runner-snapshots\/([^/]+)\//.exec(`${normalized}/`);
-  const fingerprint = match?.[1]?.trim() ?? '';
+  const marker = `/${productIdentity.runnerSnapshotsDirName}/`;
+  const markerIndex = normalized.lastIndexOf(marker);
+  if (markerIndex < 0) return null;
+  const fingerprint = normalized.slice(markerIndex + marker.length).split('/')[0]?.trim() ?? '';
   if (!fingerprint || fingerprint.startsWith('.')) return null;
   return fingerprint;
 }
@@ -72,7 +76,7 @@ function resolveRunnerSnapshotFingerprint(pathLike: string): string | null {
 function isCliEntrypointPath(pathLike: string): boolean {
   const normalized = normalizePathLike(pathLike).toLowerCase();
   if (
-    normalized.endsWith('/package-dist/index.mjs') ||
+    normalized.endsWith(`/${productIdentity.cliRuntimeDirName}/index.mjs`) ||
     normalized.endsWith('/dist/index.mjs') ||
     normalized.endsWith('/src/index.ts')
   ) {
@@ -82,8 +86,7 @@ function isCliEntrypointPath(pathLike: string): boolean {
 }
 
 function isCliBinaryPath(pathLike: string): boolean {
-  const base = normalizePathLike(pathLike).split('/').at(-1)?.toLowerCase() ?? '';
-  return base === 'happier' || base === 'happier.exe';
+  return resolveRuntimeRootFromPackagedBinaryPath(pathLike) !== null;
 }
 
 function resolveVersion(pathLike: string): string | null {
@@ -95,7 +98,7 @@ function resolveVersion(pathLike: string): string | null {
 
 function resolveRuntimeRoot(pathLike: string): string | null {
   const normalized = normalizeComparablePath(pathLike);
-  for (const marker of ['/package-dist/', '/dist/', '/src/']) {
+  for (const marker of [`/${productIdentity.cliRuntimeDirName}/`, '/dist/', '/src/']) {
     const index = normalized.indexOf(marker);
     if (index > 0) return normalized.slice(0, index);
   }

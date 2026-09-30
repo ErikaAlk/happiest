@@ -6,7 +6,7 @@ import { createTempDirSync, removeTempDirSync } from '../../../src/testkit/fs/te
 import { ensureDirectorySync, writeTextFileSync } from '../../../src/testkit/fs/fileHelpers';
 
 const runtimeBinFiles = [
-  'happier.mjs',
+  'happiest.mjs',
   '_resolveRuntimeEntrypoint.mjs',
   '_prepareRuntimeEntrypoint.mjs',
   '_importRuntimeEntrypoint.mjs',
@@ -68,6 +68,23 @@ export function copyCliBinRuntimeFiles(options: {
       ].join('\n'),
     },
   });
+
+  // `_resolveRuntimeEntrypoint.mjs` reads the runtime directory name from the product identity
+  // package, which a published CLI carries bundled. The real identity file keeps the sandbox in
+  // step with the directory name the packaged runtime uses.
+  const releaseRuntimeDir = resolve(options.binDir, '..', 'node_modules', '@happier-dev', 'release-runtime');
+  ensureDirectorySync(releaseRuntimeDir);
+  cpSync(
+    resolve(cliRoot, '..', '..', 'packages', 'release-runtime', 'productIdentity.cjs'),
+    join(releaseRuntimeDir, 'productIdentity.cjs'),
+  );
+  writeSandboxJsonFile(join(releaseRuntimeDir, 'package.json'), {
+    name: '@happier-dev/release-runtime',
+    version: '0.0.0',
+    exports: {
+      './productIdentity': './productIdentity.cjs',
+    },
+  });
 }
 
 export function runHappierBin(options: {
@@ -77,7 +94,7 @@ export function runHappierBin(options: {
   env?: NodeJS.ProcessEnv;
   timeoutMs?: number;
 }): SpawnSyncReturns<string> {
-  return spawnSync(process.execPath, [join(options.binDir, 'happier.mjs'), ...(options.args ?? [])], {
+  return spawnSync(process.execPath, [join(options.binDir, 'happiest.mjs'), ...(options.args ?? [])], {
     cwd: options.cwd,
     encoding: 'utf8',
     env: options.env,
@@ -112,7 +129,7 @@ export function writeSandboxPackage(options: {
 
 export function writeCliProjectFixture(options: {
   projectRoot: string;
-  entrypointDir: 'dist' | 'package-dist';
+  entrypointDir: 'dist' | 'happiest-runtime';
   entrypointContent: string;
 }): { binDir: string } {
   const binDir = join(options.projectRoot, 'bin');

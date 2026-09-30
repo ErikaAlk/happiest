@@ -11,7 +11,7 @@ test('resolveInstalledBinPath falls back to the installed package bin when npm p
   const packageBinDir = path.join(prefixDir, 'lib', 'node_modules', '@happier-dev', 'cli', 'bin');
   fs.mkdirSync(packageBinDir, { recursive: true });
 
-  const binPath = path.join(packageBinDir, 'happier.mjs');
+  const binPath = path.join(packageBinDir, 'happiest.mjs');
   fs.writeFileSync(binPath, '#!/usr/bin/env node\n', 'utf8');
 
   const resolved = resolveInstalledBinPath(prefixDir, { platform: 'darwin' });

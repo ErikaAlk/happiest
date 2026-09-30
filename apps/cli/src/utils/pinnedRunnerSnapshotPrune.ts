@@ -1,5 +1,5 @@
 /**
- * Retention decision for pinned runner dist snapshots (`.runner-snapshots/<fingerprint>/`).
+ * Retention decision for pinned runner dist snapshots (`.happiest-runner-snapshots/<fingerprint>/`).
  *
  * A snapshot dir is the frozen dist closure a session runner spawned from; the runner keeps
  * spawning bundled tools (zellij, node-pty relay, ripgrep) from paths INSIDE its snapshot for its

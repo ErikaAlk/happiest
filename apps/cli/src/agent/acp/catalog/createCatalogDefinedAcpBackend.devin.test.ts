@@ -35,7 +35,7 @@ describe('createCatalogDefinedAcpBackend (Devin)', () => {
     const created = createCatalogDefinedAcpBackend('devin' as never, {
       cwd: '/workspace',
       permissionMode: 'default',
-      mcpServers: { happier: { command: 'happier-mcp' } },
+      mcpServers: { happier: { command: 'happiest-mcp' } },
     });
 
     await created.startSession();

@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import {
   mkdirSync,
   readFileSync,
@@ -57,9 +58,10 @@ function resolveRequiredPkgrollOutputDir(value) {
 function rewritePackageDistPath(value, outputDir = 'dist') {
   if (typeof value !== 'string') return value;
   const outputRoot = `./${normalizePkgrollOutputDir(outputDir)}`;
-  if (value === './package-dist') return outputRoot;
-  if (value.startsWith('./package-dist/')) {
-    return `${outputRoot}/${value.slice('./package-dist/'.length)}`;
+  const runtimeRoot = `./${productIdentity.cliRuntimeDirName}`;
+  if (value === runtimeRoot) return outputRoot;
+  if (value.startsWith(`${runtimeRoot}/`)) {
+    return `${outputRoot}/${value.slice(runtimeRoot.length + 1)}`;
   }
   return value;
 }
@@ -68,7 +70,7 @@ function rebasePackageEntrypointOutputPath(value, outputDir = 'dist') {
   if (typeof value !== 'string') return null;
   const normalized = value.replace(/\\/g, '/').replace(/^\.\/+/, '');
   const outputRoot = normalizePkgrollOutputDir(outputDir);
-  for (const sourceRoot of ['dist', 'package-dist']) {
+  for (const sourceRoot of ['dist', productIdentity.cliRuntimeDirName]) {
     if (normalized === sourceRoot) {
       return outputRoot;
     }
@@ -157,7 +159,7 @@ function prepareRuntimeGenerationManifest(manifest, outputDir) {
 function rebaseManifestOutputPathToStage(value, outputDir) {
   if (typeof value !== 'string') return value;
   const normalized = value.replace(/\\/g, '/').replace(/^\.\/+/, '');
-  for (const outputRoot of [outputDir, 'dist', 'package-dist']) {
+  for (const outputRoot of [outputDir, 'dist', productIdentity.cliRuntimeDirName]) {
     if (normalized === outputRoot) return '.';
     const prefix = `${outputRoot}/`;
     if (normalized.startsWith(prefix)) {

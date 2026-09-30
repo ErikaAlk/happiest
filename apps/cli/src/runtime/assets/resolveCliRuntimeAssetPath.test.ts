@@ -27,7 +27,7 @@ describe('resolveCliRuntimeAssetPath', () => {
     if (originalExecPathDescriptor) {
       Object.defineProperty(process, 'execPath', {
         ...originalExecPathDescriptor,
-        value: '/runtime/payload/happier',
+        value: '/runtime/payload/happiest',
       });
     }
 
@@ -65,14 +65,14 @@ describe('resolveCliRuntimeAssetPath', () => {
     if (originalExecPathDescriptor) {
       Object.defineProperty(process, 'execPath', {
         ...originalExecPathDescriptor,
-        value: '/Users/test/.happier/bin/happier',
+        value: '/Users/test/.happiest/bin/happiest',
       });
     }
 
     const { resolveCliRuntimeAssetPath } = await import('./resolveCliRuntimeAssetPath');
 
     expect(resolveCliRuntimeAssetPath('scripts', 'claude_local_launcher.cjs')).toBe(
-      '/Users/test/.happier/cli/current/scripts/claude_local_launcher.cjs',
+      '/Users/test/.happiest/cli/current/scripts/claude_local_launcher.cjs',
     );
   });
 
@@ -84,14 +84,14 @@ describe('resolveCliRuntimeAssetPath', () => {
     if (originalExecPathDescriptor) {
       Object.defineProperty(process, 'execPath', {
         ...originalExecPathDescriptor,
-        value: '/Users/test/.happier/bin/hprev',
+        value: '/Users/test/.happiest/bin/happiest-preview',
       });
     }
 
     const { resolveCliRuntimeAssetPath } = await import('./resolveCliRuntimeAssetPath');
 
     expect(resolveCliRuntimeAssetPath('tools', 'unpacked', 'zellij')).toBe(
-      '/Users/test/.happier/cli-preview/current/tools/unpacked/zellij',
+      '/Users/test/.happiest/cli-preview/current/tools/unpacked/zellij',
     );
   });
 });
@@ -99,7 +99,7 @@ describe('resolveCliRuntimeAssetPath', () => {
 describe('resolveCliRuntimeAssetPathFromModuleUrl', () => {
   it('resolves launch sidecars from a snapshot module root', async () => {
     await withTempDir('happier-runtime-assets-snapshot-', async (root) => {
-      const snapshotRoot = join(root, '.runner-snapshots', 'abc123def4567890');
+      const snapshotRoot = join(root, '.happiest-runner-snapshots', 'abc123def4567890');
       const scriptsDir = join(snapshotRoot, 'scripts');
       mkdirSync(scriptsDir, { recursive: true });
       for (const scriptName of [

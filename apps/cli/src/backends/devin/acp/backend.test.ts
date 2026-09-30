@@ -24,7 +24,7 @@ describe('createDevinBackend', () => {
   });
 
   it('materializes Happier MCP servers through a Devin process-scoped config overlay', async () => {
-    const mcpServers = { happier: { command: 'happier-mcp', args: ['bridge'] } };
+    const mcpServers = { happier: { command: 'happiest-mcp', args: ['bridge'] } };
     createDevinBackend({
       cwd: '/workspace',
       env: { DEVIN_TEST_ENV: 'scoped' },
@@ -55,7 +55,7 @@ describe('createDevinBackend', () => {
   });
 
   it('resolves execution-run MCP servers when preparing the Devin process launch', async () => {
-    const mcpServers = { happier: { command: 'happier-mcp', args: ['bridge'] } };
+    const mcpServers = { happier: { command: 'happiest-mcp', args: ['bridge'] } };
     const resolveMcpServers = vi.fn(async () => mcpServers);
     createDevinBackend({
       cwd: '/workspace',

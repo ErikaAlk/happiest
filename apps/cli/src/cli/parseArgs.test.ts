@@ -6,7 +6,7 @@ describe('parseCliArgs', () => {
     it('strips a leading packaged runtime entrypoint before parsing command args', () => {
         expect(
             parseCliArgs([
-                '/Users/test/.happier/stacks/review-runs/runtime/builds/abc123/cli/package-dist/index.mjs',
+                '/Users/test/.happiest/stacks/review-runs/runtime/builds/abc123/cli/happiest-runtime/index.mjs',
                 'daemon',
                 'start-sync',
             ]),

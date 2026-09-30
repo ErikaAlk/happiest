@@ -195,7 +195,7 @@ describe('prepareRuntimeEntrypoint', () => {
     try {
       const { projectRoot, syncCalledPath } = writeLocalRepoFixture(repoRoot);
       const distDir = resolve(projectRoot, 'dist');
-      const packageDistDir = resolve(projectRoot, 'package-dist');
+      const packageDistDir = resolve(projectRoot, 'happiest-runtime');
       const stagingDir = resolve(projectRoot, 'dist.staging.writer');
       const backupDir = resolve(projectRoot, 'dist.__finalize_backup__.writer');
       const lockPath = resolve(repoRoot, '.project', 'tmp', 'cli-dist-build.lock');

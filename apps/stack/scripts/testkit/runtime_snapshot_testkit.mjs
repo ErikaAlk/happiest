@@ -1,5 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { runNodeCapture } from './core/run_node_capture.mjs';
 import { writeRuntimeSnapshotLayout } from './core/runtime_snapshot_layout.mjs';
@@ -44,7 +45,7 @@ export async function createRuntimeSnapshotFixture(
       content: cliRuntimeSource,
       executable: !cliEntrypoint.endsWith('.mjs') && !cliEntrypoint.endsWith('.js') && !cliEntrypoint.endsWith('.cjs'),
       artifactFingerprint: 'cli-1',
-      nodeEntrypoint: 'cli/package-dist/index.mjs',
+      nodeEntrypoint: `cli/${productIdentity.cliRuntimeDirName}/index.mjs`,
       nodeContent: 'export {};\n',
     },
   });

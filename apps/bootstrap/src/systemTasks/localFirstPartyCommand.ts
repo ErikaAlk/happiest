@@ -19,7 +19,10 @@ import {
   type FirstPartyAcquisitionOptions,
 } from '@happier-dev/cli-common/firstPartyRuntime';
 import { SystemTaskExecutionError } from '@happier-dev/cli-common/systemTasks';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import type { PublicReleaseRingId } from '@happier-dev/release-runtime/releaseRings';
+
+const CLI_LAUNCHER_FILE_NAME = `${productIdentity.commandName}.mjs`;
 
 /**
  * Where a local first-party command came from — an INSTALL-OWNERSHIP record, not verified
@@ -193,8 +196,8 @@ function resolveRepoLocalFirstPartyCommandPath(params: Readonly<{
         ]
       : params.componentId === 'happier-cli'
         ? [
-            join(repoRoot, 'apps', 'cli', 'bin', 'happier.mjs'),
-            join(repoRoot, 'packages', 'cli', 'bin', 'happier.mjs'),
+            join(repoRoot, 'apps', 'cli', 'bin', CLI_LAUNCHER_FILE_NAME),
+            join(repoRoot, 'packages', 'cli', 'bin', CLI_LAUNCHER_FILE_NAME),
           ]
         : [];
 
@@ -217,7 +220,7 @@ function resolveRepoRootForFirstPartyComponent(processEnv: NodeJS.ProcessEnv): s
   let cursor = resolve(startDir);
   while (true) {
     const stackBin = join(cursor, 'apps', 'stack', 'bin', 'hstack.mjs');
-    const cliBin = join(cursor, 'apps', 'cli', 'bin', 'happier.mjs');
+    const cliBin = join(cursor, 'apps', 'cli', 'bin', CLI_LAUNCHER_FILE_NAME);
     if (existsSync(stackBin) || existsSync(cliBin)) {
       return cursor;
     }

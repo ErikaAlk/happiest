@@ -3,6 +3,7 @@ import {
     type HappierToolsShellBridgeCommand,
 } from '@happier-dev/protocol';
 import { isChangeTitleToolNameAlias } from '@happier-dev/protocol/tools/v2';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -31,7 +32,7 @@ export function extractHappierToolsShellBridgeCall(rawInput: unknown): Extract<H
         isHappierToolsShellBridgeCommand(embedded)
             ? embedded
             : rawCommand
-                ? parseHappierToolsShellBridgeCommand(rawCommand)
+                ? parseHappierToolsShellBridgeCommand(rawCommand, productIdentity.commandName)
                 : null;
     if (!command || command.kind !== 'call') return null;
     return command;

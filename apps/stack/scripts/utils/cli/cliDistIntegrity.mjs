@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 import { DEFAULT_CLI_RUNTIME_IMPORT_TIMEOUT_MS } from '@happier-dev/cli-common/runtimeImportProbePolicy';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 export const CLI_DIST_INTEGRITY_PROBE_ENV = 'HAPPIER_CLI_DIST_INTEGRITY_PROBE';
 export const CLI_DIST_BUILD_MANIFEST = '.build-manifest.json';
@@ -28,7 +29,7 @@ export function resolveCliDistEntrypointFromBin(cliBin) {
     const fallbackBuildEntrypoint = join(binDir, '..', 'dist', 'index.mjs');
     const candidates = [
       fallbackBuildEntrypoint,
-      join(binDir, '..', 'package-dist', 'index.mjs'),
+      join(binDir, '..', productIdentity.cliRuntimeDirName, 'index.mjs'),
     ];
     let firstExistingCandidate = null;
     for (const candidate of candidates) {

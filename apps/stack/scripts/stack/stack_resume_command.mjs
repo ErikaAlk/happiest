@@ -2,6 +2,7 @@ import { join } from 'node:path';
 
 import { printResult } from '../utils/cli/cli.mjs';
 import { getComponentDir } from '../utils/paths/paths.mjs';
+import { getCliBinPath } from '../utils/paths/cli_bin.mjs';
 import { run, runCapture } from '../utils/proc/proc.mjs';
 
 import { withStackEnv } from './stack_environment.mjs';
@@ -29,7 +30,7 @@ export async function runStackResumeCommand({ rootDir, stackName, passthrough, j
     stackName,
     fn: async ({ env }) => {
       const cliDir = getComponentDir(rootDir, 'happier-cli', env);
-      const happierBin = join(cliDir, 'bin', 'happier.mjs');
+      const happierBin = getCliBinPath(cliDir);
 
       let daemonHelpText = '';
       try {

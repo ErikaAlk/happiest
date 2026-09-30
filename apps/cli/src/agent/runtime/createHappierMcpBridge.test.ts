@@ -65,7 +65,7 @@ describe('createHappierMcpBridge', () => {
   it('uses direct script mode by default', async () => {
     vi.mocked(existsSync).mockImplementation((pathLike) => {
       const path = String(pathLike)
-      return path.endsWith('/package-dist/backends/codex/happyMcpStdioBridge.mjs')
+      return path.endsWith('/happiest-runtime/backends/codex/happyMcpStdioBridge.mjs')
     })
 
     const session = {} as any
@@ -76,7 +76,7 @@ describe('createHappierMcpBridge', () => {
       args: [
         '--no-warnings',
         '--no-deprecation',
-        '/repo/package-dist/backends/codex/happyMcpStdioBridge.mjs',
+        '/repo/happiest-runtime/backends/codex/happyMcpStdioBridge.mjs',
         '--url',
         'http://127.0.0.1:12345',
       ],
@@ -86,7 +86,7 @@ describe('createHappierMcpBridge', () => {
   it('supports current-process mode', async () => {
     vi.mocked(existsSync).mockImplementation((pathLike) => {
       const path = String(pathLike)
-      return path.endsWith('/package-dist/backends/codex/happyMcpStdioBridge.mjs')
+      return path.endsWith('/happiest-runtime/backends/codex/happyMcpStdioBridge.mjs')
     })
 
     const session = {} as any
@@ -97,7 +97,7 @@ describe('createHappierMcpBridge', () => {
       args: [
         '--no-warnings',
         '--no-deprecation',
-        '/repo/package-dist/backends/codex/happyMcpStdioBridge.mjs',
+        '/repo/happiest-runtime/backends/codex/happyMcpStdioBridge.mjs',
         '--url',
         'http://127.0.0.1:12345',
       ],
@@ -116,7 +116,7 @@ describe('createHappierMcpBridge', () => {
     try {
       vi.mocked(existsSync).mockImplementation((pathLike) => {
         const path = String(pathLike)
-        return path.endsWith('/package-dist/backends/codex/happyMcpStdioBridge.mjs')
+        return path.endsWith('/happiest-runtime/backends/codex/happyMcpStdioBridge.mjs')
       })
 
       const session = {} as any
@@ -137,7 +137,7 @@ describe('createHappierMcpBridge', () => {
   it('passes account action settings to the in-session server and bridge stdio process', async () => {
     vi.mocked(existsSync).mockImplementation((pathLike) => {
       const path = String(pathLike)
-      return path.endsWith('/package-dist/backends/codex/happyMcpStdioBridge.mjs')
+      return path.endsWith('/happiest-runtime/backends/codex/happyMcpStdioBridge.mjs')
     })
 
     const session = {} as any
@@ -167,7 +167,7 @@ describe('createHappierMcpBridge', () => {
     try {
       vi.mocked(existsSync).mockImplementation((pathLike) => {
         const path = String(pathLike)
-        if (path.endsWith('/package-dist/backends/codex/happyMcpStdioBridge.mjs')) return true
+        if (path.endsWith('/happiest-runtime/backends/codex/happyMcpStdioBridge.mjs')) return true
         if (path.endsWith('/src/backends/codex/happyMcpStdioBridge.ts')) return true
         return false
       })
@@ -227,7 +227,7 @@ describe('createHappierMcpBridge', () => {
     requireJavaScriptRuntimeExecutableMock.mockResolvedValue('/managed/js-runtime')
     vi.mocked(existsSync).mockImplementation((pathLike) => {
       const path = String(pathLike)
-      return path.endsWith('/package-dist/backends/codex/happyMcpStdioBridge.mjs')
+      return path.endsWith('/happiest-runtime/backends/codex/happyMcpStdioBridge.mjs')
     })
 
     const session = {} as any
@@ -238,7 +238,7 @@ describe('createHappierMcpBridge', () => {
       args: [
         '--no-warnings',
         '--no-deprecation',
-        '/repo/package-dist/backends/codex/happyMcpStdioBridge.mjs',
+        '/repo/happiest-runtime/backends/codex/happyMcpStdioBridge.mjs',
         '--url',
         'http://127.0.0.1:12345',
       ],
@@ -261,7 +261,7 @@ describe('createHappierMcpBridge', () => {
   it('forwards credentials to the in-session Happier MCP server when provided', async () => {
     vi.mocked(existsSync).mockImplementation((pathLike) => {
       const path = String(pathLike)
-      return path.endsWith('/package-dist/backends/codex/happyMcpStdioBridge.mjs')
+      return path.endsWith('/happiest-runtime/backends/codex/happyMcpStdioBridge.mjs')
     })
 
     const session = {} as any

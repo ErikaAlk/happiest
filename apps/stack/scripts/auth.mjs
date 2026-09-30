@@ -2,6 +2,7 @@ import './utils/env/env.mjs';
 import { parseArgs } from './utils/cli/args.mjs';
 import { printResult, wantsHelp, wantsJson } from './utils/cli/cli.mjs';
 import { getComponentDir, getDefaultAutostartPaths, getRootDir, getStackName, resolveStackEnvPath } from './utils/paths/paths.mjs';
+import { getCliBinPath } from './utils/paths/cli_bin.mjs';
 import { listAllStackNames } from './utils/stack/stacks.mjs';
 import { resolvePublicServerUrl } from './tailscale.mjs';
 import { getInternalServerUrl, getPublicServerUrlEnvOverride, getWebappUrlEnvOverride } from './utils/server/urls.mjs';
@@ -1466,7 +1467,7 @@ async function cmdStatus({ json }) {
     auth,
     daemon,
     serverHealth: health,
-    cliBin: join(getComponentDir(rootDir, 'happier-cli'), 'bin', 'happier.mjs'),
+    cliBin: getCliBinPath(getComponentDir(rootDir, 'happier-cli')),
   };
 
   if (json) {

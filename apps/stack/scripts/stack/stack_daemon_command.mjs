@@ -7,6 +7,7 @@ import { printResult, wantsHelp } from '../utils/cli/cli.mjs';
 import { isTty, promptSelect, withRl } from '../utils/cli/wizard.mjs';
 import { checkDaemonStatePingAware, daemonStatusSummary, startLocalDaemonWithAuth, stopLocalDaemon } from '../daemon.mjs';
 import { getComponentDir, resolveStackEnvPath } from '../utils/paths/paths.mjs';
+import { getCliBinPath } from '../utils/paths/cli_bin.mjs';
 import { run } from '../utils/proc/proc.mjs';
 import { resolveServerPortFromEnv, resolveServerUrls } from '../utils/server/urls.mjs';
 import { parseCliIdentityOrThrow, resolveCliHomeDirForIdentity } from '../utils/stack/cli_identities.mjs';
@@ -28,7 +29,7 @@ export async function resolveStackDaemonCommandContext({ rootDir, stackName, env
   const runtimeSnapshot = runtimeLaunchContext.snapshot;
   const cliLaunchSpec = runtimeSnapshot ? resolveCliRuntimeLaunchSpec({ snapshot: runtimeSnapshot }) : null;
   const cliDir = cliLaunchSpec?.cliDir ?? getComponentDir(rootDir, 'happier-cli', env);
-  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+  const cliBin = getCliBinPath(cliDir);
   const cliEntrypoint = cliLaunchSpec?.entrypoint ?? '';
   const cliNodeEntrypoint = cliLaunchSpec?.nodeEntrypoint ?? '';
   const cliCommand = cliLaunchSpec?.command ?? '';

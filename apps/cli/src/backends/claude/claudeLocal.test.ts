@@ -273,7 +273,7 @@ describe('claudeLocal --continue handling', () => {
 
     it('inserts a "--" delimiter before positional prompts when --mcp-config is present (variadic flag)', async () => {
         const happierMcp = JSON.stringify({
-            mcpServers: { happier: { command: 'node', args: ['happier-mcp.mjs'] } },
+            mcpServers: { happier: { command: 'node', args: ['happiest-mcp.mjs'] } },
         });
 
         await claudeLocal({
@@ -301,7 +301,7 @@ describe('claudeLocal --continue handling', () => {
 
     it('injects --mcp-config through a temporary file and removes it after Claude exits', async () => {
         const mcpJson = JSON.stringify({
-            mcpServers: { happier: { command: 'node', args: ['happier-mcp.mjs', '--url', 'http://127.0.0.1:1234'] } },
+            mcpServers: { happier: { command: 'node', args: ['happiest-mcp.mjs', '--url', 'http://127.0.0.1:1234'] } },
         });
 
         await claudeLocal({
@@ -358,7 +358,7 @@ describe('claudeLocal --continue handling', () => {
             mcpServers: { fixture: { command: 'node', args: ['server.mjs'] } },
         });
         const happierMcp = JSON.stringify({
-            mcpServers: { happier: { command: 'node', args: ['happier-mcp.mjs', '--url', 'http://127.0.0.1:1234'] } },
+            mcpServers: { happier: { command: 'node', args: ['happiest-mcp.mjs', '--url', 'http://127.0.0.1:1234'] } },
         });
 
         await claudeLocal({
@@ -381,7 +381,7 @@ describe('claudeLocal --continue handling', () => {
         const happierMcpPath = spawnArgs[mcpFlags[1]! + 1]!;
         expect(userMcpPath).not.toBe(userMcp);
         expect(happierMcpPath).not.toBe(happierMcp);
-        expect(JSON.stringify(spawnArgs)).not.toContain('happier-mcp.mjs');
+        expect(JSON.stringify(spawnArgs)).not.toContain('happiest-mcp.mjs');
         await expect(stat(userMcpPath)).rejects.toMatchObject({ code: 'ENOENT' });
         await expect(stat(happierMcpPath)).rejects.toMatchObject({ code: 'ENOENT' });
     });
@@ -391,7 +391,7 @@ describe('claudeLocal --continue handling', () => {
             mcpServers: { fixture: { command: 'node', args: ['server.mjs'] } },
         });
         const happierMcp = JSON.stringify({
-            mcpServers: { happier: { command: 'node', args: ['happier-mcp.mjs', '--url', 'http://127.0.0.1:1234'] } },
+            mcpServers: { happier: { command: 'node', args: ['happiest-mcp.mjs', '--url', 'http://127.0.0.1:1234'] } },
         });
 
         await claudeLocal({
@@ -415,7 +415,7 @@ describe('claudeLocal --continue handling', () => {
 
     it('treats -p as a flag-with-value so the prompt is not misclassified as a positional arg', async () => {
         const happierMcp = JSON.stringify({
-            mcpServers: { happier: { command: 'node', args: ['happier-mcp.mjs', '--url', 'http://127.0.0.1:1234'] } },
+            mcpServers: { happier: { command: 'node', args: ['happiest-mcp.mjs', '--url', 'http://127.0.0.1:1234'] } },
         });
 
         await claudeLocal({

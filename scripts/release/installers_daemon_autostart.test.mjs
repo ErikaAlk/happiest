@@ -113,7 +113,7 @@ exec "$HAPPIER_TEST_REAL_AWK" "$@"
     const artifactStem = `happier-v${version}-linux-x64`;
     const artifactName = `${artifactStem}.tar.gz`;
     const artifactDir = join(fixtureDir, artifactStem);
-    await mkdir(join(artifactDir, 'package-dist'), { recursive: true });
+    await mkdir(join(artifactDir, 'happiest-runtime'), { recursive: true });
     const happierBin = join(artifactDir, 'happier');
     await writeFile(
       happierBin,
@@ -317,7 +317,7 @@ exit 0
       'utf8',
     );
     await chmod(happierBin, 0o755);
-    await writeFile(join(artifactDir, 'package-dist', 'index.mjs'), `export default ${JSON.stringify(version)};\n`, 'utf8');
+    await writeFile(join(artifactDir, 'happiest-runtime', 'index.mjs'), `export default ${JSON.stringify(version)};\n`, 'utf8');
 
     const tarPath = join(fixtureDir, artifactName);
     const tarRes = spawnSync('tar', ['-czf', tarPath, '-C', fixtureDir, artifactStem], { encoding: 'utf8' });
@@ -532,7 +532,7 @@ printf '%s' '${releaseJson}'
   assert.equal(versionRes.status, 0, `installed binary failed: ${String(versionRes.stderr ?? '')}`);
   assert.match(String(versionRes.stdout ?? ''), new RegExp(expectedInstalledVersion.replaceAll('.', '[.]')));
   assert.equal(
-    await readFile(join(installDir, installedManagedRoot, 'current', 'package-dist', 'index.mjs'), 'utf8'),
+    await readFile(join(installDir, installedManagedRoot, 'current', 'happiest-runtime', 'index.mjs'), 'utf8'),
     `export default ${JSON.stringify(expectedInstalledVersion)};\n`,
   );
   assert.match(

@@ -4,6 +4,7 @@ import { execFileSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { join, dirname } from 'path';
 import { homedir } from 'os';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { importPreparedRuntimeEntrypoint } from './_importRuntimeEntrypoint.mjs';
 
@@ -12,7 +13,7 @@ const hasNoWarnings = process.execArgv.includes('--no-warnings');
 const hasNoDeprecation = process.execArgv.includes('--no-deprecation');
 
 // Set development environment variables
-process.env.HAPPIEST_HOME_DIR =join(homedir(), '.happier-dev');
+process.env.HAPPIEST_HOME_DIR = join(homedir(), productIdentity.sourceHomeDirName);
 process.env.HAPPIER_VARIANT = 'dev';
 
 if (!hasNoWarnings || !hasNoDeprecation) {

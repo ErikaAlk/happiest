@@ -31,7 +31,7 @@ describe('createExecutionRunBackend built-in ACP MCP context', () => {
 
   it('provides the canonical Happier MCP servers to a built-in backend with one resolution', async () => {
     const mcpServers = {
-      happier: { command: 'happier-mcp', args: ['bridge'] },
+      happier: { command: 'happiest-mcp', args: ['bridge'] },
     } satisfies Record<string, McpServerConfig>;
     const captured: { first?: Readonly<Record<string, McpServerConfig>>; second?: Readonly<Record<string, McpServerConfig>> } = {};
 

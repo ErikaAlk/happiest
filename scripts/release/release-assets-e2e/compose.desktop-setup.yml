@@ -4,7 +4,7 @@
 # release-feed  — answers as api.github.com inside this network only (alias + test CA), serving the
 #                 staged CLI release assets so the shipped hsetup acquires the build under test.
 # approver      — plays the signed-in app: owns the account and approves the pairing prompt.
-# desktop1/2    — systemd machines with NO Happier CLI, daemon or service installed. desktop1 is
+# desktop1/2    — systemd machines with NO Happiest CLI, daemon or service installed. desktop1 is
 #                 the fresh-download scenario (layer 2), desktop2 the upgrade scenario (layer 3).
 services:
   relay:

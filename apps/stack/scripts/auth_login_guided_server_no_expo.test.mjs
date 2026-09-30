@@ -179,7 +179,7 @@ async function buildGuidedNoExpoFixture({
       daemon: {
         content: wrapSuccessfulAuthRuntimeCliScript(runtimeCliScript),
         artifactFingerprint: 'cli-auth',
-        nodeEntrypoint: 'cli/package-dist/index.mjs',
+        nodeEntrypoint: 'cli/happiest-runtime/index.mjs',
         nodeContent: 'export {};\n',
       },
     });

@@ -363,8 +363,8 @@ describe('discoverInstalledDaemonServiceEntries', () => {
     });
   });
 
-  it('accepts linux units that launch daemon start-sync through the package-dist node entrypoint', async () => {
-    await withTempDir('happier-discover-service-entry-linux-package-dist-', async (homeDir) => {
+  it('accepts linux units that launch daemon start-sync through the happiest-runtime node entrypoint', async () => {
+    await withTempDir('happier-discover-service-entry-linux-happiest-runtime-', async (homeDir) => {
       const servicesDir = join(homeDir, '.config', 'systemd', 'user');
       const path = join(servicesDir, 'happiest-daemon.default.service');
       mkdirSync(servicesDir, { recursive: true });
@@ -374,7 +374,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
           description: 'Happier Daemon',
           execStart: [
             '/usr/bin/node',
-            '/Users/tester/happier/apps/cli/package-dist/index.mjs',
+            '/Users/tester/happier/apps/cli/happiest-runtime/index.mjs',
             'daemon',
             'start-sync',
           ],
@@ -420,7 +420,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
           description: 'Happier Daemon',
           execStart: [
             '/home/tester/.happier/tools/js-runtime/current/bin/happier-js-runtime',
-            '/home/tester/.happier/cli-dev/versions/0.2.3-dev.36.1/package-dist/index.mjs',
+            '/home/tester/.happier/cli-dev/versions/0.2.3-dev.36.1/happiest-runtime/index.mjs',
             'daemon',
             'start-sync',
           ],
@@ -466,7 +466,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
           description: 'Happier Daemon',
           execStart: [
             '/home/tester/.happier/tools/js-runtime/current/bin/happier-js-runtime',
-            '/home/tester/.happier/cli-preview/versions/0.2.2-preview.1/package-dist/index.mjs',
+            '/home/tester/.happier/cli-preview/versions/0.2.2-preview.1/happiest-runtime/index.mjs',
             'daemon',
             'start-sync',
           ],
@@ -514,7 +514,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
           description: 'Happier Daemon',
           execStart: [
             '/home/tester/.happier/tools/js-runtime/current/bin/happier-js-runtime',
-            '/home/tester/.happier/cli-preview/versions/0.2.2-preview.1/package-dist/index.mjs',
+            '/home/tester/.happier/cli-preview/versions/0.2.2-preview.1/happiest-runtime/index.mjs',
             'daemon',
             'start-sync',
           ],

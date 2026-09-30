@@ -7,7 +7,7 @@ import {
 } from './warnMissingRunnerSnapshotRoot';
 
 const SNAPSHOT_ENTRYPOINT =
-  '/Users/alice/dev/happier/apps/cli/.runner-snapshots/0c53de7737667471/index.mjs';
+  '/Users/alice/dev/happier/apps/cli/.happiest-runner-snapshots/0c53de7737667471/index.mjs';
 
 describe('describeMissingRunnerSnapshotRoot', () => {
   it('flags an entrypoint whose snapshot root no longer exists', () => {
@@ -17,7 +17,7 @@ describe('describeMissingRunnerSnapshotRoot', () => {
     });
     expect(result).not.toBeNull();
     expect(result?.fingerprint).toBe('0c53de7737667471');
-    expect(result?.snapshotRoot).toContain('.runner-snapshots/0c53de7737667471');
+    expect(result?.snapshotRoot).toContain('.happiest-runner-snapshots/0c53de7737667471');
   });
 
   it('returns null when the snapshot root still exists', () => {

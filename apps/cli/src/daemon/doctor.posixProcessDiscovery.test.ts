@@ -38,7 +38,7 @@ describe('doctor POSIX process discovery', () => {
       '/Users/alice/.local/share/fnm/node-versions/v22.22.1/installation/bin/node',
       '--no-warnings',
       '--no-deprecation',
-      '/repo/apps/cli/.runner-snapshots/bee5314ededb46bd/index.mjs',
+      '/repo/apps/cli/.happiest-runner-snapshots/bee5314ededb46bd/index.mjs',
       'opencode',
       '--happy-starting-mode',
       'remote',

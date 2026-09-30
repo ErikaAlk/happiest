@@ -13,7 +13,7 @@ function stackRootDirFromMeta(metaUrl) {
   return dirname(scriptsDir);
 }
 
-test('happier wrapper refreshes bundled workspace packages in preflight mode before loading the CLI entrypoint', async () => {
+test('happiest wrapper refreshes bundled workspace packages in preflight mode before loading the CLI entrypoint', async () => {
   const rootDir = stackRootDirFromMeta(import.meta.url);
   const repoRoot = coerceHappyMonorepoRootFromPath(rootDir);
   assert.ok(repoRoot, `expected monorepo root for ${rootDir}`);
@@ -23,7 +23,7 @@ test('happier wrapper refreshes bundled workspace packages in preflight mode bef
     const cliMarkerPath = join(fixtureDir, 'cli.txt');
     const syncStubPath = join(fixtureDir, 'syncBundledWorkspacePackages.mjs');
     const resolveSyncModulePathStubPath = join(fixtureDir, 'resolveBundledWorkspaceSyncModulePath.mjs');
-    const cliStubPath = join(fixtureDir, 'happier.mjs');
+    const cliStubPath = join(fixtureDir, 'happiest.mjs');
     const loaderPath = join(fixtureDir, 'loader.mjs');
 
     writeFileSync(
@@ -65,7 +65,7 @@ test('happier wrapper refreshes bundled workspace packages in preflight mode bef
         "  if (specifier === '../scripts/runtime/resolveBundledWorkspaceSyncModulePath.mjs') {",
         `    return { url: pathToFileURL(${JSON.stringify(resolveSyncModulePathStubPath)}).href, shortCircuit: true };`,
         '  }',
-        "  if (specifier === '../scripts/happier.mjs' || specifier === '../scripts/happier_main.mjs') {",
+        "  if (specifier === '../scripts/happiest.mjs' || specifier === '../scripts/happier_main.mjs') {",
         `    return { url: pathToFileURL(${JSON.stringify(cliStubPath)}).href, shortCircuit: true };`,
         '  }',
         '  return defaultResolve(specifier, context, defaultResolve);',
@@ -75,7 +75,7 @@ test('happier wrapper refreshes bundled workspace packages in preflight mode bef
       'utf8',
     );
 
-    const res = await runNodeCapture([join(rootDir, 'bin', 'happier.mjs')], {
+    const res = await runNodeCapture([join(rootDir, 'bin', 'happiest.mjs')], {
       cwd: rootDir,
       env: {
         ...process.env,
@@ -95,13 +95,13 @@ test('happier wrapper refreshes bundled workspace packages in preflight mode bef
   }
 });
 
-test('happier wrapper skips bundled workspace preflight when disabled', async () => {
+test('happiest wrapper skips bundled workspace preflight when disabled', async () => {
   const rootDir = stackRootDirFromMeta(import.meta.url);
   const fixtureDir = mkdtempSync(join(tmpdir(), 'happier-wrapper-bootstrap-disabled-'));
   try {
     const syncMarkerPath = join(fixtureDir, 'sync.txt');
     const bundleStubPath = join(fixtureDir, 'bundleWorkspaceDeps.mjs');
-    const cliStubPath = join(fixtureDir, 'happier.mjs');
+    const cliStubPath = join(fixtureDir, 'happiest.mjs');
     const loaderPath = join(fixtureDir, 'loader.mjs');
 
     writeFileSync(
@@ -124,7 +124,7 @@ test('happier wrapper skips bundled workspace preflight when disabled', async ()
         "  if (specifier === '../scripts/bundleWorkspaceDeps.mjs') {",
         `    return { url: pathToFileURL(${JSON.stringify(bundleStubPath)}).href, shortCircuit: true };`,
         '  }',
-        "  if (specifier === '../scripts/happier.mjs' || specifier === '../scripts/happier_main.mjs') {",
+        "  if (specifier === '../scripts/happiest.mjs' || specifier === '../scripts/happier_main.mjs') {",
         `    return { url: pathToFileURL(${JSON.stringify(cliStubPath)}).href, shortCircuit: true };`,
         '  }',
         '  return defaultResolve(specifier, context, defaultResolve);',
@@ -134,7 +134,7 @@ test('happier wrapper skips bundled workspace preflight when disabled', async ()
       'utf8',
     );
 
-    const res = await runNodeCapture([join(rootDir, 'bin', 'happier.mjs')], {
+    const res = await runNodeCapture([join(rootDir, 'bin', 'happiest.mjs')], {
       cwd: rootDir,
       env: {
         ...process.env,
@@ -151,7 +151,7 @@ test('happier wrapper skips bundled workspace preflight when disabled', async ()
   }
 });
 
-test('scripts/happier delegates to the command owner without a second bundled workspace preflight', async () => {
+test('scripts/happiest delegates to the command owner without a second bundled workspace preflight', async () => {
   const rootDir = stackRootDirFromMeta(import.meta.url);
   const fixtureDir = mkdtempSync(join(tmpdir(), 'happier-script-single-preflight-'));
   try {
@@ -191,7 +191,7 @@ test('scripts/happier delegates to the command owner without a second bundled wo
       'utf8',
     );
 
-    const res = await runNodeCapture([join(rootDir, 'scripts', 'happier.mjs')], {
+    const res = await runNodeCapture([join(rootDir, 'scripts', 'happiest.mjs')], {
       cwd: rootDir,
       env: {
         ...process.env,

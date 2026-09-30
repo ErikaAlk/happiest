@@ -20,7 +20,7 @@ test('happier daemon shares the cli install root but uses node-runtime-payload',
   assert.equal(daemon.installRootName, 'cli');
   assert.equal(cli.runtimeKind, 'binary');
   assert.equal(daemon.runtimeKind, 'node-runtime-payload');
-  assert.equal(daemon.nodeEntrypointRelativePath, 'package-dist/index.mjs');
+  assert.equal(daemon.nodeEntrypointRelativePath, 'happiest-runtime/index.mjs');
 });
 
 test('catalog rejects unknown component ids', () => {
@@ -43,9 +43,9 @@ test('cli public release variants resolve rolling tags and side-by-side install 
 
   assert.equal(preview.releaseTag, 'cli-preview');
   assert.equal(preview.installRootName, 'cli-preview');
-  assert.deepEqual(preview.installShims, ['hprev']);
+  assert.deepEqual(preview.installShims, ['happiest-preview']);
 
   assert.equal(publicdev.releaseTag, 'cli-dev');
   assert.equal(publicdev.installRootName, 'cli-dev');
-  assert.deepEqual(publicdev.installShims, ['hdev']);
+  assert.deepEqual(publicdev.installShims, ['happiest-dev']);
 });

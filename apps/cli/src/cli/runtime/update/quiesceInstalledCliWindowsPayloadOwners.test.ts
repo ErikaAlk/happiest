@@ -22,7 +22,7 @@ const {
     previousPath: 'C:\\Users\\tester\\.happier\\cli-dev\\previous',
     versionsDir: 'C:\\Users\\tester\\.happier\\cli-dev\\versions',
     binaryPath: 'C:\\Users\\tester\\.happier\\cli-dev\\current\\happier.exe',
-    nodeEntrypointPath: 'C:\\Users\\tester\\.happier\\cli-dev\\current\\package-dist\\index.mjs',
+    nodeEntrypointPath: 'C:\\Users\\tester\\.happier\\cli-dev\\current\\happiest-runtime\\index.mjs',
     shimPaths: ['C:\\Users\\tester\\.happier\\bin\\hdev.exe'],
   })),
   spawnSyncMock: vi.fn((_command?: unknown, _args?: unknown, _options?: unknown) => ({ status: 0 })),
@@ -96,7 +96,7 @@ describe('quiesceInstalledCliWindowsPayloadOwners', () => {
         {
           pid: 12,
           command:
-            'C:\\Users\\tester\\.happier\\bin\\hdev.exe C:\\Users\\tester\\.happier\\cli-dev\\current\\package-dist\\index.mjs codex --happy-starting-mode remote --started-by daemon',
+            'C:\\Users\\tester\\.happier\\bin\\hdev.exe C:\\Users\\tester\\.happier\\cli-dev\\current\\happiest-runtime\\index.mjs codex --happy-starting-mode remote --started-by daemon',
           type: 'daemon-spawned-session',
         },
         {

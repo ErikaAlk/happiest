@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { classifyHappyProcess } from './doctor';
+import { projectPath } from '@/projectPath';
 
 describe('classifyHappyProcess', () => {
   it('should ignore unrelated processes with "happy" in the name', () => {
@@ -11,7 +12,7 @@ describe('classifyHappyProcess', () => {
     const res = classifyHappyProcess({
       pid: 123,
       name: 'node',
-      cmd: '/usr/bin/node /repo/dist/index.mjs daemon start-sync',
+      cmd: `/usr/bin/node "${projectPath()}/dist/index.mjs" daemon start-sync`,
     });
     expect(res).not.toBeNull();
     expect(res!.type).toBe('daemon');
@@ -21,17 +22,17 @@ describe('classifyHappyProcess', () => {
     const res = classifyHappyProcess({
       pid: 123,
       name: 'node',
-      cmd: '/usr/bin/node /repo/dist/index.mjs --started-by daemon',
+      cmd: `/usr/bin/node "${projectPath()}/dist/index.mjs" --started-by daemon`,
     });
     expect(res).not.toBeNull();
     expect(res!.type).toBe('daemon-spawned-session');
   });
 
-  it('should detect a daemon-spawned session process from package-dist when ps-list reports MainThread', () => {
+  it('should detect a daemon-spawned session process from happiest-runtime when ps-list reports MainThread', () => {
     const res = classifyHappyProcess({
       pid: 123,
       name: 'MainThread',
-      cmd: '/usr/bin/node /repo/cli-preview/versions/0.2.4/package-dist/index.mjs codex --happy-starting-mode remote --started-by daemon',
+      cmd: '/usr/bin/node /repo/cli-preview/versions/0.2.4/happiest-runtime/index.mjs codex --happy-starting-mode remote --started-by daemon',
     });
     expect(res).not.toBeNull();
     expect(res!.type).toBe('daemon-spawned-session');
@@ -41,17 +42,17 @@ describe('classifyHappyProcess', () => {
     const res = classifyHappyProcess({
       pid: 123,
       name: '/Users/leeroy/.local/share/fnm/node-versions/v22.22.1/installation/bin/node',
-      cmd: '/Users/leeroy/.local/share/fnm/node-versions/v22.22.1/installation/bin/node --no-warnings --no-deprecation --import /repo/node_modules/tsx/dist/esm/index.mjs /repo/apps/cli/src/index.ts codex --happy-starting-mode remote --started-by daemon',
+      cmd: `/Users/leeroy/.local/share/fnm/node-versions/v22.22.1/installation/bin/node --no-warnings --no-deprecation --import /repo/node_modules/tsx/dist/esm/index.mjs "${projectPath()}/src/index.ts" codex --happy-starting-mode remote --started-by daemon`,
     });
     expect(res).not.toBeNull();
     expect(res!.type).toBe('dev-daemon-spawned');
   });
 
-  it('should detect a packaged Windows daemon-spawned session process when ps-list reports happier.exe', () => {
+  it('should detect a packaged Windows daemon-spawned session process when ps-list reports happiest.exe', () => {
     const res = classifyHappyProcess({
       pid: 123,
-      name: 'happier.exe',
-      cmd: 'C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\happier.exe C:\\hq\\windetachedfix-007\\happier-v0.2.4-windows-x64\\package-dist\\index.mjs opencode --happy-starting-mode remote --started-by daemon --existing-session session-123',
+      name: 'happiest.exe',
+      cmd: 'C:\\hq\\windetachedfix-007\\happiest-v0.2.4-windows-x64\\happiest.exe C:\\hq\\windetachedfix-007\\happiest-v0.2.4-windows-x64\\happiest-runtime\\index.mjs opencode --happy-starting-mode remote --started-by daemon --existing-session session-123',
     });
     expect(res).not.toBeNull();
     expect(res!.type).toBe('daemon-spawned-session');
@@ -61,7 +62,7 @@ describe('classifyHappyProcess', () => {
     const res = classifyHappyProcess({
       pid: 123,
       name: 'node',
-      cmd: '/usr/bin/node /repo/apps/cli/node_modules/.bin/tsx /repo/apps/cli/src/index.ts daemon start-sync',
+      cmd: `/usr/bin/node /repo/apps/cli/node_modules/.bin/tsx "${projectPath()}/src/index.ts" daemon start-sync`,
     });
     expect(res).not.toBeNull();
     expect(res!.type).toBe('dev-daemon');
@@ -71,7 +72,7 @@ describe('classifyHappyProcess', () => {
     const res = classifyHappyProcess({
       pid: 123,
       name: 'node',
-      cmd: '/usr/bin/node /repo/apps/cli/node_modules/.bin/tsx /repo/apps/cli/src/index.ts daemon start-sync',
+      cmd: `/usr/bin/node /repo/apps/cli/node_modules/.bin/tsx "${projectPath()}/src/index.ts" daemon start-sync`,
       daemonOwnershipEnvironmentVariables: {
         HAPPIEST_HOME_DIR: '/tmp/happier-stack/cli',
         HAPPIEST_ACTIVE_SERVER_ID: 'stack_current__id_default',
@@ -86,41 +87,40 @@ describe('classifyHappyProcess', () => {
     });
   });
 
-  it('should detect a daemon-spawned source snapshot session started through the tsx import hook', () => {
+  it('should detect a daemon-spawned source session started through the tsx import hook', () => {
     const res = classifyHappyProcess({
       pid: 123,
       name: 'node',
-      cmd: '/usr/bin/node --preserve-symlinks --preserve-symlinks-main --import /repo/node_modules/tsx/dist/esm/index.mjs /repo/.project/tmp/cli-dist-snapshot/src/index.ts claude --happy-starting-mode remote --started-by daemon',
+      cmd: `/usr/bin/node --preserve-symlinks --preserve-symlinks-main --import /repo/node_modules/tsx/dist/esm/index.mjs "${projectPath()}/src/index.ts" claude --happy-starting-mode remote --started-by daemon`,
     });
     expect(res).not.toBeNull();
     expect(res!.type).toBe('dev-daemon-spawned');
   });
 
-  it('should detect daemon-spawned sessions from versioned CLI update source snapshots', () => {
+  it('should ignore source snapshots whose product ownership cannot be established', () => {
     const res = classifyHappyProcess({
       pid: 123,
       name: 'node',
       cmd: '/usr/bin/node --preserve-symlinks --preserve-symlinks-main --import /repo/node_modules/tsx/dist/esm/index.mjs /repo/.project/logs/e2e/run/cli-update-continuity/cli-update-from/src/index.ts claude --happy-starting-mode remote --started-by daemon',
     });
-    expect(res).not.toBeNull();
-    expect(res!.type).toBe('dev-daemon-spawned');
+    expect(res).toBeNull();
   });
 
-  it('should detect daemon-spawned snapshot sessions launched without tsx import hook', () => {
+  it('should detect daemon-spawned source sessions launched without tsx import hook', () => {
     const res = classifyHappyProcess({
       pid: 123,
       name: 'node',
-      cmd: '/usr/bin/node /repo/.project/tmp/cli-dist-snapshot/src/index.ts claude --happy-starting-mode remote --started-by daemon',
+      cmd: `/usr/bin/node "${projectPath()}/src/index.ts" claude --happy-starting-mode remote --started-by daemon`,
     });
     expect(res).not.toBeNull();
     expect(res!.type).toBe('daemon-spawned-session');
   });
 
-  it('should detect F4 runner snapshot sessions launched from .runner-snapshots index.mjs', () => {
+  it('should detect F4 runner snapshot sessions launched from .happiest-runner-snapshots index.mjs', () => {
     const res = classifyHappyProcess({
       pid: 67178,
       name: 'node',
-      cmd: '/managed/node /repo/apps/cli/.runner-snapshots/f4abcd123/index.mjs claude --happy-starting-mode remote --started-by daemon --existing-session sess-live',
+      cmd: '/managed/node /repo/apps/cli/.happiest-runner-snapshots/f4abcd123/index.mjs claude --happy-starting-mode remote --started-by daemon --existing-session sess-live',
     });
     expect(res).not.toBeNull();
     expect(res!.type).toBe('daemon-spawned-session');

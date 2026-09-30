@@ -34,14 +34,14 @@ if [[ -n "$HAPPIER_TGZ" && -f "$HAPPIER_TGZ" ]]; then
   # `@happier-dev/stack` also exposes a `happier` shim, so installing the CLI
   # into the same global prefix can fail with EEXIST on the bin link.
   npm install -g --force "$HAPPIER_TGZ" >/dev/null
-  HAPPIER_PREFIX=(happier)
+  HAPPIER_PREFIX=(happiest)
 elif [[ "$HAPPIER_CLI_INSTALL_MODE" == "npx" ]]; then
   echo "[remote-daemon-reuse-cli] running happier-cli via npx: $HAPPIER_NPM_SPEC"
-  HAPPIER_PREFIX=(npx --yes -p "$HAPPIER_NPM_SPEC" happier)
+  HAPPIER_PREFIX=(npx --yes -p "$HAPPIER_NPM_SPEC" happiest)
 else
   echo "[remote-daemon-reuse-cli] installing happier-cli from npm: $HAPPIER_NPM_SPEC"
   npm install -g "$HAPPIER_NPM_SPEC" >/dev/null
-  HAPPIER_PREFIX=(happier)
+  HAPPIER_PREFIX=(happiest)
 fi
 
 if [[ ! -f "$ssh_key_src" ]]; then
@@ -169,13 +169,13 @@ resolve_remote_happier_command() {
   local candidates=()
   case "$HSTACK_REMOTE_CHANNEL" in
     preview)
-      candidates=(hprev '~/.happier/bin/hprev' '~/.happier/cli-preview/current/happier' happier '~/.happier/bin/happier' '~/.happier/cli/current/happier' hdev '~/.happier/bin/hdev' '~/.happier/cli-dev/current/happier')
+      candidates=(happiest-preview '~/.happiest/bin/happiest-preview' '~/.happiest/cli-preview/current/happiest' happiest '~/.happiest/bin/happiest' '~/.happiest/cli/current/happiest' happiest-dev '~/.happiest/bin/happiest-dev' '~/.happiest/cli-dev/current/happiest')
       ;;
     stable)
-      candidates=(happier '~/.happier/bin/happier' '~/.happier/cli/current/happier' hprev '~/.happier/bin/hprev' '~/.happier/cli-preview/current/happier' hdev '~/.happier/bin/hdev' '~/.happier/cli-dev/current/happier')
+      candidates=(happiest '~/.happiest/bin/happiest' '~/.happiest/cli/current/happiest' happiest-preview '~/.happiest/bin/happiest-preview' '~/.happiest/cli-preview/current/happiest' happiest-dev '~/.happiest/bin/happiest-dev' '~/.happiest/cli-dev/current/happiest')
       ;;
     *)
-      candidates=(happier '~/.happier/bin/happier' '~/.happier/cli/current/happier' hprev '~/.happier/bin/hprev' '~/.happier/cli-preview/current/happier' hdev '~/.happier/bin/hdev' '~/.happier/cli-dev/current/happier')
+      candidates=(happiest '~/.happiest/bin/happiest' '~/.happiest/cli/current/happiest' happiest-preview '~/.happiest/bin/happiest-preview' '~/.happiest/cli-preview/current/happiest' happiest-dev '~/.happiest/bin/happiest-dev' '~/.happiest/cli-dev/current/happiest')
       ;;
   esac
 
@@ -292,8 +292,8 @@ else
   echo "[remote-daemon-reuse-cli] setup did not register a machine yet; starting remote daemon manually..."
   remote_happier_command="$(resolve_remote_happier_command || true)"
   if [[ -z "$remote_happier_command" ]]; then
-    echo "[remote-daemon-reuse-cli] failed to resolve remote happier command for channel=$HSTACK_REMOTE_CHANNEL" >&2
-    ssh "$REMOTE_SSH_TARGET" "echo PATH=\$PATH; command -v happier || true; command -v hprev || true; command -v hdev || true; ls -la ~/.happier ~/.happier/bin ~/.happier/cli ~/.happier/cli-preview ~/.happier/cli-dev 2>/dev/null || true" >&2 || true
+    echo "[remote-daemon-reuse-cli] failed to resolve remote happiest command for channel=$HSTACK_REMOTE_CHANNEL" >&2
+    ssh "$REMOTE_SSH_TARGET" "echo PATH=\$PATH; command -v happiest || true; command -v happiest-preview || true; command -v happiest-dev || true; ls -la ~/.happiest ~/.happiest/bin ~/.happiest/cli ~/.happiest/cli-preview ~/.happiest/cli-dev 2>/dev/null || true" >&2 || true
     exit 1
   fi
 

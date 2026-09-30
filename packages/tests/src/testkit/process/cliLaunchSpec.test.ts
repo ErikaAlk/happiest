@@ -73,17 +73,17 @@ describe('resolveCliTestLaunchSpec', () => {
     const snapshotDir = resolve(repoRoot, 'release-snapshot');
 
     try {
-      mkdirSync(resolve(snapshotDir, 'package-dist'), { recursive: true });
+      mkdirSync(resolve(snapshotDir, 'happiest-runtime'), { recursive: true });
       mkdirSync(resolve(snapshotDir, 'node_modules'), { recursive: true });
       writeFileSync(resolve(snapshotDir, '.cli-dist-snapshot.ready.json'), '{"v":1}\n', 'utf8');
-      writeFileSync(resolve(snapshotDir, 'package-dist', 'index.mjs'), 'export {};\n', 'utf8');
+      writeFileSync(resolve(snapshotDir, 'happiest-runtime', 'index.mjs'), 'export {};\n', 'utf8');
 
       await expect(resolveCliTestLaunchSpec(
         { testDir: resolve(repoRoot, '.project'), env: process.env },
         { repoRoot, snapshotDir, preparedDistSnapshotOnly: true },
       )).resolves.toEqual({
         command: process.execPath,
-        args: ['--preserve-symlinks', resolve(snapshotDir, 'package-dist', 'index.mjs')],
+        args: ['--preserve-symlinks', resolve(snapshotDir, 'happiest-runtime', 'index.mjs')],
       });
     } finally {
       rmSync(repoRoot, { recursive: true, force: true });

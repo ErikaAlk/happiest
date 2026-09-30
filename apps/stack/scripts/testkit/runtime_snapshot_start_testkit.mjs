@@ -1,6 +1,7 @@
 import { chmod, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { resolveStackCredentialPaths } from '../utils/auth/credentials_paths.mjs';
 import { buildStackStableScopeId } from '../utils/auth/stable_scope_id.mjs';
@@ -255,7 +256,7 @@ process.on('SIGINT', shutdown);
     daemon: {
       content: `#!/usr/bin/env node\n${cliScript.trimStart()}`,
       artifactFingerprint: 'daemon-startable',
-      nodeEntrypoint: 'cli/package-dist/index.mjs',
+      nodeEntrypoint: `cli/${productIdentity.cliRuntimeDirName}/index.mjs`,
       nodeContent: cliPackageDistScript.trimStart(),
       distClosureFingerprint: daemonDistClosureFingerprint,
     },

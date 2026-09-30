@@ -86,7 +86,7 @@ describe('normalizeAcpSessionMessageBody', () => {
         callId: 'call_1',
         name: 'bash',
         input: {
-          command: `happier tools call --source happier --tool change_title --args-json '{"title":"QA"}' --json`,
+          command: `happiest tools call --source happier --tool change_title --args-json '{"title":"QA"}' --json`,
         },
         id: 'msg_1',
       } as any,

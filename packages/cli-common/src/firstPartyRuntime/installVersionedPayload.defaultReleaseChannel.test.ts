@@ -18,9 +18,9 @@ async function createPayload(
     binaryName: string = 'happiest',
 ): Promise<string> {
     const payloadRoot = join(rootDir, `payload-${versionId}`);
-    await mkdir(join(payloadRoot, 'package-dist'), { recursive: true });
+    await mkdir(join(payloadRoot, 'happiest-runtime'), { recursive: true });
     await writeFile(join(payloadRoot, binaryName), contents, 'utf8');
-    await writeFile(join(payloadRoot, 'package-dist', 'index.mjs'), `export default ${JSON.stringify(versionId)};\n`, 'utf8');
+    await writeFile(join(payloadRoot, 'happiest-runtime', 'index.mjs'), `export default ${JSON.stringify(versionId)};\n`, 'utf8');
     return payloadRoot;
 }
 

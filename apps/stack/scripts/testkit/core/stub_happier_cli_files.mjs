@@ -1,6 +1,8 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+import { getCliBinPath } from '../../utils/paths/cli_bin.mjs';
+
 export async function writeStubHappierCliFiles(
   monoRoot,
   {
@@ -30,7 +32,7 @@ export async function writeStubHappierCliFiles(
 
   if (typeof binHappierScript !== 'undefined') {
     await mkdir(join(cliDir, 'bin'), { recursive: true });
-    await writeFile(join(cliDir, 'bin', 'happier.mjs'), binHappierScript, 'utf-8');
+    await writeFile(getCliBinPath(cliDir), binHappierScript, 'utf-8');
   }
 
   if (typeof tsconfigContent !== 'undefined') {

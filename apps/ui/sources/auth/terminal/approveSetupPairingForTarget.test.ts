@@ -47,7 +47,7 @@ const RELAY_KEY = createServerUrlComparableKey(RELAY_URL);
 const SERVER_ID = 'custom-2';
 const ACCOUNT_ID = 'acct_app';
 const TASK_ID = 'task_1';
-const CLI_COMMAND = '/home/dev/happier-stack/apps/cli/bin/happier.mjs';
+const CLI_COMMAND = '/home/dev/happier-stack/apps/cli/bin/happiest.mjs';
 
 const terminalSecretKey = new Uint8Array(32).fill(4);
 const terminalPublicKey = tweetnacl.box.keyPair.fromSecretKey(terminalSecretKey).publicKey;

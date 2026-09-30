@@ -14,16 +14,16 @@ import {
 async function createStagedPayload(rootDir, versionId, contents) {
   const stagedPayloadPath = join(rootDir, `stage-${versionId}`);
   await mkdir(stagedPayloadPath, { recursive: true });
-  await writeFile(join(stagedPayloadPath, 'happier'), contents, 'utf8');
-  await mkdir(join(stagedPayloadPath, 'package-dist'), { recursive: true });
-  await writeFile(join(stagedPayloadPath, 'package-dist', 'index.mjs'), `export default ${JSON.stringify(versionId)};\n`, 'utf8');
+  await writeFile(join(stagedPayloadPath, 'happiest'), contents, 'utf8');
+  await mkdir(join(stagedPayloadPath, 'happiest-runtime'), { recursive: true });
+  await writeFile(join(stagedPayloadPath, 'happiest-runtime', 'index.mjs'), `export default ${JSON.stringify(versionId)};\n`, 'utf8');
   return stagedPayloadPath;
 }
 
 for (const [releaseRing, shimName, installRootPattern] of [
-  ['stable', 'happier', /cli\/current\/happier|..\/cli\/current\/happier/],
-  ['preview', 'hprev', /cli-preview\/current\/happier|..\/cli-preview\/current\/happier/],
-  ['publicdev', 'hdev', /cli-dev\/current\/happier|..\/cli-dev\/current\/happier/],
+  ['stable', 'happiest', /cli\/current\/happiest|..\/cli\/current\/happiest/],
+  ['preview', 'happiest-preview', /cli-preview\/current\/happiest|..\/cli-preview\/current\/happiest/],
+  ['publicdev', 'happiest-dev', /cli-dev\/current\/happiest|..\/cli-dev\/current\/happiest/],
 ]) {
   test(`syncInstalledFirstPartyShims points the ${releaseRing} shim at the current payload binary`, async () => {
     const homeDir = await mkdtemp(join(tmpdir(), 'happier-first-party-runtime-'));

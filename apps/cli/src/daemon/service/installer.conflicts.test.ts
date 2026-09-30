@@ -23,7 +23,7 @@ const {
   applyDaemonServiceUninstallPlanMock: vi.fn(async () => undefined),
   resolveDaemonServiceInstallRuntimeTargetMock: vi.fn(async () => ({
     nodePath: '/managed/node',
-    entryPath: '/opt/happier/package-dist/index.mjs',
+    entryPath: '/opt/happier/happiest-runtime/index.mjs',
   })),
   discoverInstalledDaemonServiceEntriesMock: vi.fn<() => Promise<readonly InstalledDaemonServiceEntry[]>>(async () => []),
 }));

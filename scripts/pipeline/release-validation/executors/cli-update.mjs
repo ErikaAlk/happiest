@@ -3,6 +3,7 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import { basename, dirname, resolve } from 'node:path';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { execYarn } from '../../../workspaces/execYarnCommand.mjs';
 import { resolveCoreE2eSlowSuiteCommand } from './core-e2e-slow-suite.mjs';
@@ -82,7 +83,7 @@ function assertCliPackHasRuntimeEntrypoints({ tarballPath, exec }) {
   });
   const listing = Buffer.isBuffer(raw) ? raw.toString('utf8') : String(raw ?? '');
   const entries = new Set(listing.split(/\r?\n/).map((entry) => entry.trim()).filter(Boolean));
-  const requiredEntries = ['package/dist/index.mjs', 'package/package-dist/index.mjs'];
+  const requiredEntries = ['package/dist/index.mjs', `package/${productIdentity.cliRuntimeDirName}/index.mjs`];
   const missing = requiredEntries.filter((entry) => !entries.has(entry));
   if (missing.length > 0) {
     throw new Error(`cli-update local-build pack is missing required runtime entries: ${missing.join(', ')} (${tarballPath})`);

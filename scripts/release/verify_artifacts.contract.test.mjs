@@ -69,7 +69,7 @@ async function createComponentFixture({ product = 'happier-difftastic', foreign 
 function createBaseCliRuntimeSmokeFixtureFiles(version) {
   const markerWrite = "appendFileSync(process.env.HAPPIER_TEST_RUNTIME_SMOKE_MARKER, ";
   return {
-    happier: `#!/usr/bin/env bash\nprintf '%s\\n' '${version}'\n`,
+    happiest: `#!/usr/bin/env bash\nprintf '%s\\n' '${version}'\n`,
     'tools/unpacked/rg': `#!/usr/bin/env bash
 set -euo pipefail
 if [[ "\${1:-}" == '--version' ]]; then
@@ -88,11 +88,11 @@ set -euo pipefail
 printf 'zellij-version\\n' >> "$HAPPIER_TEST_RUNTIME_SMOKE_MARKER"
 printf 'zellij 0.44.3\\n'
 `,
-    'package-dist/index.mjs': `
+    'happiest-runtime/index.mjs': `
       import { appendFileSync } from 'node:fs';
-      if (!process.argv.includes('--version')) throw new Error('package-dist version flag missing');
-      if (process.env.NODE_PATH) throw new Error('package-dist inherited NODE_PATH');
-      ${markerWrite}'package-dist-version\\n');
+      if (!process.argv.includes('--version')) throw new Error('happiest-runtime version flag missing');
+      if (process.env.NODE_PATH) throw new Error('happiest-runtime inherited NODE_PATH');
+      ${markerWrite}'happiest-runtime-version\\n');
       console.log(${JSON.stringify(version)});
     `,
     'node_modules/@anthropic-ai/claude-agent-sdk/package.json': JSON.stringify({
@@ -586,7 +586,7 @@ test('verify-artifacts includes stdout in smoke failures when stderr is empty', 
     await mkdir(stageDir, { recursive: true });
     await mkdir(artifactsDir, { recursive: true });
     await writeFile(
-      join(stageDir, 'happier'),
+      join(stageDir, 'happiest'),
       '#!/usr/bin/env bash\necho "stdout-only smoke failure"\nexit 1\n',
       { encoding: 'utf-8', mode: 0o755 },
     );
@@ -635,7 +635,7 @@ test('verify-artifacts rejects a CLI version mismatch even when optional smoke t
     await mkdir(stageDir, { recursive: true });
     await mkdir(artifactsDir, { recursive: true });
     await writeFile(
-      join(stageDir, 'happier'),
+      join(stageDir, 'happiest'),
       `#!/usr/bin/env bash\nprintf '%s\\n' '${embeddedVersion}'\n`,
       { encoding: 'utf-8', mode: 0o755 },
     );
@@ -684,7 +684,7 @@ test('verify-artifacts exercises the isolated runtime payload of a native base C
     assert.deepEqual(result.baseCliRuntimeSmokes, [fixture.archiveName]);
     const markers = new Set((await readFile(markerPath, 'utf8')).trim().split('\n'));
     assert.deepEqual(markers, new Set([
-      'package-dist-version',
+      'happiest-runtime-version',
       'claude-query',
       'sdk-mcp-server',
       'mcp-cjs',
@@ -708,7 +708,7 @@ test('verify-artifacts rejects a native CLI whose version works but help fails',
     product: 'happier',
     files: {
       ...createBaseCliRuntimeSmokeFixtureFiles('1.2.3'),
-      happier: `#!/usr/bin/env bash
+      happiest: `#!/usr/bin/env bash
 if [[ "\${1:-}" == '--help' ]]; then
   printf 'native help metadata failure\\n' >&2
   exit 1
@@ -787,7 +787,7 @@ test('verify-artifacts rejects a CLI that times out before its version can be at
     await mkdir(stageDir, { recursive: true });
     await mkdir(artifactsDir, { recursive: true });
     await writeFile(
-      join(stageDir, 'happier'),
+      join(stageDir, 'happiest'),
       [
         '#!/usr/bin/env bash',
         "printf 'version %s\\n' '1.2.3-preview.99'",

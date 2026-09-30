@@ -6,6 +6,7 @@ import { coerceHappyMonorepoRootFromPath, getStacksStorageRoot } from './utils/p
 import { readLastLines } from './utils/fs/tail.mjs';
 import { ensureCliBuilt, isCliDistBuildLockActive } from './utils/proc/pm.mjs';
 import { resolveJavaScriptRuntimeCommand } from '@happier-dev/cli-common/providers/managedJavaScriptRuntime';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import {
   findAnyCredentialPathInCliHome,
   findExistingStackCredentialPath,
@@ -2531,7 +2532,7 @@ function isMissingDistStatusError({ error, distEntrypoint }) {
   ];
   if (!loadFailureMarkers.some((marker) => text.includes(marker))) return false;
   if (distEntrypoint && text.includes(distEntrypoint)) return true;
-  return text.includes('/dist/index.mjs') || text.includes('/package-dist/index.mjs');
+  return text.includes('/dist/index.mjs') || text.includes(`/${productIdentity.cliRuntimeDirName}/index.mjs`);
 }
 
 function buildDistMissingStatusFallback({ cliHomeDir, internalServerUrl, env, distEntrypoint }) {

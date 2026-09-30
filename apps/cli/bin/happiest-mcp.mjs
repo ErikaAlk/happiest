@@ -6,7 +6,7 @@ import { join, dirname } from 'path';
 
 import { importPreparedRuntimeEntrypoint } from './_importRuntimeEntrypoint.mjs';
 
-// Ensure Node flags to reduce noisy warnings on stdout (which could interfere with MCP)
+// 避免运行时警告影响 MCP 通信。
 const hasNoWarnings = process.execArgv.includes('--no-warnings');
 const hasNoDeprecation = process.execArgv.includes('--no-deprecation');
 

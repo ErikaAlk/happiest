@@ -104,7 +104,7 @@ describe('cli.update.v1 hosted by the daemon (remote CLI update)', () => {
     const kind = createCliUpdateRemoteTaskKind({
       readFacts: () => facts({ installSource: 'npm', updateCommand: 'npm install -g @happier-dev/cli@latest', canUpdateRemotely: false }),
       publicReleaseRing: 'preview',
-      script: '/usr/lib/node_modules/@happier-dev/cli/bin/happier.mjs',
+      script: '/usr/lib/node_modules/@happier-dev/cli/bin/happiest.mjs',
       cwd: '/tmp',
       logsDir: '/tmp/logs',
       spawnDetached: () => { throw new Error('must not spawn'); },

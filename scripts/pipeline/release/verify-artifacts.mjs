@@ -10,6 +10,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { resolveReleaseAssetBundle } from '@happier-dev/release-runtime/assets';
 import { lookupSha256 } from '@happier-dev/release-runtime/checksums';
 import { verifyMinisign } from '@happier-dev/release-runtime/minisign';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { extractReleasePayloadRootFromArchive, getFirstPartyComponentCatalogEntry } from '@happier-dev/cli-common/firstPartyRuntime';
 
 import { fileSha256 } from './lib/release-files.mjs';
@@ -19,6 +20,7 @@ import { shouldSmokeTestReleaseArtifact } from './publishing/artifact-smoke-comp
 import { CLI_OPTIONAL_COMPONENT_PRODUCTS } from './publishing/product-specs.mjs';
 import { terminateProcessTreeByPid } from '../../testing/process/processTree.mjs';
 
+const CLI_EXECUTABLE_BASE_NAME = getFirstPartyComponentCatalogEntry('happier-cli').executableBaseName;
 const DEFAULT_BINARY_SMOKE_TIMEOUT_MS = 20_000;
 const DEFAULT_SERVER_BINARY_SMOKE_TIMEOUT_MS = 15_000;
 
@@ -328,7 +330,7 @@ async function runBaseCliRuntimeSmoke({ root, scratch, artifact, archivePath, en
   // Version dispatch can succeed before the command catalog and its packaged
   // metadata load. Exercise that native startup path before accepting a CLI.
   const nativeHelp = await runSmokeCommand({
-    command: join(root, artifact.os === 'windows' ? 'happier.exe' : 'happier'),
+    command: join(root, artifact.os === 'windows' ? `${CLI_EXECUTABLE_BASE_NAME}.exe` : CLI_EXECUTABLE_BASE_NAME),
     args: ['--help'],
     cwd: root,
     env,
@@ -341,9 +343,9 @@ async function runBaseCliRuntimeSmoke({ root, scratch, artifact, archivePath, en
     throw new Error(`[release] native CLI help smoke failed for ${archivePath}: ${formatSmokeOutput(nativeHelp)}`);
   }
   await assertBaseCliProjection({ root, targetOs: artifact.os });
-  const packageDistEntrypoint = join(root, 'package-dist', 'index.mjs');
+  const packageDistEntrypoint = join(root, productIdentity.cliRuntimeDirName, 'index.mjs');
   if (!await fileExists(packageDistEntrypoint)) {
-    throw new Error(`[release] missing base CLI package-dist entrypoint in ${archivePath}`);
+    throw new Error(`[release] missing base CLI ${productIdentity.cliRuntimeDirName} entrypoint in ${archivePath}`);
   }
   const packageDistVersion = await runSmokeCommand({
     command: process.execPath,
@@ -353,15 +355,15 @@ async function runBaseCliRuntimeSmoke({ root, scratch, artifact, archivePath, en
     timeoutMs,
   });
   if (packageDistVersion.timedOut === true) {
-    throw new Error(`[release] package-dist version smoke timed out for ${archivePath}: ${formatSmokeOutput(packageDistVersion)}`);
+    throw new Error(`[release] ${productIdentity.cliRuntimeDirName} version smoke timed out for${archivePath}: ${formatSmokeOutput(packageDistVersion)}`);
   }
   if ((packageDistVersion.status ?? 1) !== 0) {
-    throw new Error(`[release] package-dist version smoke failed for ${archivePath}: ${formatSmokeOutput(packageDistVersion)}`);
+    throw new Error(`[release] ${productIdentity.cliRuntimeDirName} version smoke failed for${archivePath}: ${formatSmokeOutput(packageDistVersion)}`);
   }
   const actualPackageDistVersion = String(packageDistVersion.stdout ?? '').trim();
   if (actualPackageDistVersion !== artifact.version) {
     throw new Error(
-      `[release] package-dist version mismatch for ${archivePath}: expected ${artifact.version}, got ${actualPackageDistVersion || '<empty>'}`,
+      `[release] ${productIdentity.cliRuntimeDirName} version mismatch for${archivePath}: expected ${artifact.version}, got ${actualPackageDistVersion || '<empty>'}`,
     );
   }
 

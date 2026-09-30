@@ -3,6 +3,7 @@
 const { createHash } = require('node:crypto');
 const { existsSync, lstatSync, readFileSync, readdirSync, statSync, writeFileSync } = require('node:fs');
 const { dirname, isAbsolute, join, relative, resolve } = require('node:path');
+const { productIdentity } = require('@happier-dev/release-runtime/productIdentity');
 
 const CLI_DIST_BUILD_MANIFEST = '.build-manifest.json';
 const CLI_DIST_BUILD_MANIFEST_TOOL_VERSION = '2';
@@ -584,7 +585,7 @@ function readCliRuntimeAssetIntegrity(params = {}) {
   }
   const entrypoint = params.entrypoint
     ? resolve(String(params.entrypoint))
-    : join(runtimeRoot, 'package-dist', 'index.mjs');
+    : join(runtimeRoot, productIdentity.cliRuntimeDirName, 'index.mjs');
   if (!isPathInsideDirectory(entrypoint, runtimeRoot) || entrypoint === runtimeRoot) {
     return {
       ok: false,

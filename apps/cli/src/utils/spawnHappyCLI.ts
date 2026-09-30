@@ -12,9 +12,9 @@
  * 
  * ## The Wrapper Strategy
  * 
- * We created a wrapper script `bin/happier.mjs` with a shebang `#!/usr/bin/env node`.
+ * We created a wrapper script `bin/happiest.mjs` with a shebang `#!/usr/bin/env node`.
  * This allows direct execution on Unix systems and NPM automatically generates 
- * Windows-specific wrapper scripts (`happier.cmd` and `happier.ps1`) when it sees 
+ * Windows-specific wrapper scripts (`happiest.cmd` and `happiest.ps1`) when it sees 
  * the `bin` field in package.json pointing to a JavaScript file with a shebang.
  * 
  * The wrapper script either directly execs `dist/index.mjs` with the flags we want,
@@ -23,19 +23,19 @@
  * ## Execution Chains
  * 
  * **Unix/Linux/macOS:**
- * 1. User runs `happier` command
- * 2. Shell directly executes `bin/happier.mjs` (shebang: `#!/usr/bin/env node`)
- * 3. `bin/happier.mjs` either execs `node --no-warnings --no-deprecation dist/index.mjs` or imports `dist/index.mjs` directly
+ * 1. User runs `happiest` command
+ * 2. Shell directly executes `bin/happiest.mjs` (shebang: `#!/usr/bin/env node`)
+ * 3. `bin/happiest.mjs` either execs `node --no-warnings --no-deprecation dist/index.mjs` or imports `dist/index.mjs` directly
  * 
  * **Windows:**
- * 1. User runs `happier` command  
- * 2. NPM wrapper (`happier.cmd`) calls `node bin/happier.mjs`
- * 3. `bin/happier.mjs` either execs `node --no-warnings --no-deprecation dist/index.mjs` or imports `dist/index.mjs` directly
+ * 1. User runs `happiest` command  
+ * 2. NPM wrapper (`happiest.cmd`) calls `node bin/happiest.mjs`
+ * 3. `bin/happiest.mjs` either execs `node --no-warnings --no-deprecation dist/index.mjs` or imports `dist/index.mjs` directly
  * 
  * ## The Spawning Problem
  * 
  * When our code needs to spawn Happier CLI as a subprocess (for daemon processes), 
- * we were trying to execute `bin/happier.mjs` directly. This fails on Windows 
+ * we were trying to execute `bin/happiest.mjs` directly. This fails on Windows 
  * because Windows doesn't understand shebangs - you get an `EFTYPE` error.
  * 
  * ## The Solution
@@ -70,6 +70,8 @@ import { resolveJavaScriptRuntimeExecutable } from '@/runtime/js/resolveJavaScri
 import { buildMissingJavaScriptRuntimeMessage } from '@/runtime/js/buildMissingJavaScriptRuntimeMessage';
 import { resolvePackagedRuntimeEntrypoint } from '@/runtime/resolvePackagedRuntimeEntrypoint';
 import { parseOptionalBooleanEnv } from '@happier-dev/protocol';
+import { getFirstPartyComponentCatalogEntry } from '@happier-dev/cli-common/firstPartyRuntime';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { isEmbeddedBunBundlePath } from '@/runtime/js/isEmbeddedBunBundlePath';
 import {
   decidePinnedRunnerSnapshotPrune,
@@ -82,7 +84,7 @@ const STACK_DIST_ENTRYPOINT_ENV = 'HAPPIER_CLI_SUBPROCESS_DIST_ENTRYPOINT';
 const DAEMON_DIST_CLOSURE_FINGERPRINT_ENV = 'HAPPIER_CLI_SUBPROCESS_DAEMON_DIST_CLOSURE_FINGERPRINT';
 const RUNTIME_BACKED_SUBPROCESS_ENV = 'HAPPIER_CLI_SUBPROCESS_RUNTIME_BACKED';
 const CLI_DIST_BUILD_MANIFEST = '.build-manifest.json';
-const PINNED_RUNNER_DIST_DIR = '.runner-snapshots';
+const PINNED_RUNNER_DIST_DIR = productIdentity.runnerSnapshotsDirName;
 const PINNED_RUNNER_REQUIRED_ASSET_RELATIVE_PATHS = [
   ['scripts', 'terminal_launch_spec_runner.cjs'],
   ['scripts', 'claude_local_launcher.cjs'],
@@ -258,8 +260,8 @@ function resolveCurrentProcessBundledScriptPath(): string | null {
   if (!existsSync(scriptPath)) return null;
   const lowered = normalized.toLowerCase();
   const base = basename(lowered);
-  if (base.includes('happier')) return scriptPath;
-  if (base === 'index.mjs' && (lowered.includes('/@happier-dev/cli/') || lowered.includes('/happier/'))) {
+  if (base === `${productIdentity.commandName}.mjs` || base === `${productIdentity.sourceCommandName}.mjs`) return scriptPath;
+  if (base === 'index.mjs' && lowered.includes(`/${productIdentity.cliRuntimeDirName}/`)) {
     return scriptPath;
   }
   return null;
@@ -276,8 +278,8 @@ function buildCurrentProcessBinaryFallbackInvocation(args: string[]): HappyCliSu
 function resolveSiblingWindowsPackagedBinary(entrypoint: string): string | null {
   if (process.platform !== 'win32') return null;
   const distDir = dirname(entrypoint);
-  if (basename(distDir).toLowerCase() !== 'package-dist') return null;
-  const binaryPath = join(dirname(distDir), 'happier.exe');
+  if (basename(distDir).toLowerCase() !== productIdentity.cliRuntimeDirName) return null;
+  const binaryPath = join(dirname(distDir), `${getFirstPartyComponentCatalogEntry('happier-cli').executableBaseName}.exe`);
   return existsSync(binaryPath) ? binaryPath : null;
 }
 
@@ -888,7 +890,7 @@ export function buildHappyCliSubprocessLaunchSpec(
 /**
  * Spawn the Happier CLI with the given arguments in a cross-platform way.
  * 
- * This function bypasses the wrapper script (bin/happier.mjs) and spawns the 
+ * This function bypasses the wrapper script (bin/happiest.mjs) and spawns the 
  * actual CLI entrypoint (dist/index.mjs) directly with Node.js, ensuring
  * compatibility across all platforms including Windows.
  * 

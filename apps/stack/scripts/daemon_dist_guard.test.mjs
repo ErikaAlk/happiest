@@ -48,7 +48,7 @@ test('watch startup admits a validated prior CLI publication without waiting for
   const repoDir = await mkdtemp(join(tmpdir(), 'hstack-last-green-cli-startup-'));
   t.after(async () => rm(repoDir, { recursive: true, force: true }));
   const cliDir = join(repoDir, 'apps', 'cli');
-  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+  const cliBin = join(cliDir, 'bin', 'happiest.mjs');
   const distEntrypoint = join(cliDir, 'dist', 'index.mjs');
   await mkdir(dirname(cliBin), { recursive: true });
   await mkdir(dirname(distEntrypoint), { recursive: true });
@@ -84,7 +84,7 @@ test('watch startup retries a transient atomic CLI publication gap before waitin
   const repoDir = await mkdtemp(join(tmpdir(), 'hstack-last-green-cli-publication-gap-'));
   t.after(async () => rm(repoDir, { recursive: true, force: true }));
   const cliDir = join(repoDir, 'apps', 'cli');
-  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+  const cliBin = join(cliDir, 'bin', 'happiest.mjs');
   const distEntrypoint = join(cliDir, 'dist', 'index.mjs');
   await mkdir(dirname(cliBin), { recursive: true });
   await mkdir(dirname(distEntrypoint), { recursive: true });
@@ -120,7 +120,7 @@ test('source admission forces one last-chance build when builds are disabled and
   const repoDir = await mkdtemp(join(tmpdir(), 'hstack-disabled-cli-bootstrap-'));
   t.after(async () => rm(repoDir, { recursive: true, force: true }));
   const cliDir = join(repoDir, 'apps', 'cli');
-  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+  const cliBin = join(cliDir, 'bin', 'happiest.mjs');
   const distEntrypoint = join(cliDir, 'dist', 'index.mjs');
   await mkdir(dirname(cliBin), { recursive: true });
   const calls = [];
@@ -151,7 +151,7 @@ test('source admission does not force a disabled build when prior dist is valid'
   const repoDir = await mkdtemp(join(tmpdir(), 'hstack-disabled-cli-valid-'));
   t.after(async () => rm(repoDir, { recursive: true, force: true }));
   const cliDir = join(repoDir, 'apps', 'cli');
-  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+  const cliBin = join(cliDir, 'bin', 'happiest.mjs');
   const distEntrypoint = join(cliDir, 'dist', 'index.mjs');
   await mkdir(dirname(cliBin), { recursive: true });
   await mkdir(dirname(distEntrypoint), { recursive: true });
@@ -186,7 +186,7 @@ test('source admission exposes an unchanged runnable prior dist as degraded when
   const repoDir = await mkdtemp(join(tmpdir(), 'hstack-cli-build-failed-fallback-'));
   t.after(async () => rm(repoDir, { recursive: true, force: true }));
   const cliDir = join(repoDir, 'apps', 'cli');
-  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+  const cliBin = join(cliDir, 'bin', 'happiest.mjs');
   const distEntrypoint = join(cliDir, 'dist', 'index.mjs');
   await mkdir(dirname(cliBin), { recursive: true });
   await mkdir(dirname(distEntrypoint), { recursive: true });
@@ -218,7 +218,7 @@ test('source admission uses a successful current build without entering degraded
   const repoDir = await mkdtemp(join(tmpdir(), 'hstack-cli-current-build-'));
   t.after(async () => rm(repoDir, { recursive: true, force: true }));
   const cliDir = join(repoDir, 'apps', 'cli');
-  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+  const cliBin = join(cliDir, 'bin', 'happiest.mjs');
   const distEntrypoint = join(cliDir, 'dist', 'index.mjs');
   await mkdir(dirname(cliBin), { recursive: true });
   await mkdir(dirname(distEntrypoint), { recursive: true });
@@ -245,7 +245,7 @@ test('source admission exposes a successful but superseded build as degraded wit
   const repoDir = await mkdtemp(join(tmpdir(), 'hstack-cli-superseded-build-'));
   t.after(async () => rm(repoDir, { recursive: true, force: true }));
   const cliDir = join(repoDir, 'apps', 'cli');
-  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+  const cliBin = join(cliDir, 'bin', 'happiest.mjs');
   const distEntrypoint = join(cliDir, 'dist', 'index.mjs');
   await mkdir(dirname(cliBin), { recursive: true });
   await mkdir(dirname(distEntrypoint), { recursive: true });
@@ -278,7 +278,7 @@ test('source admission never promotes a different dist identity from a failed re
   const repoDir = await mkdtemp(join(tmpdir(), 'hstack-cli-build-failed-mutated-'));
   t.after(async () => rm(repoDir, { recursive: true, force: true }));
   const cliDir = join(repoDir, 'apps', 'cli');
-  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+  const cliBin = join(cliDir, 'bin', 'happiest.mjs');
   const distEntrypoint = join(cliDir, 'dist', 'index.mjs');
   await mkdir(dirname(cliBin), { recursive: true });
   await mkdir(dirname(distEntrypoint), { recursive: true });
@@ -310,7 +310,7 @@ test('source admission rejects a manifest-valid prior dist when its runtime impo
   const repoDir = await mkdtemp(join(tmpdir(), 'hstack-cli-build-failed-probe-'));
   t.after(async () => rm(repoDir, { recursive: true, force: true }));
   const cliDir = join(repoDir, 'apps', 'cli');
-  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+  const cliBin = join(cliDir, 'bin', 'happiest.mjs');
   const distEntrypoint = join(cliDir, 'dist', 'index.mjs');
   await mkdir(dirname(cliBin), { recursive: true });
   await mkdir(dirname(distEntrypoint), { recursive: true });
@@ -337,7 +337,7 @@ test('source admission fails closed when the disabled-build recovery cannot prod
   const repoDir = await mkdtemp(join(tmpdir(), 'hstack-disabled-cli-failed-bootstrap-'));
   t.after(async () => rm(repoDir, { recursive: true, force: true }));
   const cliDir = join(repoDir, 'apps', 'cli');
-  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+  const cliBin = join(cliDir, 'bin', 'happiest.mjs');
   await mkdir(dirname(cliBin), { recursive: true });
   const calls = [];
 
@@ -361,7 +361,7 @@ test('source daemon admission reuses an exact watcher-admitted dist without a se
   const repoDir = await mkdtemp(join(tmpdir(), 'hstack-watcher-admitted-cli-build-'));
   t.after(async () => rm(repoDir, { recursive: true, force: true }));
   const cliDir = join(repoDir, 'apps', 'cli');
-  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+  const cliBin = join(cliDir, 'bin', 'happiest.mjs');
   const distEntrypoint = join(cliDir, 'dist', 'index.mjs');
   await mkdir(dirname(cliBin), { recursive: true });
   await mkdir(dirname(distEntrypoint), { recursive: true });
@@ -432,7 +432,7 @@ const { resolveCliDistBuildLockPath, withCliDistBuildLock } = await import(${JSO
 const root = ${JSON.stringify(fixtureRoot)};
 const repoDir = join(root, 'repo');
 const cliDir = join(repoDir, 'apps', 'cli');
-const cliBin = join(cliDir, 'bin', 'happier.mjs');
+const cliBin = join(cliDir, 'bin', 'happiest.mjs');
 const distEntrypoint = join(cliDir, 'dist', 'index.mjs');
 const manifestPath = join(cliDir, 'dist', '.build-manifest.json');
 const cliHomeDir = join(root, 'home');
@@ -547,7 +547,7 @@ test('source daemon lifecycle commands run after the CLI publication lock is rel
   t.after(async () => rm(fixtureRoot, { recursive: true, force: true }));
   const repoDir = join(fixtureRoot, 'repo');
   const cliDir = join(repoDir, 'apps', 'cli');
-  const cliBin = join(cliDir, 'bin', 'happier.mjs');
+  const cliBin = join(cliDir, 'bin', 'happiest.mjs');
   const distEntrypoint = join(cliDir, 'dist', 'index.mjs');
   const lockPath = join(repoDir, '.project', 'tmp', 'cli-dist-build.lock');
   const eventsPath = join(fixtureRoot, 'events.jsonl');
@@ -642,13 +642,13 @@ test('applyDaemonDistClosureRuntimeEnv marks an admitted runtime-backed daemon a
 
   applyDaemonDistClosureRuntimeEnv(env, {
     runtimeStatePath: '/tmp/happier/stack.runtime.json',
-    distEntrypoint: '/tmp/happier/runtime/builds/snap-1/cli/package-dist/index.mjs',
+    distEntrypoint: '/tmp/happier/runtime/builds/snap-1/cli/happiest-runtime/index.mjs',
     distClosureFingerprint: 'abc123def4567890',
     runtimeBacked: true,
   });
 
   assert.equal(env.HAPPIER_CLI_SUBPROCESS_RUNTIME_BACKED, '1');
-  assert.equal(env.HAPPIER_CLI_SUBPROCESS_DIST_ENTRYPOINT, '/tmp/happier/runtime/builds/snap-1/cli/package-dist/index.mjs');
+  assert.equal(env.HAPPIER_CLI_SUBPROCESS_DIST_ENTRYPOINT, '/tmp/happier/runtime/builds/snap-1/cli/happiest-runtime/index.mjs');
   assert.equal(env.HAPPIER_CLI_SUBPROCESS_DAEMON_DIST_CLOSURE_FINGERPRINT, 'abc123def4567890');
 });
 
@@ -723,7 +723,7 @@ test('runtime-backed daemon adoption requires a valid authenticated fingerprint 
     'utf-8',
   );
   const input = {
-    distEntrypoint: join(tmp, 'runtime', 'builds', 'snap-b', 'cli', 'package-dist', 'index.mjs'),
+    distEntrypoint: join(tmp, 'runtime', 'builds', 'snap-b', 'cli', 'happiest-runtime', 'index.mjs'),
     distClosure: { ok: true, fingerprint: admittedFingerprint },
     runtimeStatePath,
     runtimeBacked: true,
@@ -864,7 +864,7 @@ function startFakePingAwareDaemon(statePath) {
 
 async function writeStubHappyCli({ cliDir }) {
   // Dist entrypoint exists, but package.json intentionally has no build script.
-  // startLocalDaemonWithAuth should launch the daemon via dist (not via bin/happier.mjs).
+  // startLocalDaemonWithAuth should launch the daemon via dist (not via bin/happiest.mjs).
   const distScript = `
 import { spawn } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
@@ -920,10 +920,10 @@ process.exit(0);
   const { cliBinDir } = await writeStubHappierCliFiles(monoRoot, {
     packageJsonContent: '{}\n',
     distIndexScript: distScript.trimStart(),
-    // If the implementation accidentally invokes bin/happier.mjs instead of dist/index.mjs, fail loudly.
+    // If the implementation accidentally invokes bin/happiest.mjs instead of dist/index.mjs, fail loudly.
     binHappierScript: 'process.exit(42);\n',
   });
-  return join(cliBinDir, 'happier.mjs');
+  return join(cliBinDir, 'happiest.mjs');
 }
 
 async function writeSlowStartStubHappyCli({ cliDir }) {
@@ -979,7 +979,7 @@ process.exit(0);
     distIndexScript: distScript.trimStart(),
     binHappierScript: 'process.exit(42);\n',
   });
-  return join(cliBinDir, 'happier.mjs');
+  return join(cliBinDir, 'happiest.mjs');
 }
 
 async function writeDelayedStopStubHappyCli({ cliDir }) {
@@ -1051,7 +1051,7 @@ process.exit(0);
     distIndexScript: distScript.trimStart(),
     binHappierScript: 'process.exit(42);\n',
   });
-  return join(cliBinDir, 'happier.mjs');
+  return join(cliBinDir, 'happiest.mjs');
 }
 
 async function writePidOnlyFalseReadyStubHappyCli({ cliDir }) {
@@ -1097,7 +1097,7 @@ process.exit(0);
     distIndexScript: distScript.trimStart(),
     binHappierScript: 'process.exit(42);\n',
   });
-  return join(cliBinDir, 'happier.mjs');
+  return join(cliBinDir, 'happiest.mjs');
 }
 
 test('pid-only false-ready fixture publishes daemon command identity and cleans up its child', async () => {
@@ -1196,7 +1196,7 @@ process.exit(0);
 
 async function writeRuntimeSnapshotHappyCliWithNodeEntrypoint({ snapshotDir }) {
   const cliDir = join(snapshotDir, 'cli');
-  const packageDistDir = join(cliDir, 'package-dist');
+  const packageDistDir = join(cliDir, 'happiest-runtime');
   await mkdir(packageDistDir, { recursive: true });
   const cliBin = join(cliDir, 'happier');
 
@@ -1264,7 +1264,7 @@ async function writeRuntimeSnapshotHappyCliJsCommand({ snapshotDir }) {
   const cliDir = join(snapshotDir, 'cli');
   await mkdir(cliDir, { recursive: true });
   const cliBin = join(cliDir, 'happier');
-  const cliCommand = join(cliDir, 'happier.mjs');
+  const cliCommand = join(cliDir, 'happiest.mjs');
 
   const distScript = `
 import { spawn } from 'node:child_process';
@@ -1989,7 +1989,7 @@ test('startLocalDaemonWithAuth ignores unreachable stale dist chunks when the en
   }
 });
 
-test('startLocalDaemonWithAuth prefers guarded dist over package-dist when both entrypoints exist', async () => {
+test('startLocalDaemonWithAuth prefers guarded dist over happiest-runtime when both entrypoints exist', async () => {
   const tmp = await mkdtemp(join(tmpdir(), 'happy-stacks-daemon-dist-preferred-'));
   let daemonPid = null;
   try {
@@ -2019,8 +2019,8 @@ process.exit(0);
       distIndexScript: distScript.trimStart(),
       binHappierScript: 'process.exit(43);\n',
     });
-    await mkdir(join(cliDir, 'package-dist'), { recursive: true });
-    await writeFile(join(cliDir, 'package-dist', 'index.mjs'), 'process.exit(42);\n', 'utf-8');
+    await mkdir(join(cliDir, 'happiest-runtime'), { recursive: true });
+    await writeFile(join(cliDir, 'happiest-runtime', 'index.mjs'), 'process.exit(42);\n', 'utf-8');
 
     await writeFile(join(tmp, 'package.json'), '{}\n', 'utf-8');
     runGit(['init'], tmp);
@@ -2034,7 +2034,7 @@ process.exit(0);
     await writeFile(join(cliHomeDir, 'access.key'), 'dummy\n', 'utf-8');
     await writeFile(join(cliHomeDir, 'settings.json'), JSON.stringify({ machineId: 'test-machine' }) + '\n', 'utf-8');
 
-    const cliBin = join(cliBinDir, 'happier.mjs');
+    const cliBin = join(cliBinDir, 'happiest.mjs');
     const env = buildDaemonDistGuardEnv({
       HAPPIER_STACK_CLI_BUILD: '1',
       HAPPIER_STACK_TUI: '0',
@@ -2054,7 +2054,7 @@ process.exit(0);
 
     const daemonState = JSON.parse(await readFile(join(cliHomeDir, 'daemon.state.json'), 'utf-8'));
     daemonPid = Number(daemonState.pid);
-    assert.ok(daemonPid > 1, 'expected package-dist daemon to write daemon state');
+    assert.ok(daemonPid > 1, 'expected happiest-runtime daemon to write daemon state');
 
     await stopLocalDaemon({
       cliBin,
@@ -2186,7 +2186,7 @@ process.exit(0);
     await writeFile(join(cliHomeDir, 'access.key'), 'dummy\n', 'utf-8');
     await writeFile(join(cliHomeDir, 'settings.json'), JSON.stringify({ machineId: 'test-machine' }) + '\n', 'utf-8');
 
-    const cliBin = join(cliBinDir, 'happier.mjs');
+    const cliBin = join(cliBinDir, 'happiest.mjs');
     const env = buildDaemonDistGuardEnv({
       HAPPIER_STACK_CLI_BUILD: '1',
       HAPPIER_STACK_HOME_DIR: join(tmp, 'hstack-home'),
@@ -3241,7 +3241,7 @@ test('startLocalDaemonWithAuth rejects missing runtime snapshot command paths be
     await assert.rejects(
       () => startLocalDaemonWithAuth({
         cliBin: join(tmp, 'runtime', 'builds', 'snap-auth', 'cli', 'happier'),
-        cliNodeEntrypoint: join(tmp, 'runtime', 'builds', 'snap-auth', 'cli', 'package-dist', 'index.mjs'),
+        cliNodeEntrypoint: join(tmp, 'runtime', 'builds', 'snap-auth', 'cli', 'happiest-runtime', 'index.mjs'),
         cliCommand: join(tmp, 'runtime', 'builds', 'snap-auth', 'cli', 'happier'),
         cliHomeDir,
         internalServerUrl,

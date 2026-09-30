@@ -125,10 +125,10 @@ describe('spawnHappyCLI runtime executable selection', () => {
 
   it('uses the sibling packaged executable for requested Windows session runner launches', async () => {
     await withTempDir('happier-windows-payload-', async (rootDir) => {
-      const packageDistDir = join(rootDir, 'package-dist');
+      const packageDistDir = join(rootDir, 'happiest-runtime');
       mkdirSync(packageDistDir, { recursive: true });
       const entrypoint = join(packageDistDir, 'index.mjs');
-      const binaryPath = join(rootDir, 'happier.exe');
+      const binaryPath = join(rootDir, 'happiest.exe');
       writeFileSync(entrypoint, 'export {};\n', 'utf8');
       writeFileSync(binaryPath, '@echo off\r\n', 'utf8');
 
@@ -153,10 +153,10 @@ describe('spawnHappyCLI runtime executable selection', () => {
 
   it('keeps the node entrypoint when the Windows session runner binary preference is disabled', async () => {
     await withTempDir('happier-windows-payload-', async (rootDir) => {
-      const packageDistDir = join(rootDir, 'package-dist');
+      const packageDistDir = join(rootDir, 'happiest-runtime');
       mkdirSync(packageDistDir, { recursive: true });
       const entrypoint = join(packageDistDir, 'index.mjs');
-      const binaryPath = join(rootDir, 'happier.exe');
+      const binaryPath = join(rootDir, 'happiest.exe');
       writeFileSync(entrypoint, 'export {};\n', 'utf8');
       writeFileSync(binaryPath, '@echo off\r\n', 'utf8');
 
@@ -264,6 +264,52 @@ describe('spawnHappyCLI runtime executable selection', () => {
         process.env.HAPPIEST_HOME_DIR = originalHappyHomeDir;
       }
     }
+  });
+
+  it('reuses the source launcher script run under bun when dist entrypoint is missing', async () => {
+    const originalArgv = [...process.argv];
+    const originalExecPath = process.execPath;
+    const originalPlatformDescriptorInner = Object.getOwnPropertyDescriptor(process, 'platform');
+    const originalHappyHomeDir = process.env.HAPPIEST_HOME_DIR;
+
+    await withTempDir('happiest-source-launcher-', async (root) => {
+      const scriptPath = join(root, 'apps', 'cli', 'bin', 'happiest-source.mjs');
+      mkdirSync(join(root, 'apps', 'cli', 'bin'), { recursive: true });
+      writeFileSync(scriptPath, '// launcher\n', 'utf8');
+      try {
+        Object.defineProperty(process, 'platform', { ...originalPlatformDescriptorInner, value: 'linux' });
+        process.argv = ['bun', scriptPath, 'daemon', 'start'];
+        Object.defineProperty(process, 'execPath', { value: '/usr/bin/bun', configurable: true });
+        process.env.HAPPIEST_HOME_DIR = '/tmp/happiest-cli-test-home';
+        envScope.patch({
+          HAPPIER_CLI_SUBPROCESS_ENTRYPOINT: join(root, 'missing', 'index.mjs'),
+          HAPPIER_CLI_SUBPROCESS_RUNTIME: undefined,
+          HAPPIER_CLI_SUBPROCESS_PREFER_TSX: '0',
+          HAPPIER_CLI_SUBPROCESS_ALLOW_TSX_FALLBACK: '0',
+          HAPPIER_VARIANT: undefined,
+          HAPPIER_STACK_REPO_DIR: undefined,
+          HAPPIER_STACK_CLI_ROOT_DIR: undefined,
+          HAPPIER_STACK_STACK: undefined,
+        });
+
+        const mod = (await import('@/utils/spawnHappyCLI')) as typeof import('@/utils/spawnHappyCLI');
+        const launchSpec = mod.buildHappyCliSubprocessLaunchSpec(['daemon', 'start-sync']);
+
+        expect(launchSpec.runtime).toBe('bun');
+        expect(launchSpec.args).toEqual([scriptPath, 'daemon', 'start-sync']);
+      } finally {
+        process.argv = originalArgv;
+        Object.defineProperty(process, 'execPath', { value: originalExecPath, configurable: true });
+        if (originalPlatformDescriptorInner) {
+          Object.defineProperty(process, 'platform', originalPlatformDescriptorInner);
+        }
+        if (originalHappyHomeDir === undefined) {
+          delete process.env.HAPPIEST_HOME_DIR;
+        } else {
+          process.env.HAPPIEST_HOME_DIR = originalHappyHomeDir;
+        }
+      }
+    });
   });
 
   it('fails closed on Windows when only an embedded bun bundle script path is available', async () => {

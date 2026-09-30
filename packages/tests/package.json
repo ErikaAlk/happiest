@@ -70,6 +70,7 @@
   "dependencies": {
     "@happier-dev/cli-common": "0.0.0",
     "@happier-dev/protocol": "0.0.0",
+    "@happier-dev/release-runtime": "0.0.0",
     "socket.io-client": "^4.8.1",
     "tweetnacl": "^1.0.3",
     "privacy-kit": "^0.0.25"

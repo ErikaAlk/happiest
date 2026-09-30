@@ -48,8 +48,8 @@ test('readStackInfoSnapshot reports invalid runtime pointers instead of marking 
 
 test('readStackInfoSnapshot reports runtime snapshots with missing daemon node entrypoints as invalid', async (t) => {
   const fixture = await createRuntimeSnapshotFixture(t, { stackName: 'prod-dev' });
-  await rm(join(fixture.snapshotDir, 'cli', 'package-dist', 'index.mjs'), { force: true });
-  await rm(join(fixture.stackDir, 'runtime', 'current', 'cli', 'package-dist', 'index.mjs'), { force: true });
+  await rm(join(fixture.snapshotDir, 'cli', 'happiest-runtime', 'index.mjs'), { force: true });
+  await rm(join(fixture.stackDir, 'runtime', 'current', 'cli', 'happiest-runtime', 'index.mjs'), { force: true });
 
   const restore = withPatchedProcessEnv(t, { HAPPIER_STACK_STORAGE_DIR: fixture.storageDir });
   try {

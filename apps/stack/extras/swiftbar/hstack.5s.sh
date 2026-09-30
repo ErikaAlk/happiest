@@ -294,7 +294,7 @@ else
   else
     echo "--Setup (guided) | bash=$hstack_TERM param1=setup dir=$hstack_ROOT_DIR terminal=false refresh=true"
     echo "--Bootstrap (clone/install) | bash=$hstack_TERM param1=bootstrap dir=$hstack_ROOT_DIR terminal=false refresh=true"
-    echo "--CLI link (install happier wrapper) | bash=$hstack_TERM param1=cli:link dir=$hstack_ROOT_DIR terminal=false refresh=true"
+    echo "--CLI link (install happiest wrapper) | bash=$hstack_TERM param1=cli:link dir=$hstack_ROOT_DIR terminal=false refresh=true"
     echo "--Mobile dev helper | bash=$hstack_TERM param1=mobile dir=$hstack_ROOT_DIR terminal=false"
   fi
 fi

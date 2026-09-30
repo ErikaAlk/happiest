@@ -1,4 +1,7 @@
 import { basename, dirname } from 'node:path';
+import { resolveFirstPartyComponentPublicReleaseVariant } from '@happier-dev/cli-common/firstPartyRuntime';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+import { PUBLIC_RELEASE_RING_IDS } from '@happier-dev/release-runtime/releaseRings';
 
 import { isEmbeddedBunBundlePath } from '@/runtime/js/isEmbeddedBunBundlePath';
 
@@ -13,7 +16,7 @@ export function resolveRunnerSnapshotRuntimeRootFromPath(pathLike: string | null
   if (!normalized || isEmbeddedBunBundlePath(normalized)) {
     return null;
   }
-  for (const snapshotMarker of ['/.runner-snapshots/', '/dist/.runner-snapshots/']) {
+  for (const snapshotMarker of [`/${productIdentity.runnerSnapshotsDirName}/`]) {
     const snapshotIndex = normalized.lastIndexOf(snapshotMarker);
     if (snapshotIndex < 0) {
       continue;
@@ -47,7 +50,7 @@ export function resolveRuntimeRootFromEntrypointPath(pathLike: string | null | u
     return runnerSnapshotRoot;
   }
 
-  const packageDistMarker = `${String.raw`/`}package-dist${String.raw`/`}`;
+  const packageDistMarker = `/${productIdentity.cliRuntimeDirName}/`;
   const distMarker = `${String.raw`/`}dist${String.raw`/`}`;
   const packageDistIndex = normalized.indexOf(packageDistMarker);
   if (packageDistIndex >= 0) {
@@ -98,7 +101,10 @@ export function resolveRuntimeRootFromPackagedBinaryPath(pathLike: string | null
     return null;
   }
   const fileName = basename(normalized).toLowerCase();
-  if (!['happier', 'happier.exe', 'happier-dev', 'happier-dev.exe'].includes(fileName)) {
+  const executableBase = fileName.replace(/\.exe$/u, '');
+  if (!PUBLIC_RELEASE_RING_IDS.some((channel) => resolveFirstPartyComponentPublicReleaseVariant({
+    componentId: 'happier-cli', channel,
+  }).installShims.includes(executableBase))) {
     return null;
   }
   return dirname(normalized);

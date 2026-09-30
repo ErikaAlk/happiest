@@ -2,10 +2,12 @@ import { existsSync } from 'node:fs';
 import { lstat, readdir } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { run, runCapture } from '../proc/proc.mjs';
 import { preferStackLocalhostUrl } from '../paths/localhost_host.mjs';
 import { getComponentDir, resolveStackEnvPath } from '../paths/paths.mjs';
+import { getCliBinPath } from '../paths/cli_bin.mjs';
 import { getExpoStatePaths, isStateProcessRunning, looksLikeExpoMetro } from '../expo/expo.mjs';
 import { resolveLocalhostHost } from '../paths/localhost_host.mjs';
 import { getStackRuntimeStatePath, isPidAlive, readStackRuntimeStateFile } from '../stack/runtime_state.mjs';
@@ -503,9 +505,9 @@ export async function resolveStackAuthCliExecutable({ rootDir, env = process.env
 
   const cliDir = getComponentDir(rootDir, 'happier-cli', env);
   const preferredEntrypoints = [
-    join(cliDir, 'package-dist', 'index.mjs'),
+    join(cliDir, productIdentity.cliRuntimeDirName, 'index.mjs'),
     join(cliDir, 'dist', 'index.mjs'),
-    join(cliDir, 'bin', 'happier.mjs'),
+    getCliBinPath(cliDir),
   ];
 
   for (const candidate of preferredEntrypoints) {

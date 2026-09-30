@@ -4,6 +4,7 @@ import {
   parseHappierToolsShellBridgeCommand,
   type HappierToolsShellBridgeCommand,
 } from '@happier-dev/protocol';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { resolveHappierToolsShellBridgeContextEnv } from './resolveHappierToolsShellBridgeContextEnv';
 
 /**
@@ -52,7 +53,7 @@ function buildCanonicalBridgeArgs(command: HappierToolsShellBridgeCommand): stri
 export function parseTrustedHappierToolsShellBridgeCommand(
   command: string,
 ): HappierToolsShellBridgeCommand | null {
-  const parsed = parseHappierToolsShellBridgeCommand(command);
+  const parsed = parseHappierToolsShellBridgeCommand(command, productIdentity.commandName);
   if (!parsed) return null;
   const expected = buildHappierToolsShellBridgeCommand(buildCanonicalBridgeArgs(parsed));
   return parsed.rawCommand === expected ? parsed : null;
