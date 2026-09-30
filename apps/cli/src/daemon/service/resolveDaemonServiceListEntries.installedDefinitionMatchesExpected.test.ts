@@ -12,8 +12,8 @@ const { ensureJavaScriptRuntimeExecutableMock } = vi.hoisted(() => ({
 
 describe('resolveDaemonServiceListEntries', () => {
   const envScope = createEnvKeyScope([
-    'HAPPIER_HOME_DIR',
-    'HAPPIER_ACTIVE_SERVER_ID',
+    'HAPPIEST_HOME_DIR',
+    'HAPPIEST_ACTIVE_SERVER_ID',
     'HAPPIER_PUBLIC_RELEASE_CHANNEL',
   ]);
 
@@ -38,8 +38,8 @@ describe('resolveDaemonServiceListEntries', () => {
       writeFileSync(join(happierHomeDir, 'default-cli-release-channel.json'), '{"releaseChannel":"preview"}\n', 'utf8');
 
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: 'preview',
       });
       vi.resetModules();
@@ -98,8 +98,8 @@ describe('resolveDaemonServiceListEntries', () => {
       mkdirSync(happierHomeDir, { recursive: true });
 
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
       });
       vi.resetModules();
@@ -168,8 +168,8 @@ describe('resolveDaemonServiceListEntries', () => {
       const expectedWrapperPath = 'C:\\Users\\tester\\.happier\\services\\happier-daemon.default.ps1';
 
       envScope.patch({
-        HAPPIER_HOME_DIR: join(hostHomeDir, '.happier'),
-        HAPPIER_ACTIVE_SERVER_ID: 'default',
+        HAPPIEST_HOME_DIR: join(hostHomeDir, '.happier'),
+        HAPPIEST_ACTIVE_SERVER_ID: 'default',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: 'preview',
       });
       vi.resetModules();

@@ -114,7 +114,7 @@ describe('writeSessionExitReport', () => {
     });
   });
 
-  it('defaults to HAPPIER_HOME_DIR/logs/session-exit', async () => {
+  it('defaults to HAPPIEST_HOME_DIR/logs/session-exit', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'happy-home-dir-'));
     mockedHappyHomeDir.value = dir;
 

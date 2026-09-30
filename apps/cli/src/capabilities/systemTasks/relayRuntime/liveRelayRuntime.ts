@@ -160,7 +160,7 @@ function resolveRelayRuntimeConfig(params: RelayRuntimeTaskParams): RelayRuntime
   const configDir = configuredPaths.configDir;
   const dataDir = configuredPaths.dataDir;
   const logDir = configuredPaths.logDir;
-  const serviceName = String(process.env.HAPPIER_SELF_HOST_SERVICE_NAME ?? defaults.serviceName).trim() || defaults.serviceName;
+  const serviceName = String(process.env.HAPPIEST_SELF_HOST_SERVICE_NAME ?? defaults.serviceName).trim() || defaults.serviceName;
   const serverHost = String(process.env.HAPPIER_SERVER_HOST ?? defaults.serverHost).trim() || defaults.serverHost;
   const serverPort = parsePort(process.env.HAPPIER_SERVER_PORT, defaults.serverPort);
   const githubRepo = resolveHappierGithubRepo();

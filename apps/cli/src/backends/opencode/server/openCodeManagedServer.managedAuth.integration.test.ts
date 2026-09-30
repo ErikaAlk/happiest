@@ -78,7 +78,7 @@ process.on('SIGINT', shutdown);
 const envKeys = [
   'PATH',
   'HOME',
-  'HAPPIER_HOME_DIR',
+  'HAPPIEST_HOME_DIR',
   'HAPPIER_OPENCODE_PATH',
   'HAPPIER_OPENCODE_CLI_GENERATION',
   'HAPPIER_OPENCODE_SERVER_STATE_PATH',
@@ -98,7 +98,7 @@ async function prepareManagedServerEnv(): Promise<Readonly<{ root: string; logsD
     fileName: 'fake-opencode',
     contents: FAKE_OPEN_CODE_V2_SERVE,
   });
-  process.env.HAPPIER_HOME_DIR = join(root, 'happier-home');
+  process.env.HAPPIEST_HOME_DIR = join(root, 'happier-home');
   process.env.HAPPIER_OPENCODE_PATH = shimPath;
   delete process.env.HAPPIER_OPENCODE_SERVER_STATE_PATH;
   delete process.env.OPENCODE_PASSWORD;

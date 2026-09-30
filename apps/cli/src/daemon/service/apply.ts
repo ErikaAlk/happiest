@@ -20,7 +20,7 @@ function formatDaemonServiceCommand(command: DaemonServicePlannedCommand): strin
 
 function runCommand(command: DaemonServicePlannedCommand): { ok: boolean; out: string | null } {
   try {
-    const timeoutMs = readPositiveIntEnv('HAPPIER_DAEMON_SERVICE_COMMAND_TIMEOUT_MS', 30_000);
+    const timeoutMs = readPositiveIntEnv('HAPPIEST_DAEMON_SERVICE_COMMAND_TIMEOUT_MS', 30_000);
     const res = spawnSync(command.cmd, [...command.args], {
       stdio: ['ignore', 'pipe', 'pipe'],
       env: buildServiceCommandEnv({ cmd: command.cmd, args: command.args, env: process.env }),

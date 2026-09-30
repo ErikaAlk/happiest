@@ -38,6 +38,10 @@
       "types": "./dist/releaseRings.d.ts",
       "require": "./releaseRings.cjs",
       "default": "./dist/releaseRings.js"
+    },
+    "./productIdentity": {
+      "types": "./dist/productIdentity.d.ts",
+      "default": "./dist/productIdentity.js"
     }
   },
   "files": [

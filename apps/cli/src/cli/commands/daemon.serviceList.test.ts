@@ -45,9 +45,9 @@ function writeValidLinuxDaemonServiceDefinition(params: Readonly<{
       execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
       env: {
         HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: params.targetMode ?? 'pinned',
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: params.targetMode ?? 'pinned',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: params.releaseChannel ?? 'stable',
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: params.happierHomeDir ?? '/Users/tester/.happier',
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: params.happierHomeDir ?? '/Users/tester/.happier',
       },
       wantedBy: 'default.target',
     }),
@@ -68,7 +68,7 @@ function writeValidWindowsDaemonServiceDefinition(params: Readonly<{
       programArgs: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
       env: {
         HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: params.targetMode ?? 'pinned',
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: params.targetMode ?? 'pinned',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: params.releaseChannel ?? 'stable',
       },
     }),
@@ -82,14 +82,14 @@ describe('happier daemon service list', () => {
       {
         prefix: 'happier-service-list-',
         env: {
-          HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-          HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '',
-          HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
+          HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+          HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '',
+          HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
         },
       },
       async ({ homeDir }) => {
-        process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
-        process.env.HAPPIER_DAEMON_SERVICE_CHANNEL = 'stable';
+        process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
+        process.env.HAPPIEST_DAEMON_SERVICE_CHANNEL = 'stable';
         await writeDaemonSettingsFixture(homeDir, {
           servers: {
             'company.prod': {
@@ -141,14 +141,14 @@ describe('happier daemon service list', () => {
       {
         prefix: 'happier-service-list-default-following-',
         env: {
-          HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-          HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '',
-          HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
+          HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+          HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '',
+          HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
         },
       },
       async ({ homeDir }) => {
-        process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
-        process.env.HAPPIER_DAEMON_SERVICE_CHANNEL = 'stable';
+        process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
+        process.env.HAPPIEST_DAEMON_SERVICE_CHANNEL = 'stable';
         await writeDaemonSettingsFixture(homeDir);
 
         const unitDir = join(homeDir, '.config', 'systemd', 'user');
@@ -191,22 +191,22 @@ describe('happier daemon service list', () => {
       {
         prefix: 'happier-service-list-running-owner-',
         env: {
-          HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-          HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '',
-          HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
+          HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+          HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '',
+          HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
         },
       },
       async ({ homeDir }) => {
-        process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
-        process.env.HAPPIER_DAEMON_SERVICE_CHANNEL = 'stable';
+        process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
+        process.env.HAPPIEST_DAEMON_SERVICE_CHANNEL = 'stable';
         await writeDaemonSettingsFixture(homeDir);
 
         const runtime = resolveDaemonServiceCliRuntimeFromEnv({
           processEnv: {
             ...process.env,
-            HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-            HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+            HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
           },
         });
         const paths = resolveDaemonServicePaths(runtime);
@@ -218,9 +218,9 @@ describe('happier daemon service list', () => {
             execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
             env: {
               HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-              HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+              HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
               HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
-              HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: join(homeDir, '.happier'),
+              HAPPIEST_DAEMON_SERVICE_HOME_DIR: join(homeDir, '.happier'),
             },
             wantedBy: 'default.target',
           }),
@@ -265,22 +265,22 @@ describe('happier daemon service list', () => {
       {
         prefix: 'happier-service-list-cli-versions-',
         env: {
-          HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-          HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '',
-          HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
+          HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+          HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '',
+          HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
         },
       },
       async ({ homeDir }) => {
-        process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
-        process.env.HAPPIER_DAEMON_SERVICE_CHANNEL = 'stable';
+        process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
+        process.env.HAPPIEST_DAEMON_SERVICE_CHANNEL = 'stable';
         await writeDaemonSettingsFixture(homeDir);
 
         const runtime = resolveDaemonServiceCliRuntimeFromEnv({
           processEnv: {
             ...process.env,
-            HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-            HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+            HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
           },
         });
         const paths = resolveDaemonServicePaths(runtime);
@@ -292,9 +292,9 @@ describe('happier daemon service list', () => {
             execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
             env: {
               HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-              HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+              HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
               HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
-              HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: join(homeDir, '.happier'),
+              HAPPIEST_DAEMON_SERVICE_HOME_DIR: join(homeDir, '.happier'),
             },
             wantedBy: 'default.target',
           }),
@@ -379,22 +379,22 @@ describe('happier daemon service list', () => {
       {
         prefix: 'happier-service-list-running-systemd-active-',
         env: {
-          HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-          HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '',
-          HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
+          HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+          HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '',
+          HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
         },
       },
       async ({ homeDir }) => {
-        process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
-        process.env.HAPPIER_DAEMON_SERVICE_CHANNEL = 'stable';
+        process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
+        process.env.HAPPIEST_DAEMON_SERVICE_CHANNEL = 'stable';
         await writeDaemonSettingsFixture(homeDir);
 
         const runtime = resolveDaemonServiceCliRuntimeFromEnv({
           processEnv: {
             ...process.env,
-            HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-            HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+            HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
           },
         });
         const paths = resolveDaemonServicePaths(runtime);
@@ -406,7 +406,7 @@ describe('happier daemon service list', () => {
             execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
             env: {
               HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-              HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+              HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
               HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             },
             wantedBy: 'default.target',
@@ -468,22 +468,22 @@ describe('happier daemon service list', () => {
       {
         prefix: 'happier-service-list-running-launchctl-active-',
         env: {
-          HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
-          HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '',
-          HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
+          HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
+          HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '',
+          HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
         },
       },
       async ({ homeDir }) => {
-        process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
-        process.env.HAPPIER_DAEMON_SERVICE_CHANNEL = 'stable';
+        process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
+        process.env.HAPPIEST_DAEMON_SERVICE_CHANNEL = 'stable';
         await writeDaemonSettingsFixture(homeDir);
 
         const runtime = resolveDaemonServiceCliRuntimeFromEnv({
           processEnv: {
             ...process.env,
-            HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
-            HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
+            HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
           },
         });
         const paths = resolveDaemonServicePaths(runtime);
@@ -495,7 +495,7 @@ describe('happier daemon service list', () => {
             programArgs: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
             env: {
               HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-              HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+              HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
               HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             },
             stdoutPath: join(homeDir, '.happier', 'logs', 'daemon-service.out.log'),
@@ -559,22 +559,22 @@ describe('happier daemon service list', () => {
       {
         prefix: 'happier-service-list-launchctl-not-running-',
         env: {
-          HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
-          HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '',
-          HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
+          HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
+          HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '',
+          HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
         },
       },
       async ({ homeDir }) => {
-        process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
-        process.env.HAPPIER_DAEMON_SERVICE_CHANNEL = 'stable';
+        process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
+        process.env.HAPPIEST_DAEMON_SERVICE_CHANNEL = 'stable';
         await writeDaemonSettingsFixture(homeDir);
 
         const runtime = resolveDaemonServiceCliRuntimeFromEnv({
           processEnv: {
             ...process.env,
-            HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
-            HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
+            HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
           },
         });
         const paths = resolveDaemonServicePaths(runtime);
@@ -586,7 +586,7 @@ describe('happier daemon service list', () => {
             programArgs: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
             env: {
               HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-              HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+              HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
               HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             },
             stdoutPath: join(homeDir, '.happier', 'logs', 'daemon-service.out.log'),
@@ -650,22 +650,22 @@ describe('happier daemon service list', () => {
       {
         prefix: 'happier-service-list-running-schtasks-active-',
         env: {
-          HAPPIER_DAEMON_SERVICE_PLATFORM: 'win32',
-          HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '',
-          HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
+          HAPPIEST_DAEMON_SERVICE_PLATFORM: 'win32',
+          HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '',
+          HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
         },
       },
       async ({ homeDir }) => {
-        process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
-        process.env.HAPPIER_DAEMON_SERVICE_CHANNEL = 'stable';
+        process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
+        process.env.HAPPIEST_DAEMON_SERVICE_CHANNEL = 'stable';
         await writeDaemonSettingsFixture(homeDir);
 
         const runtime = resolveDaemonServiceCliRuntimeFromEnv({
           processEnv: {
             ...process.env,
-            HAPPIER_DAEMON_SERVICE_PLATFORM: 'win32',
-            HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_DAEMON_SERVICE_PLATFORM: 'win32',
+            HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
           },
         });
         const paths = resolveDaemonServicePaths(runtime);
@@ -742,14 +742,14 @@ describe('happier daemon service list', () => {
         {
           prefix: 'happier-daemon-service-list-',
           env: {
-            HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-            HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '',
-            HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
+            HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+            HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '',
+            HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
           },
         },
         async ({ homeDir }) => {
-          process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
-          process.env.HAPPIER_DAEMON_SERVICE_CHANNEL = 'stable';
+          process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
+          process.env.HAPPIEST_DAEMON_SERVICE_CHANNEL = 'stable';
           await writeDaemonSettingsFixture(homeDir, {
             servers: {
               'company.prod': {
@@ -789,28 +789,28 @@ describe('happier daemon service list', () => {
       {
         prefix: 'happier-daemon-service-list-json-',
         env: {
-          HAPPIER_DAEMON_SERVICE_PLATFORM: 'win32',
-          HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '',
-          HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
+          HAPPIEST_DAEMON_SERVICE_PLATFORM: 'win32',
+          HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '',
+          HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
         },
       },
       async ({ homeDir }) => {
-        process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
-        process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR = join(homeDir, '.happier');
-        process.env.HAPPIER_DAEMON_SERVICE_CHANNEL = 'stable';
+        process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
+        process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR = join(homeDir, '.happier');
+        process.env.HAPPIEST_DAEMON_SERVICE_CHANNEL = 'stable';
         await writeDaemonSettingsFixture(homeDir);
 
         const runtime = resolveDaemonServiceCliRuntimeFromEnv({
           processEnv: {
             ...process.env,
-            HAPPIER_DAEMON_SERVICE_PLATFORM: 'win32',
-            HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'pinned',
-            HAPPIER_DAEMON_SERVICE_INSTANCE_ID: 'company',
-            HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-            HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: join(homeDir, '.happier'),
-            HAPPIER_DAEMON_SERVICE_SERVER_URL: 'https://company.example.test',
-            HAPPIER_DAEMON_SERVICE_WEBAPP_URL: 'https://company.example.test',
+            HAPPIEST_DAEMON_SERVICE_PLATFORM: 'win32',
+            HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'pinned',
+            HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: 'company',
+            HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+            HAPPIEST_DAEMON_SERVICE_HOME_DIR: join(homeDir, '.happier'),
+            HAPPIEST_DAEMON_SERVICE_SERVER_URL: 'https://company.example.test',
+            HAPPIEST_DAEMON_SERVICE_WEBAPP_URL: 'https://company.example.test',
           },
         });
         const wrapperPath = resolveDaemonServicePaths(runtime).wrapperPath;
@@ -883,10 +883,10 @@ describe('happier daemon service list', () => {
           env: {
             HOME: '/tmp/placeholder',
             USERPROFILE: '/tmp/placeholder',
-            HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-            HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
-            HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '~/service-home',
-            HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '~/service-happier',
+            HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+            HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
+            HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '~/service-home',
+            HAPPIEST_DAEMON_SERVICE_HOME_DIR: '~/service-happier',
           },
         },
         async ({ homeDir }) => {
@@ -945,10 +945,10 @@ describe('happier daemon service list', () => {
         {
           prefix: 'happier-daemon-service-list-real-home-',
           env: {
-            HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-            HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
-            HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '',
-            HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '',
+            HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+            HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
+            HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '',
+            HAPPIEST_DAEMON_SERVICE_HOME_DIR: '',
             HOME: '/isolated-stack-home',
             USERPROFILE: '/isolated-stack-home',
           },

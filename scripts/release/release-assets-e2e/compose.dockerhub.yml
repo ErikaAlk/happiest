@@ -26,10 +26,10 @@ services:
       - relay
     environment:
       HAPPIER_NPM_SPEC: ${HAPPIER_NPM_SPEC:-@happier-dev/cli@next}
-      HAPPIER_SERVER_URL: ${HAPPIER_SERVER_URL:-http://relay:3005}
+      HAPPIEST_SERVER_URL: ${HAPPIEST_SERVER_URL:-http://relay:3005}
       HAPPIER_E2E_WITH_DAEMON: ${HAPPIER_E2E_WITH_DAEMON:-1}
       HAPPIER_CLI_INSTALL_MODE: preinstalled
-      HAPPIER_ACTIVE_SERVER_ID: ${HAPPIER_ACTIVE_SERVER_ID:-smoke}
+      HAPPIEST_ACTIVE_SERVER_ID: ${HAPPIEST_ACTIVE_SERVER_ID:-smoke}
       CLIENT_HOME_DIR: ${CLIENT_HOME_DIR:-/home/happier/happier-home}
       APPROVER_HOME_DIR: ${APPROVER_HOME_DIR:-/home/happier/happier-approver-home}
     volumes:

@@ -67,18 +67,18 @@ vi.mock('@/daemon/ownership/daemonServiceInventory', () => ({
 
 describe('handleDaemonCliCommand ownership conflicts', () => {
     const envScope = createEnvKeyScope([
-        'HAPPIER_HOME_DIR',
-        'HAPPIER_ACTIVE_SERVER_ID',
+        'HAPPIEST_HOME_DIR',
+        'HAPPIEST_ACTIVE_SERVER_ID',
         'HAPPIER_PUBLIC_RELEASE_CHANNEL',
-        'HAPPIER_DAEMON_SERVICE_PLATFORM',
-        'HAPPIER_DAEMON_SERVICE_USER_HOME_DIR',
-        'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR',
-        'HAPPIER_DAEMON_SERVICE_CHANNEL',
-        'HAPPIER_DAEMON_SERVICE_TARGET_MODE',
+        'HAPPIEST_DAEMON_SERVICE_PLATFORM',
+        'HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR',
+        'HAPPIEST_DAEMON_SERVICE_HOME_DIR',
+        'HAPPIEST_DAEMON_SERVICE_CHANNEL',
+        'HAPPIEST_DAEMON_SERVICE_TARGET_MODE',
         'HAPPIER_DAEMON_STARTUP_SOURCE',
-        'HAPPIER_SERVER_URL',
-        'HAPPIER_PUBLIC_SERVER_URL',
-        'HAPPIER_WEBAPP_URL',
+        'HAPPIEST_SERVER_URL',
+        'HAPPIEST_PUBLIC_SERVER_URL',
+        'HAPPIEST_WEBAPP_URL',
     ]);
 
     afterEach(() => {
@@ -111,14 +111,14 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
     it('fails closed for daemon start and stop when a background service is already running for the selected relay', async () => {
         await withTempDir('happier-daemon-service-owned-conflict-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
-                HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-                HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-                HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: join(homeDir, '.happier'),
-                HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
-                HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+                HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+                HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+                HAPPIEST_DAEMON_SERVICE_HOME_DIR: join(homeDir, '.happier'),
+                HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
+                HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
             });
             vi.resetModules();
 
@@ -207,8 +207,8 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
     it('allows daemon start takeover to spawn a replacement relay when the current owner is manual', async () => {
         await withTempDir('happier-daemon-start-takeover-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             });
             vi.resetModules();
@@ -268,12 +268,12 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
     it('prints JSON when daemon start is already running for the current invocation', async () => {
         await withTempDir('happier-daemon-start-json-already-running-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
-                HAPPIER_SERVER_URL: 'https://cloud.example.test',
-                HAPPIER_PUBLIC_SERVER_URL: 'https://cloud.example.test',
-                HAPPIER_WEBAPP_URL: 'https://app.example.test',
+                HAPPIEST_SERVER_URL: 'https://cloud.example.test',
+                HAPPIEST_PUBLIC_SERVER_URL: 'https://cloud.example.test',
+                HAPPIEST_WEBAPP_URL: 'https://app.example.test',
             });
             vi.resetModules();
 
@@ -333,8 +333,8 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
     it('fails closed for daemon restart without --takeover when a manual daemon is already running', async () => {
         await withTempDir('happier-daemon-restart-manual-conflict-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             });
             vi.resetModules();
@@ -388,13 +388,13 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
     it('fails closed when daemon restart sees an installed background service for the active relay', async () => {
         await withTempDir('happier-daemon-restart-service-installed-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
-                HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-                HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-                HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: join(homeDir, '.happier'),
-                HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
+                HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+                HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+                HAPPIEST_DAEMON_SERVICE_HOME_DIR: join(homeDir, '.happier'),
+                HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
                 HAPPIER_DAEMON_STARTUP_SOURCE: '',
             });
             vi.resetModules();
@@ -450,13 +450,13 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
     it('prints JSON when daemon start is blocked by an installed background service', async () => {
         await withTempDir('happier-daemon-start-json-service-installed-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
-                HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-                HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-                HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: join(homeDir, '.happier'),
-                HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
+                HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+                HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+                HAPPIEST_DAEMON_SERVICE_HOME_DIR: join(homeDir, '.happier'),
+                HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
                 HAPPIER_DAEMON_STARTUP_SOURCE: '',
             });
             vi.resetModules();
@@ -516,8 +516,8 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
     it('allows daemon restart takeover to replace a manual daemon explicitly', async () => {
         await withTempDir('happier-daemon-restart-takeover-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             });
             vi.resetModules();
@@ -568,8 +568,8 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
     it('allows daemon stop to stop a legacy manual daemon without startup metadata', async () => {
         await withTempDir('happier-daemon-stop-legacy-manual-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             });
             vi.resetModules();
@@ -615,8 +615,8 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
     it('allows daemon restart takeover to replace a legacy manual daemon without startup metadata', async () => {
         await withTempDir('happier-daemon-restart-legacy-takeover-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             });
             vi.resetModules();
@@ -666,17 +666,17 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
         await withTempDir('happier-daemon-service-installed-', async (homeDir) => {
             const happierHomeDir = join(homeDir, '.happier');
             envScope.patch({
-                HAPPIER_HOME_DIR: happierHomeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: happierHomeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
-                HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-                HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-                HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-                HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
+                HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+                HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+                HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+                HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
                 HAPPIER_DAEMON_STARTUP_SOURCE: '',
-                HAPPIER_SERVER_URL: 'https://cloud.example.test',
-                HAPPIER_PUBLIC_SERVER_URL: 'https://cloud.example.test',
-                HAPPIER_WEBAPP_URL: 'https://cloud.example.test',
+                HAPPIEST_SERVER_URL: 'https://cloud.example.test',
+                HAPPIEST_PUBLIC_SERVER_URL: 'https://cloud.example.test',
+                HAPPIEST_WEBAPP_URL: 'https://cloud.example.test',
             });
             vi.resetModules();
 
@@ -708,8 +708,8 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
                     description: 'Happier Daemon',
                     execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
                     env: {
-                        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-                        HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+                        HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                         HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
                     },
                     wantedBy: 'default.target',

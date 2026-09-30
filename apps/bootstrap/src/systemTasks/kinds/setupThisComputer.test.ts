@@ -99,7 +99,7 @@ function createScenario(scenario: Scenario = {}) {
     // The run's scope addresses the target through the CLI's env server selection only on the
     // reads made before it may select that relay (`target`); every other read is `selected`.
     readAuthStatus: vi.fn(async (_ring, cli) => {
-      const targetUrl = cli.processEnv?.HAPPIER_SERVER_URL;
+      const targetUrl = cli.processEnv?.HAPPIEST_SERVER_URL;
       if (targetUrl) {
         record(`readTargetAuthStatus:${targetUrl}`);
         return scenario.targetAuthStatus ?? authStatus;
@@ -201,9 +201,9 @@ describe('setup.thisComputer.v1 (interactive executor)', () => {
       provenance: 'managed',
       version: '0.2.13',
       processEnv: expect.objectContaining({
-        HAPPIER_SERVER_URL: APP_RELAY,
-        HAPPIER_WEBAPP_URL: 'https://app.example.test',
-        HAPPIER_LOCAL_SERVER_URL: 'http://127.0.0.1:3005',
+        HAPPIEST_SERVER_URL: APP_RELAY,
+        HAPPIEST_WEBAPP_URL: 'https://app.example.test',
+        HAPPIEST_LOCAL_SERVER_URL: 'http://127.0.0.1:3005',
       }),
     }));
   });

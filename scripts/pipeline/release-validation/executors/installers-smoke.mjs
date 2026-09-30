@@ -227,7 +227,7 @@ export async function runInstallersSmokeValidation({ repoRoot, platform, source,
   };
   if (localBuildAssets) {
     env.HAPPIER_RELEASE_ASSETS_DIR = localBuildAssets.assetsDir;
-    env.HAPPIER_MINISIGN_PUBKEY = localBuildAssets.publicKey;
+    env.HAPPIEST_MINISIGN_PUBKEY =localBuildAssets.publicKey;
     if (localBuildAssets.installVersion) {
       env.HAPPIER_INSTALL_VERSION = localBuildAssets.installVersion;
     }

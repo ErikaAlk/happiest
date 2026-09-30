@@ -365,7 +365,7 @@ function main() {
 
   const binPath = opts.dryRun ? path.join(prefixDir, process.platform === 'win32' ? 'happier.cmd' : 'bin/happier') : resolveInstalledBin(prefixDir);
 
-  const baseEnv = { ...process.env, HAPPIER_HOME_DIR: homeDir };
+  const baseEnv = { ...process.env, HAPPIEST_HOME_DIR: homeDir };
 
   run(opts, binPath, ['--help'], { cwd: repoRoot, env: baseEnv, stdio: opts.dryRun ? 'inherit' : ['ignore', 'inherit', 'inherit'], timeoutMs: 30_000 });
   run(opts, binPath, ['--version'], { cwd: repoRoot, env: baseEnv, stdio: opts.dryRun ? 'inherit' : ['ignore', 'inherit', 'inherit'], timeoutMs: 10_000 });

@@ -10,7 +10,7 @@ vi.mock('@/daemon/doctor', () => ({
 
 describe('stopDaemon: graceful wait before force kill', () => {
   let envScope = createEnvKeyScope([
-    'HAPPIER_HOME_DIR',
+    'HAPPIEST_HOME_DIR',
     'HAPPIER_DAEMON_HTTP_TIMEOUT',
     'HAPPIER_DAEMON_STOP_WAIT_FOR_DEATH_TIMEOUT_MS',
   ]);
@@ -21,7 +21,7 @@ describe('stopDaemon: graceful wait before force kill', () => {
     vi.unstubAllGlobals();
     envScope.restore();
     envScope = createEnvKeyScope([
-      'HAPPIER_HOME_DIR',
+      'HAPPIEST_HOME_DIR',
       'HAPPIER_DAEMON_HTTP_TIMEOUT',
       'HAPPIER_DAEMON_STOP_WAIT_FOR_DEATH_TIMEOUT_MS',
     ]);
@@ -33,7 +33,7 @@ describe('stopDaemon: graceful wait before force kill', () => {
 
     const homeDir = createTempDirSync('happier-cli-daemon-stop-grace-');
     envScope.patch({
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_DAEMON_HTTP_TIMEOUT: '1000',
       HAPPIER_DAEMON_STOP_WAIT_FOR_DEATH_TIMEOUT_MS: '5000',
     });
@@ -182,7 +182,7 @@ describe('stopDaemon: graceful wait before force kill', () => {
   it('does not kill or delete a lock-only startup without daemon-state ownership proof', async () => {
     const homeDir = createTempDirSync('happier-cli-daemon-stop-lock-fallback-');
     envScope.patch({
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
     });
 
     const daemonPid = 23456;

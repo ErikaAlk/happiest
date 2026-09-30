@@ -31,7 +31,7 @@ function installParameters(key: OptionalRuntimeKey) {
     componentId: components[key],
     versionId: configuration.currentCliVersion,
     channel: configuration.publicReleaseRing,
-    processEnv: { ...process.env, HAPPIER_HOME_DIR: configuration.happyHomeDir },
+    processEnv: { ...process.env, HAPPIEST_HOME_DIR: configuration.happyHomeDir },
   };
 }
 

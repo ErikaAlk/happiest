@@ -58,12 +58,12 @@ vi.mock('@/daemon/ownership/daemonServiceInventory', async (importOriginal) => {
 });
 
 function installDefaultFollowingServiceFixture(homeDir: string): void {
-    process.env.HAPPIER_DAEMON_SERVICE_PLATFORM = process.platform === 'darwin' || process.platform === 'linux' || process.platform === 'win32'
+    process.env.HAPPIEST_DAEMON_SERVICE_PLATFORM = process.platform === 'darwin' || process.platform === 'linux' || process.platform === 'win32'
         ? process.platform
         : 'linux';
-    process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
-    process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR = join(homeDir, '.happier');
-    process.env.HAPPIER_DAEMON_SERVICE_TARGET_MODE = 'default-following';
+    process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR = join(homeDir, '.happier');
+    process.env.HAPPIEST_DAEMON_SERVICE_TARGET_MODE = 'default-following';
     reloadConfiguration();
 
     const runtime = resolveDaemonServiceCliRuntimeFromEnv({ processEnv: process.env });
@@ -77,10 +77,10 @@ function installDefaultFollowingServiceFixture(homeDir: string): void {
                 label: paths.label,
                 programArgs: [runtime.nodePath, runtime.entryPath, 'daemon', 'start-sync'].filter(Boolean),
                 env: {
-                    HAPPIER_HOME_DIR: join(homeDir, '.happier'),
+                    HAPPIEST_HOME_DIR: join(homeDir, '.happier'),
                     HAPPIER_PUBLIC_RELEASE_CHANNEL: runtime.channel,
                     HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-                    HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+                    HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
                 },
                 stdoutPath: paths.stdoutPath,
                 stderrPath: paths.stderrPath,
@@ -98,10 +98,10 @@ function installDefaultFollowingServiceFixture(homeDir: string): void {
                 description: 'Happier Daemon',
                 execStart: [runtime.nodePath, runtime.entryPath, 'daemon', 'start-sync'].filter(Boolean),
                 env: {
-                    HAPPIER_HOME_DIR: join(homeDir, '.happier'),
+                    HAPPIEST_HOME_DIR: join(homeDir, '.happier'),
                     HAPPIER_PUBLIC_RELEASE_CHANNEL: runtime.channel,
                     HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-                    HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+                    HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
                 },
                 wantedBy: 'default.target',
             }),
@@ -115,10 +115,10 @@ function installDefaultFollowingServiceFixture(homeDir: string): void {
         renderWindowsScheduledTaskWrapperPs1({
             programArgs: [runtime.nodePath, runtime.entryPath, 'daemon', 'start-sync'].filter(Boolean),
             env: {
-                HAPPIER_HOME_DIR: join(homeDir, '.happier'),
+                HAPPIEST_HOME_DIR: join(homeDir, '.happier'),
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: runtime.channel,
                 HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-                HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+                HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
             },
         }),
         'utf8',
@@ -159,15 +159,15 @@ describe('happier server background service follow-up', () => {
 
     it('prompts to restart a default-following background service after switching active servers', async () => {
         const home = await mkdtemp(join(tmpdir(), 'happier-server-use-followup-'));
-        const previousHome = process.env.HAPPIER_HOME_DIR;
-        const prevDaemonPlatform = process.env.HAPPIER_DAEMON_SERVICE_PLATFORM;
-        const prevDaemonUserHomeDir = process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR;
-        const prevDaemonHappierHomeDir = process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR;
-        const prevDaemonTargetMode = process.env.HAPPIER_DAEMON_SERVICE_TARGET_MODE;
+        const previousHome = process.env.HAPPIEST_HOME_DIR;
+        const prevDaemonPlatform = process.env.HAPPIEST_DAEMON_SERVICE_PLATFORM;
+        const prevDaemonUserHomeDir = process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR;
+        const prevDaemonHappierHomeDir = process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR;
+        const prevDaemonTargetMode = process.env.HAPPIEST_DAEMON_SERVICE_TARGET_MODE;
         const restoreTty = setTtyMode(true, true);
 
         try {
-            process.env.HAPPIER_HOME_DIR = home;
+            process.env.HAPPIEST_HOME_DIR = home;
             reloadConfiguration();
 
             const serverA = await addServerProfile({
@@ -228,16 +228,16 @@ describe('happier server background service follow-up', () => {
             }));
         } finally {
             restoreTty();
-            if (previousHome === undefined) delete process.env.HAPPIER_HOME_DIR;
-            else process.env.HAPPIER_HOME_DIR = previousHome;
-            if (prevDaemonPlatform === undefined) delete process.env.HAPPIER_DAEMON_SERVICE_PLATFORM;
-            else process.env.HAPPIER_DAEMON_SERVICE_PLATFORM = prevDaemonPlatform;
-            if (prevDaemonUserHomeDir === undefined) delete process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR;
-            else process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = prevDaemonUserHomeDir;
-            if (prevDaemonHappierHomeDir === undefined) delete process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR;
-            else process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR = prevDaemonHappierHomeDir;
-            if (prevDaemonTargetMode === undefined) delete process.env.HAPPIER_DAEMON_SERVICE_TARGET_MODE;
-            else process.env.HAPPIER_DAEMON_SERVICE_TARGET_MODE = prevDaemonTargetMode;
+            if (previousHome === undefined) delete process.env.HAPPIEST_HOME_DIR;
+            else process.env.HAPPIEST_HOME_DIR = previousHome;
+            if (prevDaemonPlatform === undefined) delete process.env.HAPPIEST_DAEMON_SERVICE_PLATFORM;
+            else process.env.HAPPIEST_DAEMON_SERVICE_PLATFORM = prevDaemonPlatform;
+            if (prevDaemonUserHomeDir === undefined) delete process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR;
+            else process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = prevDaemonUserHomeDir;
+            if (prevDaemonHappierHomeDir === undefined) delete process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR;
+            else process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR = prevDaemonHappierHomeDir;
+            if (prevDaemonTargetMode === undefined) delete process.env.HAPPIEST_DAEMON_SERVICE_TARGET_MODE;
+            else process.env.HAPPIEST_DAEMON_SERVICE_TARGET_MODE = prevDaemonTargetMode;
             reloadConfiguration();
             await rm(home, { recursive: true, force: true });
         }
@@ -245,15 +245,15 @@ describe('happier server background service follow-up', () => {
 
     it('prompts to re-authenticate when credentials no longer work on the newly selected server', async () => {
         const home = await mkdtemp(join(tmpdir(), 'happier-server-use-stale-followup-'));
-        const previousHome = process.env.HAPPIER_HOME_DIR;
-        const prevDaemonPlatform = process.env.HAPPIER_DAEMON_SERVICE_PLATFORM;
-        const prevDaemonUserHomeDir = process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR;
-        const prevDaemonHappierHomeDir = process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR;
-        const prevDaemonTargetMode = process.env.HAPPIER_DAEMON_SERVICE_TARGET_MODE;
+        const previousHome = process.env.HAPPIEST_HOME_DIR;
+        const prevDaemonPlatform = process.env.HAPPIEST_DAEMON_SERVICE_PLATFORM;
+        const prevDaemonUserHomeDir = process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR;
+        const prevDaemonHappierHomeDir = process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR;
+        const prevDaemonTargetMode = process.env.HAPPIEST_DAEMON_SERVICE_TARGET_MODE;
         const restoreTty = setTtyMode(true, true);
 
         try {
-            process.env.HAPPIER_HOME_DIR = home;
+            process.env.HAPPIEST_HOME_DIR = home;
             reloadConfiguration();
 
             const serverA = await addServerProfile({
@@ -314,16 +314,16 @@ describe('happier server background service follow-up', () => {
             expect(spawnHappyCLIMock).toHaveBeenCalledTimes(1);
         } finally {
             restoreTty();
-            if (previousHome === undefined) delete process.env.HAPPIER_HOME_DIR;
-            else process.env.HAPPIER_HOME_DIR = previousHome;
-            if (prevDaemonPlatform === undefined) delete process.env.HAPPIER_DAEMON_SERVICE_PLATFORM;
-            else process.env.HAPPIER_DAEMON_SERVICE_PLATFORM = prevDaemonPlatform;
-            if (prevDaemonUserHomeDir === undefined) delete process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR;
-            else process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = prevDaemonUserHomeDir;
-            if (prevDaemonHappierHomeDir === undefined) delete process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR;
-            else process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR = prevDaemonHappierHomeDir;
-            if (prevDaemonTargetMode === undefined) delete process.env.HAPPIER_DAEMON_SERVICE_TARGET_MODE;
-            else process.env.HAPPIER_DAEMON_SERVICE_TARGET_MODE = prevDaemonTargetMode;
+            if (previousHome === undefined) delete process.env.HAPPIEST_HOME_DIR;
+            else process.env.HAPPIEST_HOME_DIR = previousHome;
+            if (prevDaemonPlatform === undefined) delete process.env.HAPPIEST_DAEMON_SERVICE_PLATFORM;
+            else process.env.HAPPIEST_DAEMON_SERVICE_PLATFORM = prevDaemonPlatform;
+            if (prevDaemonUserHomeDir === undefined) delete process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR;
+            else process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = prevDaemonUserHomeDir;
+            if (prevDaemonHappierHomeDir === undefined) delete process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR;
+            else process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR = prevDaemonHappierHomeDir;
+            if (prevDaemonTargetMode === undefined) delete process.env.HAPPIEST_DAEMON_SERVICE_TARGET_MODE;
+            else process.env.HAPPIEST_DAEMON_SERVICE_TARGET_MODE = prevDaemonTargetMode;
             reloadConfiguration();
             await rm(home, { recursive: true, force: true });
         }
@@ -331,16 +331,16 @@ describe('happier server background service follow-up', () => {
 
     it('prints manual follow-up guidance in non-interactive mode when a default-following background service exists', async () => {
         const home = await mkdtemp(join(tmpdir(), 'happier-server-use-noninteractive-followup-'));
-        const previousHome = process.env.HAPPIER_HOME_DIR;
-        const prevDaemonPlatform = process.env.HAPPIER_DAEMON_SERVICE_PLATFORM;
-        const prevDaemonUserHomeDir = process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR;
-        const prevDaemonHappierHomeDir = process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR;
-        const prevDaemonTargetMode = process.env.HAPPIER_DAEMON_SERVICE_TARGET_MODE;
+        const previousHome = process.env.HAPPIEST_HOME_DIR;
+        const prevDaemonPlatform = process.env.HAPPIEST_DAEMON_SERVICE_PLATFORM;
+        const prevDaemonUserHomeDir = process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR;
+        const prevDaemonHappierHomeDir = process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR;
+        const prevDaemonTargetMode = process.env.HAPPIEST_DAEMON_SERVICE_TARGET_MODE;
         const restoreTty = setTtyMode(false, false);
         const output = captureConsoleLogAndMuteStdout();
 
         try {
-            process.env.HAPPIER_HOME_DIR = home;
+            process.env.HAPPIEST_HOME_DIR = home;
             reloadConfiguration();
 
             await addServerProfile({
@@ -382,16 +382,16 @@ describe('happier server background service follow-up', () => {
         } finally {
             output.restore();
             restoreTty();
-            if (previousHome === undefined) delete process.env.HAPPIER_HOME_DIR;
-            else process.env.HAPPIER_HOME_DIR = previousHome;
-            if (prevDaemonPlatform === undefined) delete process.env.HAPPIER_DAEMON_SERVICE_PLATFORM;
-            else process.env.HAPPIER_DAEMON_SERVICE_PLATFORM = prevDaemonPlatform;
-            if (prevDaemonUserHomeDir === undefined) delete process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR;
-            else process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = prevDaemonUserHomeDir;
-            if (prevDaemonHappierHomeDir === undefined) delete process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR;
-            else process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR = prevDaemonHappierHomeDir;
-            if (prevDaemonTargetMode === undefined) delete process.env.HAPPIER_DAEMON_SERVICE_TARGET_MODE;
-            else process.env.HAPPIER_DAEMON_SERVICE_TARGET_MODE = prevDaemonTargetMode;
+            if (previousHome === undefined) delete process.env.HAPPIEST_HOME_DIR;
+            else process.env.HAPPIEST_HOME_DIR = previousHome;
+            if (prevDaemonPlatform === undefined) delete process.env.HAPPIEST_DAEMON_SERVICE_PLATFORM;
+            else process.env.HAPPIEST_DAEMON_SERVICE_PLATFORM = prevDaemonPlatform;
+            if (prevDaemonUserHomeDir === undefined) delete process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR;
+            else process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = prevDaemonUserHomeDir;
+            if (prevDaemonHappierHomeDir === undefined) delete process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR;
+            else process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR = prevDaemonHappierHomeDir;
+            if (prevDaemonTargetMode === undefined) delete process.env.HAPPIEST_DAEMON_SERVICE_TARGET_MODE;
+            else process.env.HAPPIEST_DAEMON_SERVICE_TARGET_MODE = prevDaemonTargetMode;
             reloadConfiguration();
             await rm(home, { recursive: true, force: true });
         }
@@ -399,16 +399,16 @@ describe('happier server background service follow-up', () => {
 
     it('prints authentication guidance in non-interactive mode when the selected server credentials are stale', async () => {
         const home = await mkdtemp(join(tmpdir(), 'happier-server-use-noninteractive-auth-followup-'));
-        const previousHome = process.env.HAPPIER_HOME_DIR;
-        const prevDaemonPlatform = process.env.HAPPIER_DAEMON_SERVICE_PLATFORM;
-        const prevDaemonUserHomeDir = process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR;
-        const prevDaemonHappierHomeDir = process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR;
-        const prevDaemonTargetMode = process.env.HAPPIER_DAEMON_SERVICE_TARGET_MODE;
+        const previousHome = process.env.HAPPIEST_HOME_DIR;
+        const prevDaemonPlatform = process.env.HAPPIEST_DAEMON_SERVICE_PLATFORM;
+        const prevDaemonUserHomeDir = process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR;
+        const prevDaemonHappierHomeDir = process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR;
+        const prevDaemonTargetMode = process.env.HAPPIEST_DAEMON_SERVICE_TARGET_MODE;
         const restoreTty = setTtyMode(false, false);
         const output = captureConsoleLogAndMuteStdout();
 
         try {
-            process.env.HAPPIER_HOME_DIR = home;
+            process.env.HAPPIEST_HOME_DIR = home;
             reloadConfiguration();
 
             const serverA = await addServerProfile({
@@ -461,16 +461,16 @@ describe('happier server background service follow-up', () => {
         } finally {
             output.restore();
             restoreTty();
-            if (previousHome === undefined) delete process.env.HAPPIER_HOME_DIR;
-            else process.env.HAPPIER_HOME_DIR = previousHome;
-            if (prevDaemonPlatform === undefined) delete process.env.HAPPIER_DAEMON_SERVICE_PLATFORM;
-            else process.env.HAPPIER_DAEMON_SERVICE_PLATFORM = prevDaemonPlatform;
-            if (prevDaemonUserHomeDir === undefined) delete process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR;
-            else process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = prevDaemonUserHomeDir;
-            if (prevDaemonHappierHomeDir === undefined) delete process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR;
-            else process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR = prevDaemonHappierHomeDir;
-            if (prevDaemonTargetMode === undefined) delete process.env.HAPPIER_DAEMON_SERVICE_TARGET_MODE;
-            else process.env.HAPPIER_DAEMON_SERVICE_TARGET_MODE = prevDaemonTargetMode;
+            if (previousHome === undefined) delete process.env.HAPPIEST_HOME_DIR;
+            else process.env.HAPPIEST_HOME_DIR = previousHome;
+            if (prevDaemonPlatform === undefined) delete process.env.HAPPIEST_DAEMON_SERVICE_PLATFORM;
+            else process.env.HAPPIEST_DAEMON_SERVICE_PLATFORM = prevDaemonPlatform;
+            if (prevDaemonUserHomeDir === undefined) delete process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR;
+            else process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = prevDaemonUserHomeDir;
+            if (prevDaemonHappierHomeDir === undefined) delete process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR;
+            else process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR = prevDaemonHappierHomeDir;
+            if (prevDaemonTargetMode === undefined) delete process.env.HAPPIEST_DAEMON_SERVICE_TARGET_MODE;
+            else process.env.HAPPIEST_DAEMON_SERVICE_TARGET_MODE = prevDaemonTargetMode;
             reloadConfiguration();
             await rm(home, { recursive: true, force: true });
         }
@@ -479,10 +479,10 @@ describe('happier server background service follow-up', () => {
     it('fails closed with repair guidance when duplicate user and system default-following services exist', async () => {
         const output = captureConsoleLogAndMuteStdout();
         const home = await mkdtemp(join(tmpdir(), 'happier-server-use-duplicate-followup-'));
-        const previousHome = process.env.HAPPIER_HOME_DIR;
+        const previousHome = process.env.HAPPIEST_HOME_DIR;
 
         try {
-            process.env.HAPPIER_HOME_DIR = home;
+            process.env.HAPPIEST_HOME_DIR = home;
             reloadConfiguration();
 
             const serverA = await addServerProfile({
@@ -539,8 +539,8 @@ describe('happier server background service follow-up', () => {
             expect(output.logs.join('\n')).toContain('sudo happier doctor repair --yes');
         } finally {
             output.restore();
-            if (previousHome === undefined) delete process.env.HAPPIER_HOME_DIR;
-            else process.env.HAPPIER_HOME_DIR = previousHome;
+            if (previousHome === undefined) delete process.env.HAPPIEST_HOME_DIR;
+            else process.env.HAPPIEST_HOME_DIR = previousHome;
             reloadConfiguration();
             await rm(home, { recursive: true, force: true });
         }
@@ -767,11 +767,11 @@ describe('happier server background service follow-up', () => {
             await import('./backgroundServiceFollowUp');
 
         const home = await mkdtemp(join(tmpdir(), 'happier-server-use-target-probe-'));
-        const previousHome = process.env.HAPPIER_HOME_DIR;
+        const previousHome = process.env.HAPPIEST_HOME_DIR;
         const restoreTty = setTtyMode(false, false);
 
         try {
-            process.env.HAPPIER_HOME_DIR = home;
+            process.env.HAPPIEST_HOME_DIR = home;
             reloadConfiguration();
 
             await addServerProfile({
@@ -810,8 +810,8 @@ describe('happier server background service follow-up', () => {
             expect(axiosGetMock.mock.calls[0]?.[0]).toBe('https://b.example.test/v1/account/profile');
         } finally {
             restoreTty();
-            if (previousHome === undefined) delete process.env.HAPPIER_HOME_DIR;
-            else process.env.HAPPIER_HOME_DIR = previousHome;
+            if (previousHome === undefined) delete process.env.HAPPIEST_HOME_DIR;
+            else process.env.HAPPIEST_HOME_DIR = previousHome;
             reloadConfiguration();
             await rm(home, { recursive: true, force: true });
         }

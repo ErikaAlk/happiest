@@ -43,7 +43,7 @@ async function main() {
         DISPLAY: display, GDK_BACKEND: 'x11', LIBGL_ALWAYS_SOFTWARE: '1', APPIMAGE_EXTRACT_AND_RUN: '1', HAPPIER_TAURI_STARTUP_MARKER: marker,
         // The shipped explicit-CLI override (provenance `override`): the status read resolves this
         // stand-in instead of acquiring a CLI, so the app's own task stays read-only and offline.
-        HAPPIER_BOOTSTRAP_CLI_PATH: stubCli,
+        HAPPIEST_BOOTSTRAP_CLI_PATH: stubCli,
       },
       stdio: 'inherit',
     });

@@ -82,10 +82,10 @@ vi.mock('axios', async () => {
 
 describe.sequential('doAuth (non-interactive)', () => {
   const envKeys = [
-    'HAPPIER_HOME_DIR',
-    'HAPPIER_SERVER_URL',
-    'HAPPIER_WEBAPP_URL',
-    'HAPPIER_PUBLIC_SERVER_URL',
+    'HAPPIEST_HOME_DIR',
+    'HAPPIEST_SERVER_URL',
+    'HAPPIEST_WEBAPP_URL',
+    'HAPPIEST_PUBLIC_SERVER_URL',
     'HAPPIER_NO_BROWSER_OPEN',
     'HAPPIER_AUTH_POLL_INTERVAL_MS',
     'HAPPIER_AUTH_METHOD',
@@ -101,9 +101,9 @@ describe.sequential('doAuth (non-interactive)', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: home,
-        HAPPIER_SERVER_URL: 'https://server.example.test',
-        HAPPIER_WEBAPP_URL: 'https://webapp.example.test',
+        HAPPIEST_HOME_DIR: home,
+        HAPPIEST_SERVER_URL: 'https://server.example.test',
+        HAPPIEST_WEBAPP_URL: 'https://webapp.example.test',
         HAPPIER_NO_BROWSER_OPEN: '1',
         HAPPIER_AUTH_POLL_INTERVAL_MS: '1',
         HAPPIER_AUTH_METHOD: undefined,
@@ -148,10 +148,10 @@ describe.sequential('doAuth (non-interactive)', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: home,
-        HAPPIER_SERVER_URL: 'http://127.0.0.1:53545',
-        HAPPIER_WEBAPP_URL: 'https://webapp.example.test',
-        HAPPIER_PUBLIC_SERVER_URL: undefined,
+        HAPPIEST_HOME_DIR: home,
+        HAPPIEST_SERVER_URL: 'http://127.0.0.1:53545',
+        HAPPIEST_WEBAPP_URL: 'https://webapp.example.test',
+        HAPPIEST_PUBLIC_SERVER_URL: undefined,
         HAPPIER_NO_BROWSER_OPEN: '1',
         HAPPIER_AUTH_POLL_INTERVAL_MS: '1',
         HAPPIER_AUTH_METHOD: undefined,
@@ -185,9 +185,9 @@ describe.sequential('doAuth (non-interactive)', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: home,
-        HAPPIER_SERVER_URL: 'http://192.168.1.10:3005',
-        HAPPIER_WEBAPP_URL: 'https://webapp.example.test',
+        HAPPIEST_HOME_DIR: home,
+        HAPPIEST_SERVER_URL: 'http://192.168.1.10:3005',
+        HAPPIEST_WEBAPP_URL: 'https://webapp.example.test',
         HAPPIER_NO_BROWSER_OPEN: '1',
         HAPPIER_AUTH_POLL_INTERVAL_MS: '1',
         HAPPIER_AUTH_METHOD: undefined,
@@ -219,10 +219,10 @@ describe.sequential('doAuth (non-interactive)', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: home,
-        HAPPIER_SERVER_URL: 'http://127.0.0.1:53545',
-        HAPPIER_WEBAPP_URL: 'https://webapp.example.test',
-        HAPPIER_PUBLIC_SERVER_URL: undefined,
+        HAPPIEST_HOME_DIR: home,
+        HAPPIEST_SERVER_URL: 'http://127.0.0.1:53545',
+        HAPPIEST_WEBAPP_URL: 'https://webapp.example.test',
+        HAPPIEST_PUBLIC_SERVER_URL: undefined,
         HAPPIER_TAILSCALE_AUTO_PUBLIC_URL: '0',
         HAPPIER_NO_BROWSER_OPEN: '1',
         HAPPIER_AUTH_POLL_INTERVAL_MS: '1',
@@ -255,10 +255,10 @@ describe.sequential('doAuth (non-interactive)', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: home,
-        HAPPIER_SERVER_URL: 'http://localhost:3010',
-        HAPPIER_WEBAPP_URL: 'http://happier-dev-auth.localhost:8082',
-        HAPPIER_PUBLIC_SERVER_URL: undefined,
+        HAPPIEST_HOME_DIR: home,
+        HAPPIEST_SERVER_URL: 'http://localhost:3010',
+        HAPPIEST_WEBAPP_URL: 'http://happier-dev-auth.localhost:8082',
+        HAPPIEST_PUBLIC_SERVER_URL: undefined,
         HAPPIER_TAILSCALE_AUTO_PUBLIC_URL: '0',
         HAPPIER_NO_BROWSER_OPEN: '1',
         HAPPIER_AUTH_POLL_INTERVAL_MS: '1',
@@ -284,7 +284,7 @@ describe.sequential('doAuth (non-interactive)', () => {
     }
   }, 15_000);
 
-  it('uses apiServerUrl for auth API calls when HAPPIER_PUBLIC_SERVER_URL is set', async () => {
+  it('uses apiServerUrl for auth API calls when HAPPIEST_PUBLIC_SERVER_URL is set', async () => {
     const home = await createTempDir('happier-cli-auth-noninteractive-apiServerUrl-');
     const envScope = createEnvKeyScope(envKeys);
     const restoreTty = setStdioTtyForTest({ stdin: false, stdout: false });
@@ -293,10 +293,10 @@ describe.sequential('doAuth (non-interactive)', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: home,
-        HAPPIER_SERVER_URL: 'http://127.0.0.1:53545',
-        HAPPIER_PUBLIC_SERVER_URL: 'https://my-stack.example.test',
-        HAPPIER_WEBAPP_URL: 'https://webapp.example.test',
+        HAPPIEST_HOME_DIR: home,
+        HAPPIEST_SERVER_URL: 'http://127.0.0.1:53545',
+        HAPPIEST_PUBLIC_SERVER_URL: 'https://my-stack.example.test',
+        HAPPIEST_WEBAPP_URL: 'https://webapp.example.test',
         HAPPIER_NO_BROWSER_OPEN: '1',
         HAPPIER_AUTH_POLL_INTERVAL_MS: '1',
         HAPPIER_AUTH_METHOD: 'web',
@@ -362,9 +362,9 @@ describe.sequential('doAuth (non-interactive)', () => {
       }) as AxiosLike['post'];
 
       envScope.patch({
-        HAPPIER_HOME_DIR: home,
-        HAPPIER_SERVER_URL: 'https://server.example.test',
-        HAPPIER_WEBAPP_URL: 'https://webapp.example.test',
+        HAPPIEST_HOME_DIR: home,
+        HAPPIEST_SERVER_URL: 'https://server.example.test',
+        HAPPIEST_WEBAPP_URL: 'https://webapp.example.test',
         HAPPIER_NO_BROWSER_OPEN: '1',
         HAPPIER_AUTH_POLL_INTERVAL_MS: '1',
         HAPPIER_AUTH_METHOD: undefined,
@@ -394,9 +394,9 @@ describe.sequential('doAuth (non-interactive)', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: home,
-        HAPPIER_SERVER_URL: 'https://server.example.test',
-        HAPPIER_WEBAPP_URL: 'https://webapp.example.test',
+        HAPPIEST_HOME_DIR: home,
+        HAPPIEST_SERVER_URL: 'https://server.example.test',
+        HAPPIEST_WEBAPP_URL: 'https://webapp.example.test',
         HAPPIER_AUTH_POLL_INTERVAL_MS: '1',
         HAPPIER_AUTH_METHOD: 'mobile',
       });
@@ -426,9 +426,9 @@ describe.sequential('doAuth (non-interactive)', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: home,
-        HAPPIER_SERVER_URL: 'https://server.example.test',
-        HAPPIER_WEBAPP_URL: 'https://webapp.example.test',
+        HAPPIEST_HOME_DIR: home,
+        HAPPIEST_SERVER_URL: 'https://server.example.test',
+        HAPPIEST_WEBAPP_URL: 'https://webapp.example.test',
         HAPPIER_NO_BROWSER_OPEN: undefined,
         HAPPIER_AUTH_POLL_INTERVAL_MS: '1',
         HAPPIER_AUTH_METHOD: 'web',

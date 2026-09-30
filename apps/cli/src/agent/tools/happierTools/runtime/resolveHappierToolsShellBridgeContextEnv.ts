@@ -10,8 +10,8 @@ export function resolveHappierToolsShellBridgeContextEnv(): Record<string, strin
   const contextEnv = resolveHappierRuntimeContextEnvFromConfiguration();
   if (mode === 'full') return contextEnv;
 
-  const homeDir = contextEnv.HAPPIER_HOME_DIR;
+  const homeDir = contextEnv.HAPPIEST_HOME_DIR;
   return typeof homeDir === 'string' && homeDir.trim().length > 0
-    ? { HAPPIER_HOME_DIR: homeDir }
+    ? { HAPPIEST_HOME_DIR: homeDir }
     : {};
 }

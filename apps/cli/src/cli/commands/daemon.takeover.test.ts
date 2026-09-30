@@ -29,8 +29,8 @@ vi.mock('@/daemon/controlClient', async (importOriginal) => {
 
 describe('handleDaemonCliCommand takeover handling', () => {
     const envScope = createEnvKeyScope([
-        'HAPPIER_HOME_DIR',
-        'HAPPIER_ACTIVE_SERVER_ID',
+        'HAPPIEST_HOME_DIR',
+        'HAPPIEST_ACTIVE_SERVER_ID',
         'HAPPIER_PUBLIC_RELEASE_CHANNEL',
     ]);
 
@@ -49,8 +49,8 @@ describe('handleDaemonCliCommand takeover handling', () => {
     it('takes over a manual daemon when daemon start uses --takeover', async () => {
         await withTempDir('happier-daemon-start-takeover-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             });
             vi.resetModules();
@@ -103,8 +103,8 @@ describe('handleDaemonCliCommand takeover handling', () => {
     it('allows a stale manual daemon to be replaced without explicit takeover', async () => {
         await withTempDir('happier-daemon-start-stale-manual-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             });
             vi.resetModules();
@@ -153,8 +153,8 @@ describe('handleDaemonCliCommand takeover handling', () => {
     it('takes over a legacy manual daemon without startup metadata when daemon start uses --takeover', async () => {
         await withTempDir('happier-daemon-start-legacy-takeover-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             });
             vi.resetModules();

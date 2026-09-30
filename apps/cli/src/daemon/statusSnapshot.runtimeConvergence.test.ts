@@ -13,11 +13,11 @@ import { createEnvKeyScope } from '@/testkit/env/envScope';
 import { createTempDir, removeTempDir } from '@/testkit/fs/tempDir';
 
 const ENV_KEYS = [
-  'HAPPIER_HOME_DIR',
-  'HAPPIER_SERVER_URL',
-  'HAPPIER_DAEMON_SERVICE_PLATFORM',
-  'HAPPIER_DAEMON_SERVICE_USER_HOME_DIR',
-  'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR',
+  'HAPPIEST_HOME_DIR',
+  'HAPPIEST_SERVER_URL',
+  'HAPPIEST_DAEMON_SERVICE_PLATFORM',
+  'HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR',
+  'HAPPIEST_DAEMON_SERVICE_HOME_DIR',
 ] as const;
 
 function listen(server: http.Server): Promise<{ port: number; url: string }> {
@@ -115,11 +115,11 @@ describe('readDaemonStatusSnapshot runtimeConvergence', () => {
 
   async function seedHome(params: Readonly<{ relayUrl: string; accountId: string; machineId: string }>): Promise<void> {
     envScope.patch({
-      HAPPIER_HOME_DIR: tmpHomeDir!,
-      HAPPIER_SERVER_URL: params.relayUrl,
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: tmpHomeDir!,
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: tmpHomeDir!,
+      HAPPIEST_HOME_DIR: tmpHomeDir!,
+      HAPPIEST_SERVER_URL: params.relayUrl,
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: tmpHomeDir!,
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: tmpHomeDir!,
     });
     reloadConfiguration();
     await writeCredentialsLegacy({

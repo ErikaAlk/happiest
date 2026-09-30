@@ -6,17 +6,17 @@ import { withTempDir } from '@/testkit/fs/tempDir';
 
 describe('readDaemonState', () => {
     const envKeys = [
-        'HAPPIER_HOME_DIR',
-        'HAPPIER_ACTIVE_SERVER_ID',
-        'HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID',
+        'HAPPIEST_HOME_DIR',
+        'HAPPIEST_ACTIVE_SERVER_ID',
+        'HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID',
         'HAPPIER_PUBLIC_RELEASE_CHANNEL',
-        'HAPPIER_SERVER_URL',
-        'HAPPIER_WEBAPP_URL',
+        'HAPPIEST_SERVER_URL',
+        'HAPPIEST_WEBAPP_URL',
     ] as const;
     let envScope = createEnvKeyScope(envKeys);
 
     beforeEach(() => {
-        envScope.patch({ HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: undefined });
+        envScope.patch({ HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: undefined });
     });
 
     afterEach(() => {
@@ -28,7 +28,7 @@ describe('readDaemonState', () => {
     it('retries when the daemon state file appears shortly after the call starts', async () => {
         await withTempDir('happier-cli-daemon-state-', async (homeDir) => {
             vi.resetModules();
-            envScope.patch({ HAPPIER_HOME_DIR: homeDir, HAPPIER_ACTIVE_SERVER_ID: undefined });
+            envScope.patch({ HAPPIEST_HOME_DIR: homeDir, HAPPIEST_ACTIVE_SERVER_ID: undefined });
 
             const [{ configuration }, { readDaemonState }] = await Promise.all([
                 import('./configuration'),
@@ -63,8 +63,8 @@ describe('readDaemonState', () => {
         await withTempDir('happier-cli-daemon-state-scope-', async (homeDir) => {
             vi.resetModules();
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: undefined,
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: undefined,
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'dev',
             });
 
@@ -78,8 +78,8 @@ describe('readDaemonState', () => {
         await withTempDir('happier-cli-daemon-state-legacy-ring-fallback-', async (homeDir) => {
             vi.resetModules();
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'dev',
             });
 
@@ -117,8 +117,8 @@ describe('readDaemonState', () => {
         await withTempDir('happier-cli-daemon-state-owned-legacy-promotion-', async (homeDir) => {
             vi.resetModules();
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'dev',
             });
 
@@ -149,8 +149,8 @@ describe('readDaemonState', () => {
         await withTempDir('happier-cli-daemon-state-runtime-metadata-', async (homeDir) => {
             vi.resetModules();
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
             });
 
             const [{ configuration }, { readDaemonState }] = await Promise.all([
@@ -191,9 +191,9 @@ describe('readDaemonState', () => {
         await withTempDir('happier-cli-daemon-state-explicit-lifecycle-', async (homeDir) => {
             vi.resetModules();
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'endpoint-profile',
-                HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'endpoint-profile',
+                HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
             });
 
             const [{ configuration }, { readDaemonState }] = await Promise.all([
@@ -249,11 +249,11 @@ describe('readDaemonState', () => {
                 }), 'utf-8');
                 vi.resetModules();
                 envScope.patch({
-                    HAPPIER_HOME_DIR: homeDir,
-                    HAPPIER_ACTIVE_SERVER_ID: 'endpoint-profile',
-                    HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
-                    HAPPIER_SERVER_URL: 'http://127.0.0.1:53288',
-                    HAPPIER_WEBAPP_URL: 'http://127.0.0.1:53288',
+                    HAPPIEST_HOME_DIR: homeDir,
+                    HAPPIEST_ACTIVE_SERVER_ID: 'endpoint-profile',
+                    HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
+                    HAPPIEST_SERVER_URL: 'http://127.0.0.1:53288',
+                    HAPPIEST_WEBAPP_URL: 'http://127.0.0.1:53288',
                 });
 
                 const { readDaemonState } = await import('./persistence');
@@ -319,10 +319,10 @@ describe('readDaemonState', () => {
 
                 vi.resetModules();
                 envScope.patch({
-                    HAPPIER_HOME_DIR: homeDir,
-                    HAPPIER_ACTIVE_SERVER_ID: 'localhost-53288',
-                    HAPPIER_SERVER_URL: 'http://127.0.0.1:53288',
-                    HAPPIER_WEBAPP_URL: 'http://127.0.0.1:53288',
+                    HAPPIEST_HOME_DIR: homeDir,
+                    HAPPIEST_ACTIVE_SERVER_ID: 'localhost-53288',
+                    HAPPIEST_SERVER_URL: 'http://127.0.0.1:53288',
+                    HAPPIEST_WEBAPP_URL: 'http://127.0.0.1:53288',
                 });
 
                 const [{ configuration }, { readDaemonState }] = await Promise.all([
@@ -428,10 +428,10 @@ describe('readDaemonState', () => {
 
                 vi.resetModules();
                 envScope.patch({
-                    HAPPIER_HOME_DIR: homeDir,
-                    HAPPIER_ACTIVE_SERVER_ID: '127.0.0.1-3005',
-                    HAPPIER_SERVER_URL: 'http://127.0.0.1:3005',
-                    HAPPIER_WEBAPP_URL: 'http://127.0.0.1:3005',
+                    HAPPIEST_HOME_DIR: homeDir,
+                    HAPPIEST_ACTIVE_SERVER_ID: '127.0.0.1-3005',
+                    HAPPIEST_SERVER_URL: 'http://127.0.0.1:3005',
+                    HAPPIEST_WEBAPP_URL: 'http://127.0.0.1:3005',
                 });
 
                 const [{ readDaemonState }] = await Promise.all([
@@ -466,7 +466,7 @@ describe('readDaemonState', () => {
     it('accepts legacy startTime fields and normalizes to startedAt', async () => {
         await withTempDir('happier-cli-daemon-state-legacy-', async (homeDir) => {
             vi.resetModules();
-            envScope.patch({ HAPPIER_HOME_DIR: homeDir, HAPPIER_ACTIVE_SERVER_ID: undefined });
+            envScope.patch({ HAPPIEST_HOME_DIR: homeDir, HAPPIEST_ACTIVE_SERVER_ID: undefined });
 
             const [{ configuration }, { readDaemonState }] = await Promise.all([
                 import('./configuration'),
@@ -498,17 +498,17 @@ describe('readDaemonState', () => {
 
 describe('daemon state canonicalization', () => {
     const envKeys = [
-        'HAPPIER_HOME_DIR',
-        'HAPPIER_ACTIVE_SERVER_ID',
-        'HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID',
+        'HAPPIEST_HOME_DIR',
+        'HAPPIEST_ACTIVE_SERVER_ID',
+        'HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID',
         'HAPPIER_PUBLIC_RELEASE_CHANNEL',
-        'HAPPIER_SERVER_URL',
-        'HAPPIER_WEBAPP_URL',
+        'HAPPIEST_SERVER_URL',
+        'HAPPIEST_WEBAPP_URL',
     ] as const;
     let envScope = createEnvKeyScope(envKeys);
 
     beforeEach(() => {
-        envScope.patch({ HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: undefined });
+        envScope.patch({ HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: undefined });
     });
 
     afterEach(() => {
@@ -521,8 +521,8 @@ describe('daemon state canonicalization', () => {
         await withTempDir('happier-cli-daemon-state-write-canonical-', async (homeDir) => {
             vi.resetModules();
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'dev',
             });
 
@@ -561,9 +561,9 @@ describe('daemon state canonicalization', () => {
         await withTempDir('happier-cli-daemon-state-lifecycle-cleanup-', async (homeDir) => {
             vi.resetModules();
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'endpoint-profile',
-                HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'endpoint-profile',
+                HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'dev',
             });
 
@@ -597,8 +597,8 @@ describe('daemon state canonicalization', () => {
 
             vi.resetModules();
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
             });
 
             vi.doMock('node:fs', async (importOriginal) => {
@@ -645,9 +645,9 @@ describe('daemon state canonicalization', () => {
         await withTempDir('happier-cli-daemon-state-lock-owned-write-', async (homeDir) => {
             vi.resetModules();
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'endpoint-profile',
-                HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'endpoint-profile',
+                HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
             });
 
             const [{ configuration }, {
@@ -700,9 +700,9 @@ describe('daemon state canonicalization', () => {
         await withTempDir('happier-cli-broker-state-lifecycle-', async (homeDir) => {
             vi.resetModules();
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'endpoint-profile',
-                HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'endpoint-profile',
+                HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
             });
 
             const [{ configuration }, {
@@ -745,9 +745,9 @@ describe('daemon state canonicalization', () => {
         await withTempDir('happier-cli-daemon-state-successor-cleanup-', async (homeDir) => {
             vi.resetModules();
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'endpoint-profile',
-                HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'endpoint-profile',
+                HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'dev',
             });
 
@@ -803,9 +803,9 @@ describe('daemon state canonicalization', () => {
         await withTempDir('happier-cli-daemon-state-owned-cleanup-', async (homeDir) => {
             vi.resetModules();
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'endpoint-profile',
-                HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'endpoint-profile',
+                HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
             });
 
             const [{ configuration }, {
@@ -858,9 +858,9 @@ describe('daemon state canonicalization', () => {
         await withTempDir('happier-cli-daemon-state-successor-before-broker-', async (homeDir) => {
             vi.resetModules();
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'endpoint-profile',
-                HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'endpoint-profile',
+                HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
             });
 
             const [{ configuration }, {

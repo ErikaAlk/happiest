@@ -105,23 +105,23 @@ describe('daemon service installer', () => {
     ).rejects.toThrow('System mode background services are only supported on Linux');
   });
 
-  it('uses apiServerUrl for HAPPIER_SERVER_URL when canonical server URL differs (linux)', async () => {
+  it('uses apiServerUrl for HAPPIEST_SERVER_URL when canonical server URL differs (linux)', async () => {
     const envScope = createEnvKeyScope([
-      'HAPPIER_HOME_DIR',
-      'HAPPIER_ACTIVE_SERVER_ID',
-      'HAPPIER_PUBLIC_SERVER_URL',
-      'HAPPIER_SERVER_URL',
-      'HAPPIER_WEBAPP_URL',
+      'HAPPIEST_HOME_DIR',
+      'HAPPIEST_ACTIVE_SERVER_ID',
+      'HAPPIEST_PUBLIC_SERVER_URL',
+      'HAPPIEST_SERVER_URL',
+      'HAPPIEST_WEBAPP_URL',
     ]);
 
     await withTempDir('happier-service-installer-home-', async (userHomeDir) => {
       const happierHomeDir = join(userHomeDir, '.happier');
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_ACTIVE_SERVER_ID: 'company',
-        HAPPIER_PUBLIC_SERVER_URL: 'https://public.example.test',
-        HAPPIER_SERVER_URL: 'http://127.0.0.1:3005',
-        HAPPIER_WEBAPP_URL: 'https://app.public.example.test',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_ACTIVE_SERVER_ID: 'company',
+        HAPPIEST_PUBLIC_SERVER_URL: 'https://public.example.test',
+        HAPPIEST_SERVER_URL: 'http://127.0.0.1:3005',
+        HAPPIEST_WEBAPP_URL: 'https://app.public.example.test',
       });
       reloadConfiguration();
 
@@ -139,9 +139,9 @@ describe('daemon service installer', () => {
         const unitPath = join(userHomeDir, '.config', 'systemd', 'user', 'happier-daemon.company.service');
         expect(existsSync(unitPath)).toBe(true);
         const raw = await (await import('node:fs/promises')).readFile(unitPath, 'utf-8');
-        expect(raw).toContain('Environment=HAPPIER_ACTIVE_SERVER_ID=company');
-        expect(raw).toContain('Environment=HAPPIER_SERVER_URL=http://127.0.0.1:3005');
-        expect(raw).toContain('Environment=HAPPIER_PUBLIC_SERVER_URL=https://public.example.test');
+        expect(raw).toContain('Environment=HAPPIEST_ACTIVE_SERVER_ID=company');
+        expect(raw).toContain('Environment=HAPPIEST_SERVER_URL=http://127.0.0.1:3005');
+        expect(raw).toContain('Environment=HAPPIEST_PUBLIC_SERVER_URL=https://public.example.test');
       } finally {
         envScope.restore();
         reloadConfiguration();

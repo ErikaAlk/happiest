@@ -120,7 +120,7 @@ describe('managedPnpm bootstrap race protection', () => {
     
     testEnv = {
       ...process.env,
-      HAPPIER_HOME_DIR: testHomeDir,
+      HAPPIEST_HOME_DIR: testHomeDir,
       // Ensure no override or system pnpm interferes
       HAPPIER_PNPM_BIN: undefined,
       PATH: '',

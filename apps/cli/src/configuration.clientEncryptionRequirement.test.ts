@@ -17,7 +17,7 @@ describe('configuration client encryption requirement', () => {
   async function loadWith(value: string | undefined) {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     if (value === undefined) delete process.env.HAPPIER_ENCRYPTION_REQUIREMENT;
     else process.env.HAPPIER_ENCRYPTION_REQUIREMENT = value;
     return await import('./configuration');

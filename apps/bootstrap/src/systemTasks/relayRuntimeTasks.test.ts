@@ -142,7 +142,7 @@ describe('installOrUpdateRelayRuntimeDefault', () => {
         const happyHomeDir = join(rootDir, '.happier-home');
         const fakeOsHomeDir = join(rootDir, '.home');
         const payloadRoot = join(rootDir, 'payload');
-        const previousHomeDir = process.env.HAPPIER_HOME_DIR;
+        const previousHomeDir = process.env.HAPPIEST_HOME_DIR;
         const previousPath = process.env.PATH;
         const previousCwd = process.cwd();
         const previousHome = process.env.HOME;
@@ -168,7 +168,7 @@ describe('installOrUpdateRelayRuntimeDefault', () => {
                 };
             });
 
-            process.env.HAPPIER_HOME_DIR = happyHomeDir;
+            process.env.HAPPIEST_HOME_DIR = happyHomeDir;
             process.env.HOME = fakeOsHomeDir;
             process.env.USERPROFILE = fakeOsHomeDir;
             process.env.PATH = '';
@@ -198,9 +198,9 @@ describe('installOrUpdateRelayRuntimeDefault', () => {
             expect(readFileSync(join(installRoot, 'config', 'server.env'), 'utf8')).toContain('PORT=3005');
         } finally {
             if (previousHomeDir === undefined) {
-                delete process.env.HAPPIER_HOME_DIR;
+                delete process.env.HAPPIEST_HOME_DIR;
             } else {
-                process.env.HAPPIER_HOME_DIR = previousHomeDir;
+                process.env.HAPPIEST_HOME_DIR = previousHomeDir;
             }
             if (previousHome === undefined) {
                 delete process.env.HOME;

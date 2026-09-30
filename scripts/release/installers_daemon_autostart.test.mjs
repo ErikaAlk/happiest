@@ -152,14 +152,14 @@ if [[ "$1" = "self" && "$2" = "__install-payload" ]]; then
         ;;
     esac
   done
-  install_root="$HAPPIER_HOME_DIR/cli"
+  install_root="$HAPPIEST_HOME_DIR/cli"
   if [[ "$channel_id" = "preview" ]]; then
-    install_root="$HAPPIER_HOME_DIR/cli-preview"
+    install_root="$HAPPIEST_HOME_DIR/cli-preview"
   elif [[ "$channel_id" = "publicdev" || "$channel_id" = "dev" ]]; then
-    install_root="$HAPPIER_HOME_DIR/cli-dev"
+    install_root="$HAPPIEST_HOME_DIR/cli-dev"
   fi
   target_version_dir="$install_root/versions/$version_id"
-  mkdir -p "$install_root/versions" "$HAPPIER_HOME_DIR/bin"
+  mkdir -p "$install_root/versions" "$HAPPIEST_HOME_DIR/bin"
   if [[ -d "$install_root/current" ]]; then
     rm -rf "$install_root/previous"
     cp -R "$install_root/current" "$install_root/previous"
@@ -173,8 +173,8 @@ if [[ "$1" = "self" && "$2" = "__install-payload" ]]; then
   elif [[ "$channel_id" = "publicdev" || "$channel_id" = "dev" ]]; then
     shim_name="hdev"
   fi
-  cp "$install_root/current/happier" "$HAPPIER_HOME_DIR/bin/$shim_name"
-  chmod +x "$HAPPIER_HOME_DIR/bin/$shim_name"
+  cp "$install_root/current/happier" "$HAPPIEST_HOME_DIR/bin/$shim_name"
+  chmod +x "$HAPPIEST_HOME_DIR/bin/$shim_name"
   exit 0
 fi
 if [[ "$1" = "service" && "$2" = "install" ]]; then
@@ -190,7 +190,7 @@ if [[ "$1" = "service" && "$2" = "install" ]]; then
     echo "conflict: service already installed" >&2
     exit 1
   fi
-  echo "service install ${version} args=$* home=$HAPPIER_HOME_DIR" >> "${logPath}"
+  echo "service install ${version} args=$* home=$HAPPIEST_HOME_DIR" >> "${logPath}"
   exit 0
 fi
 if [[ ( "$1" = "service" || "$1" = "doctor" ) && "$2" = "repair" && "$3" = "--yes" ]]; then
@@ -207,7 +207,7 @@ if [[ ( "$1" = "service" || "$1" = "doctor" ) && "$2" = "repair" && "$3" = "--ye
     exit 1
   fi
   : > "${logPath}.repair-ran"
-  echo "$1 repair ${version} args=$* home=$HAPPIER_HOME_DIR" >> "${logPath}"
+  echo "$1 repair ${version} args=$* home=$HAPPIEST_HOME_DIR" >> "${logPath}"
   exit 0
 fi
 if [[ ( "$1" = "service" || "$1" = "doctor" ) && "$2" = "repair" && "$3" = "--json" ]]; then
@@ -216,7 +216,7 @@ if [[ ( "$1" = "service" || "$1" = "doctor" ) && "$2" = "repair" && "$3" = "--js
     exit 1
   fi
   if [[ "\${HAPPIER_TEST_LOG_SERVICE_PREFLIGHT:-0}" = "1" ]]; then
-    echo "$1 repair-json ${version} args=$* home=$HAPPIER_HOME_DIR" >> "${logPath}"
+    echo "$1 repair-json ${version} args=$* home=$HAPPIEST_HOME_DIR" >> "${logPath}"
   fi
   if [[ -n "\${HAPPIER_TEST_SERVICE_REPAIR_JSON:-}" ]]; then
     printf '%s' "\${HAPPIER_TEST_SERVICE_REPAIR_JSON}"
@@ -230,7 +230,7 @@ if [[ "$1" = "doctor" && "$2" = "repair" && "$3" = "--report-only" ]]; then
     echo "error: unknown option '--report-only'" >&2
     exit 1
   fi
-  echo "doctor repair-report-only ${version} args=$* home=$HAPPIER_HOME_DIR" >> "${logPath}"
+  echo "doctor repair-report-only ${version} args=$* home=$HAPPIEST_HOME_DIR" >> "${logPath}"
   if [[ -n "\${HAPPIER_TEST_DOCTOR_REPAIR_REPORT_ONLY_TEXT:-}" ]]; then
     printf '%s\n' "\${HAPPIER_TEST_DOCTOR_REPAIR_REPORT_ONLY_TEXT}"
   fi
@@ -238,7 +238,7 @@ if [[ "$1" = "doctor" && "$2" = "repair" && "$3" = "--report-only" ]]; then
 fi
 if [[ "$1" = "service" && "$2" = "list" && "$3" = "--json" ]]; then
   if [[ "\${HAPPIER_TEST_LOG_SERVICE_PREFLIGHT:-0}" = "1" ]]; then
-    echo "service list-json ${version} args=$* home=$HAPPIER_HOME_DIR" >> "${logPath}"
+    echo "service list-json ${version} args=$* home=$HAPPIEST_HOME_DIR" >> "${logPath}"
   fi
   if [[ "\${HAPPIER_TEST_UNSUPPORTED_SERVICE_SURFACE:-0}" = "1" ]]; then
     echo "error: unknown option '--json'" >&2
@@ -260,7 +260,7 @@ fi
 if [[ "$1" = "service" && "$2" = "status" ]]; then
   if [[ "$3" = "--json" ]]; then
     if [[ "\${HAPPIER_TEST_LOG_SERVICE_PREFLIGHT:-0}" = "1" ]]; then
-      echo "service status-json ${version} args=$* home=$HAPPIER_HOME_DIR" >> "${logPath}"
+      echo "service status-json ${version} args=$* home=$HAPPIEST_HOME_DIR" >> "${logPath}"
     fi
     if [[ -n "\${HAPPIER_TEST_SERVICE_STATUS_JSON:-}" ]]; then
       printf '%s' "\${HAPPIER_TEST_SERVICE_STATUS_JSON}"
@@ -305,7 +305,7 @@ if [[ "$1" = "relay" && "$2" = "host" && "$3" = "install" ]]; then
     echo "error: unknown option '--preserve-active-server'" >&2
     exit 1
   fi
-  echo "relay host install ${version} args=$* home=$HAPPIER_HOME_DIR" >> "${logPath}"
+  echo "relay host install ${version} args=$* home=$HAPPIEST_HOME_DIR" >> "${logPath}"
   exit 0
 fi
 if [[ "$1" = "daemon" && "$2" = "service" && "$3" = "install" ]]; then
@@ -472,12 +472,12 @@ printf '%s' '${releaseJson}'
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NO_PATH_UPDATE: '1',
     HAPPIER_NONINTERACTIVE: '1',
-    HAPPIER_HOME_DIR: '',
+    HAPPIEST_HOME_DIR: '',
     HAPPIER_SYSTEMD_USER_UNIT_DIR: systemdUserDir,
     HAPPIER_SYSTEMD_SYSTEM_UNIT_DIR: systemdSystemDir,
     HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY: '',
     HAPPIER_PUBLIC_RELEASE_CHANNEL: '',
-    HAPPIER_DAEMON_SERVICE_CHANNEL: '',
+    HAPPIEST_DAEMON_SERVICE_CHANNEL: '',
     HAPPIER_GITHUB_TOKEN: '',
     GITHUB_TOKEN: '',
     HAPPIER_TEST_LOG: logPath,
@@ -1250,8 +1250,8 @@ test('install.sh trusts CLI repair preflight over native Linux unit scans when s
 Description=Happier CLI daemon (default)
 
 [Service]
-Environment=HAPPIER_DAEMON_SERVICE_LABEL=com.happier.cli.daemon.default
-Environment=HAPPIER_DAEMON_SERVICE_TARGET_MODE=default-following
+Environment=HAPPIEST_DAEMON_SERVICE_LABEL=com.happier.cli.daemon.default
+Environment=HAPPIEST_DAEMON_SERVICE_TARGET_MODE=default-following
 Environment=HAPPIER_PUBLIC_RELEASE_CHANNEL=preview
 ExecStart=/usr/bin/node /tmp/happier daemon start-sync
 `,

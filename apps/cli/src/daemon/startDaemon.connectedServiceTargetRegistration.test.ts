@@ -324,8 +324,8 @@ describe('registerConnectedServiceTrackedSessionTargetsForDaemon', () => {
 
 describe('commitRuntimeAuthRecoveryDiagnosticForDaemon', () => {
   it('forwards the durable attempt and transition identity through the production commit adapter', async () => {
-    const previousServerUrl = process.env.HAPPIER_SERVER_URL;
-    process.env.HAPPIER_SERVER_URL = 'http://server.example.test';
+    const previousServerUrl = process.env.HAPPIEST_SERVER_URL;
+    process.env.HAPPIEST_SERVER_URL = 'http://server.example.test';
     try {
       vi.spyOn(axios, 'get').mockResolvedValueOnce({
         status: 200,
@@ -398,8 +398,8 @@ describe('commitRuntimeAuthRecoveryDiagnosticForDaemon', () => {
         expect.anything(),
       );
     } finally {
-      if (previousServerUrl === undefined) delete process.env.HAPPIER_SERVER_URL;
-      else process.env.HAPPIER_SERVER_URL = previousServerUrl;
+      if (previousServerUrl === undefined) delete process.env.HAPPIEST_SERVER_URL;
+      else process.env.HAPPIEST_SERVER_URL = previousServerUrl;
       vi.restoreAllMocks();
     }
   });

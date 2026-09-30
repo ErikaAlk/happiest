@@ -64,10 +64,10 @@ describe.sequential('daemon start-sync auth gating', () => {
 
     const env: NodeJS.ProcessEnv = {
       ...process.env,
-      HAPPIER_HOME_DIR: home,
+      HAPPIEST_HOME_DIR: home,
       // Ensure we do not accidentally hit real infra
-      HAPPIER_SERVER_URL: 'http://127.0.0.1:9',
-      HAPPIER_WEBAPP_URL: 'http://127.0.0.1:9',
+      HAPPIEST_SERVER_URL: 'http://127.0.0.1:9',
+      HAPPIEST_WEBAPP_URL: 'http://127.0.0.1:9',
       // Make the test hermetic even if the developer environment enables daemon auth wait.
       HAPPIER_DAEMON_WAIT_FOR_AUTH: '0',
       DEBUG: '1',
@@ -90,10 +90,10 @@ describe.sequential('daemon start-sync auth gating', () => {
 
     const env: NodeJS.ProcessEnv = {
       ...process.env,
-      HAPPIER_HOME_DIR: home,
+      HAPPIEST_HOME_DIR: home,
       // Ensure we do not accidentally hit real infra
-      HAPPIER_SERVER_URL: 'http://127.0.0.1:9',
-      HAPPIER_WEBAPP_URL: 'http://127.0.0.1:9',
+      HAPPIEST_SERVER_URL: 'http://127.0.0.1:9',
+      HAPPIEST_WEBAPP_URL: 'http://127.0.0.1:9',
       HAPPIER_DAEMON_WAIT_FOR_AUTH: '1',
       HAPPIER_DAEMON_WAIT_FOR_AUTH_TIMEOUT_MS: '0',
       DEBUG: '1',

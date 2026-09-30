@@ -17,8 +17,8 @@ import { createHsetupSystemTaskRegistry } from '../registry.js';
 import { createSetupThisComputerKind } from './setupThisComputer.js';
 
 /**
- * R13 (a): a stack/dev-launched app inherits a server selection (`HAPPIER_ACTIVE_SERVER_ID`,
- * `HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID`, `HAPPIER_SERVER_URL`) pinned to relay X, while the person
+ * R13 (a): a stack/dev-launched app inherits a server selection (`HAPPIEST_ACTIVE_SERVER_ID`,
+ * `HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID`, `HAPPIEST_SERVER_URL`) pinned to relay X, while the person
  * sets this computer up for relay Y. Every command the run issues must address Y — or, for the
  * lifecycle observation made before `server set`, the relay this Happier home's persisted
  * selection names (what the default-following service serves) — never the inherited pin.
@@ -46,8 +46,8 @@ const out = (value) => console.log(JSON.stringify(value));
 if (has('--version')) { console.log('0.2.13'); process.exit(0); }
 const settings = JSON.parse(fs.readFileSync(${JSON.stringify(params.settingsPath)}, 'utf8'));
 const env = process.env;
-const envUrl = String(env.HAPPIER_PUBLIC_SERVER_URL || env.HAPPIER_SERVER_URL || '').trim();
-const envId = String(env.HAPPIER_ACTIVE_SERVER_ID || '').trim();
+const envUrl = String(env.HAPPIEST_PUBLIC_SERVER_URL || env.HAPPIEST_SERVER_URL || '').trim();
+const envId = String(env.HAPPIEST_ACTIVE_SERVER_ID || '').trim();
 const byUrl = (url) => Object.keys(settings.servers).find((id) => settings.servers[id].serverUrl === url);
 // configuration.ts: an env-selected persisted profile that does not match the env URL wins; else
 // the env id or the URL-matching profile; with no env URL, the persisted active profile (its id
@@ -55,7 +55,7 @@ const byUrl = (url) => Object.keys(settings.servers).find((id) => settings.serve
 const serverId = envUrl
   ? (envId && settings.servers[envId] && settings.servers[envId].serverUrl !== envUrl ? envId : (envId || byUrl(envUrl) || 'derived'))
   : (envId || settings.activeServerId);
-const lifecycleId = String(env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID || '').trim() || serverId;
+const lifecycleId = String(env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID || '').trim() || serverId;
 const serverUrl = (settings.servers[serverId] && settings.servers[serverId].serverUrl) || envUrl;
 fs.appendFileSync(${JSON.stringify(params.logPath)}, JSON.stringify({ args, serverId, lifecycleId }) + '\\n');
 const key = new URL(serverUrl).host;
@@ -108,15 +108,15 @@ async function createStackLaunchedComputer() {
   await writeFile(cliPath, fakeCliScript({ settingsPath, logPath }));
   await chmod(cliPath, 0o755);
 
-  for (const name of ['HAPPIER_BOOTSTRAP_CLI_PATH', 'HAPPIER_BOOTSTRAP_HAPPIER_PATH', 'HAPPIER_PUBLIC_SERVER_URL', 'HAPPIER_WEBAPP_URL', 'HAPPIER_LOCAL_SERVER_URL']) {
+  for (const name of ['HAPPIEST_BOOTSTRAP_CLI_PATH', 'HAPPIER_BOOTSTRAP_HAPPIER_PATH', 'HAPPIEST_PUBLIC_SERVER_URL', 'HAPPIEST_WEBAPP_URL', 'HAPPIEST_LOCAL_SERVER_URL']) {
     vi.stubEnv(name, undefined);
   }
   vi.stubEnv('HOME', home);
-  vi.stubEnv('HAPPIER_HOME_DIR', join(home, '.happier'));
+  vi.stubEnv('HAPPIEST_HOME_DIR', join(home, '.happier'));
   vi.stubEnv('PATH', bin);
-  vi.stubEnv('HAPPIER_ACTIVE_SERVER_ID', 'stack-x');
-  vi.stubEnv('HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID', 'stack-x');
-  vi.stubEnv('HAPPIER_SERVER_URL', RELAY_X);
+  vi.stubEnv('HAPPIEST_ACTIVE_SERVER_ID', 'stack-x');
+  vi.stubEnv('HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID', 'stack-x');
+  vi.stubEnv('HAPPIEST_SERVER_URL', RELAY_X);
 
   const kind = createSetupThisComputerKind({
     inspectCliChoice: async () => ({ choice: null, question: null }),
@@ -152,7 +152,7 @@ async function createStackLaunchedComputer() {
   // The app's own reads and actions on this computer (`daemon.service.*.v1`), through the CLI the
   // app resolves for them.
   const runAppTask = async (kind: string) => {
-    vi.stubEnv('HAPPIER_BOOTSTRAP_CLI_PATH', cliPath);
+    vi.stubEnv('HAPPIEST_BOOTSTRAP_CLI_PATH', cliPath);
     try {
       return await executeSystemTask({
         spec: { protocolVersion: 1, kind, params: { target: { kind: 'local' }, channel: 'stable' } },
@@ -161,7 +161,7 @@ async function createStackLaunchedComputer() {
         emitEvent: () => undefined,
       });
     } finally {
-      vi.stubEnv('HAPPIER_BOOTSTRAP_CLI_PATH', undefined);
+      vi.stubEnv('HAPPIEST_BOOTSTRAP_CLI_PATH', undefined);
     }
   };
 

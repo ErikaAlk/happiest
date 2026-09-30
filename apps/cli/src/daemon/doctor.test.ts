@@ -73,16 +73,16 @@ describe('classifyHappyProcess', () => {
       name: 'node',
       cmd: '/usr/bin/node /repo/apps/cli/node_modules/.bin/tsx /repo/apps/cli/src/index.ts daemon start-sync',
       daemonOwnershipEnvironmentVariables: {
-        HAPPIER_HOME_DIR: '/tmp/happier-stack/cli',
-        HAPPIER_ACTIVE_SERVER_ID: 'stack_current__id_default',
-        HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
+        HAPPIEST_HOME_DIR: '/tmp/happier-stack/cli',
+        HAPPIEST_ACTIVE_SERVER_ID: 'stack_current__id_default',
+        HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
       },
     });
     expect(res).not.toBeNull();
     expect(res!.daemonOwnershipEnvironmentVariables).toEqual({
-      HAPPIER_HOME_DIR: '/tmp/happier-stack/cli',
-      HAPPIER_ACTIVE_SERVER_ID: 'stack_current__id_default',
-      HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
+      HAPPIEST_HOME_DIR: '/tmp/happier-stack/cli',
+      HAPPIEST_ACTIVE_SERVER_ID: 'stack_current__id_default',
+      HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
     });
   });
 

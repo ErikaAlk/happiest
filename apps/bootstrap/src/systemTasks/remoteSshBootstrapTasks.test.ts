@@ -284,7 +284,7 @@ describe('approveLocalRemoteAuthRequestDefault', () => {
 
     /**
      * R13 (a): the approval releases this computer's credentials for the relay the task names. A
-     * stack-launched app inherits `HAPPIER_ACTIVE_SERVER_ID`/`HAPPIER_SERVER_URL` for relay X, and the
+     * stack-launched app inherits `HAPPIEST_ACTIVE_SERVER_ID`/`HAPPIEST_SERVER_URL` for relay X, and the
      * CLI's configuration prefers that env-selected profile over a URL it does not match — so the
      * approval must run in the task relay's explicit target scope, never with the launch pin. The
      * CLI resolves its profile at the process boundary with `configuration.ts`'s precedence after
@@ -308,8 +308,8 @@ const byUrl = (url) => Object.keys(settings.servers).find((id) => settings.serve
 const flag = args.find((arg) => arg.startsWith('--server-url='));
 if (flag && args.includes('--persist')) settings.activeServerId = byUrl(flag.slice('--server-url='.length));
 const env = process.env;
-const envUrl = String(env.HAPPIER_PUBLIC_SERVER_URL || env.HAPPIER_SERVER_URL || '').trim();
-const envId = String(env.HAPPIER_ACTIVE_SERVER_ID || '').trim();
+const envUrl = String(env.HAPPIEST_PUBLIC_SERVER_URL || env.HAPPIEST_SERVER_URL || '').trim();
+const envId = String(env.HAPPIEST_ACTIVE_SERVER_ID || '').trim();
 const serverId = envUrl
   ? (envId && settings.servers[envId] && settings.servers[envId].serverUrl !== envUrl ? envId : (envId || byUrl(envUrl) || 'derived'))
   : (envId || settings.activeServerId);
@@ -317,10 +317,10 @@ fs.appendFileSync(${JSON.stringify(logPath)}, JSON.stringify({ args: args.slice(
 console.log(JSON.stringify({ ok: true }));
 `, 'utf8');
         chmodSync(cliPath, 0o755);
-        vi.stubEnv('HAPPIER_BOOTSTRAP_CLI_PATH', cliPath);
-        vi.stubEnv('HAPPIER_ACTIVE_SERVER_ID', 'stack-x');
-        vi.stubEnv('HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID', 'stack-x');
-        vi.stubEnv('HAPPIER_SERVER_URL', 'https://relay-x.example.test');
+        vi.stubEnv('HAPPIEST_BOOTSTRAP_CLI_PATH', cliPath);
+        vi.stubEnv('HAPPIEST_ACTIVE_SERVER_ID', 'stack-x');
+        vi.stubEnv('HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID', 'stack-x');
+        vi.stubEnv('HAPPIEST_SERVER_URL', 'https://relay-x.example.test');
         try {
             await approveLocalRemoteAuthRequestDefault({ publicKey: 'public-key-123', parsed: createParsedRemoteBootstrapParams() });
 

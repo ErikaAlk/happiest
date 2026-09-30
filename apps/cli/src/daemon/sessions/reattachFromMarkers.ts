@@ -417,7 +417,7 @@ export async function reattachTrackedSessionsFromMarkers(params: Readonly<{
   const orphanedDeadDaemonSessions: OrphanedDeadDaemonSession[] = [];
   const disconnectedTerminalHostCandidates: DisconnectedTerminalHostCandidate[] = [];
   const unresolvedTerminalHostSessionIds: string[] = [];
-  // On daemon restart, reattach to still-running sessions via disk markers (stack-scoped by HAPPIER_HOME_DIR).
+  // On daemon restart, reattach to still-running sessions via disk markers (stack-scoped by HAPPIEST_HOME_DIR).
   try {
     const markers = await listSessionMarkers();
     logger.debug('[DAEMON RUN] Startup reattach inputs collected', {

@@ -18,7 +18,7 @@ describe('configuration replay', () => {
   it('defaults replaySeedCandidateLimit to 500', async () => {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     delete process.env.HAPPIER_REPLAY_SEED_CANDIDATE_LIMIT;
 
     const configMod = await import('./configuration');
@@ -29,7 +29,7 @@ describe('configuration replay', () => {
   it('bounds replaySeedCandidateLimit to the /v1/messages limit (<=500)', async () => {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     process.env.HAPPIER_REPLAY_SEED_CANDIDATE_LIMIT = '9999';
 
     const configMod = await import('./configuration');
@@ -40,7 +40,7 @@ describe('configuration replay', () => {
   it('defaults replaySeedMaxChars to 120000', async () => {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     delete process.env.HAPPIER_REPLAY_MAX_SEED_CHARS;
 
     const configMod = await import('./configuration');

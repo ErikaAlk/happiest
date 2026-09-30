@@ -45,11 +45,11 @@ function buildDaemonServiceEnv(params: Readonly<{
   publicServerUrl?: string;
 }>): string {
   const env = [
-    `HAPPIER_DAEMON_SERVICE_SERVER_URL=${safeBashSingleQuote(params.serverUrl)}`,
-    `HAPPIER_DAEMON_SERVICE_WEBAPP_URL=${safeBashSingleQuote(deriveWebappUrl(params.serverUrl, params.webappUrl))}`,
+    `HAPPIEST_DAEMON_SERVICE_SERVER_URL=${safeBashSingleQuote(params.serverUrl)}`,
+    `HAPPIEST_DAEMON_SERVICE_WEBAPP_URL=${safeBashSingleQuote(deriveWebappUrl(params.serverUrl, params.webappUrl))}`,
   ];
   if (typeof params.publicServerUrl === 'string' && params.publicServerUrl.trim()) {
-    env.push(`HAPPIER_DAEMON_SERVICE_PUBLIC_SERVER_URL=${safeBashSingleQuote(params.publicServerUrl)}`);
+    env.push(`HAPPIEST_DAEMON_SERVICE_PUBLIC_SERVER_URL=${safeBashSingleQuote(params.publicServerUrl)}`);
   }
   return env.join(' ');
 }

@@ -36,7 +36,7 @@ import { spawnDetachedDaemonStartSync } from '@/daemon/runtime/spawnDetachedDaem
 import { spawnSleepyDetachedProcess } from '@/daemon/testkit/fakeDaemonLifecycle.testkit';
 
 describe('startDaemonHeartbeatLoop daemon self-restart', () => {
-  const originalHappyHomeDir = process.env.HAPPIER_HOME_DIR;
+  const originalHappyHomeDir = process.env.HAPPIEST_HOME_DIR;
   let happyHomeDir: string | null = null;
 
   afterEach(() => {
@@ -48,9 +48,9 @@ describe('startDaemonHeartbeatLoop daemon self-restart', () => {
     }
     happyHomeDir = null;
     if (originalHappyHomeDir === undefined) {
-      delete process.env.HAPPIER_HOME_DIR;
+      delete process.env.HAPPIEST_HOME_DIR;
     } else {
-      process.env.HAPPIER_HOME_DIR = originalHappyHomeDir;
+      process.env.HAPPIEST_HOME_DIR = originalHappyHomeDir;
     }
     vi.restoreAllMocks();
     vi.useRealTimers();
@@ -58,7 +58,7 @@ describe('startDaemonHeartbeatLoop daemon self-restart', () => {
 
   it('does not permanently lock the heartbeat loop if reading package.json throws', async () => {
     happyHomeDir = join(tmpdir(), `happier-cli-heartbeat-self-restart-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-    process.env.HAPPIER_HOME_DIR = happyHomeDir;
+    process.env.HAPPIEST_HOME_DIR = happyHomeDir;
     mkdirSync(join(happyHomeDir, 'logs'), { recursive: true });
     process.env.HAPPIER_DAEMON_HEARTBEAT_INTERVAL = '1';
     process.env.HAPPIER_DAEMON_RESTART_VERIFY_TIMEOUT_MS = '25';
@@ -123,7 +123,7 @@ describe('startDaemonHeartbeatLoop daemon self-restart', () => {
 
   it('uses start-sync and keeps the current daemon alive if replacement is not confirmed', async () => {
     happyHomeDir = join(tmpdir(), `happier-cli-heartbeat-self-restart-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-    process.env.HAPPIER_HOME_DIR = happyHomeDir;
+    process.env.HAPPIEST_HOME_DIR = happyHomeDir;
     mkdirSync(join(happyHomeDir, 'logs'), { recursive: true });
     process.env.HAPPIER_DAEMON_HEARTBEAT_INTERVAL = '1';
     process.env.HAPPIER_DAEMON_RESTART_VERIFY_TIMEOUT_MS = '25';
@@ -190,7 +190,7 @@ describe('startDaemonHeartbeatLoop daemon self-restart', () => {
 
   it('exits only after replacement daemon with current CLI version is confirmed', async () => {
     happyHomeDir = join(tmpdir(), `happier-cli-heartbeat-self-restart-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-    process.env.HAPPIER_HOME_DIR = happyHomeDir;
+    process.env.HAPPIEST_HOME_DIR = happyHomeDir;
     mkdirSync(join(happyHomeDir, 'logs'), { recursive: true });
     process.env.HAPPIER_DAEMON_HEARTBEAT_INTERVAL = '1';
     process.env.HAPPIER_DAEMON_RESTART_VERIFY_TIMEOUT_MS = '40';
@@ -298,7 +298,7 @@ describe('startDaemonHeartbeatLoop daemon self-restart', () => {
 
   it('preserves ownership metadata when writing heartbeat state updates', async () => {
     happyHomeDir = join(tmpdir(), `happier-cli-heartbeat-metadata-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-    process.env.HAPPIER_HOME_DIR = happyHomeDir;
+    process.env.HAPPIEST_HOME_DIR = happyHomeDir;
     mkdirSync(join(happyHomeDir, 'logs'), { recursive: true });
     process.env.HAPPIER_DAEMON_HEARTBEAT_INTERVAL = '1';
 
@@ -363,7 +363,7 @@ describe('startDaemonHeartbeatLoop daemon self-restart', () => {
 
   it('requests shutdown without overwriting a successor daemon publication', async () => {
     happyHomeDir = join(tmpdir(), `happier-cli-heartbeat-successor-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-    process.env.HAPPIER_HOME_DIR = happyHomeDir;
+    process.env.HAPPIEST_HOME_DIR = happyHomeDir;
     mkdirSync(join(happyHomeDir, 'logs'), { recursive: true });
     process.env.HAPPIER_DAEMON_HEARTBEAT_INTERVAL = '1';
 
@@ -416,7 +416,7 @@ describe('startDaemonHeartbeatLoop daemon self-restart', () => {
 
   it('fails closed when a successor takes the lifecycle lock after ownership is read', async () => {
     happyHomeDir = join(tmpdir(), `happier-cli-heartbeat-lock-successor-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-    process.env.HAPPIER_HOME_DIR = happyHomeDir;
+    process.env.HAPPIEST_HOME_DIR = happyHomeDir;
     mkdirSync(join(happyHomeDir, 'logs'), { recursive: true });
     process.env.HAPPIER_DAEMON_HEARTBEAT_INTERVAL = '1';
 

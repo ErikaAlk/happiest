@@ -13,7 +13,7 @@ import { resolveProviderCliManagedCommandPath } from './providerCliResolution';
 
 const envKeys = [
   'PATH',
-  'HAPPIER_HOME_DIR',
+  'HAPPIEST_HOME_DIR',
   'HAPPIER_GEMINI_PATH',
   'HAPPIER_JS_RUNTIME_PATH',
   'HAPPIER_MANAGED_NODE_BIN',
@@ -97,7 +97,7 @@ describe('requireProviderCliLaunchSpec', () => {
   it('keeps managed wrappers as direct commands', async () => {
     const homeDir = await createTempDir('happier-provider-launch-managed-', tmpdir());
     tempDirs.add(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     process.env.PATH = '';
     delete process.env.HAPPIER_GEMINI_PATH;
 

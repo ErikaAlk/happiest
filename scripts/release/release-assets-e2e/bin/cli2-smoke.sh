@@ -3,13 +3,13 @@ set -euo pipefail
 
 HAPPIER_NPM_SPEC="${HAPPIER_NPM_SPEC:-@happier-dev/cli@next}"
 HAPPIER_TGZ="${HAPPIER_TGZ:-}"
-HAPPIER_SERVER_URL="${HAPPIER_SERVER_URL:-http://stack:3005}"
+HAPPIEST_SERVER_URL="${HAPPIEST_SERVER_URL:-http://stack:3005}"
 HAPPIER_E2E_WITH_DAEMON="${HAPPIER_E2E_WITH_DAEMON:-1}"
 HAPPIER_CLI_INSTALL_MODE="${HAPPIER_CLI_INSTALL_MODE:-global}"
 
-HAPPIER_ACTIVE_SERVER_ID="${HAPPIER_ACTIVE_SERVER_ID:-smoke}"
-HAPPIER_PUBLIC_SERVER_URL="${HAPPIER_PUBLIC_SERVER_URL:-$HAPPIER_SERVER_URL}"
-HAPPIER_WEBAPP_URL="${HAPPIER_WEBAPP_URL:-$HAPPIER_SERVER_URL}"
+HAPPIEST_ACTIVE_SERVER_ID="${HAPPIEST_ACTIVE_SERVER_ID:-smoke}"
+HAPPIEST_PUBLIC_SERVER_URL="${HAPPIEST_PUBLIC_SERVER_URL:-$HAPPIEST_SERVER_URL}"
+HAPPIEST_WEBAPP_URL="${HAPPIEST_WEBAPP_URL:-$HAPPIEST_SERVER_URL}"
 
 CLIENT_HOME_DIR="${CLIENT_HOME_DIR:-/work/happier-home-2}"
 APPROVER_HOME_DIR="${APPROVER_HOME_DIR:-/work/primary-home}"
@@ -107,7 +107,7 @@ fi
 
 echo "[cli2] authenticating via primary account (non-interactive terminal auth)..."
 approver_servers_dir="$APPROVER_HOME_DIR/servers"
-preferred_approver_access_key="$approver_servers_dir/$HAPPIER_ACTIVE_SERVER_ID/access.key"
+preferred_approver_access_key="$approver_servers_dir/$HAPPIEST_ACTIVE_SERVER_ID/access.key"
 approver_access_keys=""
 if [[ -f "$preferred_approver_access_key" ]]; then
   approver_access_keys="$preferred_approver_access_key"
@@ -135,7 +135,7 @@ while IFS= read -r candidate_access_key; do
   if [[ -z "${candidate_token:-}" ]]; then
     continue
   fi
-  if curl -fsS -H "Authorization: Bearer $candidate_token" "$HAPPIER_SERVER_URL/v1/machines" >/dev/null 2>&1; then
+  if curl -fsS -H "Authorization: Bearer $candidate_token" "$HAPPIEST_SERVER_URL/v1/machines" >/dev/null 2>&1; then
     selected_approver_access_key="$candidate_access_key"
     selected_approver_server_id="$(basename "$(dirname "$selected_approver_access_key")")"
     break
@@ -143,7 +143,7 @@ while IFS= read -r candidate_access_key; do
 done <<<"$approver_access_keys"
 
 if [[ -z "$selected_approver_access_key" ]]; then
-  echo "[cli2] missing approver access key under $approver_servers_dir that authenticates against $HAPPIER_SERVER_URL/v1/machines" >&2
+  echo "[cli2] missing approver access key under $approver_servers_dir that authenticates against $HAPPIEST_SERVER_URL/v1/machines" >&2
   if [[ -n "${discovered_approver_access_keys:-}" ]]; then
     echo "[cli2] discovered approver access keys:" >&2
     echo "$discovered_approver_access_keys" >&2
@@ -154,23 +154,23 @@ if [[ -z "$selected_approver_server_id" ]]; then
   echo "[cli2] failed to derive server id from approver access key: $selected_approver_access_key" >&2
   exit 1
 fi
-if [[ "$selected_approver_server_id" != "$HAPPIER_ACTIVE_SERVER_ID" ]]; then
-  echo "[cli2] aligning active server id from $HAPPIER_ACTIVE_SERVER_ID to $selected_approver_server_id (selected approver access key owner)"
+if [[ "$selected_approver_server_id" != "$HAPPIEST_ACTIVE_SERVER_ID" ]]; then
+  echo "[cli2] aligning active server id from $HAPPIEST_ACTIVE_SERVER_ID to $selected_approver_server_id (selected approver access key owner)"
 fi
 
-echo "[cli2] configuring server: $HAPPIER_SERVER_URL"
-HAPPIER_HOME_DIR="$CLIENT_HOME_DIR" HAPPIER_ACTIVE_SERVER_ID="$selected_approver_server_id" "${HAPPIER_PREFIX[@]}" server set --server-url "$HAPPIER_SERVER_URL" --webapp-url "$HAPPIER_WEBAPP_URL" >/dev/null
+echo "[cli2] configuring server: $HAPPIEST_SERVER_URL"
+HAPPIEST_HOME_DIR="$CLIENT_HOME_DIR" HAPPIEST_ACTIVE_SERVER_ID="$selected_approver_server_id" "${HAPPIER_PREFIX[@]}" server set --server-url "$HAPPIEST_SERVER_URL" --webapp-url "$HAPPIEST_WEBAPP_URL" >/dev/null
 
-req_json="$(HAPPIER_HOME_DIR="$CLIENT_HOME_DIR" HAPPIER_ACTIVE_SERVER_ID="$selected_approver_server_id" HAPPIER_SERVER_URL="$HAPPIER_SERVER_URL" HAPPIER_PUBLIC_SERVER_URL="$HAPPIER_PUBLIC_SERVER_URL" HAPPIER_WEBAPP_URL="$HAPPIER_WEBAPP_URL" "${HAPPIER_PREFIX[@]}" auth request --json)"
+req_json="$(HAPPIEST_HOME_DIR="$CLIENT_HOME_DIR" HAPPIEST_ACTIVE_SERVER_ID="$selected_approver_server_id" HAPPIEST_SERVER_URL="$HAPPIEST_SERVER_URL" HAPPIEST_PUBLIC_SERVER_URL="$HAPPIEST_PUBLIC_SERVER_URL" HAPPIEST_WEBAPP_URL="$HAPPIEST_WEBAPP_URL" "${HAPPIER_PREFIX[@]}" auth request --json)"
 public_key="$(node -e 'const fs=require("fs");const j=JSON.parse(fs.readFileSync(0,"utf8"));process.stdout.write(String(j.publicKey||""))' <<<"$req_json")"
 if [[ -z "$public_key" ]]; then
   echo "[cli2] auth request did not return publicKey" >&2
   exit 1
 fi
 
-HAPPIER_HOME_DIR="$APPROVER_HOME_DIR" HAPPIER_ACTIVE_SERVER_ID="$selected_approver_server_id" HAPPIER_SERVER_URL="$HAPPIER_SERVER_URL" HAPPIER_PUBLIC_SERVER_URL="$HAPPIER_PUBLIC_SERVER_URL" HAPPIER_WEBAPP_URL="$HAPPIER_WEBAPP_URL" "${HAPPIER_PREFIX[@]}" auth approve --json --public-key "$public_key" >/dev/null
+HAPPIEST_HOME_DIR="$APPROVER_HOME_DIR" HAPPIEST_ACTIVE_SERVER_ID="$selected_approver_server_id" HAPPIEST_SERVER_URL="$HAPPIEST_SERVER_URL" HAPPIEST_PUBLIC_SERVER_URL="$HAPPIEST_PUBLIC_SERVER_URL" HAPPIEST_WEBAPP_URL="$HAPPIEST_WEBAPP_URL" "${HAPPIER_PREFIX[@]}" auth approve --json --public-key "$public_key" >/dev/null
 
-wait_json="$(HAPPIER_HOME_DIR="$CLIENT_HOME_DIR" HAPPIER_ACTIVE_SERVER_ID="$selected_approver_server_id" HAPPIER_SERVER_URL="$HAPPIER_SERVER_URL" HAPPIER_PUBLIC_SERVER_URL="$HAPPIER_PUBLIC_SERVER_URL" HAPPIER_WEBAPP_URL="$HAPPIER_WEBAPP_URL" "${HAPPIER_PREFIX[@]}" auth wait --json --public-key "$public_key")"
+wait_json="$(HAPPIEST_HOME_DIR="$CLIENT_HOME_DIR" HAPPIEST_ACTIVE_SERVER_ID="$selected_approver_server_id" HAPPIEST_SERVER_URL="$HAPPIEST_SERVER_URL" HAPPIEST_PUBLIC_SERVER_URL="$HAPPIEST_PUBLIC_SERVER_URL" HAPPIEST_WEBAPP_URL="$HAPPIEST_WEBAPP_URL" "${HAPPIER_PREFIX[@]}" auth wait --json --public-key "$public_key")"
 token="$(node -e 'const fs=require("fs");const j=JSON.parse(fs.readFileSync(0,"utf8"));process.stdout.write(String(j.token||""))' <<<"$wait_json")"
 if [[ -z "$token" ]]; then
   echo "[cli2] auth wait did not return a token" >&2
@@ -178,11 +178,11 @@ if [[ -z "$token" ]]; then
 fi
 
 echo "[cli2] probing server via happier-cli..."
-HAPPIER_HOME_DIR="$CLIENT_HOME_DIR" HAPPIER_ACTIVE_SERVER_ID="$selected_approver_server_id" HAPPIER_SERVER_URL="$HAPPIER_SERVER_URL" HAPPIER_PUBLIC_SERVER_URL="$HAPPIER_PUBLIC_SERVER_URL" HAPPIER_WEBAPP_URL="$HAPPIER_WEBAPP_URL" "${HAPPIER_PREFIX[@]}" server test >/dev/null
+HAPPIEST_HOME_DIR="$CLIENT_HOME_DIR" HAPPIEST_ACTIVE_SERVER_ID="$selected_approver_server_id" HAPPIEST_SERVER_URL="$HAPPIEST_SERVER_URL" HAPPIEST_PUBLIC_SERVER_URL="$HAPPIEST_PUBLIC_SERVER_URL" HAPPIEST_WEBAPP_URL="$HAPPIEST_WEBAPP_URL" "${HAPPIER_PREFIX[@]}" server test >/dev/null
 
 echo "[cli2] probing authenticated endpoint..."
-HAPPIER_SERVER_URL="$HAPPIER_SERVER_URL" HAPPIER_TOKEN="$token" node -e '
-  const base = String(process.env.HAPPIER_SERVER_URL || "").replace(/\/+$/, "");
+HAPPIEST_SERVER_URL="$HAPPIEST_SERVER_URL" HAPPIER_TOKEN="$token" node -e '
+  const base = String(process.env.HAPPIEST_SERVER_URL || "").replace(/\/+$/, "");
   const token = String(process.env.HAPPIER_TOKEN || "");
   const url = base + "/v1/account/profile";
   fetch(url, { headers: { Authorization: `Bearer ${token}` } })
@@ -198,8 +198,8 @@ HAPPIER_SERVER_URL="$HAPPIER_SERVER_URL" HAPPIER_TOKEN="$token" node -e '
 
 if [[ "$HAPPIER_E2E_WITH_DAEMON" == "1" ]]; then
   echo "[cli2] checking machine count before daemon start..."
-  machine_count_before="$(HAPPIER_SERVER_URL="$HAPPIER_SERVER_URL" HAPPIER_TOKEN="$token" node -e '
-    const base = String(process.env.HAPPIER_SERVER_URL || "").replace(/\/+$/, "");
+  machine_count_before="$(HAPPIEST_SERVER_URL="$HAPPIEST_SERVER_URL" HAPPIER_TOKEN="$token" node -e '
+    const base = String(process.env.HAPPIEST_SERVER_URL || "").replace(/\/+$/, "");
     const token = String(process.env.HAPPIER_TOKEN || "");
     const url = base + "/v1/machines";
     fetch(url, { headers: { Authorization: `Bearer ${token}` } })
@@ -219,16 +219,16 @@ if [[ "$HAPPIER_E2E_WITH_DAEMON" == "1" ]]; then
   fi
 
   echo "[cli2] starting daemon..."
-  HAPPIER_HOME_DIR="$CLIENT_HOME_DIR" HAPPIER_ACTIVE_SERVER_ID="$selected_approver_server_id" HAPPIER_SERVER_URL="$HAPPIER_SERVER_URL" HAPPIER_PUBLIC_SERVER_URL="$HAPPIER_PUBLIC_SERVER_URL" HAPPIER_WEBAPP_URL="$HAPPIER_WEBAPP_URL" "${HAPPIER_PREFIX[@]}" daemon start >/dev/null
+  HAPPIEST_HOME_DIR="$CLIENT_HOME_DIR" HAPPIEST_ACTIVE_SERVER_ID="$selected_approver_server_id" HAPPIEST_SERVER_URL="$HAPPIEST_SERVER_URL" HAPPIEST_PUBLIC_SERVER_URL="$HAPPIEST_PUBLIC_SERVER_URL" HAPPIEST_WEBAPP_URL="$HAPPIEST_WEBAPP_URL" "${HAPPIER_PREFIX[@]}" daemon start >/dev/null
 
   echo "[cli2] daemon status..."
-  HAPPIER_HOME_DIR="$CLIENT_HOME_DIR" HAPPIER_ACTIVE_SERVER_ID="$selected_approver_server_id" HAPPIER_SERVER_URL="$HAPPIER_SERVER_URL" HAPPIER_PUBLIC_SERVER_URL="$HAPPIER_PUBLIC_SERVER_URL" HAPPIER_WEBAPP_URL="$HAPPIER_WEBAPP_URL" "${HAPPIER_PREFIX[@]}" daemon status >/dev/null
+  HAPPIEST_HOME_DIR="$CLIENT_HOME_DIR" HAPPIEST_ACTIVE_SERVER_ID="$selected_approver_server_id" HAPPIEST_SERVER_URL="$HAPPIEST_SERVER_URL" HAPPIEST_PUBLIC_SERVER_URL="$HAPPIEST_PUBLIC_SERVER_URL" HAPPIEST_WEBAPP_URL="$HAPPIEST_WEBAPP_URL" "${HAPPIER_PREFIX[@]}" daemon status >/dev/null
 
   echo "[cli2] waiting for daemon to register a machine (connectivity check)..."
   machine_count_after="$machine_count_before"
   for _ in $(seq 1 60); do
-    machine_count_after="$(HAPPIER_SERVER_URL="$HAPPIER_SERVER_URL" HAPPIER_TOKEN="$token" node -e '
-      const base = String(process.env.HAPPIER_SERVER_URL || "").replace(/\/+$/, "");
+    machine_count_after="$(HAPPIEST_SERVER_URL="$HAPPIEST_SERVER_URL" HAPPIER_TOKEN="$token" node -e '
+      const base = String(process.env.HAPPIEST_SERVER_URL || "").replace(/\/+$/, "");
       const token = String(process.env.HAPPIER_TOKEN || "");
       const url = base + "/v1/machines";
       fetch(url, { headers: { Authorization: `Bearer ${token}` } })

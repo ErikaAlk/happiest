@@ -37,7 +37,7 @@ let transportCreationCount = 0;
 let sessionConnectionGate: Promise<void> | null = null;
 let disconnectSessionTransport: (() => void) | null = null;
 let tempHomeDir: string | null = null;
-const originalHappyHomeDir = process.env.HAPPIER_HOME_DIR;
+const originalHappyHomeDir = process.env.HAPPIEST_HOME_DIR;
 
 async function createRuntimePersistenceContext(sessionId: string) {
   const { configuration } = await import('@/configuration');
@@ -128,7 +128,7 @@ vi.mock('@happier-dev/connection-supervisor', async (importOriginal) => {
 
 async function useTempHappyHome(): Promise<string> {
   tempHomeDir = await mkdtemp(join(tmpdir(), 'happier-cli-session-outbox-'));
-  process.env.HAPPIER_HOME_DIR = tempHomeDir;
+  process.env.HAPPIEST_HOME_DIR = tempHomeDir;
   return tempHomeDir;
 }
 
@@ -190,7 +190,7 @@ describe('ApiSessionClient durable mutation outbox', () => {
 
   afterEach(async () => {
     vi.unstubAllGlobals();
-    process.env.HAPPIER_HOME_DIR = originalHappyHomeDir;
+    process.env.HAPPIEST_HOME_DIR = originalHappyHomeDir;
     if (tempHomeDir) {
       await rm(tempHomeDir, { recursive: true, force: true });
       tempHomeDir = null;

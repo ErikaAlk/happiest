@@ -12,13 +12,13 @@ import { captureConsoleLogAndMuteStdout } from '@/testkit/logger/captureOutput';
 import { handleServerCommand } from './server';
 
 const envKeys = [
-  'HAPPIER_HOME_DIR',
-  'HAPPIER_SERVER_URL',
-  'HAPPIER_WEBAPP_URL',
-  'HAPPIER_DAEMON_SERVICE_PLATFORM',
-  'HAPPIER_DAEMON_SERVICE_USER_HOME_DIR',
-  'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR',
-  'HAPPIER_ACTIVE_SERVER_ID',
+  'HAPPIEST_HOME_DIR',
+  'HAPPIEST_SERVER_URL',
+  'HAPPIEST_WEBAPP_URL',
+  'HAPPIEST_DAEMON_SERVICE_PLATFORM',
+  'HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR',
+  'HAPPIEST_DAEMON_SERVICE_HOME_DIR',
+  'HAPPIEST_ACTIVE_SERVER_ID',
 ] as const;
 
 let envScope = createEnvKeyScope(envKeys);
@@ -33,9 +33,9 @@ function writeInstalledDefaultFollowingServiceFixture(homeDir: string, happierHo
       execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
       env: {
         HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
-        HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
       },
       wantedBy: 'default.target',
     }),
@@ -49,10 +49,10 @@ describe('happier server add', () => {
     const output = captureConsoleLogAndMuteStdout();
 
     try {
-      process.env.HAPPIER_HOME_DIR = home;
-      delete process.env.HAPPIER_ACTIVE_SERVER_ID;
-      delete process.env.HAPPIER_SERVER_URL;
-      delete process.env.HAPPIER_WEBAPP_URL;
+      process.env.HAPPIEST_HOME_DIR = home;
+      delete process.env.HAPPIEST_ACTIVE_SERVER_ID;
+      delete process.env.HAPPIEST_SERVER_URL;
+      delete process.env.HAPPIEST_WEBAPP_URL;
       reloadConfiguration();
 
       await handleServerCommand([
@@ -86,10 +86,10 @@ describe('happier server add', () => {
     const output = captureConsoleLogAndMuteStdout();
 
     try {
-      process.env.HAPPIER_HOME_DIR = home;
-      delete process.env.HAPPIER_ACTIVE_SERVER_ID;
-      delete process.env.HAPPIER_SERVER_URL;
-      delete process.env.HAPPIER_WEBAPP_URL;
+      process.env.HAPPIEST_HOME_DIR = home;
+      delete process.env.HAPPIEST_ACTIVE_SERVER_ID;
+      delete process.env.HAPPIEST_SERVER_URL;
+      delete process.env.HAPPIEST_WEBAPP_URL;
       reloadConfiguration();
 
       await handleServerCommand([
@@ -124,13 +124,13 @@ describe('happier server add', () => {
     const output = captureConsoleLogAndMuteStdout();
 
     try {
-      process.env.HAPPIER_HOME_DIR = happierHomeDir;
-      process.env.HAPPIER_DAEMON_SERVICE_PLATFORM = 'linux';
-      process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = home;
-      process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR = happierHomeDir;
-      delete process.env.HAPPIER_ACTIVE_SERVER_ID;
-      delete process.env.HAPPIER_SERVER_URL;
-      delete process.env.HAPPIER_WEBAPP_URL;
+      process.env.HAPPIEST_HOME_DIR = happierHomeDir;
+      process.env.HAPPIEST_DAEMON_SERVICE_PLATFORM = 'linux';
+      process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = home;
+      process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR = happierHomeDir;
+      delete process.env.HAPPIEST_ACTIVE_SERVER_ID;
+      delete process.env.HAPPIEST_SERVER_URL;
+      delete process.env.HAPPIEST_WEBAPP_URL;
       writeInstalledDefaultFollowingServiceFixture(home, happierHomeDir);
       reloadConfiguration();
 
@@ -166,13 +166,13 @@ describe('happier server add', () => {
     const output = captureConsoleLogAndMuteStdout();
 
     try {
-      process.env.HAPPIER_HOME_DIR = happierHomeDir;
-      process.env.HAPPIER_DAEMON_SERVICE_PLATFORM = 'linux';
-      process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = home;
-      process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR = happierHomeDir;
-      delete process.env.HAPPIER_ACTIVE_SERVER_ID;
-      delete process.env.HAPPIER_SERVER_URL;
-      delete process.env.HAPPIER_WEBAPP_URL;
+      process.env.HAPPIEST_HOME_DIR = happierHomeDir;
+      process.env.HAPPIEST_DAEMON_SERVICE_PLATFORM = 'linux';
+      process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = home;
+      process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR = happierHomeDir;
+      delete process.env.HAPPIEST_ACTIVE_SERVER_ID;
+      delete process.env.HAPPIEST_SERVER_URL;
+      delete process.env.HAPPIEST_WEBAPP_URL;
       writeInstalledDefaultFollowingServiceFixture(home, happierHomeDir);
       reloadConfiguration();
 

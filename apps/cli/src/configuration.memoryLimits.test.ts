@@ -18,7 +18,7 @@ describe('configuration memory limits', () => {
   it('defaults memoryMaxTranscriptWindowMessages to 250', async () => {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     delete process.env.HAPPIER_MEMORY_MAX_TRANSCRIPT_WINDOW_MESSAGES;
 
     const configMod = await import('./configuration');
@@ -29,7 +29,7 @@ describe('configuration memory limits', () => {
   it('bounds HAPPIER_MEMORY_MAX_TRANSCRIPT_WINDOW_MESSAGES to max 500', async () => {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     process.env.HAPPIER_MEMORY_MAX_TRANSCRIPT_WINDOW_MESSAGES = '9999';
 
     const configMod = await import('./configuration');

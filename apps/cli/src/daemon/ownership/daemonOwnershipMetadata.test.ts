@@ -9,8 +9,8 @@ describe('resolveDaemonStartupSourceFromEnv', () => {
   it('defaults to manual when only service metadata env is present', () => {
     expect(
       resolveDaemonStartupSourceFromEnv({
-        HAPPIER_DAEMON_SERVICE_INSTANCE_ID: 'cloud',
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: 'cloud',
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
       } as NodeJS.ProcessEnv),
     ).toBe('manual');
   });
@@ -36,8 +36,8 @@ describe('resolveDaemonStartupSourceFromEnv', () => {
     expect(
       resolveDaemonStartupSourceFromEnv({
         HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-        HAPPIER_DAEMON_SERVICE_INSTANCE_ID: 'cloud',
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: 'cloud',
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
       } as NodeJS.ProcessEnv),
     ).toBe('background-service');
   });

@@ -13,7 +13,7 @@ import {
 } from './providerCliResolution';
 
 const envKeys = [
-  'HAPPIER_HOME_DIR',
+  'HAPPIEST_HOME_DIR',
   'HAPPIER_BACKEND_CLI_SOURCE_PREFERENCES_JSON',
   'HAPPIER_CODEX_PATH',
   'HAPPIER_CLAUDE_PATH',
@@ -65,15 +65,15 @@ describe('resolveProviderCliCommand', () => {
   it('prefers the system-installed CLI by default when both system and managed installs exist', () => {
     const root = createTempDirSync('happier-managed-cli-resolution-', tmpdir());
     tempDirs.add(root);
-    process.env.HAPPIER_HOME_DIR = join(root, 'home');
-    mkdirSync(process.env.HAPPIER_HOME_DIR, { recursive: true });
+    process.env.HAPPIEST_HOME_DIR = join(root, 'home');
+    mkdirSync(process.env.HAPPIEST_HOME_DIR, { recursive: true });
 
     const systemBin = join(root, 'system-bin');
     mkdirSync(systemBin, { recursive: true });
     const systemPath = makeExecutable(systemBin, 'codex');
     process.env.PATH = systemBin;
 
-    const managedPath = resolveProviderCliManagedCommandPath('codex', { happyHomeDir: process.env.HAPPIER_HOME_DIR });
+    const managedPath = resolveProviderCliManagedCommandPath('codex', { happyHomeDir: process.env.HAPPIEST_HOME_DIR });
     mkdirSync(join(root, 'home', '.noop'), { recursive: true });
     writeManagedExecutable(managedPath, process.platform === 'win32' ? '@echo off\r\necho ok\r\n' : '#!/bin/sh\necho ok\n');
 
@@ -88,12 +88,12 @@ describe('resolveProviderCliCommand', () => {
   it('falls back to the managed CLI when the system install is missing', () => {
     const root = createTempDirSync('happier-managed-cli-resolution-', tmpdir());
     tempDirs.add(root);
-    process.env.HAPPIER_HOME_DIR = join(root, 'home');
-    mkdirSync(process.env.HAPPIER_HOME_DIR, { recursive: true });
+    process.env.HAPPIEST_HOME_DIR = join(root, 'home');
+    mkdirSync(process.env.HAPPIEST_HOME_DIR, { recursive: true });
     process.env.PATH = join(root, 'empty-path');
     mkdirSync(process.env.PATH, { recursive: true });
 
-    const managedPath = resolveProviderCliManagedCommandPath('codex', { happyHomeDir: process.env.HAPPIER_HOME_DIR });
+    const managedPath = resolveProviderCliManagedCommandPath('codex', { happyHomeDir: process.env.HAPPIEST_HOME_DIR });
     writeManagedExecutable(managedPath, process.platform === 'win32' ? '@echo off\r\necho ok\r\n' : '#!/bin/sh\necho ok\n');
 
     expect(resolveProviderCliCommand('codex')).toEqual(
@@ -109,12 +109,12 @@ describe('resolveProviderCliCommand', () => {
 
     const root = createTempDirSync('happier-managed-cli-resolution-', tmpdir());
     tempDirs.add(root);
-    process.env.HAPPIER_HOME_DIR = join(root, 'home');
-    mkdirSync(process.env.HAPPIER_HOME_DIR, { recursive: true });
+    process.env.HAPPIEST_HOME_DIR = join(root, 'home');
+    mkdirSync(process.env.HAPPIEST_HOME_DIR, { recursive: true });
     process.env.PATH = join(root, 'empty-path');
     mkdirSync(process.env.PATH, { recursive: true });
 
-    const managedPath = resolveProviderCliManagedCommandPath('codex', { happyHomeDir: process.env.HAPPIER_HOME_DIR });
+    const managedPath = resolveProviderCliManagedCommandPath('codex', { happyHomeDir: process.env.HAPPIEST_HOME_DIR });
     writeTextFileSync(managedPath, '#!/bin/sh\necho ok\n');
     chmodSync(managedPath, 0o644);
 
@@ -124,15 +124,15 @@ describe('resolveProviderCliCommand', () => {
   it('honors managed-first source preferences for backend CLIs', () => {
     const root = createTempDirSync('happier-managed-cli-resolution-', tmpdir());
     tempDirs.add(root);
-    process.env.HAPPIER_HOME_DIR = join(root, 'home');
-    mkdirSync(process.env.HAPPIER_HOME_DIR, { recursive: true });
+    process.env.HAPPIEST_HOME_DIR = join(root, 'home');
+    mkdirSync(process.env.HAPPIEST_HOME_DIR, { recursive: true });
 
     const systemBin = join(root, 'system-bin');
     mkdirSync(systemBin, { recursive: true });
     makeExecutable(systemBin, 'codex');
     process.env.PATH = systemBin;
 
-    const managedPath = resolveProviderCliManagedCommandPath('codex', { happyHomeDir: process.env.HAPPIER_HOME_DIR });
+    const managedPath = resolveProviderCliManagedCommandPath('codex', { happyHomeDir: process.env.HAPPIEST_HOME_DIR });
     writeManagedExecutable(managedPath, process.platform === 'win32' ? '@echo off\r\necho ok\r\n' : '#!/bin/sh\necho ok\n');
 
     process.env.HAPPIER_BACKEND_CLI_SOURCE_PREFERENCES_JSON = JSON.stringify({ codex: 'managed-first' });
@@ -190,8 +190,8 @@ describe('resolveProviderCliCommand', () => {
   it('fails closed when an explicit override is set but does not point to an executable', () => {
     const root = createTempDirSync('happier-managed-cli-resolution-', tmpdir());
     tempDirs.add(root);
-    process.env.HAPPIER_HOME_DIR = join(root, 'home');
-    mkdirSync(process.env.HAPPIER_HOME_DIR, { recursive: true });
+    process.env.HAPPIEST_HOME_DIR = join(root, 'home');
+    mkdirSync(process.env.HAPPIEST_HOME_DIR, { recursive: true });
 
     const systemBin = join(root, 'system-bin');
     mkdirSync(systemBin, { recursive: true });
@@ -243,8 +243,8 @@ describe('resolveProviderCliCommand', () => {
 
     const root = createTempDirSync('happier-managed-cli-resolution-', tmpdir());
     tempDirs.add(root);
-    process.env.HAPPIER_HOME_DIR = join(root, 'home');
-    mkdirSync(process.env.HAPPIER_HOME_DIR, { recursive: true });
+    process.env.HAPPIEST_HOME_DIR = join(root, 'home');
+    mkdirSync(process.env.HAPPIEST_HOME_DIR, { recursive: true });
     const systemBin = join(root, 'system-bin');
     mkdirSync(systemBin, { recursive: true });
     const systemPath = join(systemBin, 'gemini');
@@ -268,8 +268,8 @@ describe('resolveProviderCliCommand', () => {
 
     const root = createTempDirSync('happier-managed-cli-resolution-', tmpdir());
     tempDirs.add(root);
-    process.env.HAPPIER_HOME_DIR = join(root, 'home');
-    mkdirSync(process.env.HAPPIER_HOME_DIR, { recursive: true });
+    process.env.HAPPIEST_HOME_DIR = join(root, 'home');
+    mkdirSync(process.env.HAPPIEST_HOME_DIR, { recursive: true });
     const systemBin = join(root, 'system-bin');
     mkdirSync(systemBin, { recursive: true });
     const systemPath = join(systemBin, 'gemini');

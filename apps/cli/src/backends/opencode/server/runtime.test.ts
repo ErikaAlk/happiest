@@ -12231,7 +12231,7 @@ describe('createOpenCodeServerRuntime — connected-service broker preflight (fa
       openai: { serviceId: 'openai-codex', profileId: 'primary', accountId: null, planType: null },
     });
     const restoreHome = withEnvForTest({
-      HAPPIER_HOME_DIR: home,
+      HAPPIEST_HOME_DIR: home,
       HAPPIER_OPENCODE_SERVER_STATE_PATH: managedStatePath,
       [OPENCODE_CONNECTED_SERVICE_SELECTION_IDENTITY_ENV]: 'opencode|connected|openai-codex:primary:',
       [OPEN_CODE_BROKER_SELECTIONS_ENV]: brokerSelections,
@@ -12393,7 +12393,7 @@ describe('createOpenCodeServerRuntime — connected-service broker preflight (fa
 
   it('does not forward a prompt when the turn is cancelled while broker preflight is pending', async () => {
     const home = await mkdtemp(join(tmpdir(), 'happier-opencode-runtime-broker-home-'));
-    const restoreHome = withEnvForTest({ HAPPIER_HOME_DIR: home });
+    const restoreHome = withEnvForTest({ HAPPIEST_HOME_DIR: home });
     reloadConfiguration();
     const daemonStatePath = join(home, 'daemon.state.json');
     await writeUsableDaemonState(daemonStatePath);

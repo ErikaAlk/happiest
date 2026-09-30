@@ -93,11 +93,11 @@ if [[ "\${1:-}" = "self" && "\${2:-}" = "__install-payload" ]]; then
       *) shift ;;
     esac
   done
-  dest="\${HAPPIER_HOME_DIR}/cli/versions/\${payload_version}/\$(basename "\${payload_root}")"
+  dest="\${HAPPIEST_HOME_DIR}/cli/versions/\${payload_version}/\$(basename "\${payload_root}")"
   mkdir -p "\$(dirname "\${dest}")"
   rm -rf "\${dest}"
   cp -R "\${payload_root}" "\${dest}"
-  ln -sfn "\${dest}" "\${HAPPIER_HOME_DIR}/cli/current"
+  ln -sfn "\${dest}" "\${HAPPIEST_HOME_DIR}/cli/current"
   exit 0
 fi
 if [[ "\${1:-}" = "auth" && "\${2:-}" = "status" ]]; then

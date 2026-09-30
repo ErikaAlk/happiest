@@ -351,7 +351,7 @@ ssh-keygen -t ed25519 -N '' -f "$ssh_dir/id_ed25519" >/dev/null
     # Keep release-assets smoke deterministic: UI build/serve is not required for these lanes.
     echo "HSTACK_E2E_WITH_UI=0"
     echo "HAPPIER_STACK_SERVE_UI=0"
-    echo "HAPPIER_SERVER_URL=http://stack:3005"
+    echo "HAPPIEST_SERVER_URL=http://stack:3005"
     if [[ "$remote_installer" == "shim" ]]; then
       echo "REMOTE_SHIM_HAPPIER_INSTALLER=1"
     else
@@ -572,8 +572,8 @@ run_dockerhub_images_smoke() {
         echo "HAPPIER_RELAY_IMAGE=$relay_image"
         echo "HAPPIER_DEVBOX_IMAGE=$devbox_image"
         echo "HAPPIER_NPM_SPEC=$cli_spec"
-        echo "HAPPIER_SERVER_URL=http://relay:3005"
-        echo "HAPPIER_ACTIVE_SERVER_ID=smoke_dockerhub_${docker_channel}_${db_case}"
+        echo "HAPPIEST_SERVER_URL=http://relay:3005"
+        echo "HAPPIEST_ACTIVE_SERVER_ID=smoke_dockerhub_${docker_channel}_${db_case}"
         echo "CLIENT_HOME_DIR=/home/happier/happier-home"
         echo "APPROVER_HOME_DIR=/home/happier/happier-approver-home"
 

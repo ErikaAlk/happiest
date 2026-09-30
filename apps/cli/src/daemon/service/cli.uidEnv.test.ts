@@ -6,9 +6,9 @@ import { captureConsoleText } from '@/testkit/logger/captureOutput';
 
 describe('resolveDaemonServiceCliRuntimeFromEnv', () => {
   const envKeys = [
-    'HAPPIER_HOME_DIR',
-    'HAPPIER_DAEMON_SERVICE_UID',
-    'HAPPIER_DAEMON_SERVICE_CHANNEL',
+    'HAPPIEST_HOME_DIR',
+    'HAPPIEST_DAEMON_SERVICE_UID',
+    'HAPPIEST_DAEMON_SERVICE_CHANNEL',
     'HAPPIER_PUBLIC_RELEASE_CHANNEL',
   ] as const;
   let envScope = createEnvKeyScope(envKeys);
@@ -19,11 +19,11 @@ describe('resolveDaemonServiceCliRuntimeFromEnv', () => {
     vi.resetModules();
   });
 
-  it('allows an explicit UID 0 from HAPPIER_DAEMON_SERVICE_UID', async () => {
+  it('allows an explicit UID 0 from HAPPIEST_DAEMON_SERVICE_UID', async () => {
     withTempDirSync('happier-cli-daemon-service-uid-', (homeDir) => {
       envScope.patch({
-        HAPPIER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_UID: '0',
+        HAPPIEST_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_UID: '0',
       });
 
       const output = captureConsoleText();
@@ -41,8 +41,8 @@ describe('resolveDaemonServiceCliRuntimeFromEnv', () => {
   it('defaults the daemon service channel to stable when env and argv do not provide one', async () => {
     withTempDirSync('happier-cli-daemon-service-channel-', (homeDir) => {
       envScope.patch({
-        HAPPIER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_CHANNEL: '',
+        HAPPIEST_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_CHANNEL: '',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: '',
       });
 
@@ -55,10 +55,10 @@ describe('resolveDaemonServiceCliRuntimeFromEnv', () => {
           const runtime = resolveDaemonServiceCliRuntimeFromEnv({
             processEnv: {
               ...process.env,
-              HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
-              HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-              HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: `${homeDir}/.happier`,
-              HAPPIER_DAEMON_SERVICE_CHANNEL: '',
+              HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
+              HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+              HAPPIEST_DAEMON_SERVICE_HOME_DIR: `${homeDir}/.happier`,
+              HAPPIEST_DAEMON_SERVICE_CHANNEL: '',
               HAPPIER_PUBLIC_RELEASE_CHANNEL: '',
             },
           });

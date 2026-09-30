@@ -6,7 +6,7 @@ import { createEnvKeyScope } from '@/testkit/env/envScope';
 import { createExecutableShim } from '@/testkit/fs/executableShim';
 import { createTempDir, removeTempDir } from '@/testkit/fs/tempDir';
 
-const envKeys = ['PATH', 'HAPPIER_CLAUDE_PATH', 'HOME', 'HAPPIER_HOME_DIR', 'CLAUDE_CONFIG_DIR', 'HAPPIER_CLAUDE_CONFIG_DIR', 'IS_SANDBOX'] as const;
+const envKeys = ['PATH', 'HAPPIER_CLAUDE_PATH', 'HOME', 'HAPPIEST_HOME_DIR', 'CLAUDE_CONFIG_DIR', 'HAPPIER_CLAUDE_CONFIG_DIR', 'IS_SANDBOX'] as const;
 const tempDirs = new Set<string>();
 let envScope = createEnvKeyScope(envKeys);
 
@@ -39,7 +39,7 @@ describe('claudeDaemonSpawnHooks.validateSpawn', () => {
     envScope.patch({
       PATH: '',
       HOME: homeDir,
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_CLAUDE_PATH: undefined,
     });
 

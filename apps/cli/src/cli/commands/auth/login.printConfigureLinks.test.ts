@@ -60,11 +60,11 @@ vi.mock('@/ui/logger', () => ({
 
 describe('happier auth login', () => {
   const envScope = createEnvKeyScope([
-    'HAPPIER_ACTIVE_SERVER_ID',
+    'HAPPIEST_ACTIVE_SERVER_ID',
     'HAPPIER_AUTH_METHOD',
     'HAPPIER_AUTH_PRINT_CONFIGURE_LINKS',
     'HAPPIER_AUTH_WAIT_TIMEOUT_MS',
-    'HAPPIER_SERVER_URL',
+    'HAPPIEST_SERVER_URL',
   ]);
 
   beforeEach(() => {
@@ -320,8 +320,8 @@ describe('happier auth login', () => {
   it('selects same-machine web auth for a new login to a loopback relay and names the target', async () => {
     readCredentialsMock.mockResolvedValue(null);
     envScope.patch({
-      HAPPIER_SERVER_URL: 'http://127.0.0.1:52753',
-      HAPPIER_ACTIVE_SERVER_ID: '127.0.0.1-52753',
+      HAPPIEST_SERVER_URL: 'http://127.0.0.1:52753',
+      HAPPIEST_ACTIVE_SERVER_ID: '127.0.0.1-52753',
     });
     delete process.env.HAPPIER_AUTH_METHOD;
     const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -343,7 +343,7 @@ describe('happier auth login', () => {
       encryption: { type: 'legacy', secret: new Uint8Array(32) },
     });
     readSettingsMock.mockResolvedValue({});
-    envScope.patch({ HAPPIER_SERVER_URL: 'http://127.0.0.1:52753' });
+    envScope.patch({ HAPPIEST_SERVER_URL: 'http://127.0.0.1:52753' });
     delete process.env.HAPPIER_AUTH_METHOD;
     const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     try {

@@ -9,20 +9,20 @@ import { handleDaemonCliCommand } from './daemon';
 describe('happier daemon install/uninstall', () => {
   it('aliases daemon install to daemon service install (supports --dry-run --json)', async () => {
     const envScope = createEnvKeyScope([
-      'HAPPIER_DAEMON_SERVICE_PLATFORM',
-      'HAPPIER_DAEMON_SERVICE_USER_HOME_DIR',
-      'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR',
-      'HAPPIER_DAEMON_SERVICE_INSTANCE_ID',
+      'HAPPIEST_DAEMON_SERVICE_PLATFORM',
+      'HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR',
+      'HAPPIEST_DAEMON_SERVICE_HOME_DIR',
+      'HAPPIEST_DAEMON_SERVICE_INSTANCE_ID',
       'HOME',
       'PATH',
     ]);
 
     await withTempDir('happier-daemon-install-alias-', async (tmp) => {
       envScope.patch({
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: tmp,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: join(tmp, '.happier'),
-        HAPPIER_DAEMON_SERVICE_INSTANCE_ID: 'cloud',
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: tmp,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: join(tmp, '.happier'),
+        HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: 'cloud',
         HOME: tmp,
         PATH: join(tmp, 'bin'),
       });
@@ -47,20 +47,20 @@ describe('happier daemon install/uninstall', () => {
 
   it('aliases daemon uninstall to daemon service uninstall (supports --dry-run --json)', async () => {
     const envScope = createEnvKeyScope([
-      'HAPPIER_DAEMON_SERVICE_PLATFORM',
-      'HAPPIER_DAEMON_SERVICE_USER_HOME_DIR',
-      'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR',
-      'HAPPIER_DAEMON_SERVICE_INSTANCE_ID',
+      'HAPPIEST_DAEMON_SERVICE_PLATFORM',
+      'HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR',
+      'HAPPIEST_DAEMON_SERVICE_HOME_DIR',
+      'HAPPIEST_DAEMON_SERVICE_INSTANCE_ID',
       'HOME',
       'PATH',
     ]);
 
     await withTempDir('happier-daemon-uninstall-alias-', async (tmp) => {
       envScope.patch({
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: tmp,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: join(tmp, '.happier'),
-        HAPPIER_DAEMON_SERVICE_INSTANCE_ID: 'cloud',
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: tmp,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: join(tmp, '.happier'),
+        HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: 'cloud',
         HOME: tmp,
         PATH: join(tmp, 'bin'),
       });

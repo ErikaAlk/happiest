@@ -89,12 +89,12 @@ describe('happier resume', () => {
   it('creates an attach file and dispatches to the agent handler with --resume', async () => {
     const home = await mkdtemp(join(tmpdir(), 'happier-resume-'));
     const directory = await mkdtemp(join(tmpdir(), 'happier-resume-dir-'));
-    const prevHome = process.env.HAPPIER_HOME_DIR;
+    const prevHome = process.env.HAPPIEST_HOME_DIR;
     const prevAttach = process.env.HAPPIER_SESSION_ATTACH_FILE;
     const prevCwd = process.cwd();
 
     try {
-      process.env.HAPPIER_HOME_DIR = home;
+      process.env.HAPPIEST_HOME_DIR = home;
       reloadConfiguration();
 
       const machineKey = new Uint8Array(32).fill(11);
@@ -166,8 +166,8 @@ describe('happier resume', () => {
       }
       if (prevAttach === undefined) delete process.env.HAPPIER_SESSION_ATTACH_FILE;
       else process.env.HAPPIER_SESSION_ATTACH_FILE = prevAttach;
-      if (prevHome === undefined) delete process.env.HAPPIER_HOME_DIR;
-      else process.env.HAPPIER_HOME_DIR = prevHome;
+      if (prevHome === undefined) delete process.env.HAPPIEST_HOME_DIR;
+      else process.env.HAPPIEST_HOME_DIR = prevHome;
       reloadConfiguration();
       await rm(home, { recursive: true, force: true });
       await rm(directory, { recursive: true, force: true });
@@ -177,12 +177,12 @@ describe('happier resume', () => {
   it('supports plaintext sessions by creating an attach payload without a data encryption key', async () => {
     const home = await mkdtemp(join(tmpdir(), 'happier-resume-plain-'));
     const directory = await mkdtemp(join(tmpdir(), 'happier-resume-plain-dir-'));
-    const prevHome = process.env.HAPPIER_HOME_DIR;
+    const prevHome = process.env.HAPPIEST_HOME_DIR;
     const prevAttach = process.env.HAPPIER_SESSION_ATTACH_FILE;
     const prevCwd = process.cwd();
 
     try {
-      process.env.HAPPIER_HOME_DIR = home;
+      process.env.HAPPIEST_HOME_DIR = home;
       reloadConfiguration();
 
       const credentials: Credentials = {
@@ -242,8 +242,8 @@ describe('happier resume', () => {
       }
       if (prevAttach === undefined) delete process.env.HAPPIER_SESSION_ATTACH_FILE;
       else process.env.HAPPIER_SESSION_ATTACH_FILE = prevAttach;
-      if (prevHome === undefined) delete process.env.HAPPIER_HOME_DIR;
-      else process.env.HAPPIER_HOME_DIR = prevHome;
+      if (prevHome === undefined) delete process.env.HAPPIEST_HOME_DIR;
+      else process.env.HAPPIEST_HOME_DIR = prevHome;
       reloadConfiguration();
       await rm(home, { recursive: true, force: true });
       await rm(directory, { recursive: true, force: true });
@@ -253,10 +253,10 @@ describe('happier resume', () => {
   it('materializes connected-service auth from persisted Codex metadata before direct terminal resume dispatch', async () => {
     const home = await mkdtemp(join(tmpdir(), 'happier-resume-connected-home-'));
     const directory = await mkdtemp(join(tmpdir(), 'happier-resume-connected-dir-'));
-    const prevHome = process.env.HAPPIER_HOME_DIR;
+    const prevHome = process.env.HAPPIEST_HOME_DIR;
     const prevAttach = process.env.HAPPIER_SESSION_ATTACH_FILE;
-    const prevServerUrl = process.env.HAPPIER_SERVER_URL;
-    const prevWebappUrl = process.env.HAPPIER_WEBAPP_URL;
+    const prevServerUrl = process.env.HAPPIEST_SERVER_URL;
+    const prevWebappUrl = process.env.HAPPIEST_WEBAPP_URL;
     const prevCodexHome = process.env.CODEX_HOME;
     const prevCodexSqliteHome = process.env.CODEX_SQLITE_HOME;
     const prevBindingsEnv = process.env.HAPPIER_SESSION_CONNECTED_SERVICES_BINDINGS_JSON;
@@ -343,9 +343,9 @@ describe('happier resume', () => {
     const serverUrl = `http://127.0.0.1:${address.port}`;
 
     try {
-      process.env.HAPPIER_HOME_DIR = home;
-      process.env.HAPPIER_SERVER_URL = serverUrl;
-      process.env.HAPPIER_WEBAPP_URL = serverUrl;
+      process.env.HAPPIEST_HOME_DIR = home;
+      process.env.HAPPIEST_SERVER_URL = serverUrl;
+      process.env.HAPPIEST_WEBAPP_URL = serverUrl;
       reloadConfiguration();
 
       const connectedServices = {
@@ -453,12 +453,12 @@ describe('happier resume', () => {
       }
       if (prevAttach === undefined) delete process.env.HAPPIER_SESSION_ATTACH_FILE;
       else process.env.HAPPIER_SESSION_ATTACH_FILE = prevAttach;
-      if (prevHome === undefined) delete process.env.HAPPIER_HOME_DIR;
-      else process.env.HAPPIER_HOME_DIR = prevHome;
-      if (prevServerUrl === undefined) delete process.env.HAPPIER_SERVER_URL;
-      else process.env.HAPPIER_SERVER_URL = prevServerUrl;
-      if (prevWebappUrl === undefined) delete process.env.HAPPIER_WEBAPP_URL;
-      else process.env.HAPPIER_WEBAPP_URL = prevWebappUrl;
+      if (prevHome === undefined) delete process.env.HAPPIEST_HOME_DIR;
+      else process.env.HAPPIEST_HOME_DIR = prevHome;
+      if (prevServerUrl === undefined) delete process.env.HAPPIEST_SERVER_URL;
+      else process.env.HAPPIEST_SERVER_URL = prevServerUrl;
+      if (prevWebappUrl === undefined) delete process.env.HAPPIEST_WEBAPP_URL;
+      else process.env.HAPPIEST_WEBAPP_URL = prevWebappUrl;
       if (prevCodexHome === undefined) delete process.env.CODEX_HOME;
       else process.env.CODEX_HOME = prevCodexHome;
       if (prevCodexSqliteHome === undefined) delete process.env.CODEX_SQLITE_HOME;
@@ -482,9 +482,9 @@ describe('happier resume', () => {
   it('cleans up connected-service materialization when direct resume fails before handler dispatch', async () => {
     const home = await mkdtemp(join(tmpdir(), 'happier-resume-connected-cleanup-home-'));
     const directory = await mkdtemp(join(tmpdir(), 'happier-resume-connected-cleanup-dir-'));
-    const prevHome = process.env.HAPPIER_HOME_DIR;
-    const prevServerUrl = process.env.HAPPIER_SERVER_URL;
-    const prevWebappUrl = process.env.HAPPIER_WEBAPP_URL;
+    const prevHome = process.env.HAPPIEST_HOME_DIR;
+    const prevServerUrl = process.env.HAPPIEST_SERVER_URL;
+    const prevWebappUrl = process.env.HAPPIEST_WEBAPP_URL;
     const prevCodexBackendMode = process.env.HAPPIER_CODEX_BACKEND_MODE;
     const prevCodexAcpBin = process.env.HAPPIER_CODEX_ACP_BIN;
     const prevAttach = process.env.HAPPIER_SESSION_ATTACH_FILE;
@@ -608,9 +608,9 @@ describe('happier resume', () => {
     const agentHandler: CommandHandler = vi.fn(async () => {});
 
     try {
-      process.env.HAPPIER_HOME_DIR = home;
-      process.env.HAPPIER_SERVER_URL = serverUrl;
-      process.env.HAPPIER_WEBAPP_URL = serverUrl;
+      process.env.HAPPIEST_HOME_DIR = home;
+      process.env.HAPPIEST_SERVER_URL = serverUrl;
+      process.env.HAPPIEST_WEBAPP_URL = serverUrl;
       process.env.HAPPIER_CODEX_BACKEND_MODE = 'acp';
       process.env.HAPPIER_CODEX_ACP_BIN = join(home, 'missing-codex-acp');
       reloadConfiguration();
@@ -645,12 +645,12 @@ describe('happier resume', () => {
       }
       if (prevAttach === undefined) delete process.env.HAPPIER_SESSION_ATTACH_FILE;
       else process.env.HAPPIER_SESSION_ATTACH_FILE = prevAttach;
-      if (prevHome === undefined) delete process.env.HAPPIER_HOME_DIR;
-      else process.env.HAPPIER_HOME_DIR = prevHome;
-      if (prevServerUrl === undefined) delete process.env.HAPPIER_SERVER_URL;
-      else process.env.HAPPIER_SERVER_URL = prevServerUrl;
-      if (prevWebappUrl === undefined) delete process.env.HAPPIER_WEBAPP_URL;
-      else process.env.HAPPIER_WEBAPP_URL = prevWebappUrl;
+      if (prevHome === undefined) delete process.env.HAPPIEST_HOME_DIR;
+      else process.env.HAPPIEST_HOME_DIR = prevHome;
+      if (prevServerUrl === undefined) delete process.env.HAPPIEST_SERVER_URL;
+      else process.env.HAPPIEST_SERVER_URL = prevServerUrl;
+      if (prevWebappUrl === undefined) delete process.env.HAPPIEST_WEBAPP_URL;
+      else process.env.HAPPIEST_WEBAPP_URL = prevWebappUrl;
       if (prevCodexBackendMode === undefined) delete process.env.HAPPIER_CODEX_BACKEND_MODE;
       else process.env.HAPPIER_CODEX_BACKEND_MODE = prevCodexBackendMode;
       if (prevCodexAcpBin === undefined) delete process.env.HAPPIER_CODEX_ACP_BIN;

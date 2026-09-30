@@ -718,7 +718,7 @@ Add-Stage -StageId "S00-PREFLIGHT" -Description "Preflight cleanup stale holders
     $notes = @()
     $rows = @()
 
-    $env:HAPPIER_HOME_DIR = $DefaultHome
+    $env:HAPPIEST_HOME_DIR = $DefaultHome
     $env:USERPROFILE = $UserHome
     if ($env:PATH -notlike "*$DefaultHome\bin*") {
         $env:PATH = "$DefaultHome\bin;$($env:PATH)"

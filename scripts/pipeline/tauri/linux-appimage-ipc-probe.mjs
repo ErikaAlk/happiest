@@ -3,7 +3,7 @@
 // by itself at open: the pre-auth warm-up (`apps/ui/sources/setup/DesktopLocalSetupWarmup.tsx`)
 // runs `daemon.service.status.v1` through `start_system_task`, which spawns the app's bundled
 // hsetup. That read is read-only only when a CLI resolves without acquisition, so the smoke points
-// the shipped `HAPPIER_BOOTSTRAP_CLI_PATH` override (provenance `override`, never approved
+// the shipped `HAPPIEST_BOOTSTRAP_CLI_PATH` override (provenance `override`, never approved
 // unattended) at a stand-in `happier` that records who ran it and answers only the status read.
 // No hook is added to the app: the probe observes, from outside, what the release build already does.
 

@@ -5,7 +5,7 @@ import { createEnvKeyScope } from '@/testkit/env/envScope';
 import { createTempDir, removeTempDir } from '@/testkit/fs/tempDir';
 
 const envScope = createEnvKeyScope([
-  'HAPPIER_HOME_DIR',
+  'HAPPIEST_HOME_DIR',
   'HAPPIER_SESSION_ATTACH_FILE',
 ]);
 
@@ -14,7 +14,7 @@ describe('readSessionAttachFromEnv', () => {
     const dir = await createTempDir('happy-attach-');
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: dir,
+        HAPPIEST_HOME_DIR: dir,
         HAPPIER_SESSION_ATTACH_FILE: undefined,
       });
 
@@ -40,7 +40,7 @@ describe('readSessionAttachFromEnv', () => {
     const dir = await createTempDir('happy-attach-');
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: dir,
+        HAPPIEST_HOME_DIR: dir,
         HAPPIER_SESSION_ATTACH_FILE: undefined,
       });
 
@@ -74,7 +74,7 @@ describe('readSessionAttachFromEnv', () => {
     const dir = await createTempDir('happy-attach-');
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: dir,
+        HAPPIEST_HOME_DIR: dir,
         HAPPIER_SESSION_ATTACH_FILE: undefined,
       });
 
@@ -111,7 +111,7 @@ describe('readSessionAttachFromEnv', () => {
     const dir = await createTempDir('happy-attach-');
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: dir,
+        HAPPIEST_HOME_DIR: dir,
         HAPPIER_SESSION_ATTACH_FILE: undefined,
       });
 
@@ -153,7 +153,7 @@ describe('readSessionAttachFromEnv', () => {
     const dir = await createTempDir('happy-attach-');
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: dir,
+        HAPPIEST_HOME_DIR: dir,
         HAPPIER_SESSION_ATTACH_FILE: undefined,
       });
 
@@ -201,7 +201,7 @@ describe('readSessionAttachFromEnv', () => {
     const dir = await createTempDir('happy-attach-');
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: dir,
+        HAPPIEST_HOME_DIR: dir,
         HAPPIER_SESSION_ATTACH_FILE: undefined,
       });
 
@@ -241,7 +241,7 @@ describe('readSessionAttachFromEnv', () => {
     const previousUserProfile = process.env.USERPROFILE;
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
         HAPPIER_SESSION_ATTACH_FILE: undefined,
       });
       process.env.HOME = homeDir;

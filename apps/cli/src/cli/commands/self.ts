@@ -66,7 +66,7 @@ function usage(): string {
     `${chalk.bold('Environment:')}`,
     `  HAPPIER_CLI_UPDATE_CHECK=0                 Disable update notice + background check`,
     `  HAPPIER_CLI_UPDATE_PACKAGE_NAME=@scope/pkg Override the npm package name checked/installed`,
-    `  HAPPIER_GITHUB_REPO=happier-dev/happier    Override GitHub repo for binary updates`,
+    `  HAPPIEST_GITHUB_REPO=happier-dev/happier   Override GitHub repo for binary updates`,
     `  HAPPIER_GITHUB_TOKEN=...                   GitHub token for release API (optional)`,
     '',
   ].join('\n');
@@ -154,7 +154,7 @@ export function detectInstallSource(path: string): 'npm' | 'binary' {
 }
 
 function resolveBinaryUpdateRepo(env: NodeJS.ProcessEnv): string {
-  const raw = String(env.HAPPIER_GITHUB_REPO ?? '').trim();
+  const raw = String(env.HAPPIEST_GITHUB_REPO ?? '').trim();
   return raw || 'happier-dev/happier';
 }
 
@@ -304,7 +304,7 @@ async function cmdUpdate(argv: string[], rawArgv: readonly string[] = process.ar
     const v = raw.startsWith('v') ? raw.slice(1) : raw;
     return { channel, targetVersion: v || undefined };
   })();
-  const processEnv = { ...process.env, HAPPIER_HOME_DIR: configuration.happyHomeDir };
+  const processEnv = { ...process.env, HAPPIEST_HOME_DIR: configuration.happyHomeDir };
 
   // Observed before anything changes: on Windows the update stops the payload's processes, and only
   // this observation still knows the service's daemon was running and must come back.
@@ -325,7 +325,7 @@ async function cmdUpdate(argv: string[], rawArgv: readonly string[] = process.ar
       githubRepo: resolveBinaryUpdateRepo(process.env),
       githubToken: resolveBinaryUpdateToken(process.env),
       userAgent: 'happier-cli',
-      minisignPubkeyFile: String(process.env.HAPPIER_MINISIGN_PUBKEY ?? '').trim() || undefined,
+      minisignPubkeyFile: String(process.env.HAPPIEST_MINISIGN_PUBKEY ??'').trim() || undefined,
     }),
     readVersion: async (command) => resolveCliVersionFromBinary({
       binaryPath: command,
@@ -406,10 +406,10 @@ async function withInstalledCliMigrationRuntime<T>(params: Readonly<{
     processEnv: process.env,
   });
   const scopedEnvUpdates = {
-    HAPPIER_DAEMON_SERVICE_CHANNEL: params.channel,
+    HAPPIEST_DAEMON_SERVICE_CHANNEL: params.channel,
     HAPPIER_PUBLIC_RELEASE_CHANNEL: getReleaseRingCatalogEntry(params.channel).publicLabel,
-    HAPPIER_DAEMON_SERVICE_NODE_PATH: installedCliPaths.binaryPath,
-    HAPPIER_DAEMON_SERVICE_ENTRY_PATH: '',
+    HAPPIEST_DAEMON_SERVICE_NODE_PATH: installedCliPaths.binaryPath,
+    HAPPIEST_DAEMON_SERVICE_ENTRY_PATH: '',
   } as const;
   const previousEnv = new Map<string, string | undefined>();
   for (const [key, value] of Object.entries(scopedEnvUpdates)) {

@@ -5,7 +5,7 @@ import { createTempDirSync, removeTempDirSync } from '@/testkit/fs/tempDir';
 
 describe('configuration workspace replication blob pack sizing', () => {
   const envKeys = [
-    'HAPPIER_HOME_DIR',
+    'HAPPIEST_HOME_DIR',
     'HAPPIER_WORKSPACE_REPLICATION_BLOB_PACK_TARGET_BYTES',
     'HAPPIER_WORKSPACE_REPLICATION_BLOB_PACK_MAX_BLOBS',
     'HAPPIER_WORKSPACE_REPLICATION_BLOB_PACK_MAX_SINGLE_BLOB_BYTES',
@@ -26,7 +26,7 @@ describe('configuration workspace replication blob pack sizing', () => {
   it('defaults workspace replication blob pack sizing to Appendix A values', async () => {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     delete process.env.HAPPIER_WORKSPACE_REPLICATION_BLOB_PACK_TARGET_BYTES;
     delete process.env.HAPPIER_WORKSPACE_REPLICATION_BLOB_PACK_MAX_BLOBS;
     delete process.env.HAPPIER_WORKSPACE_REPLICATION_BLOB_PACK_MAX_SINGLE_BLOB_BYTES;
@@ -42,7 +42,7 @@ describe('configuration workspace replication blob pack sizing', () => {
   it('reads workspace replication blob pack sizing from env through configuration.ts only', async () => {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     process.env.HAPPIER_WORKSPACE_REPLICATION_BLOB_PACK_TARGET_BYTES = '4194304';
     process.env.HAPPIER_WORKSPACE_REPLICATION_BLOB_PACK_MAX_BLOBS = '64';
     process.env.HAPPIER_WORKSPACE_REPLICATION_BLOB_PACK_MAX_SINGLE_BLOB_BYTES = '16777216';
@@ -58,7 +58,7 @@ describe('configuration workspace replication blob pack sizing', () => {
   it('clamps workspace replication blob pack sizing to defensive maximums', async () => {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     process.env.HAPPIER_WORKSPACE_REPLICATION_BLOB_PACK_TARGET_BYTES = String(10 * 1024 * 1024 * 1024);
     process.env.HAPPIER_WORKSPACE_REPLICATION_BLOB_PACK_MAX_BLOBS = '99999999';
     process.env.HAPPIER_WORKSPACE_REPLICATION_BLOB_PACK_MAX_SINGLE_BLOB_BYTES = String(100 * 1024 * 1024 * 1024);

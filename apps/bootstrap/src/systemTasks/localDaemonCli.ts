@@ -193,9 +193,9 @@ export type LocalHappierCliInvocation = SetupCapableLocalHappierCli & Readonly<{
  * The one execution context of a setup run (plan R13 a), built once from the target relay the app
  * selected and threaded through every command the run issues.
  *
- * A stack/dev launch exports a server selection of its own — `HAPPIER_ACTIVE_SERVER_ID` (the CLI's
+ * A stack/dev launch exports a server selection of its own — `HAPPIEST_ACTIVE_SERVER_ID` (the CLI's
  * configuration prefers that persisted profile over a URL it does not match),
- * `HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID` (where daemon state is read) and the URL selectors — so an
+ * `HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID` (where daemon state is read) and the URL selectors — so an
  * inherited selector would let a run judge relay Y and then write to relay X. Both invocations
  * clear every one of them:
  *
@@ -212,12 +212,12 @@ export type SetupCliScope = Readonly<{
 }>;
 
 const INHERITED_RELAY_SELECTOR_ENV_KEYS = [
-  'HAPPIER_SERVER_URL',
-  'HAPPIER_WEBAPP_URL',
-  'HAPPIER_LOCAL_SERVER_URL',
-  'HAPPIER_PUBLIC_SERVER_URL',
-  'HAPPIER_ACTIVE_SERVER_ID',
-  'HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID',
+  'HAPPIEST_SERVER_URL',
+  'HAPPIEST_WEBAPP_URL',
+  'HAPPIEST_LOCAL_SERVER_URL',
+  'HAPPIEST_PUBLIC_SERVER_URL',
+  'HAPPIEST_ACTIVE_SERVER_ID',
+  'HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID',
 ] as const;
 
 function clearInheritedRelaySelectors(processEnv: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
@@ -248,9 +248,9 @@ export function createSelectedCliInvocation(params: Readonly<{
 export function scopeProcessEnvToTargetRelay(target: RelayProfileTarget, processEnv: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
   return {
     ...clearInheritedRelaySelectors(processEnv),
-    HAPPIER_SERVER_URL: target.serverUrl,
-    HAPPIER_WEBAPP_URL: target.webappUrl,
-    ...(target.localServerUrl ? { HAPPIER_LOCAL_SERVER_URL: target.localServerUrl } : {}),
+    HAPPIEST_SERVER_URL: target.serverUrl,
+    HAPPIEST_WEBAPP_URL: target.webappUrl,
+    ...(target.localServerUrl ? { HAPPIEST_LOCAL_SERVER_URL: target.localServerUrl } : {}),
   };
 }
 

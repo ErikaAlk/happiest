@@ -19,16 +19,16 @@ import { handleAuthCommand } from './auth';
 describe('happier auth logout', () => {
   it('logs out only from the active server by default', async () => {
     const home = await mkdtemp(join(tmpdir(), 'happier-auth-logout-'));
-    const prevHome = process.env.HAPPIER_HOME_DIR;
-    const prevServerUrl = process.env.HAPPIER_SERVER_URL;
-    const prevWebappUrl = process.env.HAPPIER_WEBAPP_URL;
-    const prevActiveServerId = process.env.HAPPIER_ACTIVE_SERVER_ID;
+    const prevHome = process.env.HAPPIEST_HOME_DIR;
+    const prevServerUrl = process.env.HAPPIEST_SERVER_URL;
+    const prevWebappUrl = process.env.HAPPIEST_WEBAPP_URL;
+    const prevActiveServerId = process.env.HAPPIEST_ACTIVE_SERVER_ID;
 
     try {
-      process.env.HAPPIER_HOME_DIR = home;
-      delete process.env.HAPPIER_SERVER_URL;
-      delete process.env.HAPPIER_WEBAPP_URL;
-      delete process.env.HAPPIER_ACTIVE_SERVER_ID;
+      process.env.HAPPIEST_HOME_DIR = home;
+      delete process.env.HAPPIEST_SERVER_URL;
+      delete process.env.HAPPIEST_WEBAPP_URL;
+      delete process.env.HAPPIEST_ACTIVE_SERVER_ID;
 
       mkdirSync(join(home, 'servers', 'cloud'), { recursive: true });
       mkdirSync(join(home, 'servers', 'company'), { recursive: true });
@@ -90,14 +90,14 @@ describe('happier auth logout', () => {
       const companyRaw = JSON.parse(await readFile(join(home, 'servers', 'company', 'access.key'), 'utf-8'));
       expect(companyRaw.token).toBe('tok_company');
     } finally {
-      if (prevHome === undefined) delete process.env.HAPPIER_HOME_DIR;
-      else process.env.HAPPIER_HOME_DIR = prevHome;
-      if (prevServerUrl === undefined) delete process.env.HAPPIER_SERVER_URL;
-      else process.env.HAPPIER_SERVER_URL = prevServerUrl;
-      if (prevWebappUrl === undefined) delete process.env.HAPPIER_WEBAPP_URL;
-      else process.env.HAPPIER_WEBAPP_URL = prevWebappUrl;
-      if (prevActiveServerId === undefined) delete process.env.HAPPIER_ACTIVE_SERVER_ID;
-      else process.env.HAPPIER_ACTIVE_SERVER_ID = prevActiveServerId;
+      if (prevHome === undefined) delete process.env.HAPPIEST_HOME_DIR;
+      else process.env.HAPPIEST_HOME_DIR = prevHome;
+      if (prevServerUrl === undefined) delete process.env.HAPPIEST_SERVER_URL;
+      else process.env.HAPPIEST_SERVER_URL = prevServerUrl;
+      if (prevWebappUrl === undefined) delete process.env.HAPPIEST_WEBAPP_URL;
+      else process.env.HAPPIEST_WEBAPP_URL = prevWebappUrl;
+      if (prevActiveServerId === undefined) delete process.env.HAPPIEST_ACTIVE_SERVER_ID;
+      else process.env.HAPPIEST_ACTIVE_SERVER_ID = prevActiveServerId;
       reloadConfiguration();
       await rm(home, { recursive: true, force: true });
     }

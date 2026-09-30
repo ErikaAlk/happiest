@@ -132,19 +132,19 @@ describe('happier mcp serve (env hardening)', () => {
   });
 
   it('clears env server-selection overrides before reading credentials', async () => {
-    process.env.HAPPIER_SERVER_URL = 'http://attacker.example.test';
-    process.env.HAPPIER_LOCAL_SERVER_URL = 'http://attacker-local.example.test';
-    process.env.HAPPIER_PUBLIC_SERVER_URL = 'http://attacker-public.example.test';
-    process.env.HAPPIER_WEBAPP_URL = 'http://attacker-webapp.example.test';
-    process.env.HAPPIER_ACTIVE_SERVER_ID = 'attacker';
+    process.env.HAPPIEST_SERVER_URL = 'http://attacker.example.test';
+    process.env.HAPPIEST_LOCAL_SERVER_URL = 'http://attacker-local.example.test';
+    process.env.HAPPIEST_PUBLIC_SERVER_URL = 'http://attacker-public.example.test';
+    process.env.HAPPIEST_WEBAPP_URL = 'http://attacker-webapp.example.test';
+    process.env.HAPPIEST_ACTIVE_SERVER_ID = 'attacker';
 
     const readCredentials = vi.fn(async () => {
       if (
-        process.env.HAPPIER_SERVER_URL
-        || process.env.HAPPIER_LOCAL_SERVER_URL
-        || process.env.HAPPIER_PUBLIC_SERVER_URL
-        || process.env.HAPPIER_WEBAPP_URL
-        || process.env.HAPPIER_ACTIVE_SERVER_ID
+        process.env.HAPPIEST_SERVER_URL
+        || process.env.HAPPIEST_LOCAL_SERVER_URL
+        || process.env.HAPPIEST_PUBLIC_SERVER_URL
+        || process.env.HAPPIEST_WEBAPP_URL
+        || process.env.HAPPIEST_ACTIVE_SERVER_ID
       ) {
         throw new Error('server_selection_env_override_not_cleared_before_credentials');
       }
@@ -175,14 +175,14 @@ describe('happier mcp serve (env hardening)', () => {
   });
 
   it('clears env server-selection overrides before fetching account settings', async () => {
-    process.env.HAPPIER_SERVER_URL = 'http://attacker.example.test';
-    process.env.HAPPIER_LOCAL_SERVER_URL = 'http://attacker-local.example.test';
-    process.env.HAPPIER_PUBLIC_SERVER_URL = 'http://attacker-public.example.test';
-    process.env.HAPPIER_WEBAPP_URL = 'http://attacker-webapp.example.test';
-    process.env.HAPPIER_ACTIVE_SERVER_ID = 'attacker';
+    process.env.HAPPIEST_SERVER_URL = 'http://attacker.example.test';
+    process.env.HAPPIEST_LOCAL_SERVER_URL = 'http://attacker-local.example.test';
+    process.env.HAPPIEST_PUBLIC_SERVER_URL = 'http://attacker-public.example.test';
+    process.env.HAPPIEST_WEBAPP_URL = 'http://attacker-webapp.example.test';
+    process.env.HAPPIEST_ACTIVE_SERVER_ID = 'attacker';
 
     const bootstrapAccountSettingsContext = vi.fn(async () => {
-      if (process.env.HAPPIER_SERVER_URL || process.env.HAPPIER_PUBLIC_SERVER_URL || process.env.HAPPIER_LOCAL_SERVER_URL) {
+      if (process.env.HAPPIEST_SERVER_URL || process.env.HAPPIEST_PUBLIC_SERVER_URL || process.env.HAPPIEST_LOCAL_SERVER_URL) {
         throw new Error('server_selection_env_override_not_cleared');
       }
 
@@ -208,10 +208,10 @@ describe('happier mcp serve (env hardening)', () => {
       }),
     ).resolves.toBeUndefined();
 
-    expect(process.env.HAPPIER_SERVER_URL).toBeUndefined();
-    expect(process.env.HAPPIER_LOCAL_SERVER_URL).toBeUndefined();
-    expect(process.env.HAPPIER_PUBLIC_SERVER_URL).toBeUndefined();
-    expect(process.env.HAPPIER_WEBAPP_URL).toBeUndefined();
-    expect(process.env.HAPPIER_ACTIVE_SERVER_ID).toBeUndefined();
+    expect(process.env.HAPPIEST_SERVER_URL).toBeUndefined();
+    expect(process.env.HAPPIEST_LOCAL_SERVER_URL).toBeUndefined();
+    expect(process.env.HAPPIEST_PUBLIC_SERVER_URL).toBeUndefined();
+    expect(process.env.HAPPIEST_WEBAPP_URL).toBeUndefined();
+    expect(process.env.HAPPIEST_ACTIVE_SERVER_ID).toBeUndefined();
   });
 });

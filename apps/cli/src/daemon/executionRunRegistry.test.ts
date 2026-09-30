@@ -7,13 +7,13 @@ import { createEnvKeyScope } from '@/testkit/env/envScope';
 
 describe('executionRunRegistry', () => {
   const releaseEnvScope = createEnvKeyScope(STANDARD_MANAGED_CLI_RELEASE_CHANNEL_ENV_KEYS);
-  const originalHappyHomeDir = process.env.HAPPIER_HOME_DIR;
+  const originalHappyHomeDir = process.env.HAPPIEST_HOME_DIR;
   const originalReleaseRing = process.env.HAPPIER_RELEASE_RING;
   let happyHomeDir: string;
 
   beforeEach(() => {
     happyHomeDir = join(tmpdir(), `happier-cli-exec-run-registry-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-    process.env.HAPPIER_HOME_DIR = happyHomeDir;
+    process.env.HAPPIEST_HOME_DIR = happyHomeDir;
     releaseEnvScope.patch({
       HAPPIER_PUBLIC_RELEASE_CHANNEL: undefined,
       HAPPIER_RELEASE_RING: undefined,
@@ -27,9 +27,9 @@ describe('executionRunRegistry', () => {
       rmSync(happyHomeDir, { recursive: true, force: true });
     }
     if (originalHappyHomeDir === undefined) {
-      delete process.env.HAPPIER_HOME_DIR;
+      delete process.env.HAPPIEST_HOME_DIR;
     } else {
-      process.env.HAPPIER_HOME_DIR = originalHappyHomeDir;
+      process.env.HAPPIEST_HOME_DIR = originalHappyHomeDir;
     }
     releaseEnvScope.restore();
     if (originalReleaseRing === undefined) {

@@ -210,7 +210,7 @@ test('ensureManagedPnpmCommand forwards the caller-provided GitHub token during 
   try {
     const env = {
       ...process.env,
-      HAPPIER_HOME_DIR: join(dir, 'home'),
+      HAPPIEST_HOME_DIR: join(dir, 'home'),
       PATH: '',
       GITHUB_TOKEN: 'scoped-token',
     };
@@ -251,7 +251,7 @@ test('ensureManagedPnpmCommand replaces a non-executable managed pnpm binary ins
     await mkdir(homeDir, { recursive: true });
     await mkdir(binDir, { recursive: true });
 
-    const managedPath = managedPnpmBinPath({ ...process.env, HAPPIER_HOME_DIR: homeDir });
+    const managedPath = managedPnpmBinPath({ ...process.env, HAPPIEST_HOME_DIR: homeDir });
     await mkdir(dirname(managedPath), { recursive: true });
     await writeFile(managedPath, '#!/bin/sh\necho stale\n', 'utf8');
     await chmod(managedPath, 0o644);
@@ -281,11 +281,11 @@ test('ensureManagedPnpmCommand replaces a non-executable managed pnpm binary ins
 
     const command = await ensureManagedPnpmCommand({
       ...process.env,
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       PATH: binDir,
     });
 
-    assert.equal(command, managedPnpmBinPath({ ...process.env, HAPPIER_HOME_DIR: homeDir }));
+    assert.equal(command, managedPnpmBinPath({ ...process.env, HAPPIEST_HOME_DIR: homeDir }));
   } finally {
     globalThis.fetch = originalFetch;
     await rm(dir, { recursive: true, force: true });
@@ -330,7 +330,7 @@ test('ensureManagedPnpmCommand bootstraps a managed pnpm binary even when PATH a
 
     const env = {
       ...process.env,
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       PATH: binDir,
     };
 
@@ -363,7 +363,7 @@ test('ensureManagedPnpmCommand fails closed for an invalid explicit override ins
     const fetchCalls = [];
     const command = await ensureManagedPnpmCommand({
       ...process.env,
-      HAPPIER_HOME_DIR: join(dir, 'home'),
+      HAPPIEST_HOME_DIR: join(dir, 'home'),
       HAPPIER_PNPM_BIN: overridePath,
       PATH: pathDir,
     }, {
@@ -390,7 +390,7 @@ test('ensureManagedJavaScriptRuntimeCommand installs a managed Node runtime and 
 
     const env = {
       ...process.env,
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       PATH: '',
     };
 
@@ -437,7 +437,7 @@ test('ensureManagedJavaScriptRuntimeCommand serializes concurrent first-run boot
 
     const env = {
       ...process.env,
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       PATH: '',
     };
 
@@ -551,7 +551,7 @@ exit 0
       allowVendorRecipeExecution: true,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         PATH: `${binDir}${process.platform === 'win32' ? ';' : ':'}/bin`,
       },
     });
@@ -595,7 +595,7 @@ exit 0
       allowVendorRecipeExecution: true,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         HOME: homeDir,
         PATH: `${binDir}:/bin`,
       },
@@ -647,7 +647,7 @@ exit 1
       allowVendorRecipeExecution: true,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         HOME: homeDir,
         PATH: `${binDir}:/bin`,
       },
@@ -687,7 +687,7 @@ test('installProviderCli times out vendor recipe execution instead of hanging in
       allowVendorRecipeExecution: true,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         HOME: homeDir,
         PATH: `${binDir}:/bin`,
         HAPPIER_VENDOR_INSTALL_TIMEOUT_MS: '250',
@@ -727,7 +727,7 @@ test('installProviderCli writes default install logs under HAPPIER_HOME instead 
       allowVendorRecipeExecution: true,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         PATH: `${binDir}:/bin`,
       },
     });
@@ -767,7 +767,7 @@ exit 0
       skipIfInstalled: false,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         HAPPIER_PNPM_BIN: pnpmPath,
         HAPPIER_JS_RUNTIME_PATH: runtimePath,
         PATH: '',
@@ -799,7 +799,7 @@ test('installProviderCli bootstraps a managed JavaScript runtime for managed pac
     const homeDir = join(dir, 'home');
     const pnpmPath = join(dir, 'fake-pnpm');
     const pnpmLogPath = join(dir, 'pnpm.log');
-    const managedRuntimeWrapperPath = managedJavaScriptRuntimeBinPath({ ...process.env, HAPPIER_HOME_DIR: homeDir });
+    const managedRuntimeWrapperPath = managedJavaScriptRuntimeBinPath({ ...process.env, HAPPIEST_HOME_DIR: homeDir });
     const managedRuntimeNodeDir = join(dirname(managedRuntimeWrapperPath), '..', 'runtime', process.platform === 'win32' ? '' : 'bin');
     const managedRuntimeNodePath = join(managedRuntimeNodeDir, process.platform === 'win32' ? 'node.exe' : 'node');
     await mkdir(homeDir, { recursive: true });
@@ -822,7 +822,7 @@ exit 0
       skipIfInstalled: false,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         HAPPIER_PNPM_BIN: pnpmPath,
         PATH: '',
       },
@@ -855,7 +855,7 @@ test('installProviderCli reports managed-runtime-unavailable when no JavaScript 
       skipIfInstalled: false,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         HAPPIER_PNPM_BIN: pnpmPath,
         PATH: '',
       },
@@ -889,7 +889,7 @@ test('installProviderCli names HAPPIER_PNPM_BIN when an explicit pnpm override i
       skipIfInstalled: false,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         HAPPIER_PNPM_BIN: join(dir, 'missing-pnpm'),
         HAPPIER_JS_RUNTIME_PATH: runtimePath,
         PATH: '',
@@ -921,7 +921,7 @@ test('installProviderCli names HAPPIER_JS_RUNTIME_PATH when an explicit JS runti
       skipIfInstalled: false,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         HAPPIER_PNPM_BIN: pnpmPath,
         HAPPIER_JS_RUNTIME_PATH: join(dir, 'missing-node'),
         PATH: '',
@@ -959,7 +959,7 @@ test('installProviderCli does not treat a system CLI as already-installed when e
       dryRun: true,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         PATH: binDir,
       },
     });
@@ -994,7 +994,7 @@ test('installProviderCli still treats an existing managed package-backed backend
       dryRun: true,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         PATH: '',
       },
     });
@@ -1023,7 +1023,7 @@ test('installProviderCli installs managed github-release CLIs into the managed p
       skipIfInstalled: false,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         PATH: '',
       },
       deps: {
@@ -1093,7 +1093,7 @@ test('installProviderCli keeps the previous managed release active when a requir
       skipIfInstalled: false,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         PATH: '',
       },
       deps: {
@@ -1139,7 +1139,7 @@ test('installProviderCli restores the previous managed release when candidate pr
       skipIfInstalled: false,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         PATH: '',
       },
       deps: {
@@ -1191,7 +1191,7 @@ test('installProviderCli fails closed for codex releases without a digest', asyn
       skipIfInstalled: false,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         PATH: '',
       },
       deps: {
@@ -1239,7 +1239,7 @@ test('installProviderCli does not treat a system CLI as already-installed when e
       dryRun: true,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         PATH: binDir,
       },
     });
@@ -1274,7 +1274,7 @@ test('installProviderCli still treats an existing managed binary-backed backend 
       dryRun: true,
       env: {
         ...process.env,
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         PATH: '',
       },
     });
@@ -1313,7 +1313,7 @@ test('resolveProviderCliCommand does not treat non-executable PATH files as syst
 
     const env = {
       ...process.env,
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       PATH: binDir,
     };
 
@@ -1500,7 +1500,7 @@ test('resolveExistingPnpmCommand does not return non-executable PATH files on Un
 
     const env = {
       ...process.env,
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       PATH: binDir,
     };
 
@@ -1523,14 +1523,14 @@ test('resolveExistingPnpmCommand ignores a non-executable managed pnpm binary on
     const homeDir = join(dir, 'home');
     await mkdir(homeDir, { recursive: true });
 
-    const managedPath = managedPnpmBinPath({ ...process.env, HAPPIER_HOME_DIR: homeDir });
+    const managedPath = managedPnpmBinPath({ ...process.env, HAPPIEST_HOME_DIR: homeDir });
     await mkdir(dirname(managedPath), { recursive: true });
     await writeFile(managedPath, '#!/bin/sh\necho fake\n', 'utf8');
     await chmod(managedPath, 0o644);
 
     const command = resolveExistingPnpmCommand({
       ...process.env,
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       PATH: '',
     });
 
@@ -1555,7 +1555,7 @@ test('resolveExistingPnpmCommand ignores a non-executable override on Unix', asy
 
     const command = resolveExistingPnpmCommand({
       ...process.env,
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_PNPM_BIN: overridePath,
       PATH: '',
     });
@@ -1576,14 +1576,14 @@ test('resolveExistingManagedJavaScriptRuntimeCommand ignores a non-executable ma
     const homeDir = join(dir, 'home');
     await mkdir(homeDir, { recursive: true });
 
-    const managedPath = managedJavaScriptRuntimeBinPath({ ...process.env, HAPPIER_HOME_DIR: homeDir });
+    const managedPath = managedJavaScriptRuntimeBinPath({ ...process.env, HAPPIEST_HOME_DIR: homeDir });
     await mkdir(dirname(managedPath), { recursive: true });
     await writeFile(managedPath, '#!/bin/sh\necho fake\n', 'utf8');
     await chmod(managedPath, 0o644);
 
     const command = resolveExistingManagedJavaScriptRuntimeCommand({
       ...process.env,
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
     });
 
     assert.equal(command, null);
@@ -1628,7 +1628,7 @@ test('ensureManagedJavaScriptRuntimeCommand returns explicit node-binary overrid
       const command = await ensureManagedJavaScriptRuntimeCommand(
         {
           ...process.env,
-          HAPPIER_HOME_DIR: join(dir, `home-${envKey}`),
+          HAPPIEST_HOME_DIR: join(dir, `home-${envKey}`),
           HAPPIER_JS_RUNTIME_PATH: '',
           HAPPIER_MANAGED_NODE_BIN: '',
           HAPPIER_NODE_PATH: '',
@@ -1665,7 +1665,7 @@ test('ensureManagedJavaScriptRuntimeCommand fails closed for a non-executable ex
     const command = await ensureManagedJavaScriptRuntimeCommand(
       {
         ...process.env,
-        HAPPIER_HOME_DIR: join(dir, 'home'),
+        HAPPIEST_HOME_DIR: join(dir, 'home'),
         HAPPIER_MANAGED_NODE_BIN: overridePath,
       },
       {
@@ -1689,7 +1689,7 @@ test('resolveExistingManagedJavaScriptRuntimeCommand ignores a managed wrapper w
     const homeDir = join(dir, 'home');
     await mkdir(homeDir, { recursive: true });
 
-    const managedPath = managedJavaScriptRuntimeBinPath({ ...process.env, HAPPIER_HOME_DIR: homeDir });
+    const managedPath = managedJavaScriptRuntimeBinPath({ ...process.env, HAPPIEST_HOME_DIR: homeDir });
     await mkdir(dirname(managedPath), { recursive: true });
     await writeFile(
       managedPath,
@@ -1704,7 +1704,7 @@ test('resolveExistingManagedJavaScriptRuntimeCommand ignores a managed wrapper w
 
     const command = resolveExistingManagedJavaScriptRuntimeCommand({
       ...process.env,
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
     });
 
     assert.equal(command, null);

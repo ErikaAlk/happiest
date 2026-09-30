@@ -1107,12 +1107,12 @@ describe('codexLocalLauncher', () => {
       TEST_CODEX_ARGV_PATH: undefined,
     });
     const originalCodexPath = process.env.HAPPIER_CODEX_PATH;
-    const originalHappyHomeDir = process.env.HAPPIER_HOME_DIR;
+    const originalHappyHomeDir = process.env.HAPPIEST_HOME_DIR;
     const originalPath = process.env.PATH;
 
     try {
       delete process.env.HAPPIER_CODEX_PATH;
-      process.env.HAPPIER_HOME_DIR = join(fixture.binDir, 'home');
+      process.env.HAPPIEST_HOME_DIR = join(fixture.binDir, 'home');
       process.env.PATH = join(fixture.binDir, 'empty-path');
 
       await expect(
@@ -1127,8 +1127,8 @@ describe('codexLocalLauncher', () => {
     } finally {
       if (originalCodexPath === undefined) delete process.env.HAPPIER_CODEX_PATH;
       else process.env.HAPPIER_CODEX_PATH = originalCodexPath;
-      if (originalHappyHomeDir === undefined) delete process.env.HAPPIER_HOME_DIR;
-      else process.env.HAPPIER_HOME_DIR = originalHappyHomeDir;
+      if (originalHappyHomeDir === undefined) delete process.env.HAPPIEST_HOME_DIR;
+      else process.env.HAPPIEST_HOME_DIR = originalHappyHomeDir;
       if (originalPath === undefined) delete process.env.PATH;
       else process.env.PATH = originalPath;
       restoreEnv();

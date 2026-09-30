@@ -6,7 +6,7 @@ import { createEnvKeyScope } from '@/testkit/env/envScope';
 import { createExecutableShim, writeExecutableShim } from '@/testkit/fs/executableShim';
 import { createTempDir, removeTempDir } from '@/testkit/fs/tempDir';
 
-const envKeys = ['PATH', 'HAPPIER_HOME_DIR', 'HAPPIER_GEMINI_PATH'] as const;
+const envKeys = ['PATH', 'HAPPIEST_HOME_DIR', 'HAPPIER_GEMINI_PATH'] as const;
 const tempDirs = new Set<string>();
 let envScope = createEnvKeyScope(envKeys);
 
@@ -71,7 +71,7 @@ describe('geminiDaemonSpawnHooks.validateSpawn', () => {
 
     const homeDir = await createTempDir('happier-gemini-managed-home-');
     tempDirs.add(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
 
     const { resolveProviderCliManagedCommandPath } = await import('@/runtime/managedTools/providerCliResolution');
     const binPath = resolveProviderCliManagedCommandPath('gemini', { happyHomeDir: homeDir });

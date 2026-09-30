@@ -221,11 +221,11 @@ describe('spawnHappyCLI runtime executable selection', () => {
     const originalArgv = [...process.argv];
     const originalExecPath = process.execPath;
     const originalPlatformDescriptor = Object.getOwnPropertyDescriptor(process, 'platform');
-    const originalHappyHomeDir = process.env.HAPPIER_HOME_DIR;
+    const originalHappyHomeDir = process.env.HAPPIEST_HOME_DIR;
 
     try {
       Object.defineProperty(process, 'platform', { ...originalPlatformDescriptor, value: 'linux' });
-      process.env.HAPPIER_HOME_DIR = '/tmp/happier-cli-test-home';
+      process.env.HAPPIEST_HOME_DIR = '/tmp/happier-cli-test-home';
       process.argv = ['bun', '/$bunfs/root/happier-linux-arm64', 'daemon', 'start'];
       Object.defineProperty(process, 'execPath', {
         value: '/usr/bin/bun',
@@ -259,9 +259,9 @@ describe('spawnHappyCLI runtime executable selection', () => {
         Object.defineProperty(process, 'platform', originalPlatformDescriptor);
       }
       if (originalHappyHomeDir === undefined) {
-        delete process.env.HAPPIER_HOME_DIR;
+        delete process.env.HAPPIEST_HOME_DIR;
       } else {
-        process.env.HAPPIER_HOME_DIR = originalHappyHomeDir;
+        process.env.HAPPIEST_HOME_DIR = originalHappyHomeDir;
       }
     }
   });

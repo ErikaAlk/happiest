@@ -7,13 +7,13 @@ import { captureConsoleText } from '@/testkit/logger/captureOutput';
 
 describe('configuration env url fallback', () => {
   const envKeys = [
-    'HAPPIER_HOME_DIR',
-    'HAPPIER_SERVER_URL',
-    'HAPPIER_LOCAL_SERVER_URL',
-    'HAPPIER_PUBLIC_SERVER_URL',
-    'HAPPIER_WEBAPP_URL',
-    'HAPPIER_ACTIVE_SERVER_ID',
-    'HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID',
+    'HAPPIEST_HOME_DIR',
+    'HAPPIEST_SERVER_URL',
+    'HAPPIEST_LOCAL_SERVER_URL',
+    'HAPPIEST_PUBLIC_SERVER_URL',
+    'HAPPIEST_WEBAPP_URL',
+    'HAPPIEST_ACTIVE_SERVER_ID',
+    'HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID',
     'HAPPIER_EXECUTION_RUNS_MAX_CONCURRENT_PER_SESSION',
     'HAPPIER_EPHEMERAL_TASKS_MAX_CONCURRENT_PER_SESSION',
     'HAPPIER_EXECUTION_RUNS_BOUNDED_TIMEOUT_MS',
@@ -40,12 +40,12 @@ describe('configuration env url fallback', () => {
     tempDirs.length = 0;
   });
 
-  it('defaults webappUrl to server origin when HAPPIER_SERVER_URL is custom and webapp is unset', async () => {
+  it('defaults webappUrl to server origin when HAPPIEST_SERVER_URL is custom and webapp is unset', async () => {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_SERVER_URL = 'https://selfhost.example.test/api';
-    delete process.env.HAPPIER_WEBAPP_URL;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_SERVER_URL = 'https://selfhost.example.test/api';
+    delete process.env.HAPPIEST_WEBAPP_URL;
 
     const output = captureConsoleText();
     try {
@@ -58,12 +58,12 @@ describe('configuration env url fallback', () => {
     }
   });
 
-  it('keeps the cloud default webappUrl when HAPPIER_SERVER_URL matches the cloud default and webapp is unset', async () => {
+  it('keeps the cloud default webappUrl when HAPPIEST_SERVER_URL matches the cloud default and webapp is unset', async () => {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_SERVER_URL = 'https://api.happier.dev';
-    delete process.env.HAPPIER_WEBAPP_URL;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_SERVER_URL = 'https://api.happier.dev';
+    delete process.env.HAPPIEST_WEBAPP_URL;
 
     const output = captureConsoleText();
     try {
@@ -76,7 +76,7 @@ describe('configuration env url fallback', () => {
     }
   });
 
-  it('normalizes trailing slashes so env HAPPIER_SERVER_URL matches persisted server profiles', async () => {
+  it('normalizes trailing slashes so env HAPPIEST_SERVER_URL matches persisted server profiles', async () => {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
     const settingsFile = join(homeDir, 'settings.json');
@@ -100,10 +100,10 @@ describe('configuration env url fallback', () => {
       'utf-8',
     );
 
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_SERVER_URL = 'https://selfhost.example.test/api/';
-    delete process.env.HAPPIER_ACTIVE_SERVER_ID;
-    delete process.env.HAPPIER_WEBAPP_URL;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_SERVER_URL = 'https://selfhost.example.test/api/';
+    delete process.env.HAPPIEST_ACTIVE_SERVER_ID;
+    delete process.env.HAPPIEST_WEBAPP_URL;
 
     const output = captureConsoleText();
     try {
@@ -140,10 +140,10 @@ describe('configuration env url fallback', () => {
       'utf-8',
     );
 
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_SERVER_URL = 'https://api.selfhost.example.test/v1/';
-    delete process.env.HAPPIER_ACTIVE_SERVER_ID;
-    delete process.env.HAPPIER_WEBAPP_URL;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_SERVER_URL = 'https://api.selfhost.example.test/v1/';
+    delete process.env.HAPPIEST_ACTIVE_SERVER_ID;
+    delete process.env.HAPPIEST_WEBAPP_URL;
 
     const output = captureConsoleText();
     try {
@@ -186,10 +186,10 @@ describe('configuration env url fallback', () => {
       'utf-8',
     );
 
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    delete process.env.HAPPIER_ACTIVE_SERVER_ID;
-    delete process.env.HAPPIER_SERVER_URL;
-    delete process.env.HAPPIER_WEBAPP_URL;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    delete process.env.HAPPIEST_ACTIVE_SERVER_ID;
+    delete process.env.HAPPIEST_SERVER_URL;
+    delete process.env.HAPPIEST_WEBAPP_URL;
 
     const configMod = await import('./configuration');
     configMod.reloadConfiguration();
@@ -197,7 +197,7 @@ describe('configuration env url fallback', () => {
     expect(configMod.configuration.activeServerDir).toBe(join(homeDir, 'servers', 'cloud'));
   });
 
-  it('uses HAPPIER_ACTIVE_SERVER_ID override for active server scope without changing URL selection', async () => {
+  it('uses HAPPIEST_ACTIVE_SERVER_ID override for active server scope without changing URL selection', async () => {
     const homeDir = createTempDirSync('happier-cli-config-active-scope-');
     tempDirs.push(homeDir);
     const settingsFile = join(homeDir, 'settings.json');
@@ -221,10 +221,10 @@ describe('configuration env url fallback', () => {
       'utf-8',
     );
 
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_ACTIVE_SERVER_ID = 'stack_main__id_default';
-    delete process.env.HAPPIER_SERVER_URL;
-    delete process.env.HAPPIER_WEBAPP_URL;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_ACTIVE_SERVER_ID = 'stack_main__id_default';
+    delete process.env.HAPPIEST_SERVER_URL;
+    delete process.env.HAPPIEST_WEBAPP_URL;
 
     const configMod = await import('./configuration');
     configMod.reloadConfiguration();
@@ -267,11 +267,11 @@ describe('configuration env url fallback', () => {
       'utf-8',
     );
 
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_PUBLIC_SERVER_URL = 'http://192.168.1.115:26851';
-    process.env.HAPPIER_SERVER_URL = 'http://192.168.1.115:26851';
-    process.env.HAPPIER_WEBAPP_URL = 'http://192.168.1.115:8081';
-    delete process.env.HAPPIER_ACTIVE_SERVER_ID;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_PUBLIC_SERVER_URL = 'http://192.168.1.115:26851';
+    process.env.HAPPIEST_SERVER_URL = 'http://192.168.1.115:26851';
+    process.env.HAPPIEST_WEBAPP_URL = 'http://192.168.1.115:8081';
+    delete process.env.HAPPIEST_ACTIVE_SERVER_ID;
 
     const configMod = await import('./configuration');
     configMod.reloadConfiguration();
@@ -280,7 +280,7 @@ describe('configuration env url fallback', () => {
     expect(configMod.configuration.webappUrl).toBe('http://192.168.1.115:8081');
   });
 
-  it('prefers HAPPIER_ACTIVE_SERVER_ID when the env URL matches multiple persisted stack profiles', async () => {
+  it('prefers HAPPIEST_ACTIVE_SERVER_ID when the env URL matches multiple persisted stack profiles', async () => {
     const homeDir = createTempDirSync('happier-cli-config-env-active-duplicate-url-');
     tempDirs.push(homeDir);
     const settingsFile = join(homeDir, 'settings.json');
@@ -311,10 +311,10 @@ describe('configuration env url fallback', () => {
       'utf-8',
     );
 
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_ACTIVE_SERVER_ID = 'android-keyboard-qa';
-    process.env.HAPPIER_SERVER_URL = 'http://127.0.0.1:52753';
-    process.env.HAPPIER_WEBAPP_URL = 'http://localhost:52753';
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_ACTIVE_SERVER_ID = 'android-keyboard-qa';
+    process.env.HAPPIEST_SERVER_URL = 'http://127.0.0.1:52753';
+    process.env.HAPPIEST_WEBAPP_URL = 'http://localhost:52753';
 
     const configMod = await import('./configuration');
     configMod.reloadConfiguration();
@@ -346,11 +346,11 @@ describe('configuration env url fallback', () => {
       'utf-8',
     );
 
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_ACTIVE_SERVER_ID = endpointProfileId;
-    process.env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID = lifecycleScopeId;
-    process.env.HAPPIER_SERVER_URL = 'http://127.0.0.1:52753';
-    process.env.HAPPIER_WEBAPP_URL = 'http://localhost:52753';
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_ACTIVE_SERVER_ID = endpointProfileId;
+    process.env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID = lifecycleScopeId;
+    process.env.HAPPIEST_SERVER_URL = 'http://127.0.0.1:52753';
+    process.env.HAPPIEST_WEBAPP_URL = 'http://localhost:52753';
 
     const configMod = await import('./configuration');
     configMod.reloadConfiguration();
@@ -383,10 +383,10 @@ describe('configuration env url fallback', () => {
       'utf-8',
     );
 
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_ACTIVE_SERVER_ID = stableScopeId;
-    process.env.HAPPIER_SERVER_URL = 'http://127.0.0.1:52753';
-    process.env.HAPPIER_WEBAPP_URL = 'http://localhost:52753';
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_ACTIVE_SERVER_ID = stableScopeId;
+    process.env.HAPPIEST_SERVER_URL = 'http://127.0.0.1:52753';
+    process.env.HAPPIEST_WEBAPP_URL = 'http://localhost:52753';
 
     const configMod = await import('./configuration');
     configMod.reloadConfiguration();
@@ -426,10 +426,10 @@ describe('configuration env url fallback', () => {
       'utf-8',
     );
 
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_ACTIVE_SERVER_ID = 'stack_repo-remote-dev-d72117acdb__id_default';
-    process.env.HAPPIER_SERVER_URL = 'http://localhost:53288';
-    process.env.HAPPIER_WEBAPP_URL = 'http://localhost:53288';
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_ACTIVE_SERVER_ID = 'stack_repo-remote-dev-d72117acdb__id_default';
+    process.env.HAPPIEST_SERVER_URL = 'http://localhost:53288';
+    process.env.HAPPIEST_WEBAPP_URL = 'http://localhost:53288';
 
     const configMod = await import('./configuration');
     configMod.reloadConfiguration();
@@ -447,7 +447,7 @@ describe('configuration env url fallback', () => {
     tempDirs.push(homeDir);
     const argv = process.argv;
     process.argv = ['node', 'happier', 'daemon', 'start-sync'];
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     process.env.HAPPIER_STACK_STACK = 'repo-remote-dev-d72117acdb';
     process.env.HAPPIER_STACK_ENV_FILE = '/tmp/stack.env';
     process.env.HAPPIER_STACK_PROCESS_KIND = 'session';
@@ -465,7 +465,7 @@ describe('configuration env url fallback', () => {
   it('reads execution-run and ephemeral-task budget env vars', async () => {
     const homeDir = createTempDirSync('happier-cli-config-budget-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     process.env.HAPPIER_EXECUTION_RUNS_MAX_CONCURRENT_PER_SESSION = '7';
     process.env.HAPPIER_EPHEMERAL_TASKS_MAX_CONCURRENT_PER_SESSION = '3';
     process.env.HAPPIER_EXECUTION_RUNS_BOUNDED_TIMEOUT_MS = '45000';
@@ -490,7 +490,7 @@ describe('configuration env url fallback', () => {
   it('defaults execution-run concurrency and timeouts to unlimited when budget env vars are unset', async () => {
     const homeDir = createTempDirSync('happier-cli-config-budget-defaults-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     delete process.env.HAPPIER_EXECUTION_RUNS_MAX_CONCURRENT_PER_SESSION;
     delete process.env.HAPPIER_EXECUTION_RUNS_BOUNDED_TIMEOUT_MS;
     delete process.env.HAPPIER_EXECUTION_RUNS_REVIEW_BOUNDED_TIMEOUT_MS;

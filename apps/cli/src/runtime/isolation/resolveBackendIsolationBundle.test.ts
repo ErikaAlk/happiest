@@ -7,9 +7,9 @@ describe('resolveBackendIsolationBundle', () => {
   it('creates an isolation root under the active server dir and overlays XDG state/cache/data', async () => {
     const homeDir = await mkdtemp(join(os.tmpdir(), 'happier-isolation-home-'));
     const previousEnv = {
-      HAPPIER_HOME_DIR: process.env.HAPPIER_HOME_DIR,
-      HAPPIER_SERVER_URL: process.env.HAPPIER_SERVER_URL,
-      HAPPIER_WEBAPP_URL: process.env.HAPPIER_WEBAPP_URL,
+      HAPPIEST_HOME_DIR: process.env.HAPPIEST_HOME_DIR,
+      HAPPIEST_SERVER_URL: process.env.HAPPIEST_SERVER_URL,
+      HAPPIEST_WEBAPP_URL: process.env.HAPPIEST_WEBAPP_URL,
       HAPPIER_OPENCODE_SERVER_TURN_INACTIVITY_TIMEOUT_MS: process.env.HAPPIER_OPENCODE_SERVER_TURN_INACTIVITY_TIMEOUT_MS,
       HOME: process.env.HOME,
       XDG_CONFIG_HOME: process.env.XDG_CONFIG_HOME,
@@ -23,9 +23,9 @@ describe('resolveBackendIsolationBundle', () => {
       HAPPIER_CONNECTED_SERVICE_TARGET_MATERIALIZED_ROOT: process.env.HAPPIER_CONNECTED_SERVICE_TARGET_MATERIALIZED_ROOT,
     };
     try {
-      process.env.HAPPIER_HOME_DIR = homeDir;
-      process.env.HAPPIER_SERVER_URL = 'https://api.example.test';
-      process.env.HAPPIER_WEBAPP_URL = 'https://app.example.test';
+      process.env.HAPPIEST_HOME_DIR = homeDir;
+      process.env.HAPPIEST_SERVER_URL = 'https://api.example.test';
+      process.env.HAPPIEST_WEBAPP_URL = 'https://app.example.test';
       process.env.HAPPIER_OPENCODE_SERVER_TURN_INACTIVITY_TIMEOUT_MS = '123456';
       process.env.HOME = join(homeDir, 'real-home');
       process.env.XDG_CONFIG_HOME = join(homeDir, 'real-config');

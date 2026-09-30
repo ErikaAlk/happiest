@@ -8491,7 +8491,7 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
               });
               cliUpdateMetadataPublisher.watch({
                 channel: configuration.publicReleaseRing,
-                processEnv: { ...process.env, HAPPIER_HOME_DIR: configuration.happyHomeDir },
+                processEnv: { ...process.env, HAPPIEST_HOME_DIR: configuration.happyHomeDir },
               });
               const publishDaemonMetadata = cliUpdateMetadataPublisher.publish;
               connectedApiMachine.connect({

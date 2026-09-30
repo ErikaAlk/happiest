@@ -38,7 +38,7 @@ export function resolveDaemonStartupSourceFromEnv(
 export function resolveDaemonServiceLabelFromEnv(
   env: NodeJS.ProcessEnv = process.env,
 ): string | undefined {
-  const serviceLabel = String(env.HAPPIER_DAEMON_SERVICE_LABEL ?? '').trim();
+  const serviceLabel = String(env.HAPPIEST_DAEMON_SERVICE_LABEL ?? '').trim();
   return serviceLabel.length > 0 ? serviceLabel : undefined;
 }
 

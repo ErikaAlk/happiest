@@ -136,7 +136,7 @@ export async function approveLocalRemoteAuthRequestDefault(params: Readonly<{
   ];
   // R13 (a): the approval releases this computer's credentials for exactly the relay the task
   // names, so it runs in that relay's explicit target scope — an inherited launch pin
-  // (`HAPPIER_ACTIVE_SERVER_ID`, …) would otherwise outrank the flags in the CLI's configuration.
+  // (`HAPPIEST_ACTIVE_SERVER_ID`, …) would otherwise outrank the flags in the CLI's configuration.
   const { relayUrl, publicRelayUrl } = params.parsed.relay;
   await (deps.runLocalHappierJsonCommand ?? runLocalHappierJsonCommand)({
     args: ['auth', 'approve', '--public-key', params.publicKey, '--json', '--persist', ...relayArgs],
@@ -178,9 +178,9 @@ export async function runRemoteBootstrapCommandDefault(params: Readonly<{
     ...(params.parsed.relay.publicRelayUrl ? [`--public-server-url=${params.parsed.relay.publicRelayUrl}`] : []),
   ];
   const daemonEnv = [
-    `HAPPIER_DAEMON_SERVICE_SERVER_URL=${shellQuote(params.parsed.relay.relayUrl)}`,
-    `HAPPIER_DAEMON_SERVICE_WEBAPP_URL=${shellQuote(params.parsed.relay.webappUrl ?? params.parsed.relay.relayUrl)}`,
-    ...(params.parsed.relay.publicRelayUrl ? [`HAPPIER_DAEMON_SERVICE_PUBLIC_SERVER_URL=${shellQuote(params.parsed.relay.publicRelayUrl)}`] : []),
+    `HAPPIEST_DAEMON_SERVICE_SERVER_URL=${shellQuote(params.parsed.relay.relayUrl)}`,
+    `HAPPIEST_DAEMON_SERVICE_WEBAPP_URL=${shellQuote(params.parsed.relay.webappUrl ?? params.parsed.relay.relayUrl)}`,
+    ...(params.parsed.relay.publicRelayUrl ? [`HAPPIEST_DAEMON_SERVICE_PUBLIC_SERVER_URL=${shellQuote(params.parsed.relay.publicRelayUrl)}`] : []),
   ].join(' ');
 
   let command = '';

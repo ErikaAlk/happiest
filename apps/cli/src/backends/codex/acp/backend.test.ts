@@ -91,7 +91,7 @@ describe('createCodexAcpBackend', () => {
       await (await import('node:fs/promises')).chmod(wrapper, 0o755);
       await withEnv({
         HAPPIER_VARIANT: 'stable',
-        HAPPIER_HOME_DIR: dir,
+        HAPPIEST_HOME_DIR: dir,
         CODEX_HOME: dir,
         HAPPIER_CODEX_ACP_BIN: wrapper,
         OPENAI_API_KEY: 'sk-test',
@@ -129,7 +129,7 @@ describe('createCodexAcpBackend', () => {
 
         await withEnv({
           HAPPIER_VARIANT: 'stable',
-          HAPPIER_HOME_DIR: undefined,
+          HAPPIEST_HOME_DIR: undefined,
           CODEX_HOME: undefined,
           HAPPIER_CODEX_ACP_BIN: undefined,
           OPENAI_API_KEY: undefined,
@@ -198,7 +198,7 @@ describe('createCodexAcpBackend', () => {
       await (await import('node:fs/promises')).chmod(join(pathDir, 'codex-acp'), 0o755);
       await withEnv({
         HAPPIER_VARIANT: 'stable',
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         CODEX_HOME: homeDir,
         PATH: pathDir,
       }, async () => {
@@ -221,7 +221,7 @@ describe('createCodexAcpBackend', () => {
       await (await import('node:fs/promises')).chmod(join(pathDir, 'codex-acp'), 0o755);
       await withEnv({
         HAPPIER_VARIANT: 'stable',
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         CODEX_HOME: homeDir,
         PATH: pathDir,
         HAPPIER_CODEX_ACP_CONFIG_OVERRIDES: undefined,
@@ -251,7 +251,7 @@ describe('createCodexAcpBackend', () => {
       await (await import('node:fs/promises')).chmod(join(pathDir, 'codex-acp'), 0o755);
       await withEnv({
         HAPPIER_VARIANT: 'stable',
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         PATH: pathDir,
       }, async () => {
         vi.doMock('@/agent/acp/AcpBackend', () => ({
@@ -285,7 +285,7 @@ describe('createCodexAcpBackend', () => {
       await withEnv(
         {
           HAPPIER_VARIANT: 'stable',
-          HAPPIER_HOME_DIR: homeDir,
+          HAPPIEST_HOME_DIR: homeDir,
           CODEX_HOME: homeDir,
           HAPPIER_CODEX_ACP_BIN: fakeBin,
           HAPPIER_CODEX_ACP_INIT_TIMEOUT_MS: undefined,

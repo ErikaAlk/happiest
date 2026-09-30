@@ -20,7 +20,7 @@ const envKeys = [
   'HAPPIER_CODEX_APP_SERVER_BIN',
   'HAPPIER_FAKE_CODEX_APP_SERVER_DELAY_MS',
   'HAPPIER_FAKE_CODEX_APP_SERVER_ENV_CAPTURE_FILE',
-  'HAPPIER_HOME_DIR',
+  'HAPPIEST_HOME_DIR',
   'OPENAI_API_KEY',
   'CODEX_API_KEY',
   'CODEX_HOME',
@@ -48,7 +48,7 @@ describe('capabilities.invoke connected-service preflight', () => {
   it('probes native Codex auth without requiring a connected-service credential', async () => {
     vi.resetModules();
     tempDir = mkdtempSync(join(tmpdir(), 'happier-capability-native-preflight-'));
-    process.env.HAPPIER_HOME_DIR = tempDir;
+    process.env.HAPPIEST_HOME_DIR = tempDir;
     process.env.HAPPIER_CODEX_APP_SERVER_BIN = fileURLToPath(
       new URL('../../backends/codex/preflight/__fixtures__/fakeCodexAppServer.mjs', import.meta.url),
     );
@@ -80,7 +80,7 @@ describe('capabilities.invoke connected-service preflight', () => {
   it('resolves the selected backend profile environment and encrypted Saved Secret before probing controls', async () => {
     vi.resetModules();
     tempDir = mkdtempSync(join(tmpdir(), 'happier-capability-profile-preflight-'));
-    process.env.HAPPIER_HOME_DIR = tempDir;
+    process.env.HAPPIEST_HOME_DIR = tempDir;
     process.env.HAPPIER_CODEX_APP_SERVER_BIN = fileURLToPath(
       new URL('../../backends/codex/preflight/__fixtures__/fakeCodexAppServer.mjs', import.meta.url),
     );
@@ -170,7 +170,7 @@ describe('capabilities.invoke connected-service preflight', () => {
   it('materializes a selected Codex auth group through the canonical spawn resolver without a legacy stable home', async () => {
     vi.resetModules();
     tempDir = mkdtempSync(join(tmpdir(), 'happier-capability-connected-preflight-'));
-    process.env.HAPPIER_HOME_DIR = tempDir;
+    process.env.HAPPIEST_HOME_DIR = tempDir;
     process.env.HAPPIER_CODEX_APP_SERVER_BIN = fileURLToPath(
       new URL('../../backends/codex/preflight/__fixtures__/fakeCodexAppServer.mjs', import.meta.url),
     );
@@ -313,7 +313,7 @@ describe('capabilities.invoke connected-service preflight', () => {
   it('fails closed instead of probing ambient auth when selected connected-service credentials are unavailable', async () => {
     vi.resetModules();
     tempDir = mkdtempSync(join(tmpdir(), 'happier-capability-connected-preflight-no-credentials-'));
-    process.env.HAPPIER_HOME_DIR = tempDir;
+    process.env.HAPPIEST_HOME_DIR = tempDir;
     process.env.OPENAI_API_KEY = 'ambient-key-must-not-be-used';
 
     vi.doMock('@/persistence', async (importOriginal) => ({

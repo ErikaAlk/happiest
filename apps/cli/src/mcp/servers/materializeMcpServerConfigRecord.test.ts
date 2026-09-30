@@ -389,7 +389,7 @@ describe('materializeMcpServerConfigRecord', () => {
         resolved,
         settingsSecretsKey: null,
         savedSecretsById: new Map(),
-        processEnv: { PATH: '', HAPPIER_HOME_DIR: join(dir, 'home'), HAPPIER_MANAGED_PNPM_BOOTSTRAP: '0' },
+        processEnv: { PATH: '', HAPPIEST_HOME_DIR: join(dir, 'home'), HAPPIER_MANAGED_PNPM_BOOTSTRAP: '0' },
         tmpDir: null,
         strictMode: false,
       });
@@ -438,7 +438,7 @@ describe('materializeMcpServerConfigRecord', () => {
           resolved,
           settingsSecretsKey: null,
           savedSecretsById: new Map(),
-          processEnv: { PATH: '', HAPPIER_HOME_DIR: join(dir, 'home'), HAPPIER_MANAGED_PNPM_BOOTSTRAP: '0' },
+          processEnv: { PATH: '', HAPPIEST_HOME_DIR: join(dir, 'home'), HAPPIER_MANAGED_PNPM_BOOTSTRAP: '0' },
           tmpDir: null,
           strictMode: true,
         }),

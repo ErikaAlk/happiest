@@ -7,7 +7,7 @@ import { createTempDir, removeTempDir } from '@/testkit/fs/tempDir';
 import { createTestMetadata } from '@/testkit/backends/sessionMetadata';
 
 const envScope = createEnvKeyScope([
-  'HAPPIER_HOME_DIR',
+  'HAPPIEST_HOME_DIR',
   'HAPPIER_SESSION_ATTACH_FILE',
 ]);
 
@@ -16,7 +16,7 @@ describe('createBaseSessionForAttach', () => {
     const dir = await createTempDir('happy-base-attach-');
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: dir,
+        HAPPIEST_HOME_DIR: dir,
         HAPPIER_SESSION_ATTACH_FILE: undefined,
       });
       vi.resetModules();
@@ -56,7 +56,7 @@ describe('createBaseSessionForAttach', () => {
     const dir = await createTempDir('happy-base-attach-');
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: dir,
+        HAPPIEST_HOME_DIR: dir,
         HAPPIER_SESSION_ATTACH_FILE: undefined,
       });
       vi.resetModules();
@@ -95,7 +95,7 @@ describe('createBaseSessionForAttach', () => {
     const dir = await createTempDir('happy-base-attach-');
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: dir,
+        HAPPIEST_HOME_DIR: dir,
         HAPPIER_SESSION_ATTACH_FILE: undefined,
       });
       vi.resetModules();
@@ -135,7 +135,7 @@ describe('createBaseSessionForAttach', () => {
     const dir = await createTempDir('happy-base-attach-');
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: dir,
+        HAPPIEST_HOME_DIR: dir,
         HAPPIER_SESSION_ATTACH_FILE: undefined,
       });
       vi.resetModules();

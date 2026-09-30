@@ -18,8 +18,8 @@ const mergedTestEnv: NodeJS.ProcessEnv = {
     ...testEnv,
 };
 
-if (mergedTestEnv.HAPPIER_SERVER_URL && !mergedTestEnv.HAPPIER_WEBAPP_URL) {
-    mergedTestEnv.HAPPIER_WEBAPP_URL = mergedTestEnv.HAPPIER_SERVER_URL;
+if (mergedTestEnv.HAPPIEST_SERVER_URL && !mergedTestEnv.HAPPIEST_WEBAPP_URL) {
+    mergedTestEnv.HAPPIEST_WEBAPP_URL = mergedTestEnv.HAPPIEST_SERVER_URL;
 }
 
 // CLI tests should not inherit embedded build-policy gating (set in CI).

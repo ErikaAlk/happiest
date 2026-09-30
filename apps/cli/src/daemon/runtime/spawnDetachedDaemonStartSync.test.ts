@@ -42,7 +42,7 @@ describe('spawnDetachedDaemonStartSync', () => {
   const envScope = createEnvKeyScope([
     'HAPPIER_RELEASE_RING',
     'HAPPIER_PUBLIC_RELEASE_CHANNEL',
-    'HAPPIER_HOME_DIR',
+    'HAPPIEST_HOME_DIR',
     'HAPPIER_DAEMON_STARTUP_SOURCE',
     'HAPPIER_CLI_SUBPROCESS_DAEMON_DIST_CLOSURE_FINGERPRINT',
     'DBUS_SESSION_BUS_ADDRESS',
@@ -69,7 +69,7 @@ describe('spawnDetachedDaemonStartSync', () => {
     envScope.patch({
       HAPPIER_RELEASE_RING: 'dev',
       HAPPIER_PUBLIC_RELEASE_CHANNEL: undefined,
-      HAPPIER_HOME_DIR: '/tmp/happier-cli-test-home',
+      HAPPIEST_HOME_DIR: '/tmp/happier-cli-test-home',
       DBUS_SESSION_BUS_ADDRESS: undefined,
     });
 
@@ -154,7 +154,7 @@ describe('spawnDetachedDaemonStartSync', () => {
     Object.defineProperty(process, 'platform', { ...originalPlatformDescriptor, value: 'linux' });
     envScope.patch({
       HAPPIER_DAEMON_STARTUP_SOURCE: 'manual',
-      HAPPIER_HOME_DIR: '/tmp/happier-cli-test-home',
+      HAPPIEST_HOME_DIR: '/tmp/happier-cli-test-home',
       DBUS_SESSION_BUS_ADDRESS: undefined,
     });
 

@@ -66,11 +66,11 @@ describe('resolveConfiguredRelayRuntimePaths', () => {
       env: {
         HOME: '/scoped/home',
         USERPROFILE: '/scoped/home',
-        HAPPIER_SELF_HOST_INSTALL_ROOT: '~/relay/install',
-        HAPPIER_SELF_HOST_BIN_DIR: '~/relay/bin',
-        HAPPIER_SELF_HOST_CONFIG_DIR: '~/relay/config',
-        HAPPIER_SELF_HOST_DATA_DIR: '~/relay/data',
-        HAPPIER_SELF_HOST_LOG_DIR: '~/relay/logs',
+        HAPPIEST_SELF_HOST_INSTALL_ROOT: '~/relay/install',
+        HAPPIEST_SELF_HOST_BIN_DIR: '~/relay/bin',
+        HAPPIEST_SELF_HOST_CONFIG_DIR: '~/relay/config',
+        HAPPIEST_SELF_HOST_DATA_DIR: '~/relay/data',
+        HAPPIEST_SELF_HOST_LOG_DIR: '~/relay/logs',
       },
     })).toEqual({
       installRoot: '/scoped/home/relay/install',
@@ -88,7 +88,7 @@ describe('resolveConfiguredRelayRuntimePaths', () => {
     expect(mod.resolveConfiguredRelayRuntimeBinaryOverride({
       HOME: '/scoped/home',
       USERPROFILE: '/scoped/home',
-      HAPPIER_SELF_HOST_SERVER_BINARY: '~/bin/happier-server',
+      HAPPIEST_SELF_HOST_SERVER_BINARY: '~/bin/happier-server',
     })).toBe('/scoped/home/bin/happier-server');
   });
 });

@@ -608,7 +608,7 @@ describe('createClaudeConnectedServicesMaterializer', () => {
         processEnv: {
           CLAUDE_CONFIG_DIR: sourceClaudeConfigDir,
           HOME: homeDir,
-          HAPPIER_HOME_DIR: '~/custom-happier',
+          HAPPIEST_HOME_DIR: '~/custom-happier',
           USER: 'tester',
         },
         cleanupRoot: () => {},

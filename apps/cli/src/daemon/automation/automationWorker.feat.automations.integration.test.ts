@@ -197,19 +197,19 @@ async function startAutomationServer(params: {
 }
 
 describe('automationWorker integration', () => {
-  const previousHome = process.env.HAPPIER_HOME_DIR;
-  const previousServer = process.env.HAPPIER_SERVER_URL;
-  const previousWebapp = process.env.HAPPIER_WEBAPP_URL;
+  const previousHome = process.env.HAPPIEST_HOME_DIR;
+  const previousServer = process.env.HAPPIEST_SERVER_URL;
+  const previousWebapp = process.env.HAPPIEST_WEBAPP_URL;
 
   afterEach(async () => {
-    if (previousHome === undefined) delete process.env.HAPPIER_HOME_DIR;
-    else process.env.HAPPIER_HOME_DIR = previousHome;
+    if (previousHome === undefined) delete process.env.HAPPIEST_HOME_DIR;
+    else process.env.HAPPIEST_HOME_DIR = previousHome;
 
-    if (previousServer === undefined) delete process.env.HAPPIER_SERVER_URL;
-    else process.env.HAPPIER_SERVER_URL = previousServer;
+    if (previousServer === undefined) delete process.env.HAPPIEST_SERVER_URL;
+    else process.env.HAPPIEST_SERVER_URL = previousServer;
 
-    if (previousWebapp === undefined) delete process.env.HAPPIER_WEBAPP_URL;
-    else process.env.HAPPIER_WEBAPP_URL = previousWebapp;
+    if (previousWebapp === undefined) delete process.env.HAPPIEST_WEBAPP_URL;
+    else process.env.HAPPIEST_WEBAPP_URL = previousWebapp;
 
     vi.resetModules();
   });
@@ -250,9 +250,9 @@ describe('automationWorker integration', () => {
     });
 
     const homeDir = await mkdtemp(join(tmpdir(), 'happier-automation-worker-'));
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_SERVER_URL = server.baseUrl;
-    process.env.HAPPIER_WEBAPP_URL = server.baseUrl;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_SERVER_URL = server.baseUrl;
+    process.env.HAPPIEST_WEBAPP_URL = server.baseUrl;
 
     vi.resetModules();
     const { startAutomationWorker } = await import('./automationWorker');
@@ -304,9 +304,9 @@ describe('automationWorker integration', () => {
     });
 
     const homeDir = await mkdtemp(join(tmpdir(), 'happier-automation-worker-missing-routes-'));
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_SERVER_URL = server.baseUrl;
-    process.env.HAPPIER_WEBAPP_URL = server.baseUrl;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_SERVER_URL = server.baseUrl;
+    process.env.HAPPIEST_WEBAPP_URL = server.baseUrl;
 
     vi.resetModules();
     const { startAutomationWorker } = await import('./automationWorker');
@@ -371,9 +371,9 @@ describe('automationWorker integration', () => {
     });
 
     const homeDir = await mkdtemp(join(tmpdir(), 'happier-automation-worker-invalid-'));
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_SERVER_URL = server.baseUrl;
-    process.env.HAPPIER_WEBAPP_URL = server.baseUrl;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_SERVER_URL = server.baseUrl;
+    process.env.HAPPIEST_WEBAPP_URL = server.baseUrl;
 
     vi.resetModules();
     const { startAutomationWorker } = await import('./automationWorker');
@@ -447,9 +447,9 @@ describe('automationWorker integration', () => {
     });
 
     const homeDir = await mkdtemp(join(tmpdir(), 'happier-automation-worker-disabled-'));
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_SERVER_URL = server.baseUrl;
-    process.env.HAPPIER_WEBAPP_URL = server.baseUrl;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_SERVER_URL = server.baseUrl;
+    process.env.HAPPIEST_WEBAPP_URL = server.baseUrl;
 
     vi.resetModules();
     const { startAutomationWorker } = await import('./automationWorker');
@@ -524,9 +524,9 @@ describe('automationWorker integration', () => {
     });
 
     const homeDir = await mkdtemp(join(tmpdir(), 'happier-automation-worker-existing-disabled-'));
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_SERVER_URL = server.baseUrl;
-    process.env.HAPPIER_WEBAPP_URL = server.baseUrl;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_SERVER_URL = server.baseUrl;
+    process.env.HAPPIEST_WEBAPP_URL = server.baseUrl;
 
     vi.resetModules();
     const { startAutomationWorker } = await import('./automationWorker');
@@ -605,9 +605,9 @@ describe('automationWorker integration', () => {
     });
 
     const homeDir = await mkdtemp(join(tmpdir(), 'happier-automation-worker-existing-prompt-'));
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_SERVER_URL = server.baseUrl;
-    process.env.HAPPIER_WEBAPP_URL = server.baseUrl;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_SERVER_URL = server.baseUrl;
+    process.env.HAPPIEST_WEBAPP_URL = server.baseUrl;
 
     vi.resetModules();
     const { startAutomationWorker } = await import('./automationWorker');
@@ -686,9 +686,9 @@ describe('automationWorker integration', () => {
     });
 
     const homeDir = await mkdtemp(join(tmpdir(), 'happier-automation-worker-existing-plain-prompt-'));
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_SERVER_URL = server.baseUrl;
-    process.env.HAPPIER_WEBAPP_URL = server.baseUrl;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_SERVER_URL = server.baseUrl;
+    process.env.HAPPIEST_WEBAPP_URL = server.baseUrl;
 
     vi.resetModules();
     const { startAutomationWorker } = await import('./automationWorker');
@@ -776,9 +776,9 @@ describe('automationWorker integration', () => {
     });
 
     const homeDir = await mkdtemp(join(tmpdir(), 'happier-automation-worker-existing-prompt-'));
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_SERVER_URL = server.baseUrl;
-    process.env.HAPPIER_WEBAPP_URL = server.baseUrl;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_SERVER_URL = server.baseUrl;
+    process.env.HAPPIEST_WEBAPP_URL = server.baseUrl;
 
     vi.resetModules();
     const { startAutomationWorker } = await import('./automationWorker');
@@ -852,9 +852,9 @@ describe('automationWorker integration', () => {
     });
 
     const homeDir = await mkdtemp(join(tmpdir(), 'happier-automation-worker-existing-unavailable-'));
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_SERVER_URL = server.baseUrl;
-    process.env.HAPPIER_WEBAPP_URL = server.baseUrl;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_SERVER_URL = server.baseUrl;
+    process.env.HAPPIEST_WEBAPP_URL = server.baseUrl;
 
     vi.resetModules();
     const { startAutomationWorker } = await import('./automationWorker');
@@ -934,9 +934,9 @@ describe('automationWorker integration', () => {
     });
 
     const homeDir = await mkdtemp(join(tmpdir(), 'happier-automation-worker-new-prompt-'));
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_SERVER_URL = server.baseUrl;
-    process.env.HAPPIER_WEBAPP_URL = server.baseUrl;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_SERVER_URL = server.baseUrl;
+    process.env.HAPPIEST_WEBAPP_URL = server.baseUrl;
 
     vi.resetModules();
     const { startAutomationWorker } = await import('./automationWorker');
@@ -1023,9 +1023,9 @@ describe('automationWorker integration', () => {
     });
 
     const homeDir = await mkdtemp(join(tmpdir(), 'happier-automation-worker-budget-'));
-    process.env.HAPPIER_HOME_DIR = homeDir;
-    process.env.HAPPIER_SERVER_URL = server.baseUrl;
-    process.env.HAPPIER_WEBAPP_URL = server.baseUrl;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    process.env.HAPPIEST_SERVER_URL = server.baseUrl;
+    process.env.HAPPIEST_WEBAPP_URL = server.baseUrl;
 
     vi.resetModules();
     const { startAutomationWorker } = await import('./automationWorker');

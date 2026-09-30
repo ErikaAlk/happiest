@@ -43,7 +43,7 @@ describe('generateHookSettingsFile', () => {
   const envKeys = [
     'CLAUDE_CONFIG_DIR',
     'HAPPIER_MANAGED_NODE_BIN',
-    'HAPPIER_HOME_DIR',
+    'HAPPIEST_HOME_DIR',
     'HAPPIER_CLAUDE_HOOKS_DISABLED',
   ] as const;
   let envScope = createEnvKeyScope(envKeys);
@@ -117,7 +117,7 @@ describe('generateHookPluginDir', () => {
   const envKeys = [
     'CLAUDE_CONFIG_DIR',
     'HAPPIER_MANAGED_NODE_BIN',
-    'HAPPIER_HOME_DIR',
+    'HAPPIEST_HOME_DIR',
     'HAPPIER_CLAUDE_HOOKS_DISABLED',
     'HAPPIER_CLAUDE_PERMISSION_HOOK_TIMEOUT_SECONDS',
   ] as const;
@@ -518,7 +518,7 @@ describe('generateHookPluginDir', () => {
   it('fails closed when no JavaScript runtime is available for hook forwarders', async () => {
     const happyHomeDir = mkdtempSync(join(tmpdir(), 'happier-hook-plugin-no-runtime-'));
     createdDirs.push(happyHomeDir);
-    envScope.patch({ HAPPIER_HOME_DIR: happyHomeDir });
+    envScope.patch({ HAPPIEST_HOME_DIR: happyHomeDir });
 
     vi.resetModules();
     vi.doMock('@/runtime/js/resolveJavaScriptRuntimeExecutable', () => ({

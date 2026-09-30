@@ -145,9 +145,9 @@ function buildCliSnapshotCacheKey(params: DetectCliRequest, pathEnv: string | nu
     const userProfile = String(process.env.USERPROFILE ?? '');
 
     // Include environment variables that affect CLI resolution and auth.
-    // Provider resolution can fall back to HOME/USERPROFILE when HAPPIER_HOME_DIR is unset,
+    // Provider resolution can fall back to HOME/USERPROFILE when HAPPIEST_HOME_DIR is unset,
     // and auth probes also read provider files from HOME/USERPROFILE.
-    const happierHomeDir = String(process.env.HAPPIER_HOME_DIR ?? '');
+    const happierHomeDir = String(process.env.HAPPIEST_HOME_DIR ?? '');
     const sourcePrefs = String(process.env.HAPPIER_BACKEND_CLI_SOURCE_PREFERENCES_JSON ?? '');
     const authEnvFingerprint = params.includeLoginStatus === true
         ? CLI_AUTH_ENV_KEYS.map((key) => `${key}=${String(process.env[key] ?? '')}`).join(':')

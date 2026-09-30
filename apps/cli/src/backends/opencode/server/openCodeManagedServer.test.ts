@@ -6,7 +6,7 @@ import { createTempDirSync, removeTempDirSync } from '@/testkit/fs/tempDir';
 import { buildOpenCodeV2BrokerConfigContent } from '@/backends/opencode/brokerPlugin/openCodeBrokerPluginAssets';
 import { startManagedOpenCodeServer } from './openCodeManagedServer';
 
-const envKeys = ['PATH', 'HOME', 'HAPPIER_HOME_DIR', 'HAPPIER_OPENCODE_PATH'] as const;
+const envKeys = ['PATH', 'HOME', 'HAPPIEST_HOME_DIR', 'HAPPIER_OPENCODE_PATH'] as const;
 const TEMP_DIRS = new Set<string>();
 let envScope = createEnvKeyScope(envKeys);
 
@@ -52,7 +52,7 @@ describe('startManagedOpenCodeServer', () => {
   it('fails closed when the OpenCode CLI is unavailable', async () => {
     const root = createTempDirSync('happier-opencode-server-test-');
     TEMP_DIRS.add(root);
-    process.env.HAPPIER_HOME_DIR = join(root, 'home');
+    process.env.HAPPIEST_HOME_DIR = join(root, 'home');
     process.env.HOME = join(root, 'home');
     process.env.PATH = join(root, 'empty-path');
     delete process.env.HAPPIER_OPENCODE_PATH;

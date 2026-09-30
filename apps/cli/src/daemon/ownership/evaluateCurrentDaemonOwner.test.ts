@@ -61,20 +61,20 @@ describe('isDaemonProcessForCurrentRuntimeRoot', () => {
 
 describe('evaluateCurrentDaemonOwner', () => {
     const envScope = createEnvKeyScope([
-        'HAPPIER_HOME_DIR',
-        'HAPPIER_ACTIVE_SERVER_ID',
-        'HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID',
+        'HAPPIEST_HOME_DIR',
+        'HAPPIEST_ACTIVE_SERVER_ID',
+        'HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID',
         'HAPPIER_PUBLIC_RELEASE_CHANNEL',
         'HAPPIER_DAEMON_PROCESS_INVENTORY_FALLBACK',
-        'HAPPIER_SERVER_URL',
-        'HAPPIER_WEBAPP_URL',
+        'HAPPIEST_SERVER_URL',
+        'HAPPIEST_WEBAPP_URL',
     ]);
 
     beforeEach(() => {
         envScope.patch({
-            HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: undefined,
-            HAPPIER_SERVER_URL: undefined,
-            HAPPIER_WEBAPP_URL: undefined,
+            HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: undefined,
+            HAPPIEST_SERVER_URL: undefined,
+            HAPPIEST_WEBAPP_URL: undefined,
         });
     });
 
@@ -87,8 +87,8 @@ describe('evaluateCurrentDaemonOwner', () => {
     it('returns none when no daemon state exists', async () => {
         await withTempDir('happier-daemon-owner-none-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             });
             vi.resetModules();
@@ -101,8 +101,8 @@ describe('evaluateCurrentDaemonOwner', () => {
     it('allows an expected daemon to finish initial authentication when its startup lock exists before state', async () => {
         await withTempDir('happier-daemon-owner-starting-lock-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
                 HAPPIER_DAEMON_PROCESS_INVENTORY_FALLBACK: '1',
             });
@@ -132,8 +132,8 @@ describe('evaluateCurrentDaemonOwner', () => {
     it('ignores a state-less daemon process from the same runtime when it belongs to another daemon scope', async () => {
         await withTempDir('happier-daemon-owner-scope-mismatch-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'stack_current__id_default',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'stack_current__id_default',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
                 HAPPIER_DAEMON_PROCESS_INVENTORY_FALLBACK: '1',
             });
@@ -145,8 +145,8 @@ describe('evaluateCurrentDaemonOwner', () => {
                         command: `${process.execPath} ${process.cwd()}/src/index.ts daemon start-sync`,
                         type: 'dev-daemon',
                         daemonOwnershipEnvironmentVariables: {
-                            HAPPIER_HOME_DIR: `${homeDir}-other`,
-                            HAPPIER_ACTIVE_SERVER_ID: 'stack_other__id_default',
+                            HAPPIEST_HOME_DIR: `${homeDir}-other`,
+                            HAPPIEST_ACTIVE_SERVER_ID: 'stack_other__id_default',
                         },
                     } satisfies HappyProcessInfo & {
                         daemonOwnershipEnvironmentVariables: Record<string, string>;
@@ -166,9 +166,9 @@ describe('evaluateCurrentDaemonOwner', () => {
     it('blocks a real state-less daemon with the same explicit lifecycle scope despite a different endpoint profile', async () => {
         await withTempDir('happier-daemon-owner-lifecycle-match-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'current-endpoint-profile',
-                HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'current-endpoint-profile',
+                HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
                 HAPPIER_DAEMON_PROCESS_INVENTORY_FALLBACK: '1',
             });
@@ -182,9 +182,9 @@ describe('evaluateCurrentDaemonOwner', () => {
                     command: `${process.execPath} ${process.cwd()}/apps/cli/src/index.ts daemon start-sync`,
                     type: 'dev-daemon',
                     daemonOwnershipEnvironmentVariables: {
-                        HAPPIER_HOME_DIR: homeDir,
-                        HAPPIER_ACTIVE_SERVER_ID: 'older-endpoint-profile',
-                        HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
+                        HAPPIEST_HOME_DIR: homeDir,
+                        HAPPIEST_ACTIVE_SERVER_ID: 'older-endpoint-profile',
+                        HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
                     },
                 } satisfies HappyProcessInfo],
             }));
@@ -207,13 +207,13 @@ describe('evaluateCurrentDaemonOwner', () => {
     it('blocks a real state-less daemon with the same explicit lifecycle scope despite a changed endpoint URL', async () => {
         await withTempDir('happier-daemon-owner-lifecycle-match-url-change-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'current-endpoint-profile',
-                HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'current-endpoint-profile',
+                HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
                 HAPPIER_DAEMON_PROCESS_INVENTORY_FALLBACK: '1',
-                HAPPIER_SERVER_URL: 'http://127.0.0.1:43127',
-                HAPPIER_WEBAPP_URL: 'http://127.0.0.1:43127',
+                HAPPIEST_SERVER_URL: 'http://127.0.0.1:43127',
+                HAPPIEST_WEBAPP_URL: 'http://127.0.0.1:43127',
             });
             vi.resetModules();
             vi.doMock('@/daemon/controlClient', () => ({
@@ -225,10 +225,10 @@ describe('evaluateCurrentDaemonOwner', () => {
                     command: `${process.execPath} ${process.cwd()}/apps/cli/src/index.ts daemon start-sync`,
                     type: 'dev-daemon',
                     daemonOwnershipEnvironmentVariables: {
-                        HAPPIER_HOME_DIR: homeDir,
-                        HAPPIER_ACTIVE_SERVER_ID: 'older-endpoint-profile',
-                        HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
-                        HAPPIER_SERVER_URL: 'http://127.0.0.1:3005',
+                        HAPPIEST_HOME_DIR: homeDir,
+                        HAPPIEST_ACTIVE_SERVER_ID: 'older-endpoint-profile',
+                        HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
+                        HAPPIEST_SERVER_URL: 'http://127.0.0.1:3005',
                     },
                 } satisfies HappyProcessInfo],
             }));
@@ -250,9 +250,9 @@ describe('evaluateCurrentDaemonOwner', () => {
     it('rejects a state-less daemon with a different explicit lifecycle scope despite the same endpoint profile', async () => {
         await withTempDir('happier-daemon-owner-lifecycle-mismatch-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'shared-endpoint-profile',
-                HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'shared-endpoint-profile',
+                HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
                 HAPPIER_DAEMON_PROCESS_INVENTORY_FALLBACK: '1',
             });
@@ -266,9 +266,9 @@ describe('evaluateCurrentDaemonOwner', () => {
                     command: `${process.execPath} ${process.cwd()}/apps/cli/src/index.ts daemon start-sync`,
                     type: 'dev-daemon',
                     daemonOwnershipEnvironmentVariables: {
-                        HAPPIER_HOME_DIR: homeDir,
-                        HAPPIER_ACTIVE_SERVER_ID: 'shared-endpoint-profile',
-                        HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-other__id_default',
+                        HAPPIEST_HOME_DIR: homeDir,
+                        HAPPIEST_ACTIVE_SERVER_ID: 'shared-endpoint-profile',
+                        HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-other__id_default',
                     },
                 } satisfies HappyProcessInfo],
             }));
@@ -286,9 +286,9 @@ describe('evaluateCurrentDaemonOwner', () => {
     it('does not treat a current explicitly scoped daemon as an old daemon when the caller has no lifecycle scope', async () => {
         await withTempDir('happier-daemon-owner-current-scope-vs-generic-caller-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'shared-endpoint-profile',
-                HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: undefined,
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'shared-endpoint-profile',
+                HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: undefined,
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
                 HAPPIER_DAEMON_PROCESS_INVENTORY_FALLBACK: '1',
             });
@@ -302,9 +302,9 @@ describe('evaluateCurrentDaemonOwner', () => {
                     command: `${process.execPath} ${process.cwd()}/apps/cli/src/index.ts daemon start-sync`,
                     type: 'dev-daemon',
                     daemonOwnershipEnvironmentVariables: {
-                        HAPPIER_HOME_DIR: homeDir,
-                        HAPPIER_ACTIVE_SERVER_ID: 'shared-endpoint-profile',
-                        HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
+                        HAPPIEST_HOME_DIR: homeDir,
+                        HAPPIEST_ACTIVE_SERVER_ID: 'shared-endpoint-profile',
+                        HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-current__id_default',
                     },
                 } satisfies HappyProcessInfo],
             }));
@@ -322,8 +322,8 @@ describe('evaluateCurrentDaemonOwner', () => {
     it('returns a compatible manual owner when the current version and release channel already match', async () => {
         await withTempDir('happier-daemon-owner-compatible-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'dev',
             });
             vi.resetModules();
@@ -358,8 +358,8 @@ describe('evaluateCurrentDaemonOwner', () => {
     it('returns a conflict for a service-managed owner on a different version or release channel', async () => {
         await withTempDir('happier-daemon-owner-conflict-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             });
             vi.resetModules();
@@ -396,8 +396,8 @@ describe('evaluateCurrentDaemonOwner', () => {
     it('treats legacy daemon state without startup metadata as a manual owner when no service label exists', async () => {
         await withTempDir('happier-daemon-owner-legacy-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             });
             vi.resetModules();
@@ -430,8 +430,8 @@ describe('evaluateCurrentDaemonOwner', () => {
     it('treats legacy daemon state with a service label and missing startup metadata as service-managed', async () => {
         await withTempDir('happier-daemon-owner-legacy-service-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             });
             vi.resetModules();
@@ -465,8 +465,8 @@ describe('evaluateCurrentDaemonOwner', () => {
     it('treats a legacy owner with a matching version and missing release-channel metadata as compatible', async () => {
         await withTempDir('happier-daemon-owner-missing-ring-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'dev',
             });
             vi.resetModules();

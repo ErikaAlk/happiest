@@ -243,12 +243,12 @@ npm run stable:daemon:start
 
 ## How It Works
 
-The system uses the built-in `HAPPIER_HOME_DIR` environment variable to separate data:
+The system uses the built-in `HAPPIEST_HOME_DIR` environment variable to separate data:
 
-- **Stable scripts** set: `HAPPIER_HOME_DIR=~/.happier`
-- **Dev scripts** set: `HAPPIER_HOME_DIR=~/.happier-dev`
+- **Stable scripts** set: `HAPPIEST_HOME_DIR=~/.happier`
+- **Dev scripts** set: `HAPPIEST_HOME_DIR=~/.happier-dev`
 
-Everything else (auth, sessions, logs, daemon) automatically follows the `HAPPIER_HOME_DIR` setting.
+Everything else (auth, sessions, logs, daemon) automatically follows the `HAPPIEST_HOME_DIR` setting.
 
 Cross-platform via Node.js - works identically on Windows, macOS, and Linux!
 

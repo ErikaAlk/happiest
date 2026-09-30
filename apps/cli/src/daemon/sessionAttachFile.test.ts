@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { basename, join, resolve, sep } from 'node:path';
 
 describe('createSessionAttachFile', () => {
-  const originalHappyHomeDir = process.env.HAPPIER_HOME_DIR;
+  const originalHappyHomeDir = process.env.HAPPIEST_HOME_DIR;
   const originalAttachMaxAgeMs = process.env.HAPPIER_SESSION_ATTACH_FILE_MAX_AGE_MS;
   const originalPublicReleaseChannel = process.env.HAPPIER_PUBLIC_RELEASE_CHANNEL;
   const tempDirs: string[] = [];
@@ -14,9 +14,9 @@ describe('createSessionAttachFile', () => {
       await rm(dir, { recursive: true, force: true });
     }
     if (originalHappyHomeDir === undefined) {
-      delete process.env.HAPPIER_HOME_DIR;
+      delete process.env.HAPPIEST_HOME_DIR;
     } else {
-      process.env.HAPPIER_HOME_DIR = originalHappyHomeDir;
+      process.env.HAPPIEST_HOME_DIR = originalHappyHomeDir;
     }
     if (originalAttachMaxAgeMs === undefined) {
       delete process.env.HAPPIER_SESSION_ATTACH_FILE_MAX_AGE_MS;
@@ -34,14 +34,14 @@ describe('createSessionAttachFile', () => {
   async function createHappyHomeFixture(): Promise<{ dir: string; baseDir: string }> {
     const dir = await mkdtemp(join(tmpdir(), 'happy-home-'));
     tempDirs.push(dir);
-    process.env.HAPPIER_HOME_DIR = dir;
+    process.env.HAPPIEST_HOME_DIR = dir;
     return {
       dir,
       baseDir: resolve(join(dir, 'tmp', 'session-attach')),
     };
   }
 
-  test('writes a 0600 attach file under HAPPIER_HOME_DIR and cleanup deletes it', async () => {
+  test('writes a 0600 attach file under HAPPIEST_HOME_DIR and cleanup deletes it', async () => {
     const { baseDir } = await createHappyHomeFixture();
 
     vi.resetModules();

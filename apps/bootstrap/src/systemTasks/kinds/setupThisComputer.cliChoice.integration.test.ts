@@ -106,7 +106,7 @@ async function createComputer(options: Readonly<{ brokenNpmCli?: boolean }> = {}
   }));
   await chmod(join(payloadRoot, 'happier'), 0o755);
 
-  for (const name of ['HAPPIER_HOME_DIR', 'HAPPIER_BOOTSTRAP_CLI_PATH', 'HAPPIER_BOOTSTRAP_HAPPIER_PATH', 'HAPPIER_ACTIVE_SERVER_ID', 'HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID', 'HAPPIER_NO_PATH_UPDATE']) {
+  for (const name of ['HAPPIEST_HOME_DIR', 'HAPPIEST_BOOTSTRAP_CLI_PATH', 'HAPPIER_BOOTSTRAP_HAPPIER_PATH', 'HAPPIEST_ACTIVE_SERVER_ID', 'HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID', 'HAPPIER_NO_PATH_UPDATE']) {
     vi.stubEnv(name, undefined);
   }
   vi.stubEnv('HOME', home);

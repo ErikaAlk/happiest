@@ -20,7 +20,7 @@ describe('previewServiceInstall', () => {
         cliPath,
         [
           '#!/bin/sh',
-          'printf \'{"ok":true,"plan":{},"takeover":"%s|%s|%s|%s"}\\n\' "$HAPPIER_SERVER_URL" "$HAPPIER_WEBAPP_URL" "$HAPPIER_LOCAL_SERVER_URL" "$HAPPIER_PUBLIC_SERVER_URL"',
+          'printf \'{"ok":true,"plan":{},"takeover":"%s|%s|%s|%s"}\\n\' "$HAPPIEST_SERVER_URL" "$HAPPIEST_WEBAPP_URL" "$HAPPIEST_LOCAL_SERVER_URL" "$HAPPIEST_PUBLIC_SERVER_URL"',
           '',
         ].join('\n'),
         'utf8',
@@ -30,7 +30,7 @@ describe('previewServiceInstall', () => {
       const scope = createSetupCliScope({
         cli: { command: cliPath, provenance: 'managed', version: '0.2.13' },
         target: { serverUrl: 'https://relay-a.example.test', webappUrl: 'https://app-a.example.test', localServerUrl: null },
-        processEnv: { ...process.env, HAPPIER_PUBLIC_SERVER_URL: 'https://inherited.example.test', HAPPIER_LOCAL_SERVER_URL: 'http://127.0.0.1:9' },
+        processEnv: { ...process.env, HAPPIEST_PUBLIC_SERVER_URL: 'https://inherited.example.test', HAPPIEST_LOCAL_SERVER_URL: 'http://127.0.0.1:9' },
       });
       const preview = await previewServiceInstall('stable', scope.target);
 

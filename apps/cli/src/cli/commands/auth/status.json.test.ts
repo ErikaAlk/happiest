@@ -12,7 +12,7 @@ import { captureConsoleText } from '@/testkit/logger/captureOutput';
 
 import { handleAuthCommand } from '../auth';
 
-const envKeys = ['HAPPIER_HOME_DIR', 'HAPPIER_SERVER_URL', 'HAPPIER_WEBAPP_URL', 'HAPPIER_ACTIVE_SERVER_ID'] as const;
+const envKeys = ['HAPPIEST_HOME_DIR', 'HAPPIEST_SERVER_URL', 'HAPPIEST_WEBAPP_URL', 'HAPPIEST_ACTIVE_SERVER_ID'] as const;
 let envScope = createEnvKeyScope(envKeys);
 
 beforeEach(() => {
@@ -32,7 +32,7 @@ describe('happier auth status --json', () => {
         const output = captureConsoleText();
 
         try {
-          envScope.patch({ HAPPIER_HOME_DIR: home, HAPPIER_ACTIVE_SERVER_ID: undefined });
+          envScope.patch({ HAPPIEST_HOME_DIR: home, HAPPIEST_ACTIVE_SERVER_ID: undefined });
           reloadConfiguration();
 
           await handleAuthCommand(['status', '--json']);
@@ -68,7 +68,7 @@ describe('happier auth status --json', () => {
         const output = captureConsoleText();
 
         try {
-          envScope.patch({ HAPPIER_HOME_DIR: home, HAPPIER_ACTIVE_SERVER_ID: undefined });
+          envScope.patch({ HAPPIEST_HOME_DIR: home, HAPPIEST_ACTIVE_SERVER_ID: undefined });
           reloadConfiguration();
           vi.stubGlobal('fetch', vi.fn(async () => {
             throw new Error('network unavailable');
@@ -143,10 +143,10 @@ describe('happier auth status --json', () => {
 
         try {
           envScope.patch({
-            HAPPIER_HOME_DIR: home,
-            HAPPIER_SERVER_URL: serverUrl,
-            HAPPIER_WEBAPP_URL: serverUrl,
-            HAPPIER_ACTIVE_SERVER_ID: undefined,
+            HAPPIEST_HOME_DIR: home,
+            HAPPIEST_SERVER_URL: serverUrl,
+            HAPPIEST_WEBAPP_URL: serverUrl,
+            HAPPIEST_ACTIVE_SERVER_ID: undefined,
           });
           reloadConfiguration();
 
@@ -219,10 +219,10 @@ describe('happier auth status --json', () => {
 
         try {
           envScope.patch({
-            HAPPIER_HOME_DIR: home,
-            HAPPIER_SERVER_URL: serverUrl,
-            HAPPIER_WEBAPP_URL: serverUrl,
-            HAPPIER_ACTIVE_SERVER_ID: undefined,
+            HAPPIEST_HOME_DIR: home,
+            HAPPIEST_SERVER_URL: serverUrl,
+            HAPPIEST_WEBAPP_URL: serverUrl,
+            HAPPIEST_ACTIVE_SERVER_ID: undefined,
           });
           reloadConfiguration();
 
@@ -239,10 +239,10 @@ describe('happier auth status --json', () => {
           }));
 
           envScope.patch({
-            HAPPIER_HOME_DIR: home,
-            HAPPIER_SERVER_URL: undefined,
-            HAPPIER_WEBAPP_URL: undefined,
-            HAPPIER_ACTIVE_SERVER_ID: undefined,
+            HAPPIEST_HOME_DIR: home,
+            HAPPIEST_SERVER_URL: undefined,
+            HAPPIEST_WEBAPP_URL: undefined,
+            HAPPIEST_ACTIVE_SERVER_ID: undefined,
           });
           reloadConfiguration();
 

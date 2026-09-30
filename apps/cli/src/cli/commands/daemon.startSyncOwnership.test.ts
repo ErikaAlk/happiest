@@ -42,17 +42,17 @@ vi.mock('@/daemon/ownership/daemonServiceInventory', async (importOriginal) => {
 
 describe('handleDaemonCliCommand: daemon start-sync', () => {
     const envScope = createEnvKeyScope([
-        'HAPPIER_HOME_DIR',
-        'HAPPIER_ACTIVE_SERVER_ID',
+        'HAPPIEST_HOME_DIR',
+        'HAPPIEST_ACTIVE_SERVER_ID',
         'HAPPIER_PUBLIC_RELEASE_CHANNEL',
         'HAPPIER_DAEMON_STARTUP_SOURCE',
-        'HAPPIER_DAEMON_SERVICE_PLATFORM',
-        'HAPPIER_DAEMON_SERVICE_USER_HOME_DIR',
-        'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR',
-        'HAPPIER_DAEMON_SERVICE_CHANNEL',
-        'HAPPIER_SERVER_URL',
-        'HAPPIER_PUBLIC_SERVER_URL',
-        'HAPPIER_WEBAPP_URL',
+        'HAPPIEST_DAEMON_SERVICE_PLATFORM',
+        'HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR',
+        'HAPPIEST_DAEMON_SERVICE_HOME_DIR',
+        'HAPPIEST_DAEMON_SERVICE_CHANNEL',
+        'HAPPIEST_SERVER_URL',
+        'HAPPIEST_PUBLIC_SERVER_URL',
+        'HAPPIEST_WEBAPP_URL',
     ]);
 
     afterEach(() => {
@@ -71,9 +71,9 @@ describe('handleDaemonCliCommand: daemon start-sync', () => {
     it('fails closed when a different daemon is already running for the selected relay', async () => {
         envScope.patch({
             HAPPIER_DAEMON_STARTUP_SOURCE: 'manual',
-            HAPPIER_SERVER_URL: 'https://cloud.example.test',
-            HAPPIER_PUBLIC_SERVER_URL: 'https://cloud.example.test',
-            HAPPIER_WEBAPP_URL: 'https://cloud.example.test',
+            HAPPIEST_SERVER_URL: 'https://cloud.example.test',
+            HAPPIEST_PUBLIC_SERVER_URL: 'https://cloud.example.test',
+            HAPPIEST_WEBAPP_URL: 'https://cloud.example.test',
         });
 
         const conflictInspection: DaemonRunningInspection = {
@@ -209,14 +209,14 @@ describe('handleDaemonCliCommand: daemon start-sync', () => {
     it('fails closed when a background service is installed for the active relay', async () => {
         await withTempDir('happier-daemon-start-sync-installed-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: join(homeDir, '.happier'),
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: join(homeDir, '.happier'),
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
                 HAPPIER_DAEMON_STARTUP_SOURCE: '',
-                HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-                HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-                HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: join(homeDir, '.happier'),
-                HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
+                HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+                HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+                HAPPIEST_DAEMON_SERVICE_HOME_DIR: join(homeDir, '.happier'),
+                HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
             });
             vi.resetModules();
 
@@ -258,8 +258,8 @@ describe('handleDaemonCliCommand: daemon start-sync', () => {
                     execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
                     env: {
                         HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-                        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-                        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: join(homeDir, '.happier'),
+                        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+                        HAPPIEST_DAEMON_SERVICE_HOME_DIR: join(homeDir, '.happier'),
                         HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
                     },
                     wantedBy: 'default.target',

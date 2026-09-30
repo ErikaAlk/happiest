@@ -13,8 +13,8 @@ vi.mock('socket.io-client', () => ({
 }));
 
 const envScope = createEnvKeyScope([
-  'HAPPIER_SERVER_URL',
-  'HAPPIER_WEBAPP_URL',
+  'HAPPIEST_SERVER_URL',
+  'HAPPIEST_WEBAPP_URL',
   'HAPPIER_SOCKET_FORCE_WEBSOCKET',
 ]);
 
@@ -22,8 +22,8 @@ describe('session sockets transports', () => {
   beforeEach(() => {
     bindApiSessionSocketMock(mockIo, createApiSessionSocketStub());
     envScope.patch({
-      HAPPIER_SERVER_URL: 'http://localhost:3005',
-      HAPPIER_WEBAPP_URL: 'http://localhost:8080',
+      HAPPIEST_SERVER_URL: 'http://localhost:3005',
+      HAPPIEST_WEBAPP_URL: 'http://localhost:8080',
       HAPPIER_SOCKET_FORCE_WEBSOCKET: undefined,
     });
     reloadConfiguration();

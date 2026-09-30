@@ -6,7 +6,7 @@ import { join } from 'node:path';
 describe('copilot/acp/backend', () => {
   it('fails closed when the Copilot CLI is unavailable', async () => {
     vi.stubEnv('HAPPIER_COPILOT_PATH', undefined);
-    vi.stubEnv('HAPPIER_HOME_DIR', await mkdtemp(join(tmpdir(), 'happier-copilot-home-')));
+    vi.stubEnv('HAPPIEST_HOME_DIR', await mkdtemp(join(tmpdir(), 'happier-copilot-home-')));
     vi.stubEnv('PATH', '');
 
     const mod = await import('./backend');
@@ -25,7 +25,7 @@ describe('copilot/acp/backend', () => {
     await writeFile(fake, '#!/bin/sh\necho hi\n', 'utf8');
     await chmod(fake, 0o755);
     vi.stubEnv('HAPPIER_COPILOT_PATH', fake);
-    vi.stubEnv('HAPPIER_HOME_DIR', await mkdtemp(join(tmpdir(), 'happier-copilot-home-')));
+    vi.stubEnv('HAPPIEST_HOME_DIR', await mkdtemp(join(tmpdir(), 'happier-copilot-home-')));
     vi.stubEnv('PATH', '');
 
     const mod = await import('./backend');

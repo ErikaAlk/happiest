@@ -5,11 +5,11 @@ import { enableMcpStdioConsolePatch } from '@/mcp/server/mcpStdioConsolePatch';
 import type { McpCommandDeps } from './deps';
 
 function clearServerSelectionEnvOverrides(): void {
-  delete process.env.HAPPIER_SERVER_URL;
-  delete process.env.HAPPIER_LOCAL_SERVER_URL;
-  delete process.env.HAPPIER_PUBLIC_SERVER_URL;
-  delete process.env.HAPPIER_WEBAPP_URL;
-  delete process.env.HAPPIER_ACTIVE_SERVER_ID;
+  delete process.env.HAPPIEST_SERVER_URL;
+  delete process.env.HAPPIEST_LOCAL_SERVER_URL;
+  delete process.env.HAPPIEST_PUBLIC_SERVER_URL;
+  delete process.env.HAPPIEST_WEBAPP_URL;
+  delete process.env.HAPPIEST_ACTIVE_SERVER_ID;
 }
 
 export async function runMcpServeCommand(

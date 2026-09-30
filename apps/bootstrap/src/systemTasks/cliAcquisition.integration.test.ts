@@ -105,8 +105,8 @@ else console.log(JSON.stringify(${JSON.stringify(daemonStatus)}));
     return http.request(`${baseUrl}${parsed.pathname}`, options, callback);
   });
   syncBuiltinESMExports();
-  const processEnv: NodeJS.ProcessEnv = { ...process.env, HAPPIER_HOME_DIR: join(root, 'home'), HAPPIER_STACK_REPO_DIR: root, PATH: '' };
-  delete processEnv.HAPPIER_BOOTSTRAP_CLI_PATH;
+  const processEnv: NodeJS.ProcessEnv = { ...process.env, HAPPIEST_HOME_DIR: join(root, 'home'), HAPPIER_STACK_REPO_DIR: root, PATH: '' };
+  delete processEnv.HAPPIEST_BOOTSTRAP_CLI_PATH;
   delete processEnv.HAPPIER_BOOTSTRAP_HAPPIER_PATH;
   return {
     root, archive, minisignPubkeyFile, processEnv,
@@ -118,7 +118,7 @@ else console.log(JSON.stringify(${JSON.stringify(daemonStatus)}));
 }
 
 function useFixtureEnvironment(env: NodeJS.ProcessEnv) {
-  for (const name of ['HAPPIER_HOME_DIR', 'HAPPIER_STACK_REPO_DIR', 'HAPPIER_BOOTSTRAP_CLI_PATH', 'HAPPIER_BOOTSTRAP_HAPPIER_PATH', 'PATH']) {
+  for (const name of ['HAPPIEST_HOME_DIR', 'HAPPIER_STACK_REPO_DIR', 'HAPPIEST_BOOTSTRAP_CLI_PATH', 'HAPPIER_BOOTSTRAP_HAPPIER_PATH', 'PATH']) {
     vi.stubEnv(name, env[name]);
   }
 }

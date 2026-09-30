@@ -18,13 +18,13 @@ import { createTempDir, removeTempDir } from '@/testkit/fs/tempDir';
  */
 
 const ENV_KEYS = [
-  'HAPPIER_HOME_DIR',
-  'HAPPIER_DAEMON_SERVICE_PLATFORM',
-  'HAPPIER_DAEMON_SERVICE_USER_HOME_DIR',
-  'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR',
-  'HAPPIER_DAEMON_SERVICE_AUTOSTART',
-  'HAPPIER_DAEMON_SERVICE_TARGET_MODE',
-  'HAPPIER_DAEMON_SERVICE_INSTANCE_ID',
+  'HAPPIEST_HOME_DIR',
+  'HAPPIEST_DAEMON_SERVICE_PLATFORM',
+  'HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR',
+  'HAPPIEST_DAEMON_SERVICE_HOME_DIR',
+  'HAPPIEST_DAEMON_SERVICE_AUTOSTART',
+  'HAPPIEST_DAEMON_SERVICE_TARGET_MODE',
+  'HAPPIEST_DAEMON_SERVICE_INSTANCE_ID',
 ] as const;
 
 function writeInstalledUnit(declaredAutostart: string | null): string {
@@ -34,10 +34,10 @@ function writeInstalledUnit(declaredAutostart: string | null): string {
     '[Service]',
     'ExecStart=/opt/happier/happier daemon start-sync',
     'Environment=HAPPIER_DAEMON_STARTUP_SOURCE=background-service',
-    'Environment=HAPPIER_DAEMON_SERVICE_TARGET_MODE=default-following',
+    'Environment=HAPPIEST_DAEMON_SERVICE_TARGET_MODE=default-following',
     ...(declaredAutostart === null
       ? []
-      : [`Environment=HAPPIER_DAEMON_SERVICE_AUTOSTART=${declaredAutostart}`]),
+      : [`Environment=HAPPIEST_DAEMON_SERVICE_AUTOSTART=${declaredAutostart}`]),
     '',
   ].join('\n'));
   return snapshot.installedPath;
@@ -50,10 +50,10 @@ describe('readDaemonStatusSnapshot service.autostart', () => {
   beforeEach(async () => {
     tmpHomeDir = await createTempDir('happier-status-service-autostart-');
     envScope.patch({
-      HAPPIER_HOME_DIR: tmpHomeDir,
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: tmpHomeDir,
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: tmpHomeDir,
+      HAPPIEST_HOME_DIR: tmpHomeDir,
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: tmpHomeDir,
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: tmpHomeDir,
     });
     reloadConfiguration();
   });
@@ -116,7 +116,7 @@ describe('readDaemonStatusSnapshot service.autostart', () => {
   it('reports null when the file at the installed path is not a readable service definition', async () => {
     const snapshot = resolveDaemonServiceInstallationSnapshotFromEnv();
     mkdirSync(dirname(snapshot.installedPath), { recursive: true });
-    writeFileSync(snapshot.installedPath, 'Environment=HAPPIER_DAEMON_SERVICE_AUTOSTART=at-login\n');
+    writeFileSync(snapshot.installedPath, 'Environment=HAPPIEST_DAEMON_SERVICE_AUTOSTART=at-login\n');
 
     const { readDaemonStatusSnapshot } = await import('./statusSnapshot');
     const result = await readDaemonStatusSnapshot();

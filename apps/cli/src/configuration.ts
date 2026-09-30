@@ -5,16 +5,15 @@
  * Environment files should be loaded using Node's --env-file flag
  */
 
-import { spawnSync } from 'node:child_process'
 import { chmodSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
-import { join, isAbsolute, resolve as resolvePath } from 'node:path'
+import { join } from 'node:path'
 import { deriveServerIdFromUrl, isServerIdFilesystemSafe, sanitizeServerIdForFilesystem } from '@/server/serverId'
 import { isLocalishServerUrl } from '@/server/serverUrlClassification'
 import { normalizeCliArgv } from '@/cli/parseArgs'
-import { expandHomeDirPath } from '@/utils/path/expandHomeDirPath'
 import {
   resolveManagedCliReleaseChannelSync,
 } from '@happier-dev/cli-common/firstPartyRuntime'
+import { resolveHappyHomeDirFromEnvironment } from '@happier-dev/cli-common/providers'
 import { CANONICAL_DAEMON_STATE_BASENAME } from '@/daemon/ownership/daemonOwnershipPaths'
 import {
   createServerUrlComparableKey,
@@ -91,86 +90,6 @@ export function isDaemonProcessArgv(args: readonly string[]): boolean {
   if (args.length < 2) return false
   if (args[0] !== 'daemon') return false
   return args[1] === 'start' || args[1] === 'start-sync'
-}
-
-export function resolveCliHappyHomeDir(env: NodeJS.ProcessEnv): string {
-  const override = typeof env.HAPPIER_HOME_DIR === 'string' ? env.HAPPIER_HOME_DIR.trim() : ''
-  if (!override) {
-    const sudoInvokerHomeDir = resolveSudoInvokerHomeDir(env)
-    const baseHomeDir = sudoInvokerHomeDir ?? expandHomeDirPath('~', env)
-    return join(baseHomeDir, '.happier')
-  }
-  const expandedOverride = expandHomeDirPath(override, env)
-  if (process.platform !== 'win32' && isWindowsShapedAbsolutePath(expandedOverride)) {
-    throw new Error(`Windows-shaped HAPPIER_HOME_DIR overrides are not supported on ${process.platform}`)
-  }
-  return isAbsolute(expandedOverride) ? expandedOverride : resolvePath(expandedOverride)
-}
-
-function isWindowsShapedAbsolutePath(pathLike: string): boolean {
-  const value = String(pathLike ?? '').trim()
-  if (!value) return false
-  if (/^[a-zA-Z]:[\\/]/.test(value)) return true
-  if (value.startsWith('\\\\?\\')) return true
-  if (value.startsWith('\\\\')) return true
-  return false
-}
-
-function resolveSudoInvokerHomeDir(env: NodeJS.ProcessEnv): string | null {
-  const uid = typeof process.getuid === 'function' ? process.getuid() : null
-  if (uid !== 0) return null
-  const sudoUser = typeof env.SUDO_USER === 'string' ? env.SUDO_USER.trim() : ''
-  const sudoUidRaw = typeof env.SUDO_UID === 'string' ? env.SUDO_UID.trim() : ''
-  const sudoUid = sudoUidRaw ? Number.parseInt(sudoUidRaw, 10) : NaN
-  if (!sudoUser && !Number.isFinite(sudoUid)) return null
-
-  const parsePasswdHomeDir = (passwdDatabase: string, username?: string, uid?: number): string | null => {
-    for (const line of String(passwdDatabase ?? '').split(/\r?\n/u)) {
-      if (!line) continue
-      const parts = line.split(':')
-      if (parts.length < 7) continue
-      const [name, _pw, uidText, _gid, _gecos, homeDir] = parts
-      const parsedUid = Number.parseInt(uidText, 10)
-      const matchesUser = username && name === username
-      const matchesUid = uid != null && Number.isFinite(parsedUid) && parsedUid === uid
-      if (!matchesUser && !matchesUid) continue
-      const candidate = String(homeDir ?? '').trim()
-      return candidate.startsWith('/') ? candidate : null
-    }
-    return null
-  }
-
-  if (process.platform === 'linux') {
-    try {
-      const candidateKey = sudoUser || (Number.isFinite(sudoUid) ? String(sudoUid) : '')
-      if (candidateKey) {
-        const result = spawnSync('getent', ['passwd', candidateKey], {
-          stdio: ['ignore', 'pipe', 'pipe'],
-          encoding: 'utf8',
-          env: process.env,
-        });
-        if ((result.status ?? 1) === 0) {
-          const homeDir = parsePasswdHomeDir(String(result.stdout ?? ''), sudoUser || undefined, Number.isFinite(sudoUid) ? sudoUid : undefined);
-          if (homeDir) return homeDir
-        }
-      }
-    } catch {
-      // Fall back to /etc/passwd below.
-    }
-  }
-
-  try {
-    const homeDir = parsePasswdHomeDir(
-      String(readFileSync('/etc/passwd', 'utf8')),
-      sudoUser || undefined,
-      Number.isFinite(sudoUid) ? sudoUid : undefined,
-    )
-    if (homeDir) return homeDir
-  } catch {
-    // Ignore.
-  }
-
-  return null
 }
 
 class Configuration {
@@ -370,22 +289,22 @@ class Configuration {
     })
     this.publicReleaseRing = resolveManagedCliReleaseChannelSync({ processEnv: process.env, argv: process.argv }).ringId
 
-    // Directory configuration - Priority: HAPPIER_HOME_DIR env > default home dir
-    this.happyHomeDir = resolveCliHappyHomeDir(process.env)
+    // Directory configuration - Priority: HAPPIEST_HOME_DIR env > default home dir
+    this.happyHomeDir = resolveHappyHomeDirFromEnvironment(process.env)
 
     this.logsDir = join(this.happyHomeDir, 'logs')
     this.settingsFile = join(this.happyHomeDir, 'settings.json')
     this.serversDir = join(this.happyHomeDir, 'servers')
 
-    const envServerUrl = (process.env.HAPPIER_SERVER_URL ?? '').toString().trim();
-    const envLocalServerUrl = (process.env.HAPPIER_LOCAL_SERVER_URL ?? '').toString().trim();
-    const envWebappUrl = (process.env.HAPPIER_WEBAPP_URL ?? '').toString().trim();
-    const envPublicServerUrl = (process.env.HAPPIER_PUBLIC_SERVER_URL ?? '').toString().trim();
-    const envActiveServerIdRaw = (process.env.HAPPIER_ACTIVE_SERVER_ID ?? '').toString().trim();
+    const envServerUrl = (process.env.HAPPIEST_SERVER_URL ?? '').toString().trim();
+    const envLocalServerUrl = (process.env.HAPPIEST_LOCAL_SERVER_URL ?? '').toString().trim();
+    const envWebappUrl = (process.env.HAPPIEST_WEBAPP_URL ?? '').toString().trim();
+    const envPublicServerUrl = (process.env.HAPPIEST_PUBLIC_SERVER_URL ?? '').toString().trim();
+    const envActiveServerIdRaw = (process.env.HAPPIEST_ACTIVE_SERVER_ID ?? '').toString().trim();
     const envActiveServerId = isServerIdFilesystemSafe(envActiveServerIdRaw)
       ? envActiveServerIdRaw
       : null;
-    const daemonLifecycleScopeIdRaw = (process.env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID ?? '').toString().trim();
+    const daemonLifecycleScopeIdRaw = (process.env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID ?? '').toString().trim();
     const daemonLifecycleScopeId = isServerIdFilesystemSafe(daemonLifecycleScopeIdRaw)
       ? daemonLifecycleScopeIdRaw
       : null;
@@ -1164,8 +1083,8 @@ function resolveServerSelection(params: Readonly<{
   };
 
   // Env override semantics (compat):
-  // - If HAPPIER_PUBLIC_SERVER_URL is set: treat it as canonical serverUrl and use HAPPIER_LOCAL_SERVER_URL/HAPPIER_SERVER_URL for apiServerUrl.
-  // - Else: treat HAPPIER_SERVER_URL as canonical serverUrl (legacy), and use HAPPIER_LOCAL_SERVER_URL as apiServerUrl override if provided.
+  // - If HAPPIEST_PUBLIC_SERVER_URL is set: treat it as canonical serverUrl and use HAPPIEST_LOCAL_SERVER_URL/HAPPIEST_SERVER_URL for apiServerUrl.
+  // - Else: treat HAPPIEST_SERVER_URL as canonical serverUrl (legacy), and use HAPPIEST_LOCAL_SERVER_URL as apiServerUrl override if provided.
   const envCanonicalServerUrl = normalizeUrl(params.envPublicServerUrl) ?? normalizeUrl(params.envServerUrl);
   if (envCanonicalServerUrl) {
     const envActivePersisted = params.envActiveServerId && params.persisted

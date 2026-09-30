@@ -44,7 +44,7 @@ describe('managedJavaScriptRuntime binary-safe selection', () => {
 
     const env = {
       PATH: binDir,
-      HAPPIER_HOME_DIR: join(root, 'home'),
+      HAPPIEST_HOME_DIR: join(root, 'home'),
     } satisfies NodeJS.ProcessEnv;
 
     expect(resolveJavaScriptRuntimeCommand({
@@ -73,7 +73,7 @@ describe('managedJavaScriptRuntime binary-safe selection', () => {
 
         const env = {
             PATH: '',
-            HAPPIER_HOME_DIR: join(root, 'home'),
+            HAPPIEST_HOME_DIR: join(root, 'home'),
         } satisfies NodeJS.ProcessEnv;
 
         expect(resolveJavaScriptRuntimeCommand({
@@ -97,7 +97,7 @@ describe('managedJavaScriptRuntime binary-safe selection', () => {
 
         const env = {
             PATH: '',
-            HAPPIER_HOME_DIR: join(root, 'home'),
+            HAPPIEST_HOME_DIR: join(root, 'home'),
         } satisfies NodeJS.ProcessEnv;
 
         expect(resolveJavaScriptRuntimeCommand({
@@ -121,7 +121,7 @@ describe('managedJavaScriptRuntime binary-safe selection', () => {
 
         const env = {
             PATH: binDir,
-            HAPPIER_HOME_DIR: join(root, 'home'),
+            HAPPIEST_HOME_DIR: join(root, 'home'),
         } satisfies NodeJS.ProcessEnv;
 
         expect(resolveJavaScriptRuntimeCommand({
@@ -141,7 +141,7 @@ describe('managedJavaScriptRuntime binary-safe selection', () => {
 
         const env = {
             PATH: '',
-            HAPPIER_HOME_DIR: join(root, 'home'),
+            HAPPIEST_HOME_DIR: join(root, 'home'),
         } satisfies NodeJS.ProcessEnv;
 
         expect(resolveJavaScriptRuntimeCommand({

@@ -21,8 +21,8 @@ vi.mock('@/daemon/controlClient', async (importOriginal) => {
 
 describe('handleDaemonCliCommand: daemon start-sync --takeover', () => {
     const envScope = createEnvKeyScope([
-        'HAPPIER_HOME_DIR',
-        'HAPPIER_ACTIVE_SERVER_ID',
+        'HAPPIEST_HOME_DIR',
+        'HAPPIEST_ACTIVE_SERVER_ID',
         'HAPPIER_PUBLIC_RELEASE_CHANNEL',
     ]);
 
@@ -38,8 +38,8 @@ describe('handleDaemonCliCommand: daemon start-sync --takeover', () => {
     it('takes over a manual daemon and starts the daemon synchronously', async () => {
         await withTempDir('happier-daemon-start-sync-takeover-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             });
             vi.resetModules();
@@ -88,8 +88,8 @@ describe('handleDaemonCliCommand: daemon start-sync --takeover', () => {
     it('takes over a legacy manual daemon without startup metadata and starts the daemon synchronously', async () => {
         await withTempDir('happier-daemon-start-sync-legacy-takeover-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             });
             vi.resetModules();

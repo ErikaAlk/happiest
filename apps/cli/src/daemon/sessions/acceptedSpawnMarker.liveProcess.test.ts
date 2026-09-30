@@ -17,7 +17,7 @@ type SessionMarkerWriteFn = NonNullable<NonNullable<Parameters<typeof persistAcc
 type SessionMarkerWriteArgs = Parameters<SessionMarkerWriteFn>[0];
 
 const children: ChildProcess[] = [];
-const homeEnv = createEnvKeyScope(['HAPPIER_HOME_DIR']);
+const homeEnv = createEnvKeyScope(['HAPPIEST_HOME_DIR']);
 const tempDirs: string[] = [];
 
 afterEach(async () => {
@@ -61,7 +61,7 @@ describe('persistAcceptedSpawnMarker (live processes)', () => {
     // first. Custody written afterwards must not replace the reported session and resume facts.
     const homeDir = await mkdtemp(join(tmpdir(), 'happier-accepted-spawn-marker-'));
     tempDirs.push(homeDir);
-    homeEnv.patch({ HAPPIER_HOME_DIR: homeDir });
+    homeEnv.patch({ HAPPIEST_HOME_DIR: homeDir });
     vi.resetModules();
     const registry = await import('../sessionRegistry');
     const { persistAcceptedSpawnMarker: persist } = await import('./acceptedSpawnMarker');

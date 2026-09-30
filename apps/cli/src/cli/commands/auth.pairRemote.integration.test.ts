@@ -22,13 +22,13 @@ vi.mock('cross-spawn', () => {
 
 describe('auth pair-remote (ssh)', () => {
   const envKeys = [
-    'HAPPIER_HOME_DIR',
+    'HAPPIEST_HOME_DIR',
     'HAPPIER_NO_BROWSER_OPEN',
     'HAPPIER_AUTH_METHOD',
     'HAPPIER_AUTH_POLL_INTERVAL_MS',
-    'HAPPIER_SERVER_URL',
-    'HAPPIER_PUBLIC_SERVER_URL',
-    'HAPPIER_WEBAPP_URL',
+    'HAPPIEST_SERVER_URL',
+    'HAPPIEST_PUBLIC_SERVER_URL',
+    'HAPPIEST_WEBAPP_URL',
     'HAPPIER_VARIANT',
   ] as const;
 
@@ -73,10 +73,10 @@ describe('auth pair-remote (ssh)', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: localHomeDir,
-        HAPPIER_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_PUBLIC_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_WEBAPP_URL: 'http://webapp.test',
+        HAPPIEST_HOME_DIR: localHomeDir,
+        HAPPIEST_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_PUBLIC_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_WEBAPP_URL: 'http://webapp.test',
         HAPPIER_VARIANT: 'stable',
       });
       vi.resetModules();
@@ -183,10 +183,10 @@ describe('auth pair-remote (ssh)', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: localHomeDir,
-        HAPPIER_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_PUBLIC_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_WEBAPP_URL: 'http://webapp.test',
+        HAPPIEST_HOME_DIR: localHomeDir,
+        HAPPIEST_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_PUBLIC_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_WEBAPP_URL: 'http://webapp.test',
         HAPPIER_VARIANT: 'stable',
       });
       vi.resetModules();
@@ -261,10 +261,10 @@ describe('auth pair-remote (ssh)', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: localHomeDir,
-        HAPPIER_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_PUBLIC_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_WEBAPP_URL: 'http://webapp.test',
+        HAPPIEST_HOME_DIR: localHomeDir,
+        HAPPIEST_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_PUBLIC_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_WEBAPP_URL: 'http://webapp.test',
         HAPPIER_VARIANT: 'stable',
       });
       vi.resetModules();

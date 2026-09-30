@@ -72,7 +72,7 @@ describe('cli.update.v1', () => {
 
   it('restarts a running service daemon through the service\'s own relay selection and proves the new version', async () => {
     // A stack-pinned launch: the restart and its proof must not follow the pinned profile.
-    process.env.HAPPIER_ACTIVE_SERVER_ID = 'stack-pinned';
+    process.env.HAPPIEST_ACTIVE_SERVER_ID = 'stack-pinned';
     updateManagedLocalHappierCliMock.mockImplementation(transactionStandIn('0.2.14'));
     runLocalHappierJsonCommandMock
       .mockResolvedValueOnce(statusJson({ running: true, serviceManaged: true, version: '0.2.13' }))
@@ -89,7 +89,7 @@ describe('cli.update.v1', () => {
     ]);
     for (const [call] of runLocalHappierJsonCommandMock.mock.calls) {
       expect(call.cli.command).toBe(CURRENT_CLI.command);
-      expect(call.processEnv.HAPPIER_ACTIVE_SERVER_ID).toBeUndefined();
+      expect(call.processEnv.HAPPIEST_ACTIVE_SERVER_ID).toBeUndefined();
     }
     expect(result).toEqual({ previousVersion: '0.2.13', version: '0.2.14', restarted: true });
   });

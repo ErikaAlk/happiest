@@ -33,24 +33,24 @@ test('install.ps1 defaults background service installation to opt-in when nonint
   assert.match(trimmed, /else\s*\{\s*"0"\s*\}/i);
 });
 
-test('install.ps1 defaults background-service commands to the managed install dir when HAPPIER_HOME_DIR is unset', async () => {
+test('install.ps1 defaults background-service commands to the managed install dir when HAPPIEST_HOME_DIR is unset', async () => {
   const path = join(repoRoot, 'scripts', 'release', 'installers', 'install.ps1');
   const raw = await readFile(path, 'utf8');
 
-  assert.match(raw, /\$DaemonServiceStateHomeDir\s*=\s*if\s*\(\$env:HAPPIER_HOME_DIR\)\s*\{\s*\$env:HAPPIER_HOME_DIR\s*\}\s*else\s*\{\s*\$InstallDir\s*\}/i);
+  assert.match(raw, /\$DaemonServiceStateHomeDir\s*=\s*if\s*\(\$env:HAPPIEST_HOME_DIR\)\s*\{\s*\$env:HAPPIEST_HOME_DIR\s*\}\s*else\s*\{\s*\$InstallDir\s*\}/i);
   assert.doesNotMatch(raw, /Invoke-InstallerCommandWithDaemonServiceContext[^\n]*-HomeDir \$InstallDir/i);
 });
 
-test('install.ps1 uses HAPPIER_HOME_DIR as the managed install dir when HAPPIER_INSTALL_DIR is unset', async () => {
+test('install.ps1 uses HAPPIEST_HOME_DIR as the managed install dir when HAPPIER_INSTALL_DIR is unset', async () => {
   const path = join(repoRoot, 'scripts', 'release', 'installers', 'install.ps1');
   const raw = await readFile(path, 'utf8');
 
   assert.match(
     raw,
-    /\$InstallDir\s*=\s*if\s*\(\$env:HAPPIER_INSTALL_DIR\)\s*\{\s*\$env:HAPPIER_INSTALL_DIR\s*\}\s*elseif\s*\(\$env:HAPPIER_HOME_DIR\)\s*\{\s*\$env:HAPPIER_HOME_DIR\s*\}\s*else\s*\{\s*Join-Path \$env:USERPROFILE "\.happier"\s*\}/i,
+    /\$InstallDir\s*=\s*if\s*\(\$env:HAPPIER_INSTALL_DIR\)\s*\{\s*\$env:HAPPIER_INSTALL_DIR\s*\}\s*elseif\s*\(\$env:HAPPIEST_HOME_DIR\)\s*\{\s*\$env:HAPPIEST_HOME_DIR\s*\}\s*else\s*\{\s*Join-Path \$env:USERPROFILE "\.happier"\s*\}/i,
   );
-  assert.match(raw, /\$DaemonServiceStateHomeDir\s*=\s*if\s*\(\$env:HAPPIER_HOME_DIR\)\s*\{\s*\$env:HAPPIER_HOME_DIR\s*\}\s*else\s*\{\s*\$InstallDir\s*\}/i);
-  assert.match(raw, /\$env:HAPPIER_HOME_DIR\s*=\s*\$HomeDir/i);
+  assert.match(raw, /\$DaemonServiceStateHomeDir\s*=\s*if\s*\(\$env:HAPPIEST_HOME_DIR\)\s*\{\s*\$env:HAPPIEST_HOME_DIR\s*\}\s*else\s*\{\s*\$InstallDir\s*\}/i);
+  assert.match(raw, /\$env:HAPPIEST_HOME_DIR\s*=\s*\$HomeDir/i);
 });
 
 test('install.ps1 calls Resolve-WithDaemonPreference with the renamed Entries parameter', async () => {
@@ -87,12 +87,12 @@ test('published preview and dev PowerShell installers keep background-service au
   assert.doesNotMatch(devRaw, /if \(\$Channel -eq "dev"\) \{\s*return "1"\s*\}/i);
 });
 
-test('published preview and dev PowerShell installers keep the HAPPIER_HOME_DIR install-dir fallback', async () => {
+test('published preview and dev PowerShell installers keep the HAPPIEST_HOME_DIR install-dir fallback', async () => {
   const previewRaw = await readFile(join(repoRoot, 'apps', 'website', 'public', 'install-preview.ps1'), 'utf8');
   const devRaw = await readFile(join(repoRoot, 'apps', 'website', 'public', 'install-dev.ps1'), 'utf8');
 
   const installDirPattern =
-    /\$InstallDir\s*=\s*if\s*\(\$env:HAPPIER_INSTALL_DIR\)\s*\{\s*\$env:HAPPIER_INSTALL_DIR\s*\}\s*elseif\s*\(\$env:HAPPIER_HOME_DIR\)\s*\{\s*\$env:HAPPIER_HOME_DIR\s*\}\s*else\s*\{\s*Join-Path \$env:USERPROFILE "\.happier"\s*\}/i;
+    /\$InstallDir\s*=\s*if\s*\(\$env:HAPPIER_INSTALL_DIR\)\s*\{\s*\$env:HAPPIER_INSTALL_DIR\s*\}\s*elseif\s*\(\$env:HAPPIEST_HOME_DIR\)\s*\{\s*\$env:HAPPIEST_HOME_DIR\s*\}\s*else\s*\{\s*Join-Path \$env:USERPROFILE "\.happier"\s*\}/i;
 
   assert.match(previewRaw, installDirPattern);
   assert.match(devRaw, installDirPattern);

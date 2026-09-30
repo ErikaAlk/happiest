@@ -17,7 +17,7 @@ vi.mock('./commandExistsInPath', () => ({
 describe('runDaemonServiceCommands', () => {
   afterEach(() => {
     spawnSyncMock.mockReset();
-    delete process.env.HAPPIER_DAEMON_SERVICE_COMMAND_TIMEOUT_MS;
+    delete process.env.HAPPIEST_DAEMON_SERVICE_COMMAND_TIMEOUT_MS;
   });
 
   it('ignores missing launchctl bootout cleanup failures in strict mode', async () => {
@@ -154,7 +154,7 @@ describe('runDaemonServiceCommands', () => {
   it('bounds background service command execution time', async () => {
     const { runDaemonServiceCommands } = await import('./apply');
 
-    process.env.HAPPIER_DAEMON_SERVICE_COMMAND_TIMEOUT_MS = '42000';
+    process.env.HAPPIEST_DAEMON_SERVICE_COMMAND_TIMEOUT_MS = '42000';
     spawnSyncMock.mockReturnValue({ status: 0, stdout: Buffer.from(''), stderr: Buffer.from('') });
 
     runDaemonServiceCommands([

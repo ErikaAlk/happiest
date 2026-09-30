@@ -8,10 +8,10 @@ HAPPIER_NPM_SPEC="${HAPPIER_NPM_SPEC:-@happier-dev/cli@next}"
 HAPPIER_TGZ="${HAPPIER_TGZ:-}"
 HAPPIER_CLI_INSTALL_MODE="${HAPPIER_CLI_INSTALL_MODE:-global}"
 
-HAPPIER_SERVER_URL="${HAPPIER_SERVER_URL:-http://stack:3005}"
-HAPPIER_PUBLIC_SERVER_URL="${HAPPIER_PUBLIC_SERVER_URL:-$HAPPIER_SERVER_URL}"
-HAPPIER_WEBAPP_URL="${HAPPIER_WEBAPP_URL:-$HAPPIER_SERVER_URL}"
-HAPPIER_ACTIVE_SERVER_ID="${HAPPIER_ACTIVE_SERVER_ID:-smoke}"
+HAPPIEST_SERVER_URL="${HAPPIEST_SERVER_URL:-http://stack:3005}"
+HAPPIEST_PUBLIC_SERVER_URL="${HAPPIEST_PUBLIC_SERVER_URL:-$HAPPIEST_SERVER_URL}"
+HAPPIEST_WEBAPP_URL="${HAPPIEST_WEBAPP_URL:-$HAPPIEST_SERVER_URL}"
+HAPPIEST_ACTIVE_SERVER_ID="${HAPPIEST_ACTIVE_SERVER_ID:-smoke}"
 
 PRIMARY_CLI_HOME_DIR="${PRIMARY_CLI_HOME_DIR:-/work/primary-cli-home}"
 
@@ -67,13 +67,13 @@ chmod 600 /root/.ssh/config
 
 echo "[remote-daemon-reuse-cli] waiting for server..."
 for _ in $(seq 1 120); do
-  if curl -fsS "${HAPPIER_SERVER_URL}/v1/version" >/dev/null 2>&1; then
+  if curl -fsS "${HAPPIEST_SERVER_URL}/v1/version" >/dev/null 2>&1; then
     break
   fi
   sleep 1
 done
-if ! curl -fsS "${HAPPIER_SERVER_URL}/v1/version" >/dev/null 2>&1; then
-  echo "[remote-daemon-reuse-cli] server did not become ready at ${HAPPIER_SERVER_URL}/v1/version" >&2
+if ! curl -fsS "${HAPPIEST_SERVER_URL}/v1/version" >/dev/null 2>&1; then
+  echo "[remote-daemon-reuse-cli] server did not become ready at ${HAPPIEST_SERVER_URL}/v1/version" >&2
   exit 1
 fi
 
@@ -91,7 +91,7 @@ fi
 
 echo "[remote-daemon-reuse-cli] checking primary CLI is already authenticated..."
 cli_servers_dir="${PRIMARY_CLI_HOME_DIR}/servers"
-preferred_access_key="${cli_servers_dir}/${HAPPIER_ACTIVE_SERVER_ID}/access.key"
+preferred_access_key="${cli_servers_dir}/${HAPPIEST_ACTIVE_SERVER_ID}/access.key"
 access_keys=""
 if [[ -f "$preferred_access_key" ]]; then
   access_keys="$preferred_access_key"
@@ -121,7 +121,7 @@ while IFS= read -r access_key; do
   if [[ -z "${candidate_token:-}" ]]; then
     continue
   fi
-  candidate_machine_count="$(curl -fsS -H "Authorization: Bearer $candidate_token" "${HAPPIER_SERVER_URL}/v1/machines" | node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync(0,'utf8'));process.stdout.write(String(Array.isArray(j)?j.length:0))")" || true
+  candidate_machine_count="$(curl -fsS -H "Authorization: Bearer $candidate_token" "${HAPPIEST_SERVER_URL}/v1/machines" | node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync(0,'utf8'));process.stdout.write(String(Array.isArray(j)?j.length:0))")" || true
   if [[ "$candidate_machine_count" =~ ^[0-9]+$ ]]; then
     token="$candidate_token"
     machine_count_before="$candidate_machine_count"
@@ -132,8 +132,8 @@ while IFS= read -r access_key; do
 done <<<"$access_keys"
 
 if [[ -z "$token" ]]; then
-  echo "[remote-daemon-reuse-cli] expected at least one primary cli access key under ${cli_servers_dir} that can authenticate against ${HAPPIER_SERVER_URL}/v1/machines" >&2
-  echo "[remote-daemon-reuse-cli] hint: ensure the cli smoke ran first and wrote credentials for HAPPIER_ACTIVE_SERVER_ID=$HAPPIER_ACTIVE_SERVER_ID" >&2
+  echo "[remote-daemon-reuse-cli] expected at least one primary cli access key under ${cli_servers_dir} that can authenticate against ${HAPPIEST_SERVER_URL}/v1/machines" >&2
+  echo "[remote-daemon-reuse-cli] hint: ensure the cli smoke ran first and wrote credentials for HAPPIEST_ACTIVE_SERVER_ID=$HAPPIEST_ACTIVE_SERVER_ID" >&2
   if [[ -n "${discovered_access_keys:-}" ]]; then
     echo "[remote-daemon-reuse-cli] discovered access keys:" >&2
     echo "$discovered_access_keys" >&2
@@ -146,16 +146,16 @@ if [[ -z "${selected_server_id:-}" ]]; then
 fi
 
 echo "[remote-daemon-reuse-cli] using primary cli access key: ${selected_access_key}"
-if [[ -n "${selected_server_id:-}" && "$selected_server_id" != "$HAPPIER_ACTIVE_SERVER_ID" ]]; then
-  echo "[remote-daemon-reuse-cli] aligning active server id from ${HAPPIER_ACTIVE_SERVER_ID} to ${selected_server_id} (selected access key owner)"
+if [[ -n "${selected_server_id:-}" && "$selected_server_id" != "$HAPPIEST_ACTIVE_SERVER_ID" ]]; then
+  echo "[remote-daemon-reuse-cli] aligning active server id from ${HAPPIEST_ACTIVE_SERVER_ID} to ${selected_server_id} (selected access key owner)"
 fi
 
 echo "[remote-daemon-reuse-cli] running: hstack remote daemon setup (approver=primary cli home)..."
-export HAPPIER_HOME_DIR="$PRIMARY_CLI_HOME_DIR"
-export HAPPIER_ACTIVE_SERVER_ID="$selected_server_id"
-export HAPPIER_SERVER_URL="$HAPPIER_SERVER_URL"
-export HAPPIER_PUBLIC_SERVER_URL="$HAPPIER_PUBLIC_SERVER_URL"
-export HAPPIER_WEBAPP_URL="$HAPPIER_WEBAPP_URL"
+export HAPPIEST_HOME_DIR="$PRIMARY_CLI_HOME_DIR"
+export HAPPIEST_ACTIVE_SERVER_ID="$selected_server_id"
+export HAPPIEST_SERVER_URL="$HAPPIEST_SERVER_URL"
+export HAPPIEST_PUBLIC_SERVER_URL="$HAPPIEST_PUBLIC_SERVER_URL"
+export HAPPIEST_WEBAPP_URL="$HAPPIEST_WEBAPP_URL"
 export HAPPIER_NO_BROWSER_OPEN=1
 
 remote_channel_args=()
@@ -198,7 +198,7 @@ resolve_remote_happier_command() {
 }
 
 probe_machine_count() {
-  curl -fsS -H "Authorization: Bearer $token" "${HAPPIER_SERVER_URL}/v1/machines" \
+  curl -fsS -H "Authorization: Bearer $token" "${HAPPIEST_SERVER_URL}/v1/machines" \
     | node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync(0,'utf8'));process.stdout.write(String(Array.isArray(j)?j.length:0))"
 }
 
@@ -225,7 +225,7 @@ remote_auth_status_is_authenticated() {
 ensure_remote_auth_credentials() {
   local remote_happier_command="$1"
   local remote_auth_status=""
-  remote_auth_status="$(ssh "$REMOTE_SSH_TARGET" "HAPPIER_ACTIVE_SERVER_ID='$selected_server_id' HAPPIER_SERVER_URL='$HAPPIER_SERVER_URL' HAPPIER_PUBLIC_SERVER_URL='$HAPPIER_PUBLIC_SERVER_URL' HAPPIER_WEBAPP_URL='$HAPPIER_WEBAPP_URL' $remote_happier_command auth status --json" 2>/dev/null || true)"
+  remote_auth_status="$(ssh "$REMOTE_SSH_TARGET" "HAPPIEST_ACTIVE_SERVER_ID='$selected_server_id' HAPPIEST_SERVER_URL='$HAPPIEST_SERVER_URL' HAPPIEST_PUBLIC_SERVER_URL='$HAPPIEST_PUBLIC_SERVER_URL' HAPPIEST_WEBAPP_URL='$HAPPIEST_WEBAPP_URL' $remote_happier_command auth status --json" 2>/dev/null || true)"
   if remote_auth_status_is_authenticated <<<"$remote_auth_status"; then
     echo "[remote-daemon-reuse-cli] remote auth already present; skipping auth bootstrap"
     return 0
@@ -233,7 +233,7 @@ ensure_remote_auth_credentials() {
 
   echo "[remote-daemon-reuse-cli] remote auth missing; bootstrapping via request/approve/wait..."
   local remote_auth_request_json=""
-  remote_auth_request_json="$(ssh "$REMOTE_SSH_TARGET" "HAPPIER_ACTIVE_SERVER_ID='$selected_server_id' HAPPIER_SERVER_URL='$HAPPIER_SERVER_URL' HAPPIER_PUBLIC_SERVER_URL='$HAPPIER_PUBLIC_SERVER_URL' HAPPIER_WEBAPP_URL='$HAPPIER_WEBAPP_URL' $remote_happier_command auth request --json --persist" 2>/dev/null || true)"
+  remote_auth_request_json="$(ssh "$REMOTE_SSH_TARGET" "HAPPIEST_ACTIVE_SERVER_ID='$selected_server_id' HAPPIEST_SERVER_URL='$HAPPIEST_SERVER_URL' HAPPIEST_PUBLIC_SERVER_URL='$HAPPIEST_PUBLIC_SERVER_URL' HAPPIEST_WEBAPP_URL='$HAPPIEST_WEBAPP_URL' $remote_happier_command auth request --json --persist" 2>/dev/null || true)"
   local remote_public_key=""
   remote_public_key="$(node -e "const fs=require('fs');const raw=String(fs.readFileSync(0,'utf8')||'').trim();let key='';try{const j=JSON.parse(raw);key=String(j.publicKey||'').trim();}catch{};process.stdout.write(key);" <<<"$remote_auth_request_json")"
   if [[ -z "$remote_public_key" ]]; then
@@ -242,15 +242,15 @@ ensure_remote_auth_credentials() {
     return 1
   fi
 
-  HAPPIER_HOME_DIR="$PRIMARY_CLI_HOME_DIR" \
-  HAPPIER_ACTIVE_SERVER_ID="$selected_server_id" \
-  HAPPIER_SERVER_URL="$HAPPIER_SERVER_URL" \
-  HAPPIER_PUBLIC_SERVER_URL="$HAPPIER_PUBLIC_SERVER_URL" \
-  HAPPIER_WEBAPP_URL="$HAPPIER_WEBAPP_URL" \
+  HAPPIEST_HOME_DIR="$PRIMARY_CLI_HOME_DIR" \
+  HAPPIEST_ACTIVE_SERVER_ID="$selected_server_id" \
+  HAPPIEST_SERVER_URL="$HAPPIEST_SERVER_URL" \
+  HAPPIEST_PUBLIC_SERVER_URL="$HAPPIEST_PUBLIC_SERVER_URL" \
+  HAPPIEST_WEBAPP_URL="$HAPPIEST_WEBAPP_URL" \
   "${HAPPIER_PREFIX[@]}" auth approve --json --public-key "$remote_public_key" >/dev/null
 
   local remote_auth_wait_json=""
-  remote_auth_wait_json="$(ssh "$REMOTE_SSH_TARGET" "HAPPIER_ACTIVE_SERVER_ID='$selected_server_id' HAPPIER_SERVER_URL='$HAPPIER_SERVER_URL' HAPPIER_PUBLIC_SERVER_URL='$HAPPIER_PUBLIC_SERVER_URL' HAPPIER_WEBAPP_URL='$HAPPIER_WEBAPP_URL' $remote_happier_command auth wait --public-key '$remote_public_key' --json --persist" 2>/dev/null || true)"
+  remote_auth_wait_json="$(ssh "$REMOTE_SSH_TARGET" "HAPPIEST_ACTIVE_SERVER_ID='$selected_server_id' HAPPIEST_SERVER_URL='$HAPPIEST_SERVER_URL' HAPPIEST_PUBLIC_SERVER_URL='$HAPPIEST_PUBLIC_SERVER_URL' HAPPIEST_WEBAPP_URL='$HAPPIEST_WEBAPP_URL' $remote_happier_command auth wait --public-key '$remote_public_key' --json --persist" 2>/dev/null || true)"
   local remote_wait_token=""
   remote_wait_token="$(node -e "const fs=require('fs');const raw=String(fs.readFileSync(0,'utf8')||'').trim();let token='';try{const j=JSON.parse(raw);token=String(j.token||'').trim();}catch{};process.stdout.write(token);" <<<"$remote_auth_wait_json")"
   if [[ -z "$remote_wait_token" ]]; then
@@ -269,9 +269,9 @@ run_remote_daemon_setup_with_public_flag() {
     "${remote_channel_args[@]}" \
     --yes \
     --service none \
-    --server-url "$HAPPIER_SERVER_URL" \
-    --webapp-url "$HAPPIER_WEBAPP_URL" \
-    --public-server-url "$HAPPIER_PUBLIC_SERVER_URL" \
+    --server-url "$HAPPIEST_SERVER_URL" \
+    --webapp-url "$HAPPIEST_WEBAPP_URL" \
+    --public-server-url "$HAPPIEST_PUBLIC_SERVER_URL" \
     --json
 }
 
@@ -304,7 +304,7 @@ else
 
   daemon_start_output=""
   set +e
-  daemon_start_output="$(ssh "$REMOTE_SSH_TARGET" "HAPPIER_ACTIVE_SERVER_ID='$selected_server_id' HAPPIER_SERVER_URL='$HAPPIER_SERVER_URL' HAPPIER_PUBLIC_SERVER_URL='$HAPPIER_PUBLIC_SERVER_URL' HAPPIER_WEBAPP_URL='$HAPPIER_WEBAPP_URL' $remote_happier_command daemon start" 2>&1)"
+  daemon_start_output="$(ssh "$REMOTE_SSH_TARGET" "HAPPIEST_ACTIVE_SERVER_ID='$selected_server_id' HAPPIEST_SERVER_URL='$HAPPIEST_SERVER_URL' HAPPIEST_PUBLIC_SERVER_URL='$HAPPIEST_PUBLIC_SERVER_URL' HAPPIEST_WEBAPP_URL='$HAPPIEST_WEBAPP_URL' $remote_happier_command daemon start" 2>&1)"
   daemon_start_status=$?
   set -e
   if [[ "$daemon_start_status" -ne 0 ]]; then
@@ -314,7 +314,7 @@ else
       echo "[remote-daemon-reuse-cli] tailing remote daemon log: $daemon_log_path" >&2
       ssh "$REMOTE_SSH_TARGET" "test -f '$daemon_log_path' && tail -n 200 '$daemon_log_path' || true" >&2 || true
     fi
-    remote_auth_status_after_fail="$(ssh "$REMOTE_SSH_TARGET" "HAPPIER_ACTIVE_SERVER_ID='$selected_server_id' HAPPIER_SERVER_URL='$HAPPIER_SERVER_URL' HAPPIER_PUBLIC_SERVER_URL='$HAPPIER_PUBLIC_SERVER_URL' HAPPIER_WEBAPP_URL='$HAPPIER_WEBAPP_URL' $remote_happier_command auth status --json" 2>/dev/null || true)"
+    remote_auth_status_after_fail="$(ssh "$REMOTE_SSH_TARGET" "HAPPIEST_ACTIVE_SERVER_ID='$selected_server_id' HAPPIEST_SERVER_URL='$HAPPIEST_SERVER_URL' HAPPIEST_PUBLIC_SERVER_URL='$HAPPIEST_PUBLIC_SERVER_URL' HAPPIEST_WEBAPP_URL='$HAPPIEST_WEBAPP_URL' $remote_happier_command auth status --json" 2>/dev/null || true)"
     if [[ -n "$remote_auth_status_after_fail" ]]; then
       echo "[remote-daemon-reuse-cli] remote auth status after daemon start failure:" >&2
       echo "$remote_auth_status_after_fail" >&2
@@ -323,7 +323,7 @@ else
   fi
 
   echo "[remote-daemon-reuse-cli] checking remote daemon status..."
-  status_out="$(ssh "$REMOTE_SSH_TARGET" "HAPPIER_ACTIVE_SERVER_ID='$selected_server_id' HAPPIER_SERVER_URL='$HAPPIER_SERVER_URL' HAPPIER_PUBLIC_SERVER_URL='$HAPPIER_PUBLIC_SERVER_URL' HAPPIER_WEBAPP_URL='$HAPPIER_WEBAPP_URL' $remote_happier_command daemon status --json" 2>/dev/null || ssh "$REMOTE_SSH_TARGET" "HAPPIER_ACTIVE_SERVER_ID='$selected_server_id' HAPPIER_SERVER_URL='$HAPPIER_SERVER_URL' HAPPIER_PUBLIC_SERVER_URL='$HAPPIER_PUBLIC_SERVER_URL' HAPPIER_WEBAPP_URL='$HAPPIER_WEBAPP_URL' $remote_happier_command daemon status" 2>/dev/null || true)"
+  status_out="$(ssh "$REMOTE_SSH_TARGET" "HAPPIEST_ACTIVE_SERVER_ID='$selected_server_id' HAPPIEST_SERVER_URL='$HAPPIEST_SERVER_URL' HAPPIEST_PUBLIC_SERVER_URL='$HAPPIEST_PUBLIC_SERVER_URL' HAPPIEST_WEBAPP_URL='$HAPPIEST_WEBAPP_URL' $remote_happier_command daemon status --json" 2>/dev/null || ssh "$REMOTE_SSH_TARGET" "HAPPIEST_ACTIVE_SERVER_ID='$selected_server_id' HAPPIEST_SERVER_URL='$HAPPIEST_SERVER_URL' HAPPIEST_PUBLIC_SERVER_URL='$HAPPIEST_PUBLIC_SERVER_URL' HAPPIEST_WEBAPP_URL='$HAPPIEST_WEBAPP_URL' $remote_happier_command daemon status" 2>/dev/null || true)"
   if ! node -e "const fs=require('fs');const s=String(fs.readFileSync(0,'utf8')).trim();try{const j=JSON.parse(s);const daemonRunning=Boolean(j&&j.daemon&&j.daemon.running===true);const st=String((j&&j.status)||((j&&j.daemon&&j.daemon.status)||''));if(!daemonRunning&&!/running/i.test(st))process.exit(1);process.exit(0);}catch{}; if(!/running/i.test(s))process.exit(1);" <<<"$status_out" >/dev/null 2>&1; then
     echo "[remote-daemon-reuse-cli] remote daemon status not running; raw:" >&2
     echo "$status_out" >&2

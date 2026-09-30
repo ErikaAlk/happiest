@@ -13,9 +13,9 @@ vi.mock('@/terminal/prompts/promptInput', () => ({
 
 describe('connect credential storage', () => {
   const envKeys = [
-    'HAPPIER_HOME_DIR',
-    'HAPPIER_SERVER_URL',
-    'HAPPIER_LOCAL_SERVER_URL',
+    'HAPPIEST_HOME_DIR',
+    'HAPPIEST_SERVER_URL',
+    'HAPPIEST_LOCAL_SERVER_URL',
     'HAPPIER_VARIANT',
   ] as const;
   let envScope = createEnvKeyScope(envKeys);
@@ -56,9 +56,9 @@ describe('connect credential storage', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: homeDir,
-        HAPPIER_SERVER_URL: 'http://happier-connect.test',
-        HAPPIER_LOCAL_SERVER_URL: 'http://happier-connect.test',
+        HAPPIEST_HOME_DIR: homeDir,
+        HAPPIEST_SERVER_URL: 'http://happier-connect.test',
+        HAPPIEST_LOCAL_SERVER_URL: 'http://happier-connect.test',
         HAPPIER_VARIANT: 'stable',
       });
       vi.resetModules();

@@ -339,7 +339,7 @@ process.exit(0);
     }
   }, 20_000);
 
-  it('invalidates cache when HAPPIER_HOME_DIR changes', async () => {
+  it('invalidates cache when HAPPIEST_HOME_DIR changes', async () => {
     vi.resetModules();
 
     vi.doMock('@/backends/catalog', () => ({
@@ -369,12 +369,12 @@ process.exit(0);
 
     const prevPath = process.env.PATH;
     const prevCountFile = process.env.HAPPIER_TEST_CLI_SNAPSHOT_COUNT_FILE;
-    const prevHomeDir = process.env.HAPPIER_HOME_DIR;
+    const prevHomeDir = process.env.HAPPIEST_HOME_DIR;
     const prevPnpmBin = process.env.HAPPIER_PNPM_BIN;
 
     process.env.PATH = `${binDir}${delimiter}${prevPath ?? ''}`;
     process.env.HAPPIER_TEST_CLI_SNAPSHOT_COUNT_FILE = countFile;
-    process.env.HAPPIER_HOME_DIR = '/tmp/happier-home-1';
+    process.env.HAPPIEST_HOME_DIR = '/tmp/happier-home-1';
     process.env.HAPPIER_PNPM_BIN = await writePnpmNodeBridge({ dir: fixture.dir, pathLookup: prevPath });
 
     try {
@@ -387,8 +387,8 @@ process.exit(0);
       const afterSecond = (await readFile(countFile, 'utf8')).length;
       expect(afterSecond).toBe(afterFirst);
 
-      // Change HAPPIER_HOME_DIR - should invalidate cache
-      process.env.HAPPIER_HOME_DIR = '/tmp/happier-home-2';
+      // Change HAPPIEST_HOME_DIR - should invalidate cache
+      process.env.HAPPIEST_HOME_DIR = '/tmp/happier-home-2';
       await detectCliSnapshotOnDaemonPath({ includeLoginStatus: false });
       const afterThird = (await readFile(countFile, 'utf8')).length;
       expect(afterThird).toBeGreaterThan(afterSecond);
@@ -396,8 +396,8 @@ process.exit(0);
       process.env.PATH = prevPath;
       if (typeof prevCountFile === 'string') process.env.HAPPIER_TEST_CLI_SNAPSHOT_COUNT_FILE = prevCountFile;
       else delete process.env.HAPPIER_TEST_CLI_SNAPSHOT_COUNT_FILE;
-      if (typeof prevHomeDir === 'string') process.env.HAPPIER_HOME_DIR = prevHomeDir;
-      else delete process.env.HAPPIER_HOME_DIR;
+      if (typeof prevHomeDir === 'string') process.env.HAPPIEST_HOME_DIR = prevHomeDir;
+      else delete process.env.HAPPIEST_HOME_DIR;
       if (typeof prevPnpmBin === 'string') process.env.HAPPIER_PNPM_BIN = prevPnpmBin;
       else delete process.env.HAPPIER_PNPM_BIN;
       await fixture.cleanup();

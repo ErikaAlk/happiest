@@ -234,8 +234,8 @@ function resolveServiceInstallationForServer(serverId: string, serverUrl: string
     const snapshot = resolveDaemonServiceInstallationSnapshotFromEnv({
       processEnv: {
         ...process.env,
-        HAPPIER_DAEMON_SERVICE_INSTANCE_ID: serverId,
-        HAPPIER_DAEMON_SERVICE_SERVER_URL: serverUrl,
+        HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: serverId,
+        HAPPIEST_DAEMON_SERVICE_SERVER_URL: serverUrl,
       },
     });
     return { installed: snapshot.installed };

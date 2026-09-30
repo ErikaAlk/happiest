@@ -33,7 +33,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
           description: 'Happier Daemon',
           execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
           env: {
-            HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+            HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
             HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
           },
@@ -81,9 +81,9 @@ describe('discoverInstalledDaemonServiceEntries', () => {
           description: 'Happier Daemon',
           execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
           env: {
-            HAPPIER_ACTIVE_SERVER_ID: 'default',
+            HAPPIEST_ACTIVE_SERVER_ID: 'default',
             HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'pinned',
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'pinned',
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
           },
           wantedBy: 'default.target',
@@ -116,9 +116,9 @@ describe('discoverInstalledDaemonServiceEntries', () => {
           description: 'Happier Daemon',
           execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
           env: {
-            HAPPIER_ACTIVE_SERVER_ID: 'company-profile',
+            HAPPIEST_ACTIVE_SERVER_ID: 'company-profile',
             HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'pinned',
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'pinned',
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
           },
           wantedBy: 'default.target',
@@ -171,7 +171,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
             programArgs: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
             env: {
               HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-              HAPPIER_DAEMON_SERVICE_AUTOSTART: 'at-login',
+              HAPPIEST_DAEMON_SERVICE_AUTOSTART: 'at-login',
             },
             stdoutPath: '/tmp/out.log',
             stderrPath: '/tmp/err.log',
@@ -196,7 +196,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
             programArgs: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
             env: {
               HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-              HAPPIER_DAEMON_SERVICE_AUTOSTART: 'on-demand',
+              HAPPIEST_DAEMON_SERVICE_AUTOSTART: 'on-demand',
             },
             stdoutPath: '/tmp/out.log',
             stderrPath: '/tmp/err.log',
@@ -230,7 +230,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
             programArgs: ['C:\\Users\\test\\.happier\\cli\\current\\happier.exe', 'daemon', 'start-sync'],
             env: {
               HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-              HAPPIER_DAEMON_SERVICE_AUTOSTART: 'on-demand',
+              HAPPIEST_DAEMON_SERVICE_AUTOSTART: 'on-demand',
             },
             stdoutPath: 'C:\\out.log',
             stderrPath: 'C:\\err.log',
@@ -253,7 +253,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
             execStart: ['/usr/local/bin/happier', 'daemon', 'start-sync'],
             env: {
               HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-              HAPPIER_DAEMON_SERVICE_AUTOSTART: 'on-demand',
+              HAPPIEST_DAEMON_SERVICE_AUTOSTART: 'on-demand',
             },
             wantedBy: 'default.target',
           }),
@@ -302,9 +302,9 @@ describe('discoverInstalledDaemonServiceEntries', () => {
             'start-sync',
           ],
           env: {
-            HAPPIER_HOME_DIR: '/Users/tester/.happier',
+            HAPPIEST_HOME_DIR: '/Users/tester/.happier',
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
           },
           stdoutPath: '/tmp/happier-daemon.log',
           stderrPath: '/tmp/happier-daemon.log',
@@ -381,7 +381,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
           env: {
             HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
           },
           wantedBy: 'default.target',
         }),
@@ -425,9 +425,9 @@ describe('discoverInstalledDaemonServiceEntries', () => {
             'start-sync',
           ],
           env: {
-            HAPPIER_HOME_DIR: '/home/tester/.happier',
+            HAPPIEST_HOME_DIR: '/home/tester/.happier',
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'dev',
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
           },
           wantedBy: 'default.target',
         }),
@@ -471,9 +471,9 @@ describe('discoverInstalledDaemonServiceEntries', () => {
             'start-sync',
           ],
           env: {
-            HAPPIER_HOME_DIR: '/home/tester/.happier',
+            HAPPIEST_HOME_DIR: '/home/tester/.happier',
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'preview',
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
           },
           wantedBy: 'default.target',
         }),
@@ -520,9 +520,9 @@ describe('discoverInstalledDaemonServiceEntries', () => {
           ],
           env: {
             // Contains a space, so the systemd renderer will quote it.
-            HAPPIER_HOME_DIR: '/home/tester/My Happier/.happier',
+            HAPPIEST_HOME_DIR: '/home/tester/My Happier/.happier',
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'preview',
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
           },
           wantedBy: 'default.target',
         }),
@@ -590,9 +590,9 @@ describe('discoverInstalledDaemonServiceEntries', () => {
             'start-sync',
           ],
           env: {
-            HAPPIER_HOME_DIR: 'C:\\Users\\tester\\.happier',
+            HAPPIEST_HOME_DIR: 'C:\\Users\\tester\\.happier',
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'preview',
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
           },
           stdoutPath: 'C:\\Users\\tester\\.happier\\logs\\daemon-service.out.log',
           stderrPath: 'C:\\Users\\tester\\.happier\\logs\\daemon-service.err.log',

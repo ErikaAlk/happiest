@@ -17,12 +17,12 @@ import { createTempDir, removeTempDir } from '@/testkit/fs/tempDir';
  */
 
 const ENV_KEYS = [
-  'HAPPIER_HOME_DIR',
-  'HAPPIER_DAEMON_SERVICE_PLATFORM',
-  'HAPPIER_DAEMON_SERVICE_USER_HOME_DIR',
-  'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR',
-  'HAPPIER_DAEMON_SERVICE_TARGET_MODE',
-  'HAPPIER_DAEMON_SERVICE_INSTANCE_ID',
+  'HAPPIEST_HOME_DIR',
+  'HAPPIEST_DAEMON_SERVICE_PLATFORM',
+  'HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR',
+  'HAPPIEST_DAEMON_SERVICE_HOME_DIR',
+  'HAPPIEST_DAEMON_SERVICE_TARGET_MODE',
+  'HAPPIEST_DAEMON_SERVICE_INSTANCE_ID',
 ] as const;
 
 function writeInstalledUnit(declaredTargetMode: string | null): string {
@@ -34,7 +34,7 @@ function writeInstalledUnit(declaredTargetMode: string | null): string {
     'Environment=HAPPIER_DAEMON_STARTUP_SOURCE=background-service',
     ...(declaredTargetMode === null
       ? []
-      : [`Environment=HAPPIER_DAEMON_SERVICE_TARGET_MODE=${declaredTargetMode}`]),
+      : [`Environment=HAPPIEST_DAEMON_SERVICE_TARGET_MODE=${declaredTargetMode}`]),
     '',
   ].join('\n'));
   return snapshot.installedPath;
@@ -47,10 +47,10 @@ describe('readDaemonStatusSnapshot service.targetMode', () => {
   beforeEach(async () => {
     tmpHomeDir = await createTempDir('happier-status-service-target-mode-');
     envScope.patch({
-      HAPPIER_HOME_DIR: tmpHomeDir,
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: tmpHomeDir,
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: tmpHomeDir,
+      HAPPIEST_HOME_DIR: tmpHomeDir,
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: tmpHomeDir,
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: tmpHomeDir,
     });
     reloadConfiguration();
   });
@@ -77,8 +77,8 @@ describe('readDaemonStatusSnapshot service.targetMode', () => {
 
   it('reports pinned for an installed service pinned to one relay profile', async () => {
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'pinned',
-      HAPPIER_DAEMON_SERVICE_INSTANCE_ID: 'company',
+      HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'pinned',
+      HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: 'company',
     });
     reloadConfiguration();
     const installedPath = writeInstalledUnit('pinned');
@@ -98,8 +98,8 @@ describe('readDaemonStatusSnapshot service.targetMode', () => {
    */
   it('reports pinned when the definition declares pinned on the default-segment path', async () => {
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'pinned',
-      HAPPIER_DAEMON_SERVICE_INSTANCE_ID: 'default',
+      HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'pinned',
+      HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: 'default',
     });
     reloadConfiguration();
     const installedPath = writeInstalledUnit('pinned');

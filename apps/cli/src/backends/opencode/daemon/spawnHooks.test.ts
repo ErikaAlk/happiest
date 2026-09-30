@@ -5,7 +5,7 @@ import { createEnvKeyScope } from '@/testkit/env/envScope';
 import { createExecutableShim } from '@/testkit/fs/executableShim';
 import { createTempDir, removeTempDir } from '@/testkit/fs/tempDir';
 
-const envKeys = ['PATH', 'HAPPIER_OPENCODE_PATH', 'HAPPIER_OPENCODE_CLI_GENERATION', 'HAPPIER_HOME_DIR'] as const;
+const envKeys = ['PATH', 'HAPPIER_OPENCODE_PATH', 'HAPPIER_OPENCODE_CLI_GENERATION', 'HAPPIEST_HOME_DIR'] as const;
 const tempDirs = new Set<string>();
 let envScope = createEnvKeyScope(envKeys);
 
@@ -42,7 +42,7 @@ describe('opencodeDaemonSpawnHooks.validateSpawn', () => {
     envScope.patch({
       PATH: '',
       HAPPIER_OPENCODE_PATH: join(homeDir, 'missing-opencode'),
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
     });
 
     const { opencodeDaemonSpawnHooks } = await import('./spawnHooks');

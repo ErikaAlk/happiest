@@ -64,9 +64,9 @@ describe('tmux session resource policy', () => {
       extraEnv: {},
       processEnv: {
         PATH: '/bin',
-        HAPPIER_ACTIVE_SERVER_ID: 'stale-server',
-        HAPPIER_SERVER_URL: 'https://stale.example.test',
-        HAPPIER_PUBLIC_SERVER_URL: 'https://stale-public.example.test',
+        HAPPIEST_ACTIVE_SERVER_ID: 'stale-server',
+        HAPPIEST_SERVER_URL: 'https://stale.example.test',
+        HAPPIEST_PUBLIC_SERVER_URL: 'https://stale-public.example.test',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
         HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
       },
@@ -79,11 +79,11 @@ describe('tmux session resource policy', () => {
     });
 
     expect(config.tmuxEnv).toMatchObject({
-      HAPPIER_ACTIVE_SERVER_ID: 'custom',
-      HAPPIER_SERVER_URL: 'https://relay.example.test:27443',
-      HAPPIER_WEBAPP_URL: 'https://relay.example.test:27443',
-      HAPPIER_PUBLIC_SERVER_URL: '',
-      HAPPIER_LOCAL_SERVER_URL: '',
+      HAPPIEST_ACTIVE_SERVER_ID: 'custom',
+      HAPPIEST_SERVER_URL: 'https://relay.example.test:27443',
+      HAPPIEST_WEBAPP_URL: 'https://relay.example.test:27443',
+      HAPPIEST_PUBLIC_SERVER_URL: '',
+      HAPPIEST_LOCAL_SERVER_URL: '',
       HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
       HAPPIER_DAEMON_STARTUP_SOURCE: '',
     });

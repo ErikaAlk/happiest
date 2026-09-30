@@ -10,14 +10,14 @@ import {
 } from './resolveManagedCliReleaseChannel';
 
 function withDefaultChannelMarker<T>(releaseChannel: string, run: (env: NodeJS.ProcessEnv) => T): T {
-  const homeDir = mkdtempSync(join(tmpdir(), 'happier-managed-cli-release-channel-'));
+  const homeDir = mkdtempSync(join(tmpdir(), 'happiest-managed-cli-release-channel-'));
   try {
     writeFileSync(
       join(homeDir, 'default-cli-release-channel.json'),
       `${JSON.stringify({ releaseChannel })}\n`,
       'utf8',
     );
-    return run({ HAPPIER_HOME_DIR: homeDir });
+    return run({ HAPPIEST_HOME_DIR: homeDir });
   } finally {
     rmSync(homeDir, { recursive: true, force: true });
   }
@@ -34,7 +34,7 @@ async function withDefaultChannelMarkerAsync<T>(
       `${JSON.stringify({ releaseChannel })}\n`,
       'utf8',
     );
-    return await run({ HAPPIER_HOME_DIR: homeDir });
+    return await run({ HAPPIEST_HOME_DIR: homeDir });
   } finally {
     rmSync(homeDir, { recursive: true, force: true });
   }
@@ -44,7 +44,7 @@ describe('resolveManagedCliReleaseChannelSync', () => {
   it('uses explicit channel flags before env and runtime hints', () => {
     const resolved = resolveManagedCliReleaseChannelSync({
       args: ['--dev'],
-      argv: ['hprev', 'self', 'update'],
+      argv: ['happiest-preview', 'self', 'update'],
       processEnv: { HAPPIER_PUBLIC_RELEASE_CHANNEL: 'preview' },
     });
 
@@ -52,15 +52,15 @@ describe('resolveManagedCliReleaseChannelSync', () => {
       ringId: 'publicdev',
       label: 'dev',
       source: 'explicit-arg',
-      channelToolName: 'hdev',
+      channelToolName: 'happiest-dev',
     });
   });
 
   it('uses managed runtime path hints before shim names', () => {
     const resolved = resolveManagedCliReleaseChannelSync({
       argv: [
-        'hdev',
-        '/Users/test/.happier/cli-preview/versions/1.2.3/package-dist/index.mjs',
+        'happiest-dev',
+        '/Users/test/.happiest/cli-preview/versions/1.2.3/package-dist/index.mjs',
       ],
       processEnv: {},
     });
@@ -68,15 +68,15 @@ describe('resolveManagedCliReleaseChannelSync', () => {
     expect(resolved).toMatchObject({
       ringId: 'preview',
       source: 'path-hint',
-      invokedToolName: 'hdev',
-      channelToolName: 'hprev',
+      invokedToolName: 'happiest-dev',
+      channelToolName: 'happiest-preview',
     });
   });
 
-  it('uses the raw hdev invoker when packaged argv paths are generic', () => {
+  it('uses the raw channel invoker when packaged argv paths are generic', () => {
     const resolved = resolveManagedCliReleaseChannelSync({
       args: ['update'],
-      argv: ['hdev', 'self', 'update'],
+      argv: ['happiest-dev', 'self', 'update'],
       invokedPath: 'self',
       processEnv: {},
     });
@@ -84,16 +84,16 @@ describe('resolveManagedCliReleaseChannelSync', () => {
     expect(resolved).toMatchObject({
       ringId: 'publicdev',
       source: 'shim-name',
-      invokedToolName: 'hdev',
-      channelToolName: 'hdev',
+      invokedToolName: 'happiest-dev',
+      channelToolName: 'happiest-dev',
     });
   });
 
-  it('uses the persisted default channel for the unsuffixed happier invoker', () => {
+  it('uses the persisted default channel for the unsuffixed product invoker', () => {
     withDefaultChannelMarker('preview', (processEnv) => {
       const resolved = resolveManagedCliReleaseChannelSync({
         args: ['update'],
-        argv: ['happier', 'self', 'update'],
+        argv: ['happiest', 'self', 'update'],
         invokedPath: 'self',
         processEnv,
       });
@@ -101,9 +101,28 @@ describe('resolveManagedCliReleaseChannelSync', () => {
       expect(resolved).toMatchObject({
         ringId: 'preview',
         source: 'default-marker',
-        invokedToolName: 'happier',
-        channelToolName: 'hprev',
+        invokedToolName: 'happiest',
+        channelToolName: 'happiest-preview',
       });
+    });
+  });
+
+  it('does not treat another product command as its own invoker', () => {
+    withDefaultChannelMarker('preview', (processEnv) => {
+      for (const foreignInvoker of ['happier', 'hprev', 'hdev']) {
+        const resolved = resolveManagedCliReleaseChannelSync({
+          args: ['update'],
+          argv: [foreignInvoker, 'self', 'update'],
+          invokedPath: 'self',
+          processEnv,
+        });
+
+        expect(resolved).toMatchObject({
+          ringId: 'stable',
+          source: 'default',
+          invokedToolName: null,
+        });
+      }
     });
   });
 });
@@ -120,7 +139,7 @@ describe('resolveManagedCliReleaseChannel', () => {
         ringId: 'publicdev',
         source: 'default-marker',
         invokedToolName: null,
-        channelToolName: 'hdev',
+        channelToolName: 'happiest-dev',
       });
     });
   });

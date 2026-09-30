@@ -68,15 +68,15 @@ vi.mock('@/daemon/controlClient', async (importOriginal) => {
 
 describe('runDaemonServiceCliCommand install conflict preflight', () => {
   const envKeys = [
-    'HAPPIER_DAEMON_SERVICE_PLATFORM',
-    'HAPPIER_DAEMON_SERVICE_USER_HOME_DIR',
-    'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR',
-    'HAPPIER_DAEMON_SERVICE_INSTANCE_ID',
-    'HAPPIER_DAEMON_SERVICE_CHANNEL',
+    'HAPPIEST_DAEMON_SERVICE_PLATFORM',
+    'HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR',
+    'HAPPIEST_DAEMON_SERVICE_HOME_DIR',
+    'HAPPIEST_DAEMON_SERVICE_INSTANCE_ID',
+    'HAPPIEST_DAEMON_SERVICE_CHANNEL',
     'HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY',
-    'HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS',
-    'HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS',
-    'HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS',
+    'HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS',
+    'HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS',
+    'HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS',
   ] as const;
   let envScope = createEnvKeyScope(envKeys);
 
@@ -92,14 +92,14 @@ describe('runDaemonServiceCliCommand install conflict preflight', () => {
 
   it('fails closed by default when another verified background service is already installed', async () => {
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '/home/tester',
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '/home/tester/.happier',
-      HAPPIER_DAEMON_SERVICE_INSTANCE_ID: 'default',
-      HAPPIER_DAEMON_SERVICE_CHANNEL: 'publicdev',
-      HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '10',
-      HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '1',
-      HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '0',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '/home/tester',
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: '/home/tester/.happier',
+      HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: 'default',
+      HAPPIEST_DAEMON_SERVICE_CHANNEL: 'publicdev',
+      HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '10',
+      HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '1',
+      HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '0',
     });
 
     const output = captureStdoutJsonOutput<{ ok: boolean; error?: string; message?: string }>();
@@ -133,14 +133,14 @@ describe('runDaemonServiceCliCommand install conflict preflight', () => {
 
   it('allows explicit add semantics when --yes is provided', async () => {
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '/home/tester',
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '/home/tester/.happier',
-      HAPPIER_DAEMON_SERVICE_INSTANCE_ID: 'default',
-      HAPPIER_DAEMON_SERVICE_CHANNEL: 'publicdev',
-      HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '10',
-      HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '1',
-      HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '0',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '/home/tester',
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: '/home/tester/.happier',
+      HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: 'default',
+      HAPPIEST_DAEMON_SERVICE_CHANNEL: 'publicdev',
+      HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '10',
+      HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '1',
+      HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '0',
     });
 
     const { resolveDaemonServiceCliRuntimeFromEnv, resolveDaemonServicePaths, runDaemonServiceCliCommand } = await import('./cli.js');
@@ -166,14 +166,14 @@ describe('runDaemonServiceCliCommand install conflict preflight', () => {
 
   it('passes replace-all to the installer when explicitly requested', async () => {
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '/home/tester',
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '/home/tester/.happier',
-      HAPPIER_DAEMON_SERVICE_INSTANCE_ID: 'default',
-      HAPPIER_DAEMON_SERVICE_CHANNEL: 'publicdev',
-      HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '10',
-      HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '1',
-      HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '0',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '/home/tester',
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: '/home/tester/.happier',
+      HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: 'default',
+      HAPPIEST_DAEMON_SERVICE_CHANNEL: 'publicdev',
+      HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '10',
+      HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '1',
+      HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '0',
     });
 
     const { resolveDaemonServiceCliRuntimeFromEnv, resolveDaemonServicePaths, runDaemonServiceCliCommand } = await import('./cli.js');
@@ -199,14 +199,14 @@ describe('runDaemonServiceCliCommand install conflict preflight', () => {
 
   it('uses the same stale-daemon restart decision for install dry-run planning', async () => {
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '/home/tester',
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '/home/tester/.happier',
-      HAPPIER_DAEMON_SERVICE_INSTANCE_ID: 'default',
-      HAPPIER_DAEMON_SERVICE_CHANNEL: 'publicdev',
-      HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '10',
-      HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '1',
-      HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '0',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '/home/tester',
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: '/home/tester/.happier',
+      HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: 'default',
+      HAPPIEST_DAEMON_SERVICE_CHANNEL: 'publicdev',
+      HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '10',
+      HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '1',
+      HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '0',
     });
 
     const { resolveDaemonServiceCliRuntimeFromEnv, resolveDaemonServicePaths, runDaemonServiceCliCommand } = await import('./cli.js');

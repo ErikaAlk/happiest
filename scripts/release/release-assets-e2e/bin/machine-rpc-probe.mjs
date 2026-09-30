@@ -5,7 +5,7 @@
 // the daemon answering through the relay does.
 //
 // Runs on the machine under test as its user, with that machine's own saved credentials
-// (`<HAPPIER_HOME_DIR>/servers/<serverId>/access.key`): the token opens a user-scoped socket for
+// (`<HAPPIEST_HOME_DIR>/servers/<serverId>/access.key`): the token opens a user-scoped socket for
 // the account, and the dataKey `machineKey` is the key the daemon registered its machine with, so
 // the RPC is encrypted exactly as a client of that account would encrypt it.
 //
@@ -109,7 +109,7 @@ async function main() {
   const relayUrl = argValue('--relay-url');
   const machineId = argValue('--machine-id');
   const serverId = argValue('--server-id');
-  const homeDir = argValue('--home-dir') || String(process.env.HAPPIER_HOME_DIR ?? '').trim() || join(homedir(), '.happier');
+  const homeDir = argValue('--home-dir') || String(process.env.HAPPIEST_HOME_DIR ?? '').trim() || join(homedir(), '.happier');
   if (!relayUrl || !machineId || !serverId) throw new Error('usage: --relay-url <url> --machine-id <id> --server-id <id>');
 
   const { token, machineKey } = readMachineCredentials({ homeDir, serverId });

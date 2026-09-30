@@ -23,7 +23,7 @@ vi.mock('@happier-dev/cli-common/providers', async () => {
 
 const ORIGINAL_PLATFORM_DESCRIPTOR = Object.getOwnPropertyDescriptor(process, 'platform');
 const ORIGINAL_ARCH_DESCRIPTOR = Object.getOwnPropertyDescriptor(process, 'arch');
-const ORIGINAL_HOME = process.env.HAPPIER_HOME_DIR;
+const ORIGINAL_HOME = process.env.HAPPIEST_HOME_DIR;
 const ORIGINAL_PATH = process.env.PATH;
 
 const tempDirs = new Set<string>();
@@ -52,8 +52,8 @@ afterEach(async () => {
   if (ORIGINAL_ARCH_DESCRIPTOR) {
     Object.defineProperty(process, 'arch', ORIGINAL_ARCH_DESCRIPTOR);
   }
-  if (ORIGINAL_HOME === undefined) delete process.env.HAPPIER_HOME_DIR;
-  else process.env.HAPPIER_HOME_DIR = ORIGINAL_HOME;
+  if (ORIGINAL_HOME === undefined) delete process.env.HAPPIEST_HOME_DIR;
+  else process.env.HAPPIEST_HOME_DIR = ORIGINAL_HOME;
   if (ORIGINAL_PATH === undefined) delete process.env.PATH;
   else process.env.PATH = ORIGINAL_PATH;
   vi.restoreAllMocks();
@@ -75,7 +75,7 @@ describe('codexAcp release-binary installer', () => {
 
     const home = await mkdtemp(join(tmpdir(), 'happier-codex-acp-home-'));
     tempDirs.add(home);
-    process.env.HAPPIER_HOME_DIR = home;
+    process.env.HAPPIEST_HOME_DIR = home;
 
     const fetchMock = vi.fn(async (url: string) => {
       if (url === 'https://api.github.com/repos/zed-industries/codex-acp/releases/latest') {
@@ -136,7 +136,7 @@ describe('codexAcp release-binary installer', () => {
 
     const home = await mkdtemp(join(tmpdir(), 'happier-codex-acp-win-home-'));
     tempDirs.add(home);
-    process.env.HAPPIER_HOME_DIR = home;
+    process.env.HAPPIEST_HOME_DIR = home;
 
     const fetchMock = vi.fn(async (url: string) => {
       if (url === 'https://api.github.com/repos/zed-industries/codex-acp/releases/latest') {
@@ -188,7 +188,7 @@ describe('codexAcp release-binary installer', () => {
 
     const home = await mkdtemp(join(tmpdir(), 'happier-codex-acp-cleanup-home-'));
     tempDirs.add(home);
-    process.env.HAPPIER_HOME_DIR = home;
+    process.env.HAPPIEST_HOME_DIR = home;
 
     const fetchMock = vi.fn(async (url: string) => {
       if (url === 'https://api.github.com/repos/zed-industries/codex-acp/releases/latest') {
@@ -244,7 +244,7 @@ describe('codexAcp release-binary installer', () => {
   it('detects legacy npm-style managed installs when current/bin is absent and a managed JS runtime exists', async () => {
     const home = await mkdtemp(join(tmpdir(), 'happier-codex-acp-legacy-home-'));
     tempDirs.add(home);
-    process.env.HAPPIER_HOME_DIR = home;
+    process.env.HAPPIEST_HOME_DIR = home;
     await createFakeManagedJavaScriptRuntime(home);
 
     const { codexAcpInstallDir, getCodexAcpDepStatus } = await import('./codexAcp');
@@ -278,7 +278,7 @@ describe('codexAcp release-binary installer', () => {
   it('ignores legacy npm-style managed installs when no system node runtime is available', async () => {
     const home = await mkdtemp(join(tmpdir(), 'happier-codex-acp-legacy-missing-node-home-'));
     tempDirs.add(home);
-    process.env.HAPPIER_HOME_DIR = home;
+    process.env.HAPPIEST_HOME_DIR = home;
     process.env.PATH = '';
 
     const { codexAcpInstallDir, getCodexAcpDepStatus } = await import('./codexAcp');
@@ -305,7 +305,7 @@ describe('codexAcp release-binary installer', () => {
   it('ignores legacy npm-style managed installs when node is only available on PATH', async () => {
     const home = await mkdtemp(join(tmpdir(), 'happier-codex-acp-legacy-path-node-home-'));
     tempDirs.add(home);
-    process.env.HAPPIER_HOME_DIR = home;
+    process.env.HAPPIEST_HOME_DIR = home;
 
     const pathDir = await mkdtemp(join(tmpdir(), 'happier-codex-acp-node-path-'));
     tempDirs.add(pathDir);
@@ -356,7 +356,7 @@ describe('codexAcp release-binary installer', () => {
 
       const home = await mkdtemp(join(tmpdir(), 'happier-codex-acp-legacy-win-exe-home-'));
       tempDirs.add(home);
-      process.env.HAPPIER_HOME_DIR = home;
+      process.env.HAPPIEST_HOME_DIR = home;
 
       const { codexAcpInstallDir, getCodexAcpDepStatus } = await import('./codexAcp');
       const legacyExePath = join(codexAcpInstallDir(), 'node_modules', '.bin', 'codex-acp.exe');
@@ -382,7 +382,7 @@ describe('codexAcp release-binary installer', () => {
   it('treats legacy npm-style managed installs as runnable when a managed JS runtime exists', async () => {
     const home = await mkdtemp(join(tmpdir(), 'happier-codex-acp-legacy-managed-node-home-'));
     tempDirs.add(home);
-    process.env.HAPPIER_HOME_DIR = home;
+    process.env.HAPPIEST_HOME_DIR = home;
     process.env.PATH = '';
 
     const managedNodePath = join(home, process.platform === 'win32' ? 'managed-node.cmd' : 'managed-node');
@@ -417,7 +417,7 @@ describe('codexAcp release-binary installer', () => {
   it('fails closed for legacy npm-style managed installs when the explicit JS runtime override is invalid', async () => {
     const home = await mkdtemp(join(tmpdir(), 'happier-codex-acp-legacy-invalid-runtime-home-'));
     tempDirs.add(home);
-    process.env.HAPPIER_HOME_DIR = home;
+    process.env.HAPPIEST_HOME_DIR = home;
 
     const pathDir = await mkdtemp(join(tmpdir(), 'happier-codex-acp-node-path-'));
     tempDirs.add(pathDir);
@@ -454,7 +454,7 @@ describe('codexAcp release-binary installer', () => {
   it('includes the last background auto-update check timestamp in dep status', async () => {
     const home = await mkdtemp(join(tmpdir(), 'happier-codex-acp-update-state-home-'));
     tempDirs.add(home);
-    process.env.HAPPIER_HOME_DIR = home;
+    process.env.HAPPIEST_HOME_DIR = home;
 
     const {
       codexAcpBinPath,

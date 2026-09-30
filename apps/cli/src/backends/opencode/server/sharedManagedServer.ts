@@ -1464,7 +1464,7 @@ export async function ensureSharedManagedOpenCodeServerBaseUrl(params: Readonly<
 
   // By default, preserve the user's HOME/USERPROFILE and XDG config directory for OpenCode so the
   // managed server sees the same provider plugins and auth config as the user's normal OpenCode CLI.
-  // Happier's stack home remains in HAPPIER_HOME_DIR for Happier state only; it is not an OpenCode
+  // Happier's stack home remains in HAPPIEST_HOME_DIR for Happier state only; it is not an OpenCode
   // config home. The optional root below isolates only runtime data/state/cache unless explicitly
   // passed with isolateConfig by a test or future controlled flow.
   //

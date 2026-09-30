@@ -128,7 +128,7 @@ export function resolveCodexAcpCommand(): string {
  *
  * Order:
  * 1) Explicit env override: HAPPIER_CODEX_ACP_BIN
- * 2) Managed codex-acp install under HAPPIER_HOME_DIR/tools/codex-acp/current/bin
+ * 2) Managed codex-acp install under HAPPIEST_HOME_DIR/tools/codex-acp/current/bin
  * 3) PATH fallback (`codex-acp`) when available
  * 4) PATH fallback (`codex-acp`)
  */

@@ -10,7 +10,7 @@ const ENV_KEYS = [
   'CODEX_HOME',
   'HAPPIER_CODEX_ACP_BIN',
   'HAPPIER_CODEX_ACP_CONFIG_OVERRIDES',
-  'HAPPIER_HOME_DIR',
+  'HAPPIEST_HOME_DIR',
   'HAPPIER_CODEX_ACP_NPX_MODE',
   'HAPPIER_JS_RUNTIME_PATH',
   'HAPPIER_MANAGED_NODE_BIN',
@@ -163,7 +163,7 @@ describe.sequential('resolveCodexAcpSpawn', () => {
     const emptyHappyHomeDir = await createTempDir('happier-codex-acp-empty-home-');
     tempDirs.add(emptyHappyHomeDir);
     process.env.PATH = dir;
-    process.env.HAPPIER_HOME_DIR = emptyHappyHomeDir;
+    process.env.HAPPIEST_HOME_DIR = emptyHappyHomeDir;
     delete process.env.HAPPIER_CODEX_ACP_BIN;
 
     const { resolveCodexAcpSpawn } = await import('./resolveCommand');
@@ -250,7 +250,7 @@ describe.sequential('resolveCodexAcpSpawn', () => {
     const { dir: codexHome } = await createFakeCodexHome(['context7', 'sequential-thinking', 'playwright']);
     process.env.CODEX_HOME = codexHome;
     const { dir } = await createFakeCodexAcpBinary();
-    process.env.HAPPIER_HOME_DIR = dir;
+    process.env.HAPPIEST_HOME_DIR = dir;
     delete process.env.HAPPIER_CODEX_ACP_BIN;
     delete process.env.HAPPIER_CODEX_ACP_NPX_MODE;
 
@@ -271,7 +271,7 @@ describe.sequential('resolveCodexAcpSpawn', () => {
     const { dir: codexHome } = await createFakeCodexHome(['context7', 'sequential-thinking', 'playwright']);
     process.env.CODEX_HOME = codexHome;
     const { dir } = await createFakeCodexAcpBinary();
-    process.env.HAPPIER_HOME_DIR = dir;
+    process.env.HAPPIEST_HOME_DIR = dir;
     process.env.PATH = '';
     delete process.env.HAPPIER_CODEX_ACP_BIN;
     delete process.env.HAPPIER_CODEX_ACP_NPX_MODE;
@@ -290,7 +290,7 @@ describe.sequential('resolveCodexAcpSpawn', () => {
     const { dir: codexHome } = await createFakeCodexHome(['context7', 'sequential-thinking', 'playwright']);
     process.env.CODEX_HOME = codexHome;
     const { dir } = await createFakeCodexAcpBinary();
-    process.env.HAPPIER_HOME_DIR = dir;
+    process.env.HAPPIEST_HOME_DIR = dir;
     delete process.env.HAPPIER_CODEX_ACP_BIN;
     delete process.env.HAPPIER_CODEX_ACP_NPX_MODE;
 
@@ -310,7 +310,7 @@ describe.sequential('resolveCodexAcpSpawn', () => {
     const { dir: codexHome } = await createFakeCodexHome(['context7', 'sequential-thinking', 'playwright']);
     process.env.CODEX_HOME = codexHome;
     const { dir } = await createFakeCodexAcpBinary();
-    process.env.HAPPIER_HOME_DIR = dir;
+    process.env.HAPPIEST_HOME_DIR = dir;
     process.env.PATH = '';
     delete process.env.HAPPIER_CODEX_ACP_BIN;
     delete process.env.HAPPIER_CODEX_ACP_NPX_MODE;
@@ -330,7 +330,7 @@ describe.sequential('resolveCodexAcpSpawn', () => {
     const { dir: codexHome } = await createFakeCodexHome(['context7', 'sequential-thinking', 'playwright']);
     process.env.CODEX_HOME = codexHome;
     const { dir } = await createFakeCodexAcpBinary();
-    process.env.HAPPIER_HOME_DIR = dir;
+    process.env.HAPPIEST_HOME_DIR = dir;
     delete process.env.HAPPIER_CODEX_ACP_BIN;
 
     const { dir: pathDir, bin } = await createFakeCodexAcpBinary();
@@ -349,7 +349,7 @@ describe.sequential('resolveCodexAcpSpawn', () => {
     const { dir: codexHome } = await createFakeCodexHome(['context7', 'sequential-thinking', 'playwright']);
     process.env.CODEX_HOME = codexHome;
     const { dir } = await createFakeCodexAcpBinary();
-    process.env.HAPPIER_HOME_DIR = dir;
+    process.env.HAPPIEST_HOME_DIR = dir;
     delete process.env.HAPPIER_CODEX_ACP_BIN;
     process.env.HAPPIER_CODEX_ACP_NPX_MODE = 'never';
 

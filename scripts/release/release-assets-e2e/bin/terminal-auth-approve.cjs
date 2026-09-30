@@ -69,16 +69,16 @@ async function postJson(url, body, headers = {}) {
 async function main() {
   const args = process.argv.slice(2);
 
-  const serverUrl = normalizeUrl(argvValue(args, '--server-url') || process.env.HAPPIER_SERVER_URL);
-  const homeDir = String(argvValue(args, '--home-dir') || process.env.HAPPIER_HOME_DIR || '').trim();
-  const activeServerId = sanitizeServerId(argvValue(args, '--active-server-id') || process.env.HAPPIER_ACTIVE_SERVER_ID);
+  const serverUrl = normalizeUrl(argvValue(args, '--server-url') || process.env.HAPPIEST_SERVER_URL);
+  const homeDir = String(argvValue(args, '--home-dir') || process.env.HAPPIEST_HOME_DIR || '').trim();
+  const activeServerId = sanitizeServerId(argvValue(args, '--active-server-id') || process.env.HAPPIEST_ACTIVE_SERVER_ID);
 
   if (!serverUrl) {
-    console.error('Missing --server-url (or env HAPPIER_SERVER_URL)');
+    console.error('Missing --server-url (or env HAPPIEST_SERVER_URL)');
     process.exit(2);
   }
   if (!homeDir) {
-    console.error('Missing --home-dir (or env HAPPIER_HOME_DIR)');
+    console.error('Missing --home-dir (or env HAPPIEST_HOME_DIR)');
     process.exit(2);
   }
 

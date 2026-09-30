@@ -185,7 +185,7 @@ describe('daemon control server: /restart', () => {
         url: '/restart',
         headers: { 'x-happier-daemon-token': 'test-token' },
         payload: {
-          env: { HAPPIER_SERVER_URL: 'https://attacker.invalid' },
+          env: { HAPPIEST_SERVER_URL: 'https://attacker.invalid' },
         },
       });
 

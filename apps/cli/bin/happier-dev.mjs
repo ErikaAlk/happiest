@@ -12,7 +12,7 @@ const hasNoWarnings = process.execArgv.includes('--no-warnings');
 const hasNoDeprecation = process.execArgv.includes('--no-deprecation');
 
 // Set development environment variables
-process.env.HAPPIER_HOME_DIR = join(homedir(), '.happier-dev');
+process.env.HAPPIEST_HOME_DIR =join(homedir(), '.happier-dev');
 process.env.HAPPIER_VARIANT = 'dev';
 
 if (!hasNoWarnings || !hasNoDeprecation) {

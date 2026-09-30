@@ -26,14 +26,14 @@ describe('resolveOpenCodeManagedServerChildEnv', () => {
       baseEnv: {
         PATH: '/bin',
         HOME: '/Users/example',
-        HAPPIER_HOME_DIR: '/tmp/happier-home',
+        HAPPIEST_HOME_DIR: '/tmp/happier-home',
       },
       xdgRootDir: null,
       isolateConfig: false,
     });
 
     expect(env.HOME).toBe('/Users/example');
-    expect(env.HAPPIER_HOME_DIR).toBe('/tmp/happier-home');
+    expect(env.HAPPIEST_HOME_DIR).toBe('/tmp/happier-home');
     expect(env.XDG_CONFIG_HOME).toBeUndefined();
     expect(env.XDG_DATA_HOME).toBeUndefined();
     expect(env.XDG_STATE_HOME).toBeUndefined();
@@ -46,7 +46,7 @@ describe('resolveOpenCodeManagedServerChildEnv', () => {
         PATH: '/bin',
         HOME: '/Users/example',
         USERPROFILE: '/Users/example-profile',
-        HAPPIER_HOME_DIR: '/tmp/happier-home',
+        HAPPIEST_HOME_DIR: '/tmp/happier-home',
         XDG_CONFIG_HOME: '/Users/example/.config',
         XDG_DATA_HOME: '/Users/example/.local/share',
         XDG_STATE_HOME: '/Users/example/.local/state',
@@ -58,7 +58,7 @@ describe('resolveOpenCodeManagedServerChildEnv', () => {
 
     expect(env.HOME).toBe('/Users/example');
     expect(env.USERPROFILE).toBe('/Users/example-profile');
-    expect(env.HAPPIER_HOME_DIR).toBe('/tmp/happier-home');
+    expect(env.HAPPIEST_HOME_DIR).toBe('/tmp/happier-home');
     expect(env.XDG_CONFIG_HOME).toBe('/Users/example/.config');
     expect(env.XDG_DATA_HOME).toBe('/Users/example/.local/share');
     expect(env.XDG_STATE_HOME).toBe('/Users/example/.local/state');
@@ -70,7 +70,7 @@ describe('resolveOpenCodeManagedServerChildEnv', () => {
       baseEnv: {
         PATH: '/bin',
         HOME: '/Users/example',
-        HAPPIER_HOME_DIR: '/tmp/happier-home',
+        HAPPIEST_HOME_DIR: '/tmp/happier-home',
         XDG_CONFIG_HOME: '/Users/example/.config',
       },
       xdgRootDir: null,

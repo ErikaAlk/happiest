@@ -41,12 +41,12 @@ describe('happier session create (integration)', () => {
   }
 
   const envKeys = [
-    'HAPPIER_SERVER_URL',
-    'HAPPIER_PUBLIC_SERVER_URL',
-    'HAPPIER_LOCAL_SERVER_URL',
-    'HAPPIER_WEBAPP_URL',
-    'HAPPIER_ACTIVE_SERVER_ID',
-    'HAPPIER_HOME_DIR',
+    'HAPPIEST_SERVER_URL',
+    'HAPPIEST_PUBLIC_SERVER_URL',
+    'HAPPIEST_LOCAL_SERVER_URL',
+    'HAPPIEST_WEBAPP_URL',
+    'HAPPIEST_ACTIVE_SERVER_ID',
+    'HAPPIEST_HOME_DIR',
     'HAPPIER_SESSION_ID',
     'HAPPIER_STACK_INVOKED_CWD',
     'HAPPIER_SESSION_REQUESTED_DIRECTORY',
@@ -214,13 +214,13 @@ describe('happier session create (integration)', () => {
       throw new Error('Failed to resolve session control integration test server address');
     }
 
-    process.env.HAPPIER_SERVER_URL = `http://127.0.0.1:${address.port}`;
-    process.env.HAPPIER_WEBAPP_URL = 'http://127.0.0.1:3000';
-    process.env.HAPPIER_HOME_DIR = happyHomeDir;
+    process.env.HAPPIEST_SERVER_URL = `http://127.0.0.1:${address.port}`;
+    process.env.HAPPIEST_WEBAPP_URL = 'http://127.0.0.1:3000';
+    process.env.HAPPIEST_HOME_DIR = happyHomeDir;
     envScope.patch({
-      HAPPIER_PUBLIC_SERVER_URL: undefined,
-      HAPPIER_LOCAL_SERVER_URL: undefined,
-      HAPPIER_ACTIVE_SERVER_ID: undefined,
+      HAPPIEST_PUBLIC_SERVER_URL: undefined,
+      HAPPIEST_LOCAL_SERVER_URL: undefined,
+      HAPPIEST_ACTIVE_SERVER_ID: undefined,
       HAPPIER_STACK_INVOKED_CWD: undefined,
       HAPPIER_SESSION_REQUESTED_DIRECTORY: undefined,
     });

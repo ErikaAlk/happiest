@@ -39,7 +39,7 @@ services:
     environment:
       HAPPIER_NPM_SPEC: ${HAPPIER_NPM_SPEC:-@happier-dev/cli@next}
       HAPPIER_TGZ: ${HAPPIER_TGZ:-}
-      HAPPIER_SERVER_URL: ${HAPPIER_SERVER_URL:-http://stack:3005}
+      HAPPIEST_SERVER_URL: ${HAPPIEST_SERVER_URL:-http://stack:3005}
     volumes:
       - ${PACKS_DIR:-./_packs}:/packs:ro
       - cli-home:/work/happier-home
@@ -56,8 +56,8 @@ services:
     environment:
       HAPPIER_NPM_SPEC: ${HAPPIER_NPM_SPEC:-@happier-dev/cli@next}
       HAPPIER_TGZ: ${HAPPIER_TGZ:-}
-      HAPPIER_SERVER_URL: ${HAPPIER_SERVER_URL:-http://stack:3005}
-      HAPPIER_ACTIVE_SERVER_ID: ${HAPPIER_ACTIVE_SERVER_ID:-smoke}
+      HAPPIEST_SERVER_URL: ${HAPPIEST_SERVER_URL:-http://stack:3005}
+      HAPPIEST_ACTIVE_SERVER_ID: ${HAPPIEST_ACTIVE_SERVER_ID:-smoke}
       CLIENT_HOME_DIR: /work/happier-home-2
       APPROVER_HOME_DIR: /work/primary-home
     volumes:

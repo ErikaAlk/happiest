@@ -4,7 +4,7 @@ import { createTempDirSync, removeTempDirSync } from '@/testkit/fs/tempDir';
 
 describe('configuration MCP tool call timeouts', () => {
   const envKeys = [
-    'HAPPIER_HOME_DIR',
+    'HAPPIEST_HOME_DIR',
     'HAPPIER_MCP_TOOL_CALL_TIMEOUT_MS',
     'HAPPIER_MCP_EXECUTION_RUN_WAIT_TIMEOUT_GRACE_MS',
     'HAPPIER_CODEX_HAPPIER_MCP_TOOL_CALL_TIMEOUT_MS',
@@ -25,7 +25,7 @@ describe('configuration MCP tool call timeouts', () => {
   function setHomeDir(): void {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
   }
 
   it('defaults MCP tool calls to a long SDK request timeout', async () => {

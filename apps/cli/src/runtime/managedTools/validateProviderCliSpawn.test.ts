@@ -10,11 +10,11 @@ import { resolveProviderCliManagedCommandPath } from './providerCliResolution';
 import { validateProviderCliSpawn } from './validateProviderCliSpawn';
 
 const TEMP_DIRS = new Set<string>();
-let envScope = createEnvKeyScope(['HAPPIER_HOME_DIR', 'PATH', 'HAPPIER_GEMINI_PATH']);
+let envScope = createEnvKeyScope(['HAPPIEST_HOME_DIR', 'PATH', 'HAPPIER_GEMINI_PATH']);
 
 afterEach(() => {
   envScope.restore();
-  envScope = createEnvKeyScope(['HAPPIER_HOME_DIR', 'PATH', 'HAPPIER_GEMINI_PATH']);
+  envScope = createEnvKeyScope(['HAPPIEST_HOME_DIR', 'PATH', 'HAPPIER_GEMINI_PATH']);
   for (const dir of TEMP_DIRS) {
     removeTempDirSync(dir);
   }
@@ -33,12 +33,12 @@ describe('validateProviderCliSpawn', () => {
   it('accepts managed provider CLIs when PATH is missing the system install', async () => {
     const root = createTempDirSync('happier-provider-spawn-', tmpdir());
     TEMP_DIRS.add(root);
-    process.env.HAPPIER_HOME_DIR = join(root, 'home');
+    process.env.HAPPIEST_HOME_DIR = join(root, 'home');
     process.env.PATH = join(root, 'empty-path');
-    mkdirSync(process.env.HAPPIER_HOME_DIR, { recursive: true });
+    mkdirSync(process.env.HAPPIEST_HOME_DIR, { recursive: true });
     mkdirSync(process.env.PATH, { recursive: true });
 
-    const managedPath = resolveProviderCliManagedCommandPath('gemini', { happyHomeDir: process.env.HAPPIER_HOME_DIR });
+    const managedPath = resolveProviderCliManagedCommandPath('gemini', { happyHomeDir: process.env.HAPPIEST_HOME_DIR });
     writeExecutable(managedPath);
 
     await expect(validateProviderCliSpawn({ agentId: 'gemini' })).resolves.toEqual({ ok: true });

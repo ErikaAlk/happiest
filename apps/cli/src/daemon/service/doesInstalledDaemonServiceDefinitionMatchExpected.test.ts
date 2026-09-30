@@ -39,15 +39,15 @@ const BOILERPLATE = `<?xml version="1.0" encoding="UTF-8"?>
     <dict>
       <key>PATH</key>
       <string>__PATH__</string>
-      <key>HAPPIER_HOME_DIR</key>
+      <key>HAPPIEST_HOME_DIR</key>
       <string>/Users/me/.happier</string>
       <key>HAPPIER_PUBLIC_RELEASE_CHANNEL</key>
       <string>dev</string>
       <key>HAPPIER_DAEMON_STARTUP_SOURCE</key>
       <string>background-service</string>
-      <key>HAPPIER_DAEMON_SERVICE_LABEL</key>
+      <key>HAPPIEST_DAEMON_SERVICE_LABEL</key>
       <string>com.happier.cli.daemon.default</string>
-      <key>HAPPIER_DAEMON_SERVICE_TARGET_MODE</key>
+      <key>HAPPIEST_DAEMON_SERVICE_TARGET_MODE</key>
       <string>default-following</string>
       <key>HAPPIER_NO_BROWSER_OPEN</key>
       <string>1</string>

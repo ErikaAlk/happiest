@@ -67,7 +67,7 @@ vi.mock('@/integrations/terminalHost/defaultRegistry', () => ({
 
 describe('requestSessionStop marker fallback', () => {
   let happyHomeDir = '';
-  const previousHappyHomeDir = process.env.HAPPIER_HOME_DIR;
+  const previousHappyHomeDir = process.env.HAPPIEST_HOME_DIR;
   const credentials = {
     token: 'token-1',
     encryption: { type: 'legacy' as const, secret: new Uint8Array(32).fill(1) },
@@ -76,7 +76,7 @@ describe('requestSessionStop marker fallback', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     happyHomeDir = await createTempDir('happier-marker-stop-');
-    process.env.HAPPIER_HOME_DIR = happyHomeDir;
+    process.env.HAPPIEST_HOME_DIR = happyHomeDir;
     reloadConfiguration();
     mocks.resolveSessionIdOrPrefix.mockResolvedValue({
       ok: true,
@@ -259,8 +259,8 @@ describe('requestSessionStop marker fallback', () => {
 
   afterEach(async () => {
     vi.restoreAllMocks();
-    if (previousHappyHomeDir === undefined) delete process.env.HAPPIER_HOME_DIR;
-    else process.env.HAPPIER_HOME_DIR = previousHappyHomeDir;
+    if (previousHappyHomeDir === undefined) delete process.env.HAPPIEST_HOME_DIR;
+    else process.env.HAPPIEST_HOME_DIR = previousHappyHomeDir;
     reloadConfiguration();
     if (happyHomeDir) await removeTempDir(happyHomeDir);
     happyHomeDir = '';

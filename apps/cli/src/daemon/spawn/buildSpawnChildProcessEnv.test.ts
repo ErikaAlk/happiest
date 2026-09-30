@@ -63,12 +63,12 @@ describe('buildSpawnChildProcessEnv', () => {
     const params = {
       processEnv: {
         PATH: '/bin',
-        HAPPIER_ACTIVE_SERVER_ID: 'stale-server',
-        HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-remote-dev-d72117acdb__id_default',
-        HAPPIER_SERVER_URL: 'https://stale.example.test',
-        HAPPIER_LOCAL_SERVER_URL: 'http://127.0.0.1:4999',
-        HAPPIER_PUBLIC_SERVER_URL: 'https://stale-public.example.test',
-        HAPPIER_WEBAPP_URL: 'https://stale-app.example.test',
+        HAPPIEST_ACTIVE_SERVER_ID: 'stale-server',
+        HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-remote-dev-d72117acdb__id_default',
+        HAPPIEST_SERVER_URL: 'https://stale.example.test',
+        HAPPIEST_LOCAL_SERVER_URL: 'http://127.0.0.1:4999',
+        HAPPIEST_PUBLIC_SERVER_URL: 'https://stale-public.example.test',
+        HAPPIEST_WEBAPP_URL: 'https://stale-app.example.test',
       },
       extraEnv: {},
       serverSelectionEnv: {
@@ -81,21 +81,21 @@ describe('buildSpawnChildProcessEnv', () => {
     const env = buildSpawnChildProcessEnv(params);
 
     expect(env.PATH).toBe('/bin');
-    expect(env.HAPPIER_ACTIVE_SERVER_ID).toBe('stack-a');
-    expect(env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID).toBe(
+    expect(env.HAPPIEST_ACTIVE_SERVER_ID).toBe('stack-a');
+    expect(env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID).toBe(
       'stack_repo-remote-dev-d72117acdb__id_default',
     );
-    expect(env.HAPPIER_SERVER_URL).toBe('http://127.0.0.1:3005');
-    expect(env.HAPPIER_LOCAL_SERVER_URL).toBe('http://127.0.0.1:3005');
-    expect(env.HAPPIER_PUBLIC_SERVER_URL).toBe('http://127.0.0.1:13155');
-    expect(env.HAPPIER_WEBAPP_URL).toBe('http://127.0.0.1:13155');
+    expect(env.HAPPIEST_SERVER_URL).toBe('http://127.0.0.1:3005');
+    expect(env.HAPPIEST_LOCAL_SERVER_URL).toBe('http://127.0.0.1:3005');
+    expect(env.HAPPIEST_PUBLIC_SERVER_URL).toBe('http://127.0.0.1:13155');
+    expect(env.HAPPIEST_WEBAPP_URL).toBe('http://127.0.0.1:13155');
   });
 
   it('promotes an old stack daemon active scope into the child lifecycle scope', () => {
     const env = buildSpawnChildProcessEnv({
       processEnv: {
         PATH: '/bin',
-        HAPPIER_ACTIVE_SERVER_ID: 'stack_repo-remote-dev-d72117acdb__id_default',
+        HAPPIEST_ACTIVE_SERVER_ID: 'stack_repo-remote-dev-d72117acdb__id_default',
       },
       extraEnv: {},
       serverSelectionEnv: {
@@ -106,7 +106,7 @@ describe('buildSpawnChildProcessEnv', () => {
       },
     });
 
-    expect(env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID).toBe(
+    expect(env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID).toBe(
       'stack_repo-remote-dev-d72117acdb__id_default',
     );
   });

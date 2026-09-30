@@ -91,7 +91,7 @@ describe('daemonService system task handlers', () => {
   it('reports acquisition explicitly and carries every ambient daemon fact the CLI emitted', async () => {
     // An empty Happier home: no default channel's CLI to adopt, so the app's channel answers.
     const emptyHome = mkdtempSync(join(tmpdir(), 'hsetup-status-channel-'));
-    vi.stubEnv('HAPPIER_HOME_DIR', emptyHome);
+    vi.stubEnv('HAPPIEST_HOME_DIR', emptyHome);
     vi.stubEnv('PATH', '');
     onTestFinished(() => {
       vi.unstubAllEnvs();
@@ -167,7 +167,7 @@ describe('daemonService system task handlers', () => {
     chmodSync(join(packageRoot, 'bin', 'happier.mjs'), 0o755);
     mkdirSync(npmBin, { recursive: true });
     symlinkSync(join(packageRoot, 'bin', 'happier.mjs'), join(npmBin, 'happier'));
-    vi.stubEnv('HAPPIER_HOME_DIR', join(home, 'happier'));
+    vi.stubEnv('HAPPIEST_HOME_DIR', join(home, 'happier'));
     vi.stubEnv('PATH', npmBin);
     onTestFinished(() => {
       vi.unstubAllEnvs();
@@ -228,9 +228,9 @@ describe('daemonService system task handlers', () => {
     mkdirSync(npmBin, { recursive: true });
     writeFileSync(join(npmBin, 'happier'), '#!/bin/sh\n', 'utf8');
     chmodSync(join(npmBin, 'happier'), 0o755);
-    vi.stubEnv('HAPPIER_HOME_DIR', join(home, 'happier'));
+    vi.stubEnv('HAPPIEST_HOME_DIR', join(home, 'happier'));
     vi.stubEnv('HAPPIER_STACK_REPO_DIR', join(home, 'elsewhere'));
-    vi.stubEnv('HAPPIER_BOOTSTRAP_CLI_PATH', '');
+    vi.stubEnv('HAPPIEST_BOOTSTRAP_CLI_PATH', '');
     vi.stubEnv('HAPPIER_BOOTSTRAP_HAPPIER_PATH', '');
     vi.stubEnv('PATH', npmBin);
     onTestFinished(() => {

@@ -780,7 +780,7 @@ describe('ApiSessionClient message commit queue', () => {
   it('queues a retry and throws an explicit unsupported confirmation error when persisted ACK-timeout recovery hits an older server', async () => {
     vi.resetModules();
     supervisorStartCount = 0;
-    vi.stubEnv('HAPPIER_SERVER_URL', 'http://adapter.test');
+    vi.stubEnv('HAPPIEST_SERVER_URL', 'http://adapter.test');
     vi.stubEnv('HAPPIER_SESSION_SOCKET_ACK_TIMEOUT_MS', '5');
 
     const app = fastify({ logger: false });

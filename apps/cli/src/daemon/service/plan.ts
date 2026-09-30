@@ -22,7 +22,7 @@ export type DaemonServiceTargetMode = 'pinned' | 'default-following';
 export type DaemonServiceAutostartMode = 'at-login' | 'on-demand';
 
 /** Definition-embedded record of the mode, so an installed service reports it back. */
-export const DAEMON_SERVICE_AUTOSTART_ENV_KEY = 'HAPPIER_DAEMON_SERVICE_AUTOSTART';
+export const DAEMON_SERVICE_AUTOSTART_ENV_KEY = 'HAPPIEST_DAEMON_SERVICE_AUTOSTART';
 
 export type DaemonServicePlannedFile = Readonly<{
   path: string;
@@ -303,11 +303,11 @@ export function planDaemonServiceInstall(params: Readonly<{
   const unitName = resolveDaemonServiceSystemdUnitName(instanceId, channel, targetMode);
   const programArgs = buildDaemonServiceProgramArgs({ nodePath: params.nodePath, entryPath: params.entryPath });
   const baseEnv: Record<string, string> = {
-    HAPPIER_HOME_DIR: params.happierHomeDir,
+    HAPPIEST_HOME_DIR: params.happierHomeDir,
     HAPPIER_PUBLIC_RELEASE_CHANNEL: publicReleaseChannel,
     HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-    HAPPIER_DAEMON_SERVICE_LABEL: label,
-    HAPPIER_DAEMON_SERVICE_TARGET_MODE: targetMode,
+    HAPPIEST_DAEMON_SERVICE_LABEL: label,
+    HAPPIEST_DAEMON_SERVICE_TARGET_MODE: targetMode,
     // Recorded in the definition itself so the installed service reports which
     // mode it was installed with. Without it a mode switch on an already
     // installed service is invisible to the definition-convergence check in
@@ -322,10 +322,10 @@ export function planDaemonServiceInstall(params: Readonly<{
   const pinnedTargetEnv: Record<string, string> = targetMode === 'default-following'
     ? {}
     : {
-        HAPPIER_ACTIVE_SERVER_ID: activeServerId!,
-        HAPPIER_SERVER_URL: params.serverUrl,
-        HAPPIER_WEBAPP_URL: params.webappUrl,
-        HAPPIER_PUBLIC_SERVER_URL: params.publicServerUrl,
+        HAPPIEST_ACTIVE_SERVER_ID: activeServerId!,
+        HAPPIEST_SERVER_URL: params.serverUrl,
+        HAPPIEST_WEBAPP_URL: params.webappUrl,
+        HAPPIEST_PUBLIC_SERVER_URL: params.publicServerUrl,
       };
 
   if (params.platform === 'darwin') {

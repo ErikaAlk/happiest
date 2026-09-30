@@ -2007,9 +2007,11 @@ jobs:
     timeout-minutes: 120
     env:
       PORT: "3005"
-      HAPPIER_SERVER_URL: http://localhost:3005
+      HAPPIEST_SERVER_URL: http://localhost:3005
+      # The relay server process reads HAPPIER_WEBAPP_URL; the Happiest CLI reads HAPPIEST_WEBAPP_URL.
       HAPPIER_WEBAPP_URL: http://localhost:3005
-      HAPPIER_HOME_DIR: /tmp/happier-dev-test
+      HAPPIEST_WEBAPP_URL: http://localhost:3005
+      HAPPIEST_HOME_DIR: /tmp/happier-dev-test
       DANGEROUSLY_LOG_TO_SERVER_FOR_AI_AUTO_DEBUGGING: "true"
       HAPPIER_SERVER_LIGHT_DATA_DIR: /tmp/happier-server-light
       HAPPIER_DB_PROVIDER: sqlite
@@ -2136,8 +2138,8 @@ jobs:
         if: failure()
         run: |
           set -euo pipefail
-          ROOT="${HAPPIER_HOME_DIR:-$HOME/.happier-dev-test}"
-          echo "HAPPIER_HOME_DIR=${ROOT}"
+          ROOT="${HAPPIEST_HOME_DIR:-$HOME/.happier-dev-test}"
+          echo "HAPPIEST_HOME_DIR=${ROOT}"
 
           echo "--- daemon.state.json candidates (redacted) ---"
           find "$ROOT" -maxdepth 4 -type f -name 'daemon.state.json' -print | head -n 10 || true

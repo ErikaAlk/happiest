@@ -70,16 +70,16 @@ function buildForeignPinnedServiceFile(params: Readonly<{
 describe('handleServiceRepairCliCommand foreign-home integration', () => {
     const envScope = createEnvKeyScope([
         'HOME',
-        'HAPPIER_HOME_DIR',
-        'HAPPIER_ACTIVE_SERVER_ID',
+        'HAPPIEST_HOME_DIR',
+        'HAPPIEST_ACTIVE_SERVER_ID',
         'HAPPIER_PUBLIC_RELEASE_CHANNEL',
-        'HAPPIER_SERVER_URL',
-        'HAPPIER_WEBAPP_URL',
-        'HAPPIER_PUBLIC_SERVER_URL',
-        'HAPPIER_DAEMON_SERVICE_USER_HOME_DIR',
-        'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR',
-        'HAPPIER_DAEMON_SERVICE_MODE',
-        'HAPPIER_DAEMON_SERVICE_SYSTEM_USER',
+        'HAPPIEST_SERVER_URL',
+        'HAPPIEST_WEBAPP_URL',
+        'HAPPIEST_PUBLIC_SERVER_URL',
+        'HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR',
+        'HAPPIEST_DAEMON_SERVICE_HOME_DIR',
+        'HAPPIEST_DAEMON_SERVICE_MODE',
+        'HAPPIEST_DAEMON_SERVICE_SYSTEM_USER',
     ]);
 
     afterEach(() => {
@@ -102,15 +102,15 @@ describe('handleServiceRepairCliCommand foreign-home integration', () => {
 
             envScope.patch({
                 HOME: userHomeDir,
-                HAPPIER_HOME_DIR: currentHappierHomeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: currentHappierHomeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
-                HAPPIER_SERVER_URL: 'https://api.happier.dev',
-                HAPPIER_WEBAPP_URL: 'https://app.happier.dev',
-                HAPPIER_PUBLIC_SERVER_URL: 'https://api.happier.dev',
-                HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: userHomeDir,
-                HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: currentHappierHomeDir,
-                HAPPIER_DAEMON_SERVICE_MODE: 'user',
+                HAPPIEST_SERVER_URL: 'https://api.happier.dev',
+                HAPPIEST_WEBAPP_URL: 'https://app.happier.dev',
+                HAPPIEST_PUBLIC_SERVER_URL: 'https://api.happier.dev',
+                HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: userHomeDir,
+                HAPPIEST_DAEMON_SERVICE_HOME_DIR: currentHappierHomeDir,
+                HAPPIEST_DAEMON_SERVICE_MODE: 'user',
             });
             reloadConfiguration();
 

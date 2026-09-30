@@ -19,7 +19,7 @@ SETUP_RELAY_SHORTCUT="0"
 DEBUG_MODE="${HAPPIER_INSTALLER_DEBUG:-0}"
 VERBOSE_MODE="${HAPPIER_INSTALLER_VERBOSE:-0}"
 PURGE_INSTALL_DIR="${HAPPIER_INSTALLER_PURGE:-0}"
-GITHUB_REPO="${HAPPIER_GITHUB_REPO:-happier-dev/happier}"
+GITHUB_REPO="${HAPPIEST_GITHUB_REPO:-happier-dev/happier}"
 GITHUB_TOKEN="${HAPPIER_GITHUB_TOKEN:-${GITHUB_TOKEN:-}}"
 RELEASE_ASSETS_DIR="${HAPPIER_RELEASE_ASSETS_DIR:-}"
 DEFAULT_MINISIGN_PUBKEY="$(cat <<'EOF'
@@ -27,7 +27,7 @@ untrusted comment: minisign public key 91AE28177BF6E43C
 RWQ85PZ7FyiukYbL3qv/bKnwgbT68wLVzotapeMFIb8n+c7pBQ7U8W2t
 EOF
 )"
-MINISIGN_PUBKEY="${HAPPIER_MINISIGN_PUBKEY:-${DEFAULT_MINISIGN_PUBKEY}}"
+MINISIGN_PUBKEY="${HAPPIEST_MINISIGN_PUBKEY:-${DEFAULT_MINISIGN_PUBKEY}}"
 MINISIGN_PUBKEY_URL="${HAPPIER_MINISIGN_PUBKEY_URL:-https://happier.dev/happier-release.pub}"
 MINISIGN_BIN="minisign"
 
@@ -1149,12 +1149,12 @@ invoke_installer_command_with_daemon_service_context() {
   local channel_label=""
   channel_label="$(display_channel_label "${CHANNEL}")"
   local installer_strategy="${HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY:-}"
-  local state_home_dir="${HAPPIER_HOME_DIR:-${INSTALL_DIR}}"
+  local state_home_dir="${HAPPIEST_HOME_DIR:-${INSTALL_DIR}}"
 
   local -a env_cmd=(env
-    "HAPPIER_HOME_DIR=${state_home_dir}"
+    "HAPPIEST_HOME_DIR=${state_home_dir}"
     "HAPPIER_PUBLIC_RELEASE_CHANNEL=${channel_label}"
-    "HAPPIER_DAEMON_SERVICE_CHANNEL=${channel_label}"
+    "HAPPIEST_DAEMON_SERVICE_CHANNEL=${channel_label}"
     ${installer_strategy:+"HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY=${installer_strategy}"}
   )
   if [[ -n "${HAPPIER_NONINTERACTIVE:-}" ]]; then
@@ -2376,7 +2376,7 @@ verify_archive_checksum() {
 verify_release_signature() {
   if ! ensure_minisign; then
     echo "minisign is required for installer signature verification." >&2
-    echo "Install minisign manually and rerun, or set HAPPIER_MINISIGN_PUBKEY with a trusted key." >&2
+    echo "Install minisign manually and rerun, or set HAPPIEST_MINISIGN_PUBKEY with a trusted key." >&2
     return 1
   fi
   write_minisign_public_key "${PUBKEY_PATH}"
@@ -2450,7 +2450,7 @@ append_path_hint() {
   local home_export_line=""
   local default_install_dir="${HOME}/.happier"
   if [[ "${INSTALL_DIR}" != "${default_install_dir}" ]]; then
-    home_export_line="export HAPPIER_HOME_DIR=\"${INSTALL_DIR}\""
+    home_export_line="export HAPPIEST_HOME_DIR=\"${INSTALL_DIR}\""
   fi
   local rc_files=()
   case "${shell_name}" in
@@ -2481,15 +2481,15 @@ append_path_hint() {
       updated=1
     fi
     if [[ -n "${home_export_line}" ]]; then
-      if [[ ! -f "${rc_file}" ]] || ! grep -Eq "^[[:space:]]*export[[:space:]]+HAPPIER_HOME_DIR=" "${rc_file}"; then
+      if [[ ! -f "${rc_file}" ]] || ! grep -Eq "^[[:space:]]*export[[:space:]]+HAPPIEST_HOME_DIR=" "${rc_file}"; then
         printf '\n%s\n' "${home_export_line}" >> "${rc_file}"
         updated=1
-      elif ! grep -Fxq "${home_export_line}" "${rc_file}" || [[ "$(grep -Ec "^[[:space:]]*export[[:space:]]+HAPPIER_HOME_DIR=" "${rc_file}")" -ne 1 ]]; then
-        upsert_shell_export_line "${rc_file}" "HAPPIER_HOME_DIR" "${home_export_line}"
+      elif ! grep -Fxq "${home_export_line}" "${rc_file}" || [[ "$(grep -Ec "^[[:space:]]*export[[:space:]]+HAPPIEST_HOME_DIR=" "${rc_file}")" -ne 1 ]]; then
+        upsert_shell_export_line "${rc_file}" "HAPPIEST_HOME_DIR" "${home_export_line}"
         updated=1
       fi
-    elif [[ -f "${rc_file}" ]] && grep -Eq "^[[:space:]]*export[[:space:]]+HAPPIER_HOME_DIR=" "${rc_file}"; then
-      remove_shell_export_line "${rc_file}" "HAPPIER_HOME_DIR"
+    elif [[ -f "${rc_file}" ]] && grep -Eq "^[[:space:]]*export[[:space:]]+HAPPIEST_HOME_DIR=" "${rc_file}"; then
+      remove_shell_export_line "${rc_file}" "HAPPIEST_HOME_DIR"
       updated=1
     fi
   done
@@ -2689,7 +2689,7 @@ if [[ "${PRODUCT}" == "cli" ]]; then
   DISPLAY_SHIM_PATH="${BIN_DIR}/${CLI_SHIM_NAME}"
   PROMOTION_OUTPUT=""
   if ! PROMOTION_OUTPUT="$(
-    HAPPIER_HOME_DIR="${INSTALL_DIR}" "${PAYLOAD_BINARY_PATH}" self __install-payload \
+    HAPPIEST_HOME_DIR="${INSTALL_DIR}" "${PAYLOAD_BINARY_PATH}" self __install-payload \
       --component happier-cli \
       --payload-root "${PAYLOAD_ROOT}" \
       --version "${VERSION}" \

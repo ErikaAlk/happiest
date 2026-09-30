@@ -152,8 +152,8 @@ test('create-auth-credentials writes access.key for repo root and server-scoped 
 test('create-auth-credentials does not seed unrelated ambient active-server-id scopes', async () => {
   const homeDir = await mkdtemp(path.join(tmpdir(), 'happier-auth-creds-compat-'));
   const server = await startAuthServer({ token: 'test-token-compat' });
-  const previousActiveServerId = process.env.HAPPIER_ACTIVE_SERVER_ID;
-  process.env.HAPPIER_ACTIVE_SERVER_ID = 'stack_repo-remote-dev-d72117acdb__id_default';
+  const previousActiveServerId = process.env.HAPPIEST_ACTIVE_SERVER_ID;
+  process.env.HAPPIEST_ACTIVE_SERVER_ID = 'stack_repo-remote-dev-d72117acdb__id_default';
 
   try {
     const res = await runScript(
@@ -178,8 +178,8 @@ test('create-auth-credentials does not seed unrelated ambient active-server-id s
     const ambientScopedPath = path.join(homeDir, 'servers', 'stack_repo-remote-dev-d72117acdb__id_default', 'access.key');
     await assert.rejects(readFile(ambientScopedPath, 'utf8'), /ENOENT/);
   } finally {
-    if (previousActiveServerId === undefined) delete process.env.HAPPIER_ACTIVE_SERVER_ID;
-    else process.env.HAPPIER_ACTIVE_SERVER_ID = previousActiveServerId;
+    if (previousActiveServerId === undefined) delete process.env.HAPPIEST_ACTIVE_SERVER_ID;
+    else process.env.HAPPIEST_ACTIVE_SERVER_ID = previousActiveServerId;
     await server.close();
   }
 });

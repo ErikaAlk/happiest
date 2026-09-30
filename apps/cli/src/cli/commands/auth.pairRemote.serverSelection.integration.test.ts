@@ -20,11 +20,11 @@ vi.mock('cross-spawn', () => {
 
 describe('auth pair-remote server selection', () => {
   const envKeys = [
-    'HAPPIER_HOME_DIR',
-    'HAPPIER_LOCAL_SERVER_URL',
-    'HAPPIER_SERVER_URL',
-    'HAPPIER_PUBLIC_SERVER_URL',
-    'HAPPIER_WEBAPP_URL',
+    'HAPPIEST_HOME_DIR',
+    'HAPPIEST_LOCAL_SERVER_URL',
+    'HAPPIEST_SERVER_URL',
+    'HAPPIEST_PUBLIC_SERVER_URL',
+    'HAPPIEST_WEBAPP_URL',
     'HAPPIER_VARIANT',
   ] as const;
 
@@ -72,11 +72,11 @@ describe('auth pair-remote server selection', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: localHomeDir,
-        HAPPIER_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_LOCAL_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_PUBLIC_SERVER_URL: 'https://relay.example.test',
-        HAPPIER_WEBAPP_URL: 'https://app.example.test',
+        HAPPIEST_HOME_DIR: localHomeDir,
+        HAPPIEST_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_LOCAL_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_PUBLIC_SERVER_URL: 'https://relay.example.test',
+        HAPPIEST_WEBAPP_URL: 'https://app.example.test',
         HAPPIER_VARIANT: 'stable',
       });
       vi.resetModules();
@@ -161,9 +161,9 @@ describe('auth pair-remote server selection', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: localHomeDir,
-        HAPPIER_SERVER_URL: 'http://127.0.0.1:52753',
-        HAPPIER_WEBAPP_URL: 'http://127.0.0.1:52753',
+        HAPPIEST_HOME_DIR: localHomeDir,
+        HAPPIEST_SERVER_URL: 'http://127.0.0.1:52753',
+        HAPPIEST_WEBAPP_URL: 'http://127.0.0.1:52753',
         HAPPIER_VARIANT: 'stable',
       });
       vi.resetModules();
@@ -233,9 +233,9 @@ describe('auth pair-remote server selection', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: localHomeDir,
-        HAPPIER_SERVER_URL: 'http://127.0.0.1:52753',
-        HAPPIER_WEBAPP_URL: 'http://127.0.0.1:52753',
+        HAPPIEST_HOME_DIR: localHomeDir,
+        HAPPIEST_SERVER_URL: 'http://127.0.0.1:52753',
+        HAPPIEST_WEBAPP_URL: 'http://127.0.0.1:52753',
         HAPPIER_VARIANT: 'stable',
       });
       spawnSyncMock.mockImplementationOnce(() => ({
@@ -279,9 +279,9 @@ describe('auth pair-remote server selection', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: localHomeDir,
-        HAPPIER_SERVER_URL: 'https://relay.example.test',
-        HAPPIER_WEBAPP_URL: 'https://app.example.test',
+        HAPPIEST_HOME_DIR: localHomeDir,
+        HAPPIEST_SERVER_URL: 'https://relay.example.test',
+        HAPPIEST_WEBAPP_URL: 'https://app.example.test',
         HAPPIER_VARIANT: 'stable',
       });
       vi.resetModules();

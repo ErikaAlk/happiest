@@ -12,7 +12,7 @@ const envKeys = [
   'HAPPIER_MANAGED_NODE_BIN',
   'HAPPIER_JS_RUNTIME_PATH',
   'HAPPIER_NODE_PATH',
-  'HAPPIER_HOME_DIR',
+  'HAPPIEST_HOME_DIR',
   'PATH',
 ] as const;
 
@@ -46,7 +46,7 @@ describe('resolveJavaScriptRuntimeExecutable', () => {
       HAPPIER_MANAGED_NODE_BIN: undefined,
       HAPPIER_JS_RUNTIME_PATH: undefined,
       HAPPIER_NODE_PATH: undefined,
-      HAPPIER_HOME_DIR: undefined,
+      HAPPIEST_HOME_DIR: undefined,
     });
 
     expect(resolveJavaScriptRuntimeExecutable({ isBunRuntime: false })).toBe(process.execPath);
@@ -71,7 +71,7 @@ describe('resolveJavaScriptRuntimeExecutable', () => {
       HAPPIER_MANAGED_NODE_BIN: undefined,
       HAPPIER_JS_RUNTIME_PATH: undefined,
       HAPPIER_NODE_PATH: undefined,
-      HAPPIER_HOME_DIR: happyHomeDir,
+      HAPPIEST_HOME_DIR: happyHomeDir,
       PATH: '',
     });
 
@@ -87,7 +87,7 @@ describe('resolveJavaScriptRuntimeExecutable', () => {
       HAPPIER_MANAGED_NODE_BIN: undefined,
       HAPPIER_JS_RUNTIME_PATH: undefined,
       HAPPIER_NODE_PATH: undefined,
-      HAPPIER_HOME_DIR: undefined,
+      HAPPIEST_HOME_DIR: undefined,
       PATH: '',
     });
 
@@ -102,7 +102,7 @@ describe('resolveJavaScriptRuntimeExecutable', () => {
       HAPPIER_MANAGED_NODE_BIN: undefined,
       HAPPIER_JS_RUNTIME_PATH: undefined,
       HAPPIER_NODE_PATH: undefined,
-      HAPPIER_HOME_DIR: happyHomeDir,
+      HAPPIEST_HOME_DIR: happyHomeDir,
       PATH: '',
     });
 
@@ -127,7 +127,7 @@ describe('resolveJavaScriptRuntimeExecutable', () => {
       HAPPIER_MANAGED_NODE_BIN: overridePath,
       HAPPIER_JS_RUNTIME_PATH: undefined,
       HAPPIER_NODE_PATH: undefined,
-      HAPPIER_HOME_DIR: undefined,
+      HAPPIEST_HOME_DIR: undefined,
     });
 
     expect(resolveJavaScriptRuntimeExecutable({ isBunRuntime: false })).toBe(null);

@@ -98,11 +98,11 @@ async function main() {
 
   const serverUrl =
     String(values['server-url'] ?? '').trim() ||
-    String(process.env.HAPPIER_SERVER_URL ?? '').trim() ||
+    String(process.env.HAPPIEST_SERVER_URL ?? '').trim() ||
     'http://127.0.0.1:3005';
   const homeDir =
     String(values['home-dir'] ?? '').trim() ||
-    String(process.env.HAPPIER_HOME_DIR ?? '').trim() ||
+    String(process.env.HAPPIEST_HOME_DIR ?? '').trim() ||
     path.join(os.homedir(), '.happier-dev-test');
 
   const secretBase64Raw =
@@ -147,7 +147,7 @@ async function main() {
 
   const activeServerIdRaw =
     String(values['active-server-id'] ?? '').trim() ||
-    String(process.env.HAPPIER_ACTIVE_SERVER_ID ?? '').trim() ||
+    String(process.env.HAPPIEST_ACTIVE_SERVER_ID ?? '').trim() ||
     deriveServerIdFromUrl(serverUrl);
   const activeServerId = sanitizeServerId(activeServerIdRaw);
 

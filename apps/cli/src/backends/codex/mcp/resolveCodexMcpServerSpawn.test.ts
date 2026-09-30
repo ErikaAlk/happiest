@@ -8,7 +8,7 @@ import { createEnvKeyScope } from '@/testkit/env/envScope';
 import { writeExecutableShimSync } from '@/testkit/fs/executableShim';
 import { createTempDirSync, removeTempDirSync } from '@/testkit/fs/tempDir';
 
-const envKeys = ['HAPPIER_CODEX_PATH', 'HAPPIER_HOME_DIR', 'PATH'] as const;
+const envKeys = ['HAPPIER_CODEX_PATH', 'HAPPIEST_HOME_DIR', 'PATH'] as const;
 const TEMP_DIRS = new Set<string>();
 let envScope = createEnvKeyScope(envKeys);
 
@@ -25,7 +25,7 @@ describe('resolveCodexMcpServerSpawn', () => {
   it('fails closed when no Codex CLI source is available', async () => {
     const root = createTempDirSync('happier-codex-mcp-default-');
     TEMP_DIRS.add(root);
-    process.env.HAPPIER_HOME_DIR = join(root, 'home');
+    process.env.HAPPIEST_HOME_DIR = join(root, 'home');
     process.env.PATH = join(root, 'empty-path');
     mkdirSync(process.env.PATH, { recursive: true });
     vi.resetModules();
@@ -51,12 +51,12 @@ describe('resolveCodexMcpServerSpawn', () => {
   it('falls back to the managed Codex CLI when PATH is missing it', async () => {
     const root = createTempDirSync('happier-codex-mcp-managed-');
     TEMP_DIRS.add(root);
-    process.env.HAPPIER_HOME_DIR = join(root, 'home');
+    process.env.HAPPIEST_HOME_DIR = join(root, 'home');
     process.env.PATH = join(root, 'empty-path');
     mkdirSync(process.env.PATH, { recursive: true });
-    mkdirSync(process.env.HAPPIER_HOME_DIR, { recursive: true });
+    mkdirSync(process.env.HAPPIEST_HOME_DIR, { recursive: true });
 
-    const managedPath = resolveProviderCliManagedCommandPath('codex', { happyHomeDir: process.env.HAPPIER_HOME_DIR });
+    const managedPath = resolveProviderCliManagedCommandPath('codex', { happyHomeDir: process.env.HAPPIEST_HOME_DIR });
     mkdirSync(dirname(managedPath), { recursive: true });
     writeExecutableShimSync({
       dir: dirname(managedPath),

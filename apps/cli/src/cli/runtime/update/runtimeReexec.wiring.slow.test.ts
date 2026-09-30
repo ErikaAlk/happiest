@@ -45,7 +45,7 @@ function runCliVersionViaDist(homeDir: string, envOverrides?: NodeJS.ProcessEnv)
     cwd: process.cwd(),
     env: {
       ...process.env,
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_VARIANT: 'stable',
       HAPPIER_CLI_UPDATE_CHECK: '0',
       ...envOverrides,

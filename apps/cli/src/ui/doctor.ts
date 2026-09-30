@@ -123,8 +123,8 @@ export function hasDaemonOwnerMismatchForCurrentInvocation(params: Readonly<{
 export function getEnvironmentInfo(): Record<string, any> {
     return {
         PWD: process.env.PWD,
-        HAPPIER_HOME_DIR: process.env.HAPPIER_HOME_DIR,
-        HAPPIER_SERVER_URL: process.env.HAPPIER_SERVER_URL,
+        HAPPIEST_HOME_DIR: process.env.HAPPIEST_HOME_DIR,
+        HAPPIEST_SERVER_URL: process.env.HAPPIEST_SERVER_URL,
         HAPPIER_PROJECT_ROOT: process.env.HAPPIER_PROJECT_ROOT,
         DANGEROUSLY_LOG_TO_SERVER_FOR_AI_AUTO_DEBUGGING: process.env.DANGEROUSLY_LOG_TO_SERVER_FOR_AI_AUTO_DEBUGGING,
         NODE_ENV: process.env.NODE_ENV,
@@ -242,8 +242,8 @@ export async function runDoctorCommand(filter?: 'all' | 'daemon'): Promise<void>
         // Environment
         console.log(chalk.bold('\n🌍 Environment Variables'));
         const env = getEnvironmentInfo();
-        console.log(`HAPPIER_HOME_DIR: ${env.HAPPIER_HOME_DIR ? chalk.green(env.HAPPIER_HOME_DIR) : chalk.gray('not set')}`);
-        console.log(`HAPPIER_SERVER_URL: ${env.HAPPIER_SERVER_URL ? chalk.green(env.HAPPIER_SERVER_URL) : chalk.gray('not set')}`);
+        console.log(`HAPPIEST_HOME_DIR: ${env.HAPPIEST_HOME_DIR ? chalk.green(env.HAPPIEST_HOME_DIR) : chalk.gray('not set')}`);
+        console.log(`HAPPIEST_SERVER_URL: ${env.HAPPIEST_SERVER_URL ? chalk.green(env.HAPPIEST_SERVER_URL) : chalk.gray('not set')}`);
         console.log(`DANGEROUSLY_LOG_TO_SERVER: ${env.DANGEROUSLY_LOG_TO_SERVER_FOR_AI_AUTO_DEBUGGING ? chalk.yellow('ENABLED') : chalk.gray('not set')}`);
         console.log(`DEBUG: ${env.DEBUG ? chalk.green(env.DEBUG) : chalk.gray('not set')}`);
         console.log(`NODE_ENV: ${env.NODE_ENV ? chalk.green(env.NODE_ENV) : chalk.gray('not set')}`);

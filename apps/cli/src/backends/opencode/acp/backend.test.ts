@@ -46,7 +46,7 @@ function expectDefaultAcpArgs(args: string[]): void {
 }
 
 describe('createOpenCodeBackend command resolution', () => {
-  const originalHappyHomeDir = process.env.HAPPIER_HOME_DIR;
+  const originalHappyHomeDir = process.env.HAPPIEST_HOME_DIR;
   const originalHome = process.env.HOME;
   const originalOpenCodePath = process.env.HAPPIER_OPENCODE_PATH;
   const originalPath = process.env.PATH;
@@ -55,8 +55,8 @@ describe('createOpenCodeBackend command resolution', () => {
   const tempDirs: string[] = [];
 
   afterEach(() => {
-    if (originalHappyHomeDir === undefined) delete process.env.HAPPIER_HOME_DIR;
-    else process.env.HAPPIER_HOME_DIR = originalHappyHomeDir;
+    if (originalHappyHomeDir === undefined) delete process.env.HAPPIEST_HOME_DIR;
+    else process.env.HAPPIEST_HOME_DIR = originalHappyHomeDir;
     if (originalHome === undefined) delete process.env.HOME;
     else process.env.HOME = originalHome;
     if (originalOpenCodePath === undefined) delete process.env.HAPPIER_OPENCODE_PATH;
@@ -95,7 +95,7 @@ describe('createOpenCodeBackend command resolution', () => {
   ])('fails closed for $label when OpenCode is not resolvable', ({ override, expectedMessage }) => {
     const happyHomeDir = makeTempDir('happier-opencode-home-');
     tempDirs.push(happyHomeDir);
-    process.env.HAPPIER_HOME_DIR = happyHomeDir;
+    process.env.HAPPIEST_HOME_DIR = happyHomeDir;
     process.env.HOME = happyHomeDir;
     process.env.PATH = '';
     if (override === undefined) delete process.env.HAPPIER_OPENCODE_PATH;
@@ -109,7 +109,7 @@ describe('createOpenCodeBackend command resolution', () => {
   it('handles non-executable override paths with explicit platform semantics', () => {
     const happyHomeDir = makeTempDir('happier-opencode-home-');
     tempDirs.push(happyHomeDir);
-    process.env.HAPPIER_HOME_DIR = happyHomeDir;
+    process.env.HAPPIEST_HOME_DIR = happyHomeDir;
     process.env.HOME = happyHomeDir;
     process.env.PATH = '';
     const workDir = makeTempDir('happier-opencode-backend-');

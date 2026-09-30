@@ -1,3 +1,4 @@
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import {
   getReleaseRingCatalogEntry,
   type PublicReleaseRingId,
@@ -40,52 +41,47 @@ export interface FirstPartyComponentPublicReleaseVariant {
 
 const SHARED_VERSION_RETENTION = 2;
 
+const CLI_COMMAND_NAME = productIdentity.commandName;
+const SERVER_COMMAND_NAME = `${productIdentity.commandName}-server`;
+
 export const firstPartyComponentCatalog = {
   'happier-cli': {
     id: 'happier-cli',
     runtimeKind: 'binary',
-    executableBaseName: 'happier',
-    releaseProductName: 'happier',
+    executableBaseName: CLI_COMMAND_NAME,
+    releaseProductName: CLI_COMMAND_NAME,
     rollingReleasePrefix: 'cli',
     installRootName: 'cli',
     retainVersions: SHARED_VERSION_RETENTION,
     nodeEntrypointRelativePath: 'package-dist/index.mjs',
-    binaryRelativePath: 'happier',
-    installShims: ['happier'],
-    installShimOverrides: {
-      preview: ['hprev'],
-      publicdev: ['hdev'],
-    },
+    binaryRelativePath: CLI_COMMAND_NAME,
+    installShims: [CLI_COMMAND_NAME],
     prefersManagedNodeFallback: false,
   },
   'happier-daemon': {
     id: 'happier-daemon',
     runtimeKind: 'node-runtime-payload',
-    executableBaseName: 'happier',
-    releaseProductName: 'happier',
+    executableBaseName: CLI_COMMAND_NAME,
+    releaseProductName: CLI_COMMAND_NAME,
     rollingReleasePrefix: 'cli',
     installRootName: 'cli',
     retainVersions: SHARED_VERSION_RETENTION,
     nodeEntrypointRelativePath: 'package-dist/index.mjs',
-    binaryRelativePath: 'happier',
-    installShims: ['happier'],
-    installShimOverrides: {
-      preview: ['hprev'],
-      publicdev: ['hdev'],
-    },
+    binaryRelativePath: CLI_COMMAND_NAME,
+    installShims: [CLI_COMMAND_NAME],
     prefersManagedNodeFallback: true,
   },
   'happier-server': {
     id: 'happier-server',
     runtimeKind: 'binary',
-    executableBaseName: 'happier-server',
-    releaseProductName: 'happier-server',
+    executableBaseName: SERVER_COMMAND_NAME,
+    releaseProductName: SERVER_COMMAND_NAME,
     rollingReleasePrefix: 'server',
     installRootName: 'server',
     retainVersions: SHARED_VERSION_RETENTION,
     nodeEntrypointRelativePath: null,
-    binaryRelativePath: 'happier-server',
-    installShims: ['happier-server'],
+    binaryRelativePath: SERVER_COMMAND_NAME,
+    installShims: [SERVER_COMMAND_NAME],
     prefersManagedNodeFallback: false,
   },
   hstack: {
@@ -104,8 +100,8 @@ export const firstPartyComponentCatalog = {
   'happier-memory-runtime': {
     id: 'happier-memory-runtime',
     runtimeKind: 'node-runtime-payload',
-    executableBaseName: 'happier-memory-runtime',
-    releaseProductName: 'happier-memory-runtime',
+    executableBaseName: `${CLI_COMMAND_NAME}-memory-runtime`,
+    releaseProductName: `${CLI_COMMAND_NAME}-memory-runtime`,
     rollingReleasePrefix: 'cli',
     installRootName: 'memory-runtime',
     retainVersions: SHARED_VERSION_RETENTION,
@@ -118,7 +114,7 @@ export const firstPartyComponentCatalog = {
     id: 'happier-difftastic',
     runtimeKind: 'binary',
     executableBaseName: 'difft',
-    releaseProductName: 'happier-difftastic',
+    releaseProductName: `${CLI_COMMAND_NAME}-difftastic`,
     rollingReleasePrefix: 'cli',
     installRootName: 'difftastic',
     retainVersions: SHARED_VERSION_RETENTION,

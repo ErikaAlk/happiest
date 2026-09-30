@@ -42,12 +42,12 @@ describe('resolveSpawnChildEnvironment (explicit env keys marker)', () => {
     const result = await resolveSpawnChildEnvironment({
       options,
       profileEnvironmentVariables: {
-        HAPPIER_HOME_DIR: '/tmp/foreign-home',
-        HAPPIER_ACTIVE_SERVER_ID: 'foreign-server',
-        HAPPIER_SERVER_URL: 'https://foreign-api.example.test',
-        HAPPIER_WEBAPP_URL: 'https://foreign-app.example.test',
-        HAPPIER_LOCAL_SERVER_URL: 'http://127.0.0.1:65531',
-        HAPPIER_PUBLIC_SERVER_URL: 'https://foreign-public.example.test',
+        HAPPIEST_HOME_DIR: '/tmp/foreign-home',
+        HAPPIEST_ACTIVE_SERVER_ID: 'foreign-server',
+        HAPPIEST_SERVER_URL: 'https://foreign-api.example.test',
+        HAPPIEST_WEBAPP_URL: 'https://foreign-app.example.test',
+        HAPPIEST_LOCAL_SERVER_URL: 'http://127.0.0.1:65531',
+        HAPPIEST_PUBLIC_SERVER_URL: 'https://foreign-public.example.test',
         OPENAI_API_KEY: 'sk-test',
       },
       daemonSpawnHooks: null,
@@ -61,12 +61,12 @@ describe('resolveSpawnChildEnvironment (explicit env keys marker)', () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
 
-    expect(result.expandedEnvironmentVariables.HAPPIER_HOME_DIR).toBeUndefined();
-    expect(result.expandedEnvironmentVariables.HAPPIER_ACTIVE_SERVER_ID).toBeUndefined();
-    expect(result.expandedEnvironmentVariables.HAPPIER_SERVER_URL).toBeUndefined();
-    expect(result.expandedEnvironmentVariables.HAPPIER_WEBAPP_URL).toBeUndefined();
-    expect(result.expandedEnvironmentVariables.HAPPIER_LOCAL_SERVER_URL).toBeUndefined();
-    expect(result.expandedEnvironmentVariables.HAPPIER_PUBLIC_SERVER_URL).toBeUndefined();
+    expect(result.expandedEnvironmentVariables.HAPPIEST_HOME_DIR).toBeUndefined();
+    expect(result.expandedEnvironmentVariables.HAPPIEST_ACTIVE_SERVER_ID).toBeUndefined();
+    expect(result.expandedEnvironmentVariables.HAPPIEST_SERVER_URL).toBeUndefined();
+    expect(result.expandedEnvironmentVariables.HAPPIEST_WEBAPP_URL).toBeUndefined();
+    expect(result.expandedEnvironmentVariables.HAPPIEST_LOCAL_SERVER_URL).toBeUndefined();
+    expect(result.expandedEnvironmentVariables.HAPPIEST_PUBLIC_SERVER_URL).toBeUndefined();
     expect(result.expandedEnvironmentVariables.OPENAI_API_KEY).toBe('sk-test');
 
     const raw = result.extraEnvForChild.HAPPIER_SPAWN_EXPLICIT_ENV_KEYS_JSON;
@@ -74,12 +74,12 @@ describe('resolveSpawnChildEnvironment (explicit env keys marker)', () => {
     expect(parsed).toEqual(expect.arrayContaining(['OPENAI_API_KEY']));
     expect(parsed).not.toEqual(
       expect.arrayContaining([
-        'HAPPIER_HOME_DIR',
-        'HAPPIER_ACTIVE_SERVER_ID',
-        'HAPPIER_SERVER_URL',
-        'HAPPIER_WEBAPP_URL',
-        'HAPPIER_LOCAL_SERVER_URL',
-        'HAPPIER_PUBLIC_SERVER_URL',
+        'HAPPIEST_HOME_DIR',
+        'HAPPIEST_ACTIVE_SERVER_ID',
+        'HAPPIEST_SERVER_URL',
+        'HAPPIEST_WEBAPP_URL',
+        'HAPPIEST_LOCAL_SERVER_URL',
+        'HAPPIEST_PUBLIC_SERVER_URL',
       ]),
     );
   });

@@ -106,9 +106,9 @@ function parseRepairInvocation(argv: readonly string[]): Readonly<{
     asJson: argv.includes('--json'),
     reportOnly: argv.includes('--report-only'),
     migrate: argv.includes('--migrate'),
-    mode: mode ?? (String(process.env.HAPPIER_DAEMON_SERVICE_MODE ?? '').trim().toLowerCase() === 'system' ? 'system' : 'user'),
+    mode: mode ?? (String(process.env.HAPPIEST_DAEMON_SERVICE_MODE ?? '').trim().toLowerCase() === 'system' ? 'system' : 'user'),
     modeExplicit: mode !== null,
-    systemUser: systemUser || String(process.env.HAPPIER_DAEMON_SERVICE_SYSTEM_USER ?? '').trim(),
+    systemUser: systemUser || String(process.env.HAPPIEST_DAEMON_SERVICE_SYSTEM_USER ?? '').trim(),
     targetServerSelector,
   };
 }

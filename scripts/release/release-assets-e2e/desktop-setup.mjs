@@ -282,8 +282,8 @@ async function main() {
     .split('\n').filter(Boolean).map((line) => JSON.parse(line))
     .some((entry) => entry.kind === 'asset' && entry.stage === stage && entry.name === name && entry.status === 200);
 
-  const approverEnv = ['-e', `HAPPIER_HOME_DIR=${APPROVER_HOME}`, '-e', `HAPPIER_ACTIVE_SERVER_ID=${APPROVER_SERVER_ID}`,
-    '-e', `HAPPIER_SERVER_URL=${RELAY_URL}`, '-e', `HAPPIER_PUBLIC_SERVER_URL=${RELAY_URL}`, '-e', `HAPPIER_WEBAPP_URL=${RELAY_URL}`];
+  const approverEnv = ['-e', `HAPPIEST_HOME_DIR=${APPROVER_HOME}`, '-e', `HAPPIEST_ACTIVE_SERVER_ID=${APPROVER_SERVER_ID}`,
+    '-e', `HAPPIEST_SERVER_URL=${RELAY_URL}`, '-e', `HAPPIEST_PUBLIC_SERVER_URL=${RELAY_URL}`, '-e', `HAPPIEST_WEBAPP_URL=${RELAY_URL}`];
   const approvePairing = async (/** @type {string} */ publicKey) => {
     compose.run(['exec', '-T', ...approverEnv, 'approver', approverCli, 'auth', 'approve', '--json', '--public-key', publicKey]);
   };
@@ -414,9 +414,9 @@ async function main() {
       // current, so the relay reaches it the way that version read it — the CLI's env override.
       // Its params are exactly what that released app sent (PREDECESSOR_SETUP_PARAMS_BY_DESKTOP_TAG).
       const previousSetup = await hsetup(machine, 'prev', 'setup.thisComputer.v1', PREDECESSOR_SETUP_PARAMS_BY_DESKTOP_TAG[baseline.desktopTag], { approvePairing, serviceConsent: 'decline' }, {
-        HAPPIER_SERVER_URL: RELAY_URL,
-        HAPPIER_WEBAPP_URL: RELAY_URL,
-        HAPPIER_PUBLIC_SERVER_URL: RELAY_URL,
+        HAPPIEST_SERVER_URL: RELAY_URL,
+        HAPPIEST_WEBAPP_URL: RELAY_URL,
+        HAPPIEST_PUBLIC_SERVER_URL: RELAY_URL,
       });
       const previousStatus = daemonStatus(machine);
       const previousProbe = probe(machine, previousStatus);

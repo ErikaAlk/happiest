@@ -8,7 +8,7 @@ const envScope = createEnvKeyScope([
   'HAPPIER_PUBLIC_RELEASE_CHANNEL',
   'HAPPIER_RELEASE_RING',
   'HAPPIER_RELEASE_CHANNEL',
-  'HAPPIER_HOME_DIR',
+  'HAPPIEST_HOME_DIR',
   'HAPPIER_CLI_SUBPROCESS_DIST_ENTRYPOINT',
   'HAPPIER_CLI_SUBPROCESS_DAEMON_DIST_CLOSURE_FINGERPRINT',
 ]);
@@ -26,7 +26,7 @@ describe('spawnDetachedDaemonStartSync', () => {
       HAPPIER_PUBLIC_RELEASE_CHANNEL: undefined,
       HAPPIER_RELEASE_RING: undefined,
       HAPPIER_RELEASE_CHANNEL: undefined,
-      HAPPIER_HOME_DIR: '/tmp/happier-spawn-detached-test',
+      HAPPIEST_HOME_DIR: '/tmp/happier-spawn-detached-test',
       HAPPIER_CLI_SUBPROCESS_DIST_ENTRYPOINT: undefined,
       HAPPIER_CLI_SUBPROCESS_DAEMON_DIST_CLOSURE_FINGERPRINT: undefined,
     });

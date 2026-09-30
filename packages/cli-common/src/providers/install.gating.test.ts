@@ -95,7 +95,7 @@ describe('installProviderCli vendor_recipe execution gating', () => {
         logDir,
         env: {
           ...process.env,
-          HAPPIER_HOME_DIR: homeDir,
+          HAPPIEST_HOME_DIR: homeDir,
           PATH: '',
         },
         skipIfInstalled: false,
@@ -185,7 +185,7 @@ describe('installProviderCli vendor_recipe execution gating', () => {
         logDir,
         env: {
           ...process.env,
-          HAPPIER_HOME_DIR: homeDir,
+          HAPPIEST_HOME_DIR: homeDir,
           PATH: '',
           PATHEXT: '.EXE;.CMD;.BAT;.COM',
           COMSPEC: 'C:\\WINDOWS\\system32\\cmd.exe',
@@ -312,7 +312,7 @@ describe('installProviderCli vendor_recipe execution gating', () => {
         logDir,
         env: {
           ...process.env,
-          HAPPIER_HOME_DIR: homeDir,
+          HAPPIEST_HOME_DIR: homeDir,
           PATH: '',
         },
         skipIfInstalled: false,
@@ -383,7 +383,7 @@ describe('installProviderCli vendor_recipe execution gating', () => {
         logDir,
         env: {
           ...process.env,
-          HAPPIER_HOME_DIR: homeDir,
+          HAPPIEST_HOME_DIR: homeDir,
           PATH: '',
         },
         skipIfInstalled: false,
@@ -442,7 +442,7 @@ describe('installProviderCli vendor_recipe execution gating', () => {
         logDir,
         env: {
           ...process.env,
-          HAPPIER_HOME_DIR: homeDir,
+          HAPPIEST_HOME_DIR: homeDir,
           PATH: '',
         },
         skipIfInstalled: false,
@@ -504,7 +504,7 @@ describe('installProviderCli vendor_recipe execution gating', () => {
         logDir,
         env: {
           ...process.env,
-          HAPPIER_HOME_DIR: homeDir,
+          HAPPIEST_HOME_DIR: homeDir,
           HOME: homeDir,
           PATH: `${binDir}:/bin`,
         },

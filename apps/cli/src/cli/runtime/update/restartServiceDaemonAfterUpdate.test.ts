@@ -13,11 +13,11 @@ vi.mock('@/daemon/doctor', async (importOriginal) => {
 });
 
 const SCOPED_ENV_KEYS = [
-  'HAPPIER_HOME_DIR',
-  'HAPPIER_DAEMON_SERVICE_PLATFORM',
-  'HAPPIER_DAEMON_SERVICE_USER_HOME_DIR',
-  'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR',
-  'HAPPIER_DAEMON_SERVICE_TARGET_MODE',
+  'HAPPIEST_HOME_DIR',
+  'HAPPIEST_DAEMON_SERVICE_PLATFORM',
+  'HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR',
+  'HAPPIEST_DAEMON_SERVICE_HOME_DIR',
+  'HAPPIEST_DAEMON_SERVICE_TARGET_MODE',
   'HAPPIER_PUBLIC_RELEASE_CHANNEL',
 ] as const;
 
@@ -84,11 +84,11 @@ describe('service daemon restart after an update', { timeout: 120_000 }, () => {
   function patchHome(homeDir: string): void {
     const happierHomeDir = `${homeDir}/.happier`;
     envScope.patch({
-      HAPPIER_HOME_DIR: happierHomeDir,
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-      HAPPIER_DAEMON_SERVICE_TARGET_MODE: undefined,
+      HAPPIEST_HOME_DIR: happierHomeDir,
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+      HAPPIEST_DAEMON_SERVICE_TARGET_MODE: undefined,
       HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
     });
   }
@@ -117,7 +117,7 @@ describe('service daemon restart after an update', { timeout: 120_000 }, () => {
       expect(result).toEqual({ kind: 'restarted' });
       const restartCall = calls.find((call) => call.args.join(' ') === 'daemon service restart');
       expect(restartCall?.command).toMatch(/[\\/]cli[\\/]current[\\/]happier(?:\.exe)?$/);
-      expect(restartCall?.env?.HAPPIER_DAEMON_SERVICE_TARGET_MODE).toBe('default-following');
+      expect(restartCall?.env?.HAPPIEST_DAEMON_SERVICE_TARGET_MODE).toBe('default-following');
     });
   });
 

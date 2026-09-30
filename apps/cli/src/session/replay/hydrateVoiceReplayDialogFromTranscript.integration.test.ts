@@ -7,10 +7,10 @@ import { createTempDir, removeTempDir } from '@/testkit/fs/tempDir';
 describe('hydrateVoiceReplayDialogFromTranscript (integration)', () => {
   let server: Server | null = null;
   let happyHomeDir = '';
-  let envScope = createEnvKeyScope(['HAPPIER_SERVER_URL', 'HAPPIER_WEBAPP_URL', 'HAPPIER_HOME_DIR']);
+  let envScope = createEnvKeyScope(['HAPPIEST_SERVER_URL', 'HAPPIEST_WEBAPP_URL', 'HAPPIEST_HOME_DIR']);
 
   beforeEach(async () => {
-    envScope = createEnvKeyScope(['HAPPIER_SERVER_URL', 'HAPPIER_WEBAPP_URL', 'HAPPIER_HOME_DIR']);
+    envScope = createEnvKeyScope(['HAPPIEST_SERVER_URL', 'HAPPIEST_WEBAPP_URL', 'HAPPIEST_HOME_DIR']);
     happyHomeDir = await createTempDir('happier-cli-voice-replay-hydrate-');
   });
 
@@ -137,9 +137,9 @@ describe('hydrateVoiceReplayDialogFromTranscript (integration)', () => {
     if (!address || typeof address === 'string') throw new Error('Failed to resolve replay hydrate server address');
 
     envScope.patch({
-      HAPPIER_SERVER_URL: `http://127.0.0.1:${address.port}`,
-      HAPPIER_WEBAPP_URL: 'http://127.0.0.1:3000',
-      HAPPIER_HOME_DIR: happyHomeDir,
+      HAPPIEST_SERVER_URL: `http://127.0.0.1:${address.port}`,
+      HAPPIEST_WEBAPP_URL: 'http://127.0.0.1:3000',
+      HAPPIEST_HOME_DIR: happyHomeDir,
     });
     const { reloadConfiguration } = await import('@/configuration');
     reloadConfiguration();
@@ -270,9 +270,9 @@ describe('hydrateVoiceReplayDialogFromTranscript (integration)', () => {
     if (!address || typeof address === 'string') throw new Error('Failed to resolve replay hydrate server address');
 
     envScope.patch({
-      HAPPIER_SERVER_URL: `http://127.0.0.1:${address.port}`,
-      HAPPIER_WEBAPP_URL: 'http://127.0.0.1:3000',
-      HAPPIER_HOME_DIR: happyHomeDir,
+      HAPPIEST_SERVER_URL: `http://127.0.0.1:${address.port}`,
+      HAPPIEST_WEBAPP_URL: 'http://127.0.0.1:3000',
+      HAPPIEST_HOME_DIR: happyHomeDir,
     });
     const { reloadConfiguration } = await import('@/configuration');
     reloadConfiguration();

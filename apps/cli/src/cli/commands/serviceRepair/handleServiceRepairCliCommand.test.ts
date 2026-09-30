@@ -119,10 +119,10 @@ vi.mock('../server/commandUtilities', () => ({
 
 describe('handleServiceRepairCliCommand', () => {
   const envScope = createEnvKeyScope([
-    'HAPPIER_HOME_DIR',
-    'HAPPIER_ACTIVE_SERVER_ID',
+    'HAPPIEST_HOME_DIR',
+    'HAPPIEST_ACTIVE_SERVER_ID',
     'HAPPIER_PUBLIC_RELEASE_CHANNEL',
-    'HAPPIER_DAEMON_SERVICE_SYSTEM_USER',
+    'HAPPIEST_DAEMON_SERVICE_SYSTEM_USER',
     'SUDO_USER',
   ]);
 
@@ -187,8 +187,8 @@ describe('handleServiceRepairCliCommand', () => {
   it('surfaces a manually-started daemon via the report (no warning field)', async () => {
     await withTempDir('happier-service-repair-owner-warning-', async (homeDir) => {
       envScope.patch({
-        HAPPIER_HOME_DIR: homeDir,
-        HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+        HAPPIEST_HOME_DIR: homeDir,
+        HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
       });
       vi.resetModules();
@@ -276,8 +276,8 @@ describe('handleServiceRepairCliCommand', () => {
   it('resolves doctor repair --server URLs to existing server profiles', async () => {
     await withTempDir('happier-service-repair-server-url-', async (homeDir) => {
       envScope.patch({
-        HAPPIER_HOME_DIR: homeDir,
-        HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+        HAPPIEST_HOME_DIR: homeDir,
+        HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
       });
       vi.resetModules();
@@ -624,7 +624,7 @@ describe('handleServiceRepairCliCommand', () => {
     await expect(handleServiceRepairCliCommand({
       argv: ['repair', '--mode', 'system', '--yes', '--json'],
       commandPath: 'happier service',
-    })).rejects.toThrow('System mode automatic startup repair requires --system-user (or SUDO_USER / HAPPIER_DAEMON_SERVICE_SYSTEM_USER)');
+    })).rejects.toThrow('System mode automatic startup repair requires --system-user (or SUDO_USER / HAPPIEST_DAEMON_SERVICE_SYSTEM_USER)');
 
     expect(applyBackgroundServiceRepairPlanMock).not.toHaveBeenCalled();
   });

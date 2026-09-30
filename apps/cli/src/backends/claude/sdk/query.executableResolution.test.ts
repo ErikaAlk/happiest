@@ -14,7 +14,7 @@ describe('claude sdk query executable resolution', () => {
     'HAPPIER_MANAGED_NODE_BIN',
     'HAPPIER_JS_RUNTIME_PATH',
     'HAPPIER_NODE_PATH',
-    'HAPPIER_HOME_DIR',
+    'HAPPIEST_HOME_DIR',
     'PATH',
     'CLAUDECODE',
     'CLAUDE_CODE_ENTRYPOINT',
@@ -244,7 +244,7 @@ describe('claude sdk query executable resolution', () => {
         HAPPIER_JS_RUNTIME_PATH: undefined,
         HAPPIER_NODE_PATH: undefined,
         PATH: '',
-        HAPPIER_HOME_DIR: happyHomeDir,
+        HAPPIEST_HOME_DIR: happyHomeDir,
       });
       setBunRuntime(true);
       expect(process.versions.bun).toBe('1.0.0');

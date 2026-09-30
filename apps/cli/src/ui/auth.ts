@@ -89,7 +89,7 @@ function printMobileLinkMissingServerUrlHint(params: Readonly<{ serverUrl: strin
         // eslint-disable-next-line no-console
         console.log('On your phone, open Happier → Settings → Relays and add a URL your phone can reach (LAN IP/VPN/Tailscale).');
         // eslint-disable-next-line no-console
-        console.log('Tip (recommended): set HAPPIER_PUBLIC_SERVER_URL to a shareable https:// URL so future QR codes include it automatically.');
+        console.log('Tip (recommended): set HAPPIEST_PUBLIC_SERVER_URL to a shareable https:// URL so future QR codes include it automatically.');
     } else {
         // eslint-disable-next-line no-console
         console.log('Your phone will use its currently configured relay (Happier → Settings → Relays).');
@@ -100,7 +100,7 @@ function printMobileLinkMissingServerUrlHint(params: Readonly<{ serverUrl: strin
 
 async function applyAutoPublicServerUrlFromTailscaleServeBestEffort(): Promise<void> {
     if (!shouldAutoInferPublicServerUrl()) return;
-    if (String(process.env.HAPPIER_PUBLIC_SERVER_URL ?? '').trim()) return;
+    if (String(process.env.HAPPIEST_PUBLIC_SERVER_URL ?? '').trim()) return;
 
     const serverUrl = String(configuration.serverUrl ?? '').trim();
     const publicServerUrl = String(configuration.publicServerUrl ?? '').trim();
@@ -115,7 +115,7 @@ async function applyAutoPublicServerUrlFromTailscaleServeBestEffort(): Promise<v
     });
     if (!inferred) return;
 
-    process.env.HAPPIER_PUBLIC_SERVER_URL = inferred;
+    process.env.HAPPIEST_PUBLIC_SERVER_URL = inferred;
     reloadConfiguration();
 
     const serverId = String(configuration.activeServerId ?? '').trim();
@@ -155,22 +155,22 @@ async function applyAutoPublicServerUrlFromTailscaleServeBestEffort(): Promise<v
 function rehydrateRelayScopeEnvFromConfiguration(): void {
     const activeServerId = sanitizeServerIdForFilesystem(configuration.activeServerId ?? '', '');
     if (activeServerId) {
-        process.env.HAPPIER_ACTIVE_SERVER_ID = activeServerId;
+        process.env.HAPPIEST_ACTIVE_SERVER_ID = activeServerId;
     }
 
     const serverUrl = String(configuration.serverUrl ?? '').trim();
     if (serverUrl) {
-        process.env.HAPPIER_SERVER_URL = serverUrl;
+        process.env.HAPPIEST_SERVER_URL = serverUrl;
     }
 
     const publicServerUrl = String(configuration.publicServerUrl ?? '').trim();
     if (publicServerUrl) {
-        process.env.HAPPIER_PUBLIC_SERVER_URL = publicServerUrl;
+        process.env.HAPPIEST_PUBLIC_SERVER_URL = publicServerUrl;
     }
 
     const webappUrl = String(configuration.webappUrl ?? '').trim();
     if (webappUrl) {
-        process.env.HAPPIER_WEBAPP_URL = webappUrl;
+        process.env.HAPPIEST_WEBAPP_URL = webappUrl;
     }
 }
 
@@ -283,7 +283,7 @@ async function doBothAuth(params: Readonly<{
         console.log('- The app/web UI may prompt you to switch relays automatically (because the link includes server=...)');
     } else {
         console.log('- Make sure your phone is already configured to the right relay (Happier → Settings → Relays)');
-        console.log('- Tip: set HAPPIER_PUBLIC_SERVER_URL to embed a shareable relay URL in future QR codes');
+        console.log('- Tip: set HAPPIEST_PUBLIC_SERVER_URL to embed a shareable relay URL in future QR codes');
     }
     console.log('- Sign in (or create an account)');
     console.log('- If you already have a Happier account on another device, sign in with that same account');

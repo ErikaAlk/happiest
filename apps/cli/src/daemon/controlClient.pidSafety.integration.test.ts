@@ -13,7 +13,7 @@ function writeDaemonStateFixture(path: string, serializedState: string, encoding
 
 describe.sequential('daemon control client PID safety', () => {
   let envScope = createEnvKeyScope([
-    'HAPPIER_HOME_DIR',
+    'HAPPIEST_HOME_DIR',
     'HAPPIER_DAEMON_HTTP_TIMEOUT',
     'HAPPIER_DAEMON_SPAWN_HTTP_TIMEOUT',
     'HAPPIER_DAEMON_PING_TIMEOUT_MS',
@@ -36,7 +36,7 @@ describe.sequential('daemon control client PID safety', () => {
     killTrackedChildren();
     envScope.restore();
     envScope = createEnvKeyScope([
-      'HAPPIER_HOME_DIR',
+      'HAPPIEST_HOME_DIR',
       'HAPPIER_DAEMON_HTTP_TIMEOUT',
       'HAPPIER_DAEMON_SPAWN_HTTP_TIMEOUT',
       'HAPPIER_DAEMON_PING_TIMEOUT_MS',
@@ -48,7 +48,7 @@ describe.sequential('daemon control client PID safety', () => {
     const homeDir = createTempDirSync('happier-cli-daemon-stop-safety-');
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         HAPPIER_DAEMON_HTTP_TIMEOUT: '150',
       });
 
@@ -99,7 +99,7 @@ describe.sequential('daemon control client PID safety', () => {
     const homeDir = createTempDirSync('happier-cli-daemon-recycled-pid-');
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
         HAPPIER_DAEMON_PING_TIMEOUT_MS: '150',
       });
 
@@ -150,7 +150,7 @@ describe.sequential('daemon control client PID safety', () => {
   it('checkIfDaemonRunningAndCleanupStaleState probes /ping when controlToken is present', async () => {
     const homeDir = createTempDirSync('happier-cli-daemon-ping-');
     envScope.patch({
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_DAEMON_HTTP_TIMEOUT: '500',
     });
 
@@ -249,7 +249,7 @@ describe.sequential('daemon control client PID safety', () => {
   it('checkIfDaemonRunningAndCleanupStaleState uses a configurable ping timeout budget', async () => {
     const homeDir = createTempDirSync('happier-cli-daemon-ping-timeout-');
     envScope.patch({
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_DAEMON_HTTP_TIMEOUT: '500',
     });
 
@@ -338,7 +338,7 @@ describe.sequential('daemon control client PID safety', () => {
   it('checkIfDaemonRunningAndCleanupStaleState does not delete recent state when /ping is temporarily unreachable', async () => {
     const homeDir = createTempDirSync('happier-cli-daemon-ping-grace-');
     envScope.patch({
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_DAEMON_HTTP_TIMEOUT: '250',
     });
 
@@ -388,7 +388,7 @@ describe.sequential('daemon control client PID safety', () => {
   it('inspectDaemonRunningStateAndCleanupStaleState preserves live daemon state when /ping times out after the startup grace', async () => {
     const homeDir = createTempDirSync('happier-cli-daemon-ping-stale-');
     envScope.patch({
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_DAEMON_HTTP_TIMEOUT: '250',
     });
 
@@ -444,7 +444,7 @@ describe.sequential('daemon control client PID safety', () => {
   it('preserves live daemon state as starting when authenticated /ping returns 503', async () => {
     const homeDir = createTempDirSync('happier-cli-daemon-ping-unavailable-');
     envScope.patch({
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_DAEMON_HTTP_TIMEOUT: '250',
     });
 
@@ -503,7 +503,7 @@ describe.sequential('daemon control client PID safety', () => {
   it('inspectDaemonRunningStateAndCleanupStaleState treats a dead stale daemon as replaceable without deleting daemon-owned state', async () => {
     const homeDir = createTempDirSync('happier-cli-daemon-dead-stale-');
     envScope.patch({
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_DAEMON_HTTP_TIMEOUT: '250',
     });
 
@@ -550,7 +550,7 @@ describe.sequential('daemon control client PID safety', () => {
   it('inspectDaemonRunningStateAndCleanupStaleState treats a definitively dead fresh daemon as immediately replaceable', async () => {
     const homeDir = createTempDirSync('happier-cli-daemon-dead-fresh-');
     envScope.patch({
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_DAEMON_HTTP_TIMEOUT: '250',
     });
 
@@ -596,7 +596,7 @@ describe.sequential('daemon control client PID safety', () => {
 
   it('inspectDaemonRunningStateAndCleanupStaleState keeps fresh state fail-closed when PID liveness is permission denied', async () => {
     const homeDir = createTempDirSync('happier-cli-daemon-permission-inconclusive-');
-    envScope.patch({ HAPPIER_HOME_DIR: homeDir });
+    envScope.patch({ HAPPIEST_HOME_DIR: homeDir });
     const protectedPid = 987_654_319;
     const killSpy = vi.spyOn(process, 'kill').mockImplementation(((pid: number, signal?: NodeJS.Signals | number) => {
       if (pid === protectedPid && signal === 0) {
@@ -634,7 +634,7 @@ describe.sequential('daemon control client PID safety', () => {
   it('spawnDaemonSession defaults to the daemon session webhook timeout budget', async () => {
     const homeDir = createTempDirSync('happier-cli-daemon-spawn-timeout-');
     envScope.patch({
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_DAEMON_HTTP_TIMEOUT: undefined,
       HAPPIER_DAEMON_SPAWN_HTTP_TIMEOUT: undefined,
     });

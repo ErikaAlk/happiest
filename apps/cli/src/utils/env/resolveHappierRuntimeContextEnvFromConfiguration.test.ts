@@ -4,13 +4,13 @@ import { createEnvKeyScope } from '@/testkit/env/envScope';
 import { createTempDirSync, removeTempDirSync } from '@/testkit/fs/tempDir';
 
 const ENV_KEYS = [
-  'HAPPIER_HOME_DIR',
-  'HAPPIER_ACTIVE_SERVER_ID',
-  'HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID',
-  'HAPPIER_SERVER_URL',
-  'HAPPIER_LOCAL_SERVER_URL',
-  'HAPPIER_PUBLIC_SERVER_URL',
-  'HAPPIER_WEBAPP_URL',
+  'HAPPIEST_HOME_DIR',
+  'HAPPIEST_ACTIVE_SERVER_ID',
+  'HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID',
+  'HAPPIEST_SERVER_URL',
+  'HAPPIEST_LOCAL_SERVER_URL',
+  'HAPPIEST_PUBLIC_SERVER_URL',
+  'HAPPIEST_WEBAPP_URL',
   'HAPPIER_ACCESS_TOKEN',
 ] as const;
 
@@ -30,13 +30,13 @@ describe('resolveHappierRuntimeContextEnvFromConfiguration', () => {
     const home = createTempDirSync('happier-runtime-ctx-home-');
     tempDirs.add(home);
     envScope.patch({
-      HAPPIER_HOME_DIR: home,
-      HAPPIER_ACTIVE_SERVER_ID: 'preview',
-      HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-remote-dev-d72117acdb__id_default',
+      HAPPIEST_HOME_DIR: home,
+      HAPPIEST_ACTIVE_SERVER_ID: 'preview',
+      HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_repo-remote-dev-d72117acdb__id_default',
       // public != server -> split local/public stack
-      HAPPIER_PUBLIC_SERVER_URL: 'https://public.happier.example',
-      HAPPIER_SERVER_URL: 'http://127.0.0.1:48999',
-      HAPPIER_WEBAPP_URL: 'https://app.happier.example',
+      HAPPIEST_PUBLIC_SERVER_URL: 'https://public.happier.example',
+      HAPPIEST_SERVER_URL: 'http://127.0.0.1:48999',
+      HAPPIEST_WEBAPP_URL: 'https://app.happier.example',
       HAPPIER_ACCESS_TOKEN: 'secret-token-that-must-not-leak',
     });
     vi.resetModules();
@@ -49,10 +49,10 @@ describe('resolveHappierRuntimeContextEnvFromConfiguration', () => {
     const env = resolveHappierRuntimeContextEnvFromConfiguration();
 
     // Home dir flows through from configuration (the credential anchor).
-    expect(env.HAPPIER_HOME_DIR).toBe(home);
+    expect(env.HAPPIEST_HOME_DIR).toBe(home);
     // A resolved server URL is always present.
-    expect(env.HAPPIER_SERVER_URL).toBeTruthy();
-    expect(env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID).toBe(
+    expect(env.HAPPIEST_SERVER_URL).toBeTruthy();
+    expect(env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID).toBe(
       'stack_repo-remote-dev-d72117acdb__id_default',
     );
 

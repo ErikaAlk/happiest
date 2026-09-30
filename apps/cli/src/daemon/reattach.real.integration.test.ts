@@ -26,10 +26,10 @@ describe.skipIf(!shouldRunDaemonReattachIntegration())(
     const tempHomes: string[] = [];
 
     beforeEach(() => {
-      envScope = createEnvKeyScope(['HAPPIER_HOME_DIR']);
+      envScope = createEnvKeyScope(['HAPPIEST_HOME_DIR']);
       const home = createTempDirSync('happier-cli-daemon-reattach-test-');
       tempHomes.push(home);
-      envScope.patch({ HAPPIER_HOME_DIR: home });
+      envScope.patch({ HAPPIEST_HOME_DIR: home });
       vi.resetModules();
     });
 
@@ -58,7 +58,7 @@ describe.skipIf(!shouldRunDaemonReattachIntegration())(
         path: '/tmp',
         host: 'test-host',
         homeDir: '/tmp',
-        happyHomeDir: process.env.HAPPIER_HOME_DIR!,
+        happyHomeDir: process.env.HAPPIEST_HOME_DIR!,
         happyLibDir: '/tmp',
         happyToolsDir: '/tmp',
         hostPid: p.pid,

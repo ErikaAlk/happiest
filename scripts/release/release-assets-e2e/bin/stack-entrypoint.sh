@@ -101,7 +101,7 @@ resolve_happier_prefix_from_npm_global_package() {
   fi
 
   # Do not rely on `happier` shims in this container: `@happier-dev/stack` also installs one
-  # that rewrites HAPPIER_HOME_DIR, which breaks the bootstrap approver identity path.
+  # that rewrites HAPPIEST_HOME_DIR, which breaks the bootstrap approver identity path.
   HAPPIER_PREFIX=(node "$expected")
 }
 
@@ -165,10 +165,14 @@ bootstrap_stack_credentials() {
 
   echo "[stack] bootstrapping credentials (non-interactive)..."
 
-  export HAPPIER_SERVER_URL="$STACK_INTERNAL_SERVER_URL"
+  export HAPPIEST_SERVER_URL="$STACK_INTERNAL_SERVER_URL"
+  # The relay server process (started later by hstack from this shell) reads HAPPIER_PUBLIC_SERVER_URL
+  # and HAPPIER_WEBAPP_URL; the Happiest CLI reads the HAPPIEST_ variants.
   export HAPPIER_PUBLIC_SERVER_URL="$STACK_INTERNAL_SERVER_URL"
+  export HAPPIEST_PUBLIC_SERVER_URL="$STACK_INTERNAL_SERVER_URL"
   export HAPPIER_WEBAPP_URL="$STACK_INTERNAL_SERVER_URL"
-  export HAPPIER_ACTIVE_SERVER_ID="$STACK_CLI_ID"
+  export HAPPIEST_WEBAPP_URL="$STACK_INTERNAL_SERVER_URL"
+  export HAPPIEST_ACTIVE_SERVER_ID="$STACK_CLI_ID"
 
   # Create an approver identity (writes credentials to STACK_APPROVER_HOME_DIR).
   node /opt/happier-npm-e2e/bin/terminal-auth-approve.cjs \
@@ -179,7 +183,7 @@ bootstrap_stack_credentials() {
 
   # Request a terminal auth handshake for the main stack daemon identity.
   local req_json
-  req_json="$(HAPPIER_HOME_DIR="$STACK_CLI_HOME_DIR" "${HAPPIER_PREFIX[@]}" auth request --json)"
+  req_json="$(HAPPIEST_HOME_DIR="$STACK_CLI_HOME_DIR" "${HAPPIER_PREFIX[@]}" auth request --json)"
 
   local public_key
   public_key="$(node -e 'const fs=require("fs");const j=JSON.parse(fs.readFileSync(0,"utf8"));process.stdout.write(String(j.publicKey||""))' <<<"$req_json")"
@@ -189,10 +193,10 @@ bootstrap_stack_credentials() {
   fi
 
   # Approve using the bootstrap token.
-  HAPPIER_HOME_DIR="$STACK_APPROVER_HOME_DIR" "${HAPPIER_PREFIX[@]}" auth approve --json --public-key "$public_key" >/dev/null
+  HAPPIEST_HOME_DIR="$STACK_APPROVER_HOME_DIR" "${HAPPIER_PREFIX[@]}" auth approve --json --public-key "$public_key" >/dev/null
 
   # Claim and write real credentials to STACK_CLI_HOME_DIR.
-  HAPPIER_HOME_DIR="$STACK_CLI_HOME_DIR" "${HAPPIER_PREFIX[@]}" auth wait --json --public-key "$public_key" >/dev/null
+  HAPPIEST_HOME_DIR="$STACK_CLI_HOME_DIR" "${HAPPIER_PREFIX[@]}" auth wait --json --public-key "$public_key" >/dev/null
 }
 
 kill_phase1_no_ui_supervisor() {
@@ -272,8 +276,8 @@ if [[ "$HSTACK_E2E_WITH_DAEMON" == "1" ]]; then
   kill_phase1_server_light
   sleep 1
 
-  export HAPPIER_ACTIVE_SERVER_ID="$STACK_CLI_ID"
-  export HAPPIER_HOME_DIR="$STACK_CLI_HOME_DIR"
+  export HAPPIEST_ACTIVE_SERVER_ID="$STACK_CLI_ID"
+  export HAPPIEST_HOME_DIR="$STACK_CLI_HOME_DIR"
 fi
 
 if [[ "$HSTACK_E2E_WITH_UI" != "1" ]]; then

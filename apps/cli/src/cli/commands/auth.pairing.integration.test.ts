@@ -23,14 +23,14 @@ function sha256Base64Url(input: Buffer): string {
 
 describe('auth pairing commands (request/approve/wait) (json)', () => {
   const envKeys = [
-    'HAPPIER_HOME_DIR',
+    'HAPPIEST_HOME_DIR',
     'HAPPIER_NO_BROWSER_OPEN',
     'HAPPIER_AUTH_METHOD',
     'HAPPIER_AUTH_POLL_INTERVAL_MS',
     'HAPPIER_TERMINAL_PAIRING_REQUIRE',
-    'HAPPIER_SERVER_URL',
-    'HAPPIER_PUBLIC_SERVER_URL',
-    'HAPPIER_WEBAPP_URL',
+    'HAPPIEST_SERVER_URL',
+    'HAPPIEST_PUBLIC_SERVER_URL',
+    'HAPPIEST_WEBAPP_URL',
     'HAPPIER_VARIANT',
   ] as const;
 
@@ -65,10 +65,10 @@ describe('auth pairing commands (request/approve/wait) (json)', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: remoteHomeDir,
-        HAPPIER_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_PUBLIC_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_WEBAPP_URL: 'http://webapp.test',
+        HAPPIEST_HOME_DIR: remoteHomeDir,
+        HAPPIEST_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_PUBLIC_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_WEBAPP_URL: 'http://webapp.test',
         HAPPIER_TERMINAL_PAIRING_REQUIRE: 'v3',
       });
       vi.resetModules();
@@ -155,10 +155,10 @@ describe('auth pairing commands (request/approve/wait) (json)', () => {
     try {
       // 1) Remote: create pairing request (json output should be clean even in dev variant)
       envScope.patch({
-        HAPPIER_HOME_DIR: remoteHomeDir,
-        HAPPIER_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_PUBLIC_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_WEBAPP_URL: 'http://webapp.test',
+        HAPPIEST_HOME_DIR: remoteHomeDir,
+        HAPPIEST_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_PUBLIC_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_WEBAPP_URL: 'http://webapp.test',
         HAPPIER_NO_BROWSER_OPEN: '1',
         HAPPIER_AUTH_METHOD: 'web',
         HAPPIER_AUTH_POLL_INTERVAL_MS: '1',
@@ -186,10 +186,10 @@ describe('auth pairing commands (request/approve/wait) (json)', () => {
 
       // 2) Local: approve using existing local credentials (token never leaves local machine)
       envScope.patch({
-        HAPPIER_HOME_DIR: localHomeDir,
-        HAPPIER_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_PUBLIC_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_WEBAPP_URL: 'http://webapp.test',
+        HAPPIEST_HOME_DIR: localHomeDir,
+        HAPPIEST_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_PUBLIC_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_WEBAPP_URL: 'http://webapp.test',
         HAPPIER_VARIANT: 'stable',
       });
       vi.resetModules();
@@ -210,10 +210,10 @@ describe('auth pairing commands (request/approve/wait) (json)', () => {
 
       // 3) Remote: wait + claim, then write credentials (dataKey)
       envScope.patch({
-        HAPPIER_HOME_DIR: remoteHomeDir,
-        HAPPIER_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_PUBLIC_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_WEBAPP_URL: 'http://webapp.test',
+        HAPPIEST_HOME_DIR: remoteHomeDir,
+        HAPPIEST_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_PUBLIC_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_WEBAPP_URL: 'http://webapp.test',
         HAPPIER_AUTH_POLL_INTERVAL_MS: '1',
         HAPPIER_VARIANT: 'stable',
       });
@@ -263,10 +263,10 @@ describe('auth pairing commands (request/approve/wait) (json)', () => {
 
     try {
       envScope.patch({
-        HAPPIER_HOME_DIR: localHomeDir,
-        HAPPIER_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_PUBLIC_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_WEBAPP_URL: 'http://webapp.test',
+        HAPPIEST_HOME_DIR: localHomeDir,
+        HAPPIEST_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_PUBLIC_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_WEBAPP_URL: 'http://webapp.test',
         HAPPIER_NO_BROWSER_OPEN: '1',
         HAPPIER_AUTH_METHOD: 'web',
         HAPPIER_AUTH_POLL_INTERVAL_MS: '1',
@@ -378,10 +378,10 @@ describe('auth pairing commands (request/approve/wait) (json)', () => {
     try {
       // This machine is already signed in as account A with its own machine id.
       envScope.patch({
-        HAPPIER_HOME_DIR: localHomeDir,
-        HAPPIER_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_PUBLIC_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_WEBAPP_URL: 'http://webapp.test',
+        HAPPIEST_HOME_DIR: localHomeDir,
+        HAPPIEST_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_PUBLIC_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_WEBAPP_URL: 'http://webapp.test',
         HAPPIER_NO_BROWSER_OPEN: '1',
         HAPPIER_AUTH_METHOD: 'web',
         HAPPIER_AUTH_POLL_INTERVAL_MS: '1',
@@ -406,10 +406,10 @@ describe('auth pairing commands (request/approve/wait) (json)', () => {
 
       // Account B approves from another home (the app's role in desktop setup).
       envScope.patch({
-        HAPPIER_HOME_DIR: remoteHomeDir,
-        HAPPIER_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_PUBLIC_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_WEBAPP_URL: 'http://webapp.test',
+        HAPPIEST_HOME_DIR: remoteHomeDir,
+        HAPPIEST_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_PUBLIC_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_WEBAPP_URL: 'http://webapp.test',
         HAPPIER_VARIANT: 'stable',
       });
       vi.resetModules();
@@ -426,10 +426,10 @@ describe('auth pairing commands (request/approve/wait) (json)', () => {
 
       // Back on this machine: claim as account B without touching account A's mapping.
       envScope.patch({
-        HAPPIER_HOME_DIR: localHomeDir,
-        HAPPIER_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_PUBLIC_SERVER_URL: 'http://happier-auth.test',
-        HAPPIER_WEBAPP_URL: 'http://webapp.test',
+        HAPPIEST_HOME_DIR: localHomeDir,
+        HAPPIEST_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_PUBLIC_SERVER_URL: 'http://happier-auth.test',
+        HAPPIEST_WEBAPP_URL: 'http://webapp.test',
         HAPPIER_AUTH_POLL_INTERVAL_MS: '1',
         HAPPIER_VARIANT: 'stable',
       });

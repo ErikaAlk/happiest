@@ -19,12 +19,12 @@ vi.mock('@/persistence', () => ({
 import { readDaemonState } from '@/persistence';
 
 describe('startDaemonHeartbeatLoop execution run marker gc', () => {
-  const originalHappyHomeDir = process.env.HAPPIER_HOME_DIR;
+  const originalHappyHomeDir = process.env.HAPPIEST_HOME_DIR;
   let happyHomeDir: string;
 
   beforeEach(() => {
     happyHomeDir = join(tmpdir(), `happier-cli-heartbeat-gc-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-    process.env.HAPPIER_HOME_DIR = happyHomeDir;
+    process.env.HAPPIEST_HOME_DIR = happyHomeDir;
     process.env.HAPPIER_DAEMON_HEARTBEAT_INTERVAL = '1';
     process.env.HAPPIER_DAEMON_EXECUTION_RUN_TERMINAL_TTL_MS = '1';
     vi.useFakeTimers();
@@ -38,9 +38,9 @@ describe('startDaemonHeartbeatLoop execution run marker gc', () => {
       rmSync(happyHomeDir, { recursive: true, force: true });
     }
     if (originalHappyHomeDir === undefined) {
-      delete process.env.HAPPIER_HOME_DIR;
+      delete process.env.HAPPIEST_HOME_DIR;
     } else {
-      process.env.HAPPIER_HOME_DIR = originalHappyHomeDir;
+      process.env.HAPPIEST_HOME_DIR = originalHappyHomeDir;
     }
     vi.useRealTimers();
     vi.restoreAllMocks();

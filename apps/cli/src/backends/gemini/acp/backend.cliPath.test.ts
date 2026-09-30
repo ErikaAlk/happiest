@@ -11,7 +11,7 @@ import { createTempDir, removeTempDir } from '@/testkit/fs/tempDir';
 const envKeys = [
   'HOME',
   'PATH',
-  'HAPPIER_HOME_DIR',
+  'HAPPIEST_HOME_DIR',
   'HAPPIER_GEMINI_PATH',
   'HAPPIER_JS_RUNTIME_PATH',
   'USERPROFILE',
@@ -155,7 +155,7 @@ describe('Gemini ACP backend CLI path resolution', () => {
 
     const homeDir = await createTempDir('happier-gemini-managed-home-');
     tempDirs.add(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
 
     const { resolveProviderCliManagedCommandPath } = await import('@/runtime/managedTools/providerCliResolution');
     const binPath = resolveProviderCliManagedCommandPath('gemini', { happyHomeDir: homeDir });
@@ -175,7 +175,7 @@ describe('Gemini ACP backend CLI path resolution', () => {
   it('fails closed when no gemini CLI resolution is available', async () => {
     process.env.PATH = '';
     delete process.env.HAPPIER_GEMINI_PATH;
-    delete process.env.HAPPIER_HOME_DIR;
+    delete process.env.HAPPIEST_HOME_DIR;
 
     expect(() =>
       createGeminiBackend({

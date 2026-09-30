@@ -76,7 +76,7 @@ describe('quiesceInstalledCliWindowsPayloadOwners', () => {
       const { quiesceInstalledCliWindowsPayloadOwners } = await import('./quiesceInstalledCliWindowsPayloadOwners');
       await quiesceInstalledCliWindowsPayloadOwners({
         channel: 'publicdev',
-        processEnv: { ...process.env, HAPPIER_HOME_DIR: '/tmp/home' },
+        processEnv: { ...process.env, HAPPIEST_HOME_DIR: '/tmp/home' },
       });
     });
 
@@ -116,7 +116,7 @@ describe('quiesceInstalledCliWindowsPayloadOwners', () => {
       const { quiesceInstalledCliWindowsPayloadOwners } = await import('./quiesceInstalledCliWindowsPayloadOwners');
       await quiesceInstalledCliWindowsPayloadOwners({
         channel: 'publicdev',
-        processEnv: { ...process.env, HAPPIER_HOME_DIR: 'C:\\Users\\tester\\.happier' },
+        processEnv: { ...process.env, HAPPIEST_HOME_DIR: 'C:\\Users\\tester\\.happier' },
       });
     });
 
@@ -124,7 +124,7 @@ describe('quiesceInstalledCliWindowsPayloadOwners', () => {
       componentId: 'happier-cli',
       channel: 'publicdev',
       processEnv: expect.objectContaining({
-        HAPPIER_HOME_DIR: 'C:\\Users\\tester\\.happier',
+        HAPPIEST_HOME_DIR: 'C:\\Users\\tester\\.happier',
       }),
     });
     expect(spawnSyncMock).toHaveBeenNthCalledWith(
@@ -133,7 +133,7 @@ describe('quiesceInstalledCliWindowsPayloadOwners', () => {
       ['service', 'stop', '--json'],
       expect.objectContaining({
         env: expect.objectContaining({
-          HAPPIER_HOME_DIR: 'C:\\Users\\tester\\.happier',
+          HAPPIEST_HOME_DIR: 'C:\\Users\\tester\\.happier',
         }),
         stdio: 'ignore',
         windowsHide: true,
@@ -145,7 +145,7 @@ describe('quiesceInstalledCliWindowsPayloadOwners', () => {
       ['daemon', 'stop', '--all', '--kill-sessions', '--json'],
       expect.objectContaining({
         env: expect.objectContaining({
-          HAPPIER_HOME_DIR: 'C:\\Users\\tester\\.happier',
+          HAPPIEST_HOME_DIR: 'C:\\Users\\tester\\.happier',
         }),
         stdio: 'ignore',
         windowsHide: true,
@@ -177,7 +177,7 @@ describe('quiesceInstalledCliWindowsPayloadOwners', () => {
         channel: 'publicdev',
         processEnv: {
           ...process.env,
-          HAPPIER_HOME_DIR: 'C:\\Users\\tester\\.happier',
+          HAPPIEST_HOME_DIR: 'C:\\Users\\tester\\.happier',
           HAPPIER_INSTALLER_PRE_INSTALL_COMMAND_TIMEOUT_MS: '7000',
         },
       });
@@ -222,7 +222,7 @@ describe('quiesceInstalledCliWindowsPayloadOwners', () => {
         channel: 'publicdev',
         processEnv: {
           ...process.env,
-          HAPPIER_HOME_DIR: 'C:\\Users\\tester\\.happier',
+          HAPPIEST_HOME_DIR: 'C:\\Users\\tester\\.happier',
           HAPPIER_CLI_SKIP_PAYLOAD_OWNER_STOP_COMMANDS: '1',
         },
       });
@@ -257,7 +257,7 @@ describe('quiesceInstalledCliWindowsPayloadOwners', () => {
       const { quiesceInstalledCliWindowsPayloadOwners } = await import('./quiesceInstalledCliWindowsPayloadOwners');
       await expect(quiesceInstalledCliWindowsPayloadOwners({
         channel: 'publicdev',
-        processEnv: { ...process.env, HAPPIER_HOME_DIR: 'C:\\Users\\tester\\.happier' },
+        processEnv: { ...process.env, HAPPIEST_HOME_DIR: 'C:\\Users\\tester\\.happier' },
       })).rejects.toThrow(/Failed to stop running Happier runtime processes before payload promotion/i);
     });
   });

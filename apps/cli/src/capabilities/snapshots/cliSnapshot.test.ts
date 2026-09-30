@@ -13,7 +13,7 @@ const SCOPED_ENV_KEYS = [
   'USERPROFILE',
   'LOCALAPPDATA',
   'PATH',
-  'HAPPIER_HOME_DIR',
+  'HAPPIEST_HOME_DIR',
   'HAPPIER_BACKEND_CLI_SOURCE_PREFERENCES_JSON',
   'HAPPIER_CLAUDE_PATH',
   'HAPPIER_CODEX_PATH',
@@ -63,7 +63,7 @@ describe('detectCliSnapshotOnDaemonPath', () => {
     setEnv('HOME', homeDir);
     setEnv('USERPROFILE', homeDir);
     setEnv('LOCALAPPDATA', join(homeDir, 'AppData', 'Local'));
-    setEnv('HAPPIER_HOME_DIR', homeDir);
+    setEnv('HAPPIEST_HOME_DIR', homeDir);
     setEnv('PATH', join(workDir, 'empty-path'));
     mkdirSync(process.env.PATH!, { recursive: true });
     setEnv('HAPPIER_BACKEND_CLI_SOURCE_PREFERENCES_JSON', undefined);

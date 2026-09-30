@@ -32,12 +32,12 @@ test('install.sh updates bash rc + login files and prints a reload hint', async 
   // Create both interactive + login bash files to cover common PATH-loading entrypoints.
   await writeFile(
     join(homeDir, '.bashrc'),
-    '# bashrc\nexport HAPPIER_HOME_DIR="/tmp/old-happier-home"\n',
+    '# bashrc\nexport HAPPIEST_HOME_DIR="/tmp/old-happier-home"\n',
     'utf8',
   );
   await writeFile(
     join(homeDir, '.profile'),
-    '# profile\nexport HAPPIER_HOME_DIR="/tmp/old-happier-home"\n',
+    '# profile\nexport HAPPIEST_HOME_DIR="/tmp/old-happier-home"\n',
     'utf8',
   );
 
@@ -186,17 +186,17 @@ printf '%s' '${releaseJson}'
   assert.equal(res.status, 0, `installer failed:\n--- stdout ---\n${stdout}\n--- stderr ---\n${stderr}\n`);
 
   const exportLine = `export PATH="${outBinDir}:$PATH"`;
-  const homeExportLine = `export HAPPIER_HOME_DIR="${installDir}"`;
+  const homeExportLine = `export HAPPIEST_HOME_DIR="${installDir}"`;
   const bashrc = await readFile(join(homeDir, '.bashrc'), 'utf8');
   const profile = await readFile(join(homeDir, '.profile'), 'utf8');
   assert.ok(bashrc.includes(exportLine), 'expected installer to add PATH export to ~/.bashrc');
   assert.ok(profile.includes(exportLine), 'expected installer to add PATH export to ~/.profile (login shells)');
-  assert.ok(bashrc.includes(homeExportLine), 'expected installer to refresh HAPPIER_HOME_DIR in ~/.bashrc');
-  assert.ok(profile.includes(homeExportLine), 'expected installer to refresh HAPPIER_HOME_DIR in ~/.profile');
-  assert.equal((bashrc.match(/HAPPIER_HOME_DIR=/g) ?? []).length, 1, 'expected ~/.bashrc to keep a single HAPPIER_HOME_DIR export');
-  assert.equal((profile.match(/HAPPIER_HOME_DIR=/g) ?? []).length, 1, 'expected ~/.profile to keep a single HAPPIER_HOME_DIR export');
-  assert.ok(!bashrc.includes('/tmp/old-happier-home'), 'expected installer to remove stale ~/.bashrc HAPPIER_HOME_DIR exports');
-  assert.ok(!profile.includes('/tmp/old-happier-home'), 'expected installer to remove stale ~/.profile HAPPIER_HOME_DIR exports');
+  assert.ok(bashrc.includes(homeExportLine), 'expected installer to refresh HAPPIEST_HOME_DIR in ~/.bashrc');
+  assert.ok(profile.includes(homeExportLine), 'expected installer to refresh HAPPIEST_HOME_DIR in ~/.profile');
+  assert.equal((bashrc.match(/HAPPIEST_HOME_DIR=/g) ?? []).length, 1, 'expected ~/.bashrc to keep a single HAPPIEST_HOME_DIR export');
+  assert.equal((profile.match(/HAPPIEST_HOME_DIR=/g) ?? []).length, 1, 'expected ~/.profile to keep a single HAPPIEST_HOME_DIR export');
+  assert.ok(!bashrc.includes('/tmp/old-happier-home'), 'expected installer to remove stale ~/.bashrc HAPPIEST_HOME_DIR exports');
+  assert.ok(!profile.includes('/tmp/old-happier-home'), 'expected installer to remove stale ~/.profile HAPPIEST_HOME_DIR exports');
   assert.match(stdout, /(source|reload).*(bashrc|profile)|open a new terminal/i, 'expected installer to print a PATH reload hint');
   assert.equal((stdout.match(/^Next steps$/gmu) ?? []).length, 0, 'PATH guidance must not create a second next-steps section');
   assert.equal((stdout.match(/^\s*source\s+/gmu) ?? []).length, 1, 'expected one relevant source command, not multiple shell files');
@@ -210,7 +210,7 @@ printf '%s' '${releaseJson}'
   await rm(root, { recursive: true, force: true });
 });
 
-test('install.sh removes stale HAPPIER_HOME_DIR exports when reinstalling back to the default home', async () => {
+test('install.sh removes stale HAPPIEST_HOME_DIR exports when reinstalling back to the default home', async () => {
   const root = await mkdtemp(join(tmpdir(), 'happier-installer-default-home-cleanup-'));
   const homeDir = join(root, 'home');
   const binDir = join(root, 'bin');
@@ -224,12 +224,12 @@ test('install.sh removes stale HAPPIER_HOME_DIR exports when reinstalling back t
 
   await writeFile(
     join(homeDir, '.bashrc'),
-    '# bashrc\nexport HAPPIER_HOME_DIR="/tmp/old-happier-home"\n',
+    '# bashrc\nexport HAPPIEST_HOME_DIR="/tmp/old-happier-home"\n',
     'utf8',
   );
   await writeFile(
     join(homeDir, '.profile'),
-    '# profile\nexport HAPPIER_HOME_DIR="/tmp/old-happier-home"\n',
+    '# profile\nexport HAPPIEST_HOME_DIR="/tmp/old-happier-home"\n',
     'utf8',
   );
 
@@ -367,10 +367,10 @@ printf '%s' '${releaseJson}'
 
   const bashrc = await readFile(join(homeDir, '.bashrc'), 'utf8');
   const profile = await readFile(join(homeDir, '.profile'), 'utf8');
-  assert.equal((bashrc.match(/HAPPIER_HOME_DIR=/g) ?? []).length, 0, 'expected ~/.bashrc to remove stale HAPPIER_HOME_DIR exports');
-  assert.equal((profile.match(/HAPPIER_HOME_DIR=/g) ?? []).length, 0, 'expected ~/.profile to remove stale HAPPIER_HOME_DIR exports');
-  assert.ok(!bashrc.includes('/tmp/old-happier-home'), 'expected installer to remove stale ~/.bashrc HAPPIER_HOME_DIR exports');
-  assert.ok(!profile.includes('/tmp/old-happier-home'), 'expected installer to remove stale ~/.profile HAPPIER_HOME_DIR exports');
+  assert.equal((bashrc.match(/HAPPIEST_HOME_DIR=/g) ?? []).length, 0, 'expected ~/.bashrc to remove stale HAPPIEST_HOME_DIR exports');
+  assert.equal((profile.match(/HAPPIEST_HOME_DIR=/g) ?? []).length, 0, 'expected ~/.profile to remove stale HAPPIEST_HOME_DIR exports');
+  assert.ok(!bashrc.includes('/tmp/old-happier-home'), 'expected installer to remove stale ~/.bashrc HAPPIEST_HOME_DIR exports');
+  assert.ok(!profile.includes('/tmp/old-happier-home'), 'expected installer to remove stale ~/.profile HAPPIEST_HOME_DIR exports');
 
   await rm(root, { recursive: true, force: true });
 });

@@ -18,8 +18,8 @@ const mergedTestEnv: NodeJS.ProcessEnv = {
     ...testEnv,
 };
 
-if (mergedTestEnv.HAPPIER_SERVER_URL && !mergedTestEnv.HAPPIER_WEBAPP_URL) {
-    mergedTestEnv.HAPPIER_WEBAPP_URL = mergedTestEnv.HAPPIER_SERVER_URL;
+if (mergedTestEnv.HAPPIEST_SERVER_URL && !mergedTestEnv.HAPPIEST_WEBAPP_URL) {
+    mergedTestEnv.HAPPIEST_WEBAPP_URL = mergedTestEnv.HAPPIEST_SERVER_URL;
 }
 
 // CLI tests should not inherit embedded build-policy gating (set in CI).
@@ -34,7 +34,7 @@ export default defineConfig({
         // Keep per-file module isolation so cross-file mocks/env mutations cannot leak.
         // This matches our integration suite configuration and prevents order-dependent failures.
         isolate: true,
-        // Multiple CLI unit tests mutate `process.env.HAPPIER_HOME_DIR` / config at runtime.
+        // Multiple CLI unit tests mutate `process.env.HAPPIEST_HOME_DIR` / config at runtime.
         // Running them in isolated forked processes prevents cross-file env races.
         pool: 'forks',
         globals: false,

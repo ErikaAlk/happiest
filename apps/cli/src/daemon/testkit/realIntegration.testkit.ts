@@ -137,21 +137,21 @@ export async function prepareIsolatedDaemonTestHome(options: {
 
   const extraEnv = resolveExtraEnv(options.extraEnv, { homeDir, sourceHomeDir });
   const envScope = createEnvKeyScope([
-    'HAPPIER_HOME_DIR',
-    'HAPPIER_ACTIVE_SERVER_ID',
-    'HAPPIER_SERVER_URL',
-    'HAPPIER_WEBAPP_URL',
-    'HAPPIER_PUBLIC_SERVER_URL',
+    'HAPPIEST_HOME_DIR',
+    'HAPPIEST_ACTIVE_SERVER_ID',
+    'HAPPIEST_SERVER_URL',
+    'HAPPIEST_WEBAPP_URL',
+    'HAPPIEST_PUBLIC_SERVER_URL',
     'HAPPIER_CLI_SUBPROCESS_ALLOW_TSX_FALLBACK',
     ...Object.keys(extraEnv),
   ]);
 
   envScope.patch({
-    HAPPIER_HOME_DIR: homeDir,
-    HAPPIER_ACTIVE_SERVER_ID: sourceServerId,
-    HAPPIER_SERVER_URL: sourceServerUrl,
-    HAPPIER_WEBAPP_URL: sourceWebappUrl,
-    HAPPIER_PUBLIC_SERVER_URL: sourcePublicServerUrl,
+    HAPPIEST_HOME_DIR: homeDir,
+    HAPPIEST_ACTIVE_SERVER_ID: sourceServerId,
+    HAPPIEST_SERVER_URL: sourceServerUrl,
+    HAPPIEST_WEBAPP_URL: sourceWebappUrl,
+    HAPPIEST_PUBLIC_SERVER_URL: sourcePublicServerUrl,
     HAPPIER_CLI_SUBPROCESS_ALLOW_TSX_FALLBACK: '1',
     ...extraEnv,
   });

@@ -323,12 +323,12 @@ test('npm-e2e-smoke includes a second CLI machine smoke', async () => {
   );
   assert.match(
     cli2Raw,
-    /HAPPIER_ACTIVE_SERVER_ID="\$selected_approver_server_id"/,
+    /HAPPIEST_ACTIVE_SERVER_ID="\$selected_approver_server_id"/,
     'expected cli2 smoke to scope client/approver auth commands to the selected approver server id'
   );
   assert.doesNotMatch(
     cli2Raw,
-    /if \[\[ ! -f "\$APPROVER_HOME_DIR\/servers\/\$HAPPIER_ACTIVE_SERVER_ID\/access\.key" \]\]/,
+    /if \[\[ ! -f "\$APPROVER_HOME_DIR\/servers\/\$HAPPIEST_ACTIVE_SERVER_ID\/access\.key" \]\]/,
     'expected cli2 smoke to avoid failing immediately on a single hardcoded approver access-key path'
   );
 
@@ -808,7 +808,7 @@ test('remote daemon reuse-cli smoke resolves primary access key dynamically and 
   );
   assert.doesNotMatch(
     raw,
-    /access_key="\$\{PRIMARY_CLI_HOME_DIR\}\/servers\/\$\{HAPPIER_ACTIVE_SERVER_ID\}\/access\.key"/,
+    /access_key="\$\{PRIMARY_CLI_HOME_DIR\}\/servers\/\$\{HAPPIEST_ACTIVE_SERVER_ID\}\/access\.key"/,
     'expected remote daemon reuse-cli smoke to avoid a single hardcoded primary access key path'
   );
   assert.doesNotMatch(
@@ -823,7 +823,7 @@ test('remote daemon reuse-cli smoke resolves primary access key dynamically and 
   );
   assert.match(
     raw,
-    /export HAPPIER_ACTIVE_SERVER_ID="\$selected_server_id"/,
+    /export HAPPIEST_ACTIVE_SERVER_ID="\$selected_server_id"/,
     'expected remote daemon reuse-cli smoke to export the selected server id so hstack and happier use the matching profile'
   );
   assert.match(
@@ -918,12 +918,12 @@ test('remote daemon smoke scripts fail closed when --public-server-url is unsupp
   );
   assert.match(
     reuseCliRaw,
-    /ssh "\$REMOTE_SSH_TARGET" "HAPPIER_ACTIVE_SERVER_ID='\$selected_server_id'[^"]* daemon start"/,
+    /ssh "\$REMOTE_SSH_TARGET" "HAPPIEST_ACTIVE_SERVER_ID='\$selected_server_id'[^"]* daemon start"/,
     'expected reuse-cli remote daemon smoke to start remote daemon with explicit selected server scope to avoid default-profile drift'
   );
   assert.match(
     reuseCliRaw,
-    /ssh "\$REMOTE_SSH_TARGET" "HAPPIER_ACTIVE_SERVER_ID='\$selected_server_id'[^"]* daemon status --json"/,
+    /ssh "\$REMOTE_SSH_TARGET" "HAPPIEST_ACTIVE_SERVER_ID='\$selected_server_id'[^"]* daemon status --json"/,
     'expected reuse-cli remote daemon smoke to query daemon status with explicit selected server scope'
   );
   assert.match(
@@ -1006,12 +1006,12 @@ test('remote daemon smoke scripts fail closed when --public-server-url is unsupp
   );
   assert.match(
     bootstrapRaw,
-    /ssh "\$REMOTE_SSH_TARGET" "HAPPIER_ACTIVE_SERVER_ID='\$HAPPIER_ACTIVE_SERVER_ID'[^"]* daemon start"/,
+    /ssh "\$REMOTE_SSH_TARGET" "HAPPIEST_ACTIVE_SERVER_ID='\$HAPPIEST_ACTIVE_SERVER_ID'[^"]* daemon start"/,
     'expected bootstrap remote daemon smoke to start remote daemon with explicit active server scope to avoid default-profile drift'
   );
   assert.match(
     bootstrapRaw,
-    /ssh "\$REMOTE_SSH_TARGET" "HAPPIER_ACTIVE_SERVER_ID='\$HAPPIER_ACTIVE_SERVER_ID'[^"]* daemon status --json"/,
+    /ssh "\$REMOTE_SSH_TARGET" "HAPPIEST_ACTIVE_SERVER_ID='\$HAPPIEST_ACTIVE_SERVER_ID'[^"]* daemon status --json"/,
     'expected bootstrap remote daemon smoke to query daemon status with explicit active server scope'
   );
   assert.match(

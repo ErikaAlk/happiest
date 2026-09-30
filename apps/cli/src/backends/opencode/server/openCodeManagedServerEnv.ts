@@ -176,7 +176,7 @@ export function resolveOpenCodeManagedServerLaunchFingerprint(params: Readonly<{
   const relevant = {
     HOME: typeof env.HOME === 'string' ? env.HOME : '',
     USERPROFILE: typeof env.USERPROFILE === 'string' ? env.USERPROFILE : '',
-    HAPPIER_HOME_DIR: typeof env.HAPPIER_HOME_DIR === 'string' ? env.HAPPIER_HOME_DIR : '',
+    HAPPIEST_HOME_DIR: typeof env.HAPPIEST_HOME_DIR === 'string' ? env.HAPPIEST_HOME_DIR : '',
     XDG_CONFIG_HOME: typeof env.XDG_CONFIG_HOME === 'string' ? env.XDG_CONFIG_HOME : '',
     XDG_DATA_HOME: typeof env.XDG_DATA_HOME === 'string' ? env.XDG_DATA_HOME : '',
     XDG_STATE_HOME: typeof env.XDG_STATE_HOME === 'string' ? env.XDG_STATE_HOME : '',

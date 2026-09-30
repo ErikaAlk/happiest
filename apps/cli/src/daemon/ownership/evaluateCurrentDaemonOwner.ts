@@ -70,11 +70,11 @@ function daemonProcessMatchesCurrentScope(processInfo: HappyProcessInfo): boolea
   const env = processInfo.daemonOwnershipEnvironmentVariables;
   if (!env) return true;
 
-  if (!processEnvValueMatchesCurrent(env.HAPPIER_HOME_DIR, configuration.happyHomeDir, normalizePathFragment)) {
+  if (!processEnvValueMatchesCurrent(env.HAPPIEST_HOME_DIR, configuration.happyHomeDir, normalizePathFragment)) {
     return false;
   }
-  const processLifecycleScopeId = normalizeScopeValue(env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID);
-  const currentLifecycleScopeId = normalizeScopeValue(process.env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID);
+  const processLifecycleScopeId = normalizeScopeValue(env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID);
+  const currentLifecycleScopeId = normalizeScopeValue(process.env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID);
   if (processLifecycleScopeId) {
     if (!currentLifecycleScopeId || processLifecycleScopeId !== currentLifecycleScopeId) return false;
     // Explicit lifecycle scope is the canonical owner identity. Endpoint profile and URL are
@@ -86,11 +86,11 @@ function daemonProcessMatchesCurrentScope(processInfo: HappyProcessInfo): boolea
   // already-resolved active server id as the stable lifecycle id. Only that old-daemon shape
   // may fall back to ACTIVE_SERVER_ID and endpoint URL comparison.
   const currentFallbackScope = currentLifecycleScopeId || configuration.activeServerId;
-  if (!processEnvValueMatchesCurrent(env.HAPPIER_ACTIVE_SERVER_ID, currentFallbackScope)) {
+  if (!processEnvValueMatchesCurrent(env.HAPPIEST_ACTIVE_SERVER_ID,currentFallbackScope)) {
     return false;
   }
 
-  const processServerUrl = normalizeServerUrl(env.HAPPIER_SERVER_URL);
+  const processServerUrl = normalizeServerUrl(env.HAPPIEST_SERVER_URL);
   if (processServerUrl) {
     const currentServerUrls = new Set([
       normalizeServerUrl(configuration.serverUrl),

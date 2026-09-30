@@ -414,7 +414,7 @@ function resolveStackRuntimeStatePath(
   const stackEnvFile = readNonEmptyEnv('HAPPIER_STACK_ENV_FILE', env);
   if (stackEnvFile) return join(dirname(stackEnvFile), 'stack.runtime.json');
 
-  const homeDir = readNonEmptyEnv('HAPPIER_HOME_DIR', env) ?? readNonEmptyEnv('HAPPIER_STACK_CLI_HOME_DIR', env);
+  const homeDir = readNonEmptyEnv('HAPPIEST_HOME_DIR', env) ?? readNonEmptyEnv('HAPPIER_STACK_CLI_HOME_DIR', env);
   if (homeDir && basename(homeDir) === 'cli') {
     return join(dirname(homeDir), 'stack.runtime.json');
   }

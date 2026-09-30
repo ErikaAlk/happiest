@@ -212,8 +212,8 @@ function resolveFirstPartyReleaseArtifactSource(params: Readonly<{
     githubRepo: normalizeFirstPartyReleaseValue(
       source?.githubRepo
         ?? params.githubRepo
-        ?? process.env.HAPPIER_FIRST_PARTY_RELEASE_REPO
-        ?? process.env.HAPPIER_GITHUB_REPO
+        ?? process.env.HAPPIEST_FIRST_PARTY_RELEASE_REPO
+        ?? process.env.HAPPIEST_GITHUB_REPO
         ?? 'happier-dev/happier',
       'happier-dev/happier',
     ),

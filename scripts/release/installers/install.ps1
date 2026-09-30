@@ -60,7 +60,7 @@ function Normalize-Channel {
 
 $Channel = Normalize-Channel -Raw ([string]$Channel)
 
-$Repo = if ($env:HAPPIER_GITHUB_REPO) { $env:HAPPIER_GITHUB_REPO } else { "happier-dev/happier" }
+$Repo = if ($env:HAPPIEST_GITHUB_REPO) { $env:HAPPIEST_GITHUB_REPO } else { "happier-dev/happier" }
 $Token = if ($env:HAPPIER_GITHUB_TOKEN) { $env:HAPPIER_GITHUB_TOKEN } elseif ($env:GITHUB_TOKEN) { $env:GITHUB_TOKEN } else { "" }
 $ReleaseAssetsDir = if ($env:HAPPIER_RELEASE_ASSETS_DIR) { $env:HAPPIER_RELEASE_ASSETS_DIR } else { "" }
 $GitHubHeaders = @{
@@ -69,8 +69,8 @@ $GitHubHeaders = @{
 if ($Token) {
   $GitHubHeaders["Authorization"] = "Bearer $Token"
 }
-$InstallDir = if ($env:HAPPIER_INSTALL_DIR) { $env:HAPPIER_INSTALL_DIR } elseif ($env:HAPPIER_HOME_DIR) { $env:HAPPIER_HOME_DIR } else { Join-Path $env:USERPROFILE ".happier" }
-$DaemonServiceStateHomeDir = if ($env:HAPPIER_HOME_DIR) { $env:HAPPIER_HOME_DIR } else { $InstallDir }
+$InstallDir = if ($env:HAPPIER_INSTALL_DIR) { $env:HAPPIER_INSTALL_DIR } elseif ($env:HAPPIEST_HOME_DIR) { $env:HAPPIEST_HOME_DIR } else { Join-Path $env:USERPROFILE ".happier" }
+$DaemonServiceStateHomeDir = if ($env:HAPPIEST_HOME_DIR) { $env:HAPPIEST_HOME_DIR } else { $InstallDir }
 $LegacyBinDir = Join-Path $env:USERPROFILE ".local\bin"
 $BinDir = Join-Path $InstallDir "bin"
 if ($env:HAPPIER_BIN_DIR) {
@@ -105,7 +105,7 @@ $DefaultMinisignPubKey = @"
 untrusted comment: minisign public key 91AE28177BF6E43C
 RWQ85PZ7FyiukYbL3qv/bKnwgbT68wLVzotapeMFIb8n+c7pBQ7U8W2t
 "@
-$MinisignPubKey = if ($env:HAPPIER_MINISIGN_PUBKEY) { $env:HAPPIER_MINISIGN_PUBKEY } else { $DefaultMinisignPubKey.Trim() }
+$MinisignPubKey = if ($env:HAPPIEST_MINISIGN_PUBKEY) { $env:HAPPIEST_MINISIGN_PUBKEY } else { $DefaultMinisignPubKey.Trim() }
 $MinisignPubKeyUrl = if ($env:HAPPIER_MINISIGN_PUBKEY_URL) { $env:HAPPIER_MINISIGN_PUBKEY_URL } else { "https://happier.dev/happier-release.pub" }
 
 function Resolve-CliShimName {
@@ -646,14 +646,14 @@ function Invoke-InstallerCommandWithDaemonServiceContext {
     [Parameter(Mandatory = $true)] [string] $HomeDir
   )
 
-  $previousHomeDir = $env:HAPPIER_HOME_DIR
+  $previousHomeDir = $env:HAPPIEST_HOME_DIR
   $previousNoninteractive = $env:HAPPIER_NONINTERACTIVE
   $previousPublicReleaseChannel = $env:HAPPIER_PUBLIC_RELEASE_CHANNEL
-  $previousDaemonServiceChannel = $env:HAPPIER_DAEMON_SERVICE_CHANNEL
+  $previousDaemonServiceChannel = $env:HAPPIEST_DAEMON_SERVICE_CHANNEL
   $previousInstallerDaemonServiceStrategy = $env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY
   try {
     $channelLabel = if ($Channel -eq "publicdev") { "dev" } else { $Channel }
-    $env:HAPPIER_HOME_DIR = $HomeDir
+    $env:HAPPIEST_HOME_DIR = $HomeDir
     if ($null -eq $previousNoninteractive) {
       Remove-Item Env:HAPPIER_NONINTERACTIVE -ErrorAction SilentlyContinue
     }
@@ -661,7 +661,7 @@ function Invoke-InstallerCommandWithDaemonServiceContext {
       $env:HAPPIER_NONINTERACTIVE = $previousNoninteractive
     }
     $env:HAPPIER_PUBLIC_RELEASE_CHANNEL = $channelLabel
-    $env:HAPPIER_DAEMON_SERVICE_CHANNEL = $channelLabel
+    $env:HAPPIEST_DAEMON_SERVICE_CHANNEL = $channelLabel
     if ($env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY) {
       $env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY = $env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY
     }
@@ -674,10 +674,10 @@ function Invoke-InstallerCommandWithDaemonServiceContext {
   }
   finally {
     if ($null -eq $previousHomeDir) {
-      Remove-Item Env:HAPPIER_HOME_DIR -ErrorAction SilentlyContinue
+      Remove-Item Env:HAPPIEST_HOME_DIR -ErrorAction SilentlyContinue
     }
     else {
-      $env:HAPPIER_HOME_DIR = $previousHomeDir
+      $env:HAPPIEST_HOME_DIR = $previousHomeDir
     }
     if ($null -eq $previousNoninteractive) {
       Remove-Item Env:HAPPIER_NONINTERACTIVE -ErrorAction SilentlyContinue
@@ -692,10 +692,10 @@ function Invoke-InstallerCommandWithDaemonServiceContext {
       $env:HAPPIER_PUBLIC_RELEASE_CHANNEL = $previousPublicReleaseChannel
     }
     if ($null -eq $previousDaemonServiceChannel) {
-      Remove-Item Env:HAPPIER_DAEMON_SERVICE_CHANNEL -ErrorAction SilentlyContinue
+      Remove-Item Env:HAPPIEST_DAEMON_SERVICE_CHANNEL -ErrorAction SilentlyContinue
     }
     else {
-      $env:HAPPIER_DAEMON_SERVICE_CHANNEL = $previousDaemonServiceChannel
+      $env:HAPPIEST_DAEMON_SERVICE_CHANNEL = $previousDaemonServiceChannel
     }
     if ($null -eq $previousInstallerDaemonServiceStrategy) {
       Remove-Item Env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY -ErrorAction SilentlyContinue
@@ -775,10 +775,10 @@ function Invoke-InstallerCommandWithDaemonServiceContextCapturingOutputWithTimeo
     [Parameter(Mandatory = $true)] [int] $timeoutMs
   )
 
-  $previousHomeDir = $env:HAPPIER_HOME_DIR
+  $previousHomeDir = $env:HAPPIEST_HOME_DIR
   $previousNoninteractive = $env:HAPPIER_NONINTERACTIVE
   $previousPublicReleaseChannel = $env:HAPPIER_PUBLIC_RELEASE_CHANNEL
-  $previousDaemonServiceChannel = $env:HAPPIER_DAEMON_SERVICE_CHANNEL
+  $previousDaemonServiceChannel = $env:HAPPIEST_DAEMON_SERVICE_CHANNEL
   $previousInstallerDaemonServiceStrategy = $env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY
   $runToken = [System.Guid]::NewGuid().ToString("N")
   $stdoutPath = Join-Path $env:TEMP "happier-pre-install-$runToken.stdout.log"
@@ -786,7 +786,7 @@ function Invoke-InstallerCommandWithDaemonServiceContextCapturingOutputWithTimeo
 
   try {
     $channelLabel = if ($Channel -eq "publicdev") { "dev" } else { $Channel }
-    $env:HAPPIER_HOME_DIR = $HomeDir
+    $env:HAPPIEST_HOME_DIR = $HomeDir
     if ($null -eq $previousNoninteractive) {
       Remove-Item Env:HAPPIER_NONINTERACTIVE -ErrorAction SilentlyContinue
     }
@@ -794,7 +794,7 @@ function Invoke-InstallerCommandWithDaemonServiceContextCapturingOutputWithTimeo
       $env:HAPPIER_NONINTERACTIVE = $previousNoninteractive
     }
     $env:HAPPIER_PUBLIC_RELEASE_CHANNEL = $channelLabel
-    $env:HAPPIER_DAEMON_SERVICE_CHANNEL = $channelLabel
+    $env:HAPPIEST_DAEMON_SERVICE_CHANNEL = $channelLabel
     if ($env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY) {
       $env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY = $env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY
     }
@@ -829,10 +829,10 @@ function Invoke-InstallerCommandWithDaemonServiceContextCapturingOutputWithTimeo
     Remove-Item -Path $stderrPath -Force -ErrorAction SilentlyContinue
 
     if ($null -eq $previousHomeDir) {
-      Remove-Item Env:HAPPIER_HOME_DIR -ErrorAction SilentlyContinue
+      Remove-Item Env:HAPPIEST_HOME_DIR -ErrorAction SilentlyContinue
     }
     else {
-      $env:HAPPIER_HOME_DIR = $previousHomeDir
+      $env:HAPPIEST_HOME_DIR = $previousHomeDir
     }
     if ($null -eq $previousNoninteractive) {
       Remove-Item Env:HAPPIER_NONINTERACTIVE -ErrorAction SilentlyContinue
@@ -847,10 +847,10 @@ function Invoke-InstallerCommandWithDaemonServiceContextCapturingOutputWithTimeo
       $env:HAPPIER_PUBLIC_RELEASE_CHANNEL = $previousPublicReleaseChannel
     }
     if ($null -eq $previousDaemonServiceChannel) {
-      Remove-Item Env:HAPPIER_DAEMON_SERVICE_CHANNEL -ErrorAction SilentlyContinue
+      Remove-Item Env:HAPPIEST_DAEMON_SERVICE_CHANNEL -ErrorAction SilentlyContinue
     }
     else {
-      $env:HAPPIER_DAEMON_SERVICE_CHANNEL = $previousDaemonServiceChannel
+      $env:HAPPIEST_DAEMON_SERVICE_CHANNEL = $previousDaemonServiceChannel
     }
     if ($null -eq $previousInstallerDaemonServiceStrategy) {
       Remove-Item Env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY -ErrorAction SilentlyContinue
@@ -2281,11 +2281,11 @@ function Invoke-InstallerPayloadPromotionWithTimeout {
 
   $runnerScript = @"
 `$ErrorActionPreference = 'Stop'
-`$previousHappyHomeDir = `$env:HAPPIER_HOME_DIR
+`$previousHappyHomeDir = `$env:HAPPIEST_HOME_DIR
 `$previousSkipPayloadOwnerStopCommands = `$env:HAPPIER_CLI_SKIP_PAYLOAD_OWNER_STOP_COMMANDS
 `$previousSkipInstallPayloadMigration = `$env:HAPPIER_CLI_SKIP_INSTALL_PAYLOAD_MIGRATION
 try {
-  `$env:HAPPIER_HOME_DIR = '$(& $escapeSingleQuotedLiteral $InstallHomeDir)'
+  `$env:HAPPIEST_HOME_DIR = '$(& $escapeSingleQuotedLiteral $InstallHomeDir)'
   `$env:HAPPIER_CLI_SKIP_PAYLOAD_OWNER_STOP_COMMANDS = '1'
   `$env:HAPPIER_CLI_SKIP_INSTALL_PAYLOAD_MIGRATION = '1'
   & '$(& $escapeSingleQuotedLiteral $runnerBinaryPath)' self __install-payload --component happier-cli --payload-root '$(& $escapeSingleQuotedLiteral $PayloadRoot)' --version '$(& $escapeSingleQuotedLiteral $Version)' --channel '$(& $escapeSingleQuotedLiteral $ChannelValue)'
@@ -2297,10 +2297,10 @@ try {
 }
 finally {
   if (`$null -eq `$previousHappyHomeDir) {
-    Remove-Item Env:HAPPIER_HOME_DIR -ErrorAction SilentlyContinue
+    Remove-Item Env:HAPPIEST_HOME_DIR -ErrorAction SilentlyContinue
   }
   else {
-    `$env:HAPPIER_HOME_DIR = `$previousHappyHomeDir
+    `$env:HAPPIEST_HOME_DIR = `$previousHappyHomeDir
   }
   if (`$null -eq `$previousSkipPayloadOwnerStopCommands) {
     Remove-Item Env:HAPPIER_CLI_SKIP_PAYLOAD_OWNER_STOP_COMMANDS -ErrorAction SilentlyContinue

@@ -142,10 +142,10 @@ describe('happier daemon start output', () => {
     vi.useRealTimers();
 
     const envScope = createEnvKeyScope([
-      'HAPPIER_HOME_DIR',
-      'HAPPIER_SERVER_URL',
-      'HAPPIER_WEBAPP_URL',
-      'HAPPIER_ACTIVE_SERVER_ID',
+      'HAPPIEST_HOME_DIR',
+      'HAPPIEST_SERVER_URL',
+      'HAPPIEST_WEBAPP_URL',
+      'HAPPIEST_ACTIVE_SERVER_ID',
       'HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS',
     ]);
     const tmp = await createTempDir('happier-daemon-start-');
@@ -153,10 +153,10 @@ describe('happier daemon start output', () => {
     try {
       vi.resetModules();
       envScope.patch({
-        HAPPIER_HOME_DIR: tmp,
-        HAPPIER_SERVER_URL: 'http://localhost:4321',
-        HAPPIER_WEBAPP_URL: 'http://localhost:9999',
-        HAPPIER_ACTIVE_SERVER_ID: 'env_test',
+        HAPPIEST_HOME_DIR: tmp,
+        HAPPIEST_SERVER_URL: 'http://localhost:4321',
+        HAPPIEST_WEBAPP_URL: 'http://localhost:9999',
+        HAPPIEST_ACTIVE_SERVER_ID: 'env_test',
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '1',
       });
 
@@ -189,10 +189,10 @@ describe('happier daemon start output', () => {
     vi.useRealTimers();
 
     const envScope = createEnvKeyScope([
-      'HAPPIER_HOME_DIR',
-      'HAPPIER_SERVER_URL',
-      'HAPPIER_WEBAPP_URL',
-      'HAPPIER_ACTIVE_SERVER_ID',
+      'HAPPIEST_HOME_DIR',
+      'HAPPIEST_SERVER_URL',
+      'HAPPIEST_WEBAPP_URL',
+      'HAPPIEST_ACTIVE_SERVER_ID',
       'HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS',
     ]);
     const tmp = await createTempDir('happier-daemon-start-json-');
@@ -200,10 +200,10 @@ describe('happier daemon start output', () => {
     try {
       vi.resetModules();
       envScope.patch({
-        HAPPIER_HOME_DIR: tmp,
-        HAPPIER_SERVER_URL: 'http://localhost:4321',
-        HAPPIER_WEBAPP_URL: 'http://localhost:9999',
-        HAPPIER_ACTIVE_SERVER_ID: 'env_test',
+        HAPPIEST_HOME_DIR: tmp,
+        HAPPIEST_SERVER_URL: 'http://localhost:4321',
+        HAPPIEST_WEBAPP_URL: 'http://localhost:9999',
+        HAPPIEST_ACTIVE_SERVER_ID: 'env_test',
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '1',
       });
 
@@ -346,10 +346,10 @@ describe('happier daemon start output', () => {
     getLatestDaemonLogMock.mockResolvedValue({ path: '/tmp/happier-daemon.log' });
 
     const envScope = createEnvKeyScope([
-      'HAPPIER_HOME_DIR',
-      'HAPPIER_SERVER_URL',
-      'HAPPIER_WEBAPP_URL',
-      'HAPPIER_ACTIVE_SERVER_ID',
+      'HAPPIEST_HOME_DIR',
+      'HAPPIEST_SERVER_URL',
+      'HAPPIEST_WEBAPP_URL',
+      'HAPPIEST_ACTIVE_SERVER_ID',
       'HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS',
     ]);
     const tmp = await createTempDir('happier-daemon-starting-json-');
@@ -357,10 +357,10 @@ describe('happier daemon start output', () => {
     try {
       vi.resetModules();
       envScope.patch({
-        HAPPIER_HOME_DIR: tmp,
-        HAPPIER_SERVER_URL: 'http://localhost:4321',
-        HAPPIER_WEBAPP_URL: 'http://localhost:9999',
-        HAPPIER_ACTIVE_SERVER_ID: 'env_test',
+        HAPPIEST_HOME_DIR: tmp,
+        HAPPIEST_SERVER_URL: 'http://localhost:4321',
+        HAPPIEST_WEBAPP_URL: 'http://localhost:9999',
+        HAPPIEST_ACTIVE_SERVER_ID: 'env_test',
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '1',
       });
 
@@ -405,17 +405,17 @@ describe('happier daemon start output', () => {
     getLatestDaemonLogMock.mockResolvedValue({ path: '/tmp/happier-daemon.log' });
 
     const envScope = createEnvKeyScope([
-      'HAPPIER_SERVER_URL',
-      'HAPPIER_WEBAPP_URL',
-      'HAPPIER_ACTIVE_SERVER_ID',
+      'HAPPIEST_SERVER_URL',
+      'HAPPIEST_WEBAPP_URL',
+      'HAPPIEST_ACTIVE_SERVER_ID',
     ]);
 
     try {
       vi.resetModules();
       envScope.patch({
-        HAPPIER_SERVER_URL: 'http://localhost:4321',
-        HAPPIER_WEBAPP_URL: 'http://localhost:9999',
-        HAPPIER_ACTIVE_SERVER_ID: 'env_test',
+        HAPPIEST_SERVER_URL: 'http://localhost:4321',
+        HAPPIEST_WEBAPP_URL: 'http://localhost:9999',
+        HAPPIEST_ACTIVE_SERVER_ID: 'env_test',
       });
 
       const output = captureStdoutJsonOutput<{
@@ -463,17 +463,17 @@ describe('happier daemon start output', () => {
     getLatestDaemonLogMock.mockResolvedValue({ path: '/tmp/happier-daemon.log' });
 
     const envScope = createEnvKeyScope([
-      'HAPPIER_SERVER_URL',
-      'HAPPIER_WEBAPP_URL',
-      'HAPPIER_ACTIVE_SERVER_ID',
+      'HAPPIEST_SERVER_URL',
+      'HAPPIEST_WEBAPP_URL',
+      'HAPPIEST_ACTIVE_SERVER_ID',
     ]);
 
     try {
       vi.resetModules();
       envScope.patch({
-        HAPPIER_SERVER_URL: 'http://localhost:4321',
-        HAPPIER_WEBAPP_URL: 'http://localhost:9999',
-        HAPPIER_ACTIVE_SERVER_ID: 'env_test',
+        HAPPIEST_SERVER_URL: 'http://localhost:4321',
+        HAPPIEST_WEBAPP_URL: 'http://localhost:9999',
+        HAPPIEST_ACTIVE_SERVER_ID: 'env_test',
       });
 
       const output = captureStdoutJsonOutput<{

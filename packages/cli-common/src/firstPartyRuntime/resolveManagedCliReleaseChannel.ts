@@ -3,10 +3,12 @@ import { basename } from 'node:path';
 import {
   getReleaseRingCatalogEntry,
   normalizePublicReleaseRingId,
+  PUBLIC_RELEASE_RING_IDS,
   type PublicReleaseRingId,
   type PublicReleaseRingLabel,
 } from '@happier-dev/release-runtime/releaseRings';
 
+import { resolveFirstPartyComponentPublicReleaseVariant } from './componentCatalog.js';
 import {
   readDefaultManagedReleaseChannel,
   readDefaultManagedReleaseChannelSync,
@@ -19,7 +21,7 @@ export const STANDARD_MANAGED_CLI_RELEASE_CHANNEL_ENV_KEYS = [
 ] as const;
 
 export const DAEMON_SERVICE_MANAGED_CLI_RELEASE_CHANNEL_ENV_KEYS = [
-  'HAPPIER_DAEMON_SERVICE_CHANNEL',
+  'HAPPIEST_DAEMON_SERVICE_CHANNEL',
   ...STANDARD_MANAGED_CLI_RELEASE_CHANNEL_ENV_KEYS,
 ] as const;
 
@@ -31,8 +33,9 @@ export type ManagedCliReleaseChannelSource =
   | 'default-marker'
   | 'default';
 
-export type ManagedCliReleaseChannelMarkerFallback = 'happier-invoker' | 'always' | 'never';
-export type ManagedCliToolName = 'happier' | 'hprev' | 'hdev';
+export type ManagedCliReleaseChannelMarkerFallback = 'product-invoker' | 'always' | 'never';
+/** The command a ring installs, as named by the component catalog. */
+export type ManagedCliToolName = string;
 
 export interface ResolvedManagedCliReleaseChannel {
   ringId: PublicReleaseRingId;
@@ -77,15 +80,19 @@ function resolvePublicReleaseRingIdFromPathHint(raw: unknown): PublicReleaseRing
 }
 
 function resolvePublicReleaseRingIdFromInvokerName(name: string): PublicReleaseRingId | '' {
-  if (name === 'hprev') return 'preview';
-  if (name === 'hdev') return 'publicdev';
+  for (const ring of PUBLIC_RELEASE_RING_IDS) {
+    // The stable command is the unsuffixed product command; its channel comes from the default marker.
+    if (ring !== 'stable' && resolveManagedCliToolNameForRing(ring) === name) return ring;
+  }
   return '';
 }
 
 export function resolveManagedCliToolNameForRing(ring: PublicReleaseRingId): ManagedCliToolName {
-  if (ring === 'preview') return 'hprev';
-  if (ring === 'publicdev') return 'hdev';
-  return 'happier';
+  const [toolName] = resolveFirstPartyComponentPublicReleaseVariant({ componentId: 'happier-cli', channel: ring }).installShims;
+  if (!toolName) {
+    throw new Error(`The CLI component installs no command for release ring ${ring}`);
+  }
+  return toolName;
 }
 
 function buildResolvedManagedCliReleaseChannel(
@@ -138,9 +145,10 @@ function collectCandidateInputs(params: ManagedCliReleaseChannelResolverParams):
 }
 
 function resolveInvokedToolName(candidates: readonly string[]): string | null {
+  const toolNames = new Set(PUBLIC_RELEASE_RING_IDS.map(resolveManagedCliToolNameForRing));
   for (const candidate of candidates) {
     const name = normalizeInvokerCandidate(candidate);
-    if (name === 'happier' || name === 'hprev' || name === 'hdev') {
+    if (toolNames.has(name)) {
       return name;
     }
   }
@@ -174,7 +182,7 @@ function shouldReadDefaultMarker(
 ): boolean {
   if (markerFallback === 'always') return true;
   if (markerFallback === 'never') return false;
-  return invokedToolName === 'happier';
+  return invokedToolName === resolveManagedCliToolNameForRing('stable');
 }
 
 function resolveManagedCliReleaseChannelWithoutMarker(
@@ -208,7 +216,7 @@ export function resolveManagedCliReleaseChannelSync(
 
   const candidates = collectCandidateInputs(params);
   const invokedToolName = resolveInvokedToolName(candidates);
-  const markerFallback = params.markerFallback ?? 'happier-invoker';
+  const markerFallback = params.markerFallback ?? 'product-invoker';
   if (shouldReadDefaultMarker(markerFallback, invokedToolName)) {
     return buildResolvedManagedCliReleaseChannel({
       ringId: readDefaultManagedReleaseChannelSync({ processEnv: params.processEnv }),
@@ -234,7 +242,7 @@ export async function resolveManagedCliReleaseChannel(
 
   const candidates = collectCandidateInputs(params);
   const invokedToolName = resolveInvokedToolName(candidates);
-  const markerFallback = params.markerFallback ?? 'happier-invoker';
+  const markerFallback = params.markerFallback ?? 'product-invoker';
   if (shouldReadDefaultMarker(markerFallback, invokedToolName)) {
     return buildResolvedManagedCliReleaseChannel({
       ringId: await readDefaultManagedReleaseChannel({ processEnv: params.processEnv }),

@@ -142,14 +142,14 @@ function withPatchedPath<T>(binDir: string, run: () => Promise<T>): Promise<T> {
 
 describe('happier relay host arch resolution', () => {
     let home = '';
-    let envScope = createEnvKeyScope(['HAPPIER_HOME_DIR']);
+    let envScope = createEnvKeyScope(['HAPPIEST_HOME_DIR']);
 
     beforeEach(async () => {
         preparedRoots = [];
-        envScope = createEnvKeyScope(['HAPPIER_HOME_DIR']);
+        envScope = createEnvKeyScope(['HAPPIEST_HOME_DIR']);
         home = await createTempDir('happier-relay-host-arch-');
         envScope.patch({
-            HAPPIER_HOME_DIR: home,
+            HAPPIEST_HOME_DIR: home,
         });
     });
 

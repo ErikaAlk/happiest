@@ -17,7 +17,7 @@ import {
 vi.mock('axios');
 
 let tempHomeDir: string | null = null;
-const originalHappyHomeDir = process.env.HAPPIER_HOME_DIR;
+const originalHappyHomeDir = process.env.HAPPIEST_HOME_DIR;
 const originalMaxAttempts = process.env.HAPPIER_SESSION_MUTATION_OUTBOX_MAX_ATTEMPTS;
 const originalBaseRetryMs = process.env.HAPPIER_SESSION_MUTATION_OUTBOX_BASE_RETRY_MS;
 const originalJitterMs = process.env.HAPPIER_SESSION_MUTATION_OUTBOX_JITTER_MS;
@@ -37,7 +37,7 @@ function serverContract(mode: SessionSyncPendingInputServerContractMode) {
 
 async function useTempHappyHome(): Promise<void> {
     tempHomeDir = await mkdtemp(join(tmpdir(), 'happier-cli-session-outbox-unit-'));
-    process.env.HAPPIER_HOME_DIR = tempHomeDir;
+    process.env.HAPPIEST_HOME_DIR = tempHomeDir;
 }
 
 async function createRuntimePersistenceContext(sessionId: string) {
@@ -925,7 +925,7 @@ describe('createSessionMutationOutbox', () => {
 
     afterEach(async () => {
         vi.unstubAllEnvs();
-        process.env.HAPPIER_HOME_DIR = originalHappyHomeDir;
+        process.env.HAPPIEST_HOME_DIR = originalHappyHomeDir;
         if (originalMaxAttempts === undefined) {
             delete process.env.HAPPIER_SESSION_MUTATION_OUTBOX_MAX_ATTEMPTS;
         } else {
@@ -1368,12 +1368,12 @@ describe('createSessionMutationOutbox', () => {
 
     it('re-resolves the live server URL and retries a terminal turn mutation after a local endpoint refusal', async () => {
         const attemptedUrls: string[] = [];
-        vi.stubEnv('HAPPIER_SERVER_URL', 'http://127.0.0.1:41001');
-        vi.stubEnv('HAPPIER_LOCAL_SERVER_URL', '');
+        vi.stubEnv('HAPPIEST_SERVER_URL', 'http://127.0.0.1:41001');
+        vi.stubEnv('HAPPIEST_LOCAL_SERVER_URL', '');
         vi.mocked(axios.post).mockImplementation(async (url) => {
             attemptedUrls.push(String(url));
             if (attemptedUrls.length === 1) {
-                vi.stubEnv('HAPPIER_SERVER_URL', 'http://127.0.0.1:52002');
+                vi.stubEnv('HAPPIEST_SERVER_URL', 'http://127.0.0.1:52002');
                 throw Object.assign(new Error('connect ECONNREFUSED 127.0.0.1:41001'), {
                     isAxiosError: true,
                     code: 'ECONNREFUSED',

@@ -9,11 +9,11 @@ import { reserveEphemeralPort } from '@/testkit/http/portUtils';
 import { spawnSleepyDetachedProcess, spawnStoppableHttpDaemon } from './testkit/fakeDaemonLifecycle.testkit';
 
 const envScope = createEnvKeyScope([
-  'HAPPIER_HOME_DIR',
+  'HAPPIEST_HOME_DIR',
   'HAPPIER_RELEASE_RING',
-  'HAPPIER_ACTIVE_SERVER_ID',
-  'HAPPIER_SERVER_URL',
-  'HAPPIER_WEBAPP_URL',
+  'HAPPIEST_ACTIVE_SERVER_ID',
+  'HAPPIEST_SERVER_URL',
+  'HAPPIEST_WEBAPP_URL',
 ]);
 
 describe('multiDaemon release ring scoping', () => {
@@ -34,11 +34,11 @@ describe('multiDaemon release ring scoping', () => {
   it('prefers the canonical daemon state file and still reports a legacy ring-scoped daemon state path when only that legacy file exists', async () => {
     homeDir = join(tmpdir(), `happier-multi-daemon-ring-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     envScope.patch({
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_RELEASE_RING: 'dev',
-      HAPPIER_ACTIVE_SERVER_ID: 'cloud',
-      HAPPIER_SERVER_URL: 'https://api.happier.dev',
-      HAPPIER_WEBAPP_URL: 'https://app.happier.dev',
+      HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
+      HAPPIEST_SERVER_URL: 'https://api.happier.dev',
+      HAPPIEST_WEBAPP_URL: 'https://app.happier.dev',
     });
 
     // Seed a minimal settings file with a cloud server profile so the list is deterministic.
@@ -90,11 +90,11 @@ describe('multiDaemon release ring scoping', () => {
   it('falls back to a valid legacy ring-scoped daemon state when the canonical file is unreadable', async () => {
     homeDir = join(tmpdir(), `happier-multi-daemon-canonical-invalid-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     envScope.patch({
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_RELEASE_RING: 'dev',
-      HAPPIER_ACTIVE_SERVER_ID: 'cloud',
-      HAPPIER_SERVER_URL: 'https://api.happier.dev',
-      HAPPIER_WEBAPP_URL: 'https://app.happier.dev',
+      HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
+      HAPPIEST_SERVER_URL: 'https://api.happier.dev',
+      HAPPIEST_WEBAPP_URL: 'https://app.happier.dev',
     });
 
     mkdirSync(homeDir, { recursive: true });
@@ -148,11 +148,11 @@ describe('multiDaemon release ring scoping', () => {
   it('skips a stale canonical daemon state and uses a later live legacy ring-scoped state', async () => {
     homeDir = join(tmpdir(), `happier-multi-daemon-stale-canonical-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     envScope.patch({
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_RELEASE_RING: 'dev',
-      HAPPIER_ACTIVE_SERVER_ID: 'cloud',
-      HAPPIER_SERVER_URL: 'https://api.happier.dev',
-      HAPPIER_WEBAPP_URL: 'https://app.happier.dev',
+      HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
+      HAPPIEST_SERVER_URL: 'https://api.happier.dev',
+      HAPPIEST_WEBAPP_URL: 'https://app.happier.dev',
     });
 
     mkdirSync(homeDir, { recursive: true });
@@ -226,11 +226,11 @@ describe('multiDaemon release ring scoping', () => {
   it('reaps live same-home orphan daemon states without stopping the active daemon pid', async () => {
     homeDir = join(tmpdir(), `happier-multi-daemon-orphan-reap-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     envScope.patch({
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_RELEASE_RING: 'dev',
-      HAPPIER_ACTIVE_SERVER_ID: 'cloud',
-      HAPPIER_SERVER_URL: 'https://api.happier.dev',
-      HAPPIER_WEBAPP_URL: 'https://app.happier.dev',
+      HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
+      HAPPIEST_SERVER_URL: 'https://api.happier.dev',
+      HAPPIEST_WEBAPP_URL: 'https://app.happier.dev',
     });
 
     mkdirSync(homeDir, { recursive: true });
@@ -329,11 +329,11 @@ describe('multiDaemon release ring scoping', () => {
   it('does not stop live same-home daemon states when authenticated control is unavailable', async () => {
     homeDir = join(tmpdir(), `happier-multi-daemon-tokenless-orphan-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     envScope.patch({
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_RELEASE_RING: 'dev',
-      HAPPIER_ACTIVE_SERVER_ID: 'cloud',
-      HAPPIER_SERVER_URL: 'https://api.happier.dev',
-      HAPPIER_WEBAPP_URL: 'https://app.happier.dev',
+      HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
+      HAPPIEST_SERVER_URL: 'https://api.happier.dev',
+      HAPPIEST_WEBAPP_URL: 'https://app.happier.dev',
     });
 
     mkdirSync(homeDir, { recursive: true });

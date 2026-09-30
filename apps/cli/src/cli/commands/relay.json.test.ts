@@ -122,34 +122,34 @@ function withPatchedPath<T>(binDir: string, run: () => Promise<T>): Promise<T> {
 describe('happier relay --json', () => {
     let home = '';
     let envScope = createEnvKeyScope([
-        'HAPPIER_HOME_DIR',
-        'HAPPIER_PUBLIC_SERVER_URL',
+        'HAPPIEST_HOME_DIR',
+        'HAPPIEST_PUBLIC_SERVER_URL',
         'HAPPIER_PUBLIC_RELEASE_CHANNEL',
-        'HAPPIER_SERVER_URL',
+        'HAPPIEST_SERVER_URL',
         'HAPPIER_TEST_FIRST_PARTY_PAYLOAD_ROOT',
         'HAPPIER_TEST_FIRST_PARTY_PAYLOAD_VERSION_ID',
-        'HAPPIER_WEBAPP_URL',
+        'HAPPIEST_WEBAPP_URL',
     ]);
 
     beforeEach(async () => {
         envScope = createEnvKeyScope([
-            'HAPPIER_HOME_DIR',
-            'HAPPIER_PUBLIC_SERVER_URL',
+            'HAPPIEST_HOME_DIR',
+            'HAPPIEST_PUBLIC_SERVER_URL',
             'HAPPIER_PUBLIC_RELEASE_CHANNEL',
-            'HAPPIER_SERVER_URL',
+            'HAPPIEST_SERVER_URL',
             'HAPPIER_TEST_FIRST_PARTY_PAYLOAD_ROOT',
             'HAPPIER_TEST_FIRST_PARTY_PAYLOAD_VERSION_ID',
-            'HAPPIER_WEBAPP_URL',
+            'HAPPIEST_WEBAPP_URL',
         ]);
         home = await createTempDir('happier-relay-json-');
         envScope.patch({
-            HAPPIER_HOME_DIR: home,
-            HAPPIER_PUBLIC_SERVER_URL: undefined,
+            HAPPIEST_HOME_DIR: home,
+            HAPPIEST_PUBLIC_SERVER_URL: undefined,
             HAPPIER_PUBLIC_RELEASE_CHANNEL: undefined,
-            HAPPIER_SERVER_URL: undefined,
+            HAPPIEST_SERVER_URL: undefined,
             HAPPIER_TEST_FIRST_PARTY_PAYLOAD_ROOT: undefined,
             HAPPIER_TEST_FIRST_PARTY_PAYLOAD_VERSION_ID: undefined,
-            HAPPIER_WEBAPP_URL: undefined,
+            HAPPIEST_WEBAPP_URL: undefined,
         });
         reloadConfiguration();
     });
@@ -700,11 +700,11 @@ describe('happier relay --json', () => {
         const localRelayUrl = 'http://127.0.0.1:3005';
         const publicRelayUrl = 'http://127.0.0.1:43005';
         envScope.patch({
-            HAPPIER_PUBLIC_SERVER_URL: publicRelayUrl,
-            HAPPIER_SERVER_URL: localRelayUrl,
+            HAPPIEST_PUBLIC_SERVER_URL: publicRelayUrl,
+            HAPPIEST_SERVER_URL: localRelayUrl,
             HAPPIER_TEST_FIRST_PARTY_PAYLOAD_ROOT: undefined,
             HAPPIER_TEST_FIRST_PARTY_PAYLOAD_VERSION_ID: undefined,
-            HAPPIER_WEBAPP_URL: publicRelayUrl,
+            HAPPIEST_WEBAPP_URL: publicRelayUrl,
         });
 
         vi.resetModules();

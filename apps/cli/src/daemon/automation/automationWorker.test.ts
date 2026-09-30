@@ -64,9 +64,9 @@ function buildQueuedRun(params: { id: string; automationId: string; at: number }
 }
 
 describe('automationWorker', () => {
-  const previousServer = process.env.HAPPIER_SERVER_URL;
-  const previousWebapp = process.env.HAPPIER_WEBAPP_URL;
-  const previousHomeDir = process.env.HAPPIER_HOME_DIR;
+  const previousServer = process.env.HAPPIEST_SERVER_URL;
+  const previousWebapp = process.env.HAPPIEST_WEBAPP_URL;
+  const previousHomeDir = process.env.HAPPIEST_HOME_DIR;
 
   beforeEach(() => {
     vi.useRealTimers();
@@ -99,20 +99,20 @@ describe('automationWorker', () => {
     vi.restoreAllMocks();
     vi.resetModules();
 
-    if (previousServer === undefined) delete process.env.HAPPIER_SERVER_URL;
-    else process.env.HAPPIER_SERVER_URL = previousServer;
+    if (previousServer === undefined) delete process.env.HAPPIEST_SERVER_URL;
+    else process.env.HAPPIEST_SERVER_URL = previousServer;
 
-    if (previousWebapp === undefined) delete process.env.HAPPIER_WEBAPP_URL;
-    else process.env.HAPPIER_WEBAPP_URL = previousWebapp;
+    if (previousWebapp === undefined) delete process.env.HAPPIEST_WEBAPP_URL;
+    else process.env.HAPPIEST_WEBAPP_URL = previousWebapp;
 
-    if (previousHomeDir === undefined) delete process.env.HAPPIER_HOME_DIR;
-    else process.env.HAPPIER_HOME_DIR = previousHomeDir;
+    if (previousHomeDir === undefined) delete process.env.HAPPIEST_HOME_DIR;
+    else process.env.HAPPIEST_HOME_DIR = previousHomeDir;
   });
 
   it('disables itself when automation endpoints are missing (404) to avoid repeated polling', async () => {
-    process.env.HAPPIER_SERVER_URL = 'https://api.example.test';
-    process.env.HAPPIER_WEBAPP_URL = 'https://app.example.test';
-    process.env.HAPPIER_HOME_DIR = join(
+    process.env.HAPPIEST_SERVER_URL = 'https://api.example.test';
+    process.env.HAPPIEST_WEBAPP_URL = 'https://app.example.test';
+    process.env.HAPPIEST_HOME_DIR = join(
       os.tmpdir(),
       `happier-automation-worker-${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}`,
     );
@@ -162,9 +162,9 @@ describe('automationWorker', () => {
   }, 60_000);
 
   it('does not make time-driven requests after the startup assignment refresh', async () => {
-    process.env.HAPPIER_SERVER_URL = 'https://api.example.test';
-    process.env.HAPPIER_WEBAPP_URL = 'https://app.example.test';
-    process.env.HAPPIER_HOME_DIR = join(
+    process.env.HAPPIEST_SERVER_URL = 'https://api.example.test';
+    process.env.HAPPIEST_WEBAPP_URL = 'https://app.example.test';
+    process.env.HAPPIEST_HOME_DIR = join(
       os.tmpdir(),
       `happier-automation-worker-${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}`,
     );
@@ -223,9 +223,9 @@ describe('automationWorker', () => {
   }, 120_000);
 
   it('suppresses assignment refresh while paused and resumes it afterwards', async () => {
-    process.env.HAPPIER_SERVER_URL = 'https://api.example.test';
-    process.env.HAPPIER_WEBAPP_URL = 'https://app.example.test';
-    process.env.HAPPIER_HOME_DIR = join(
+    process.env.HAPPIEST_SERVER_URL = 'https://api.example.test';
+    process.env.HAPPIEST_WEBAPP_URL = 'https://app.example.test';
+    process.env.HAPPIEST_HOME_DIR = join(
       os.tmpdir(),
       `happier-automation-worker-${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}`,
     );
@@ -268,9 +268,9 @@ describe('automationWorker', () => {
       vi.setSystemTime(new Date('2026-02-01T00:00:00.000Z'));
       const now = Date.now();
 
-      process.env.HAPPIER_SERVER_URL = 'https://api.example.test';
-      process.env.HAPPIER_WEBAPP_URL = 'https://app.example.test';
-      process.env.HAPPIER_HOME_DIR = join(
+      process.env.HAPPIEST_SERVER_URL = 'https://api.example.test';
+      process.env.HAPPIEST_WEBAPP_URL = 'https://app.example.test';
+      process.env.HAPPIEST_HOME_DIR = join(
         os.tmpdir(),
         `happier-automation-worker-${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}`,
       );
@@ -363,9 +363,9 @@ describe('automationWorker', () => {
     try {
       vi.setSystemTime(new Date('2026-02-01T00:00:00.000Z'));
 
-      process.env.HAPPIER_SERVER_URL = 'https://api.example.test';
-      process.env.HAPPIER_WEBAPP_URL = 'https://app.example.test';
-      process.env.HAPPIER_HOME_DIR = join(
+      process.env.HAPPIEST_SERVER_URL = 'https://api.example.test';
+      process.env.HAPPIEST_WEBAPP_URL = 'https://app.example.test';
+      process.env.HAPPIEST_HOME_DIR = join(
         os.tmpdir(),
         `happier-automation-worker-${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}`,
       );
@@ -420,9 +420,9 @@ describe('automationWorker', () => {
       vi.setSystemTime(new Date('2026-02-01T00:00:00.000Z'));
       const now = Date.now();
 
-      process.env.HAPPIER_SERVER_URL = 'https://api.example.test';
-      process.env.HAPPIER_WEBAPP_URL = 'https://app.example.test';
-      process.env.HAPPIER_HOME_DIR = join(
+      process.env.HAPPIEST_SERVER_URL = 'https://api.example.test';
+      process.env.HAPPIEST_WEBAPP_URL = 'https://app.example.test';
+      process.env.HAPPIEST_HOME_DIR = join(
         os.tmpdir(),
         `happier-automation-worker-${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}`,
       );
@@ -520,9 +520,9 @@ describe('automationWorker', () => {
       vi.setSystemTime(new Date('2026-02-01T00:00:00.000Z'));
       const now = Date.now();
 
-      process.env.HAPPIER_SERVER_URL = 'https://api.example.test';
-      process.env.HAPPIER_WEBAPP_URL = 'https://app.example.test';
-      process.env.HAPPIER_HOME_DIR = join(
+      process.env.HAPPIEST_SERVER_URL = 'https://api.example.test';
+      process.env.HAPPIEST_WEBAPP_URL = 'https://app.example.test';
+      process.env.HAPPIEST_HOME_DIR = join(
         os.tmpdir(),
         `happier-automation-worker-${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}`,
       );

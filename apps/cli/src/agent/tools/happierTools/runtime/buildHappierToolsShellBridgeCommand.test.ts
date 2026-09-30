@@ -5,12 +5,12 @@ import { createTempDirSync, removeTempDirSync } from '@/testkit/fs/tempDir';
 
 const ENV_KEYS = [
   'HAPPIER_SHELL_BRIDGE_CONTEXT_ENV',
-  'HAPPIER_HOME_DIR',
-  'HAPPIER_ACTIVE_SERVER_ID',
-  'HAPPIER_SERVER_URL',
-  'HAPPIER_LOCAL_SERVER_URL',
-  'HAPPIER_PUBLIC_SERVER_URL',
-  'HAPPIER_WEBAPP_URL',
+  'HAPPIEST_HOME_DIR',
+  'HAPPIEST_ACTIVE_SERVER_ID',
+  'HAPPIEST_SERVER_URL',
+  'HAPPIEST_LOCAL_SERVER_URL',
+  'HAPPIEST_PUBLIC_SERVER_URL',
+  'HAPPIEST_WEBAPP_URL',
   'HAPPIER_ACCESS_TOKEN',
 ] as const;
 
@@ -66,7 +66,7 @@ describe('buildHappierToolsShellBridgeCommand', () => {
     tempDirs.add(happierHome);
     envScope.patch({
       HAPPIER_SHELL_BRIDGE_CONTEXT_ENV: 'home',
-      HAPPIER_HOME_DIR: happierHome,
+      HAPPIEST_HOME_DIR: happierHome,
     });
     vi.resetModules();
 
@@ -79,7 +79,7 @@ describe('buildHappierToolsShellBridgeCommand', () => {
     expect(parseTrustedHappierToolsShellBridgeCommand(command)).toMatchObject({ kind: 'list' });
     expect(
       parseTrustedHappierToolsShellBridgeCommand(
-        command.replace(`HAPPIER_HOME_DIR='${happierHome}'`, `HAPPIER_HOME_DIR='/tmp/attacker'`),
+        command.replace(`HAPPIEST_HOME_DIR='${happierHome}'`, `HAPPIEST_HOME_DIR='/tmp/attacker'`),
       ),
     ).toBeNull();
   });
@@ -88,12 +88,12 @@ describe('buildHappierToolsShellBridgeCommand', () => {
     const happierHome = createTempDirSync('happier-tools-shell-bridge-home-');
     tempDirs.add(happierHome);
     envScope.patch({
-      HAPPIER_HOME_DIR: happierHome,
-      HAPPIER_ACTIVE_SERVER_ID: 'preview',
-      HAPPIER_SERVER_URL: 'https://preview.happier.example',
-      HAPPIER_LOCAL_SERVER_URL: 'http://127.0.0.1:48999',
-      HAPPIER_PUBLIC_SERVER_URL: 'https://public.happier.example',
-      HAPPIER_WEBAPP_URL: 'https://app.happier.example',
+      HAPPIEST_HOME_DIR: happierHome,
+      HAPPIEST_ACTIVE_SERVER_ID: 'preview',
+      HAPPIEST_SERVER_URL: 'https://preview.happier.example',
+      HAPPIEST_LOCAL_SERVER_URL: 'http://127.0.0.1:48999',
+      HAPPIEST_PUBLIC_SERVER_URL: 'https://public.happier.example',
+      HAPPIEST_WEBAPP_URL: 'https://app.happier.example',
       HAPPIER_ACCESS_TOKEN: 'secret-token-that-must-not-be-embedded',
     });
     vi.resetModules();
@@ -111,8 +111,8 @@ describe('buildHappierToolsShellBridgeCommand', () => {
       '--json',
     ]);
 
-    expect(command).not.toContain('HAPPIER_HOME_DIR=');
-    expect(command).not.toContain('HAPPIER_SERVER_URL=');
+    expect(command).not.toContain('HAPPIEST_HOME_DIR=');
+    expect(command).not.toContain('HAPPIEST_SERVER_URL=');
     // Binary-safe invocation of the tools CLI.
     expect(command).toContain("'tools' 'call'");
     expect(command).toContain("'--tool' 'change_title'");
@@ -126,12 +126,12 @@ describe('buildHappierToolsShellBridgeCommand', () => {
     tempDirs.add(happierHome);
     envScope.patch({
       HAPPIER_SHELL_BRIDGE_CONTEXT_ENV: 'home',
-      HAPPIER_HOME_DIR: happierHome,
-      HAPPIER_ACTIVE_SERVER_ID: 'preview',
-      HAPPIER_SERVER_URL: 'https://preview.happier.example',
-      HAPPIER_LOCAL_SERVER_URL: 'http://127.0.0.1:48999',
-      HAPPIER_PUBLIC_SERVER_URL: 'https://public.happier.example',
-      HAPPIER_WEBAPP_URL: 'https://app.happier.example',
+      HAPPIEST_HOME_DIR: happierHome,
+      HAPPIEST_ACTIVE_SERVER_ID: 'preview',
+      HAPPIEST_SERVER_URL: 'https://preview.happier.example',
+      HAPPIEST_LOCAL_SERVER_URL: 'http://127.0.0.1:48999',
+      HAPPIEST_PUBLIC_SERVER_URL: 'https://public.happier.example',
+      HAPPIEST_WEBAPP_URL: 'https://app.happier.example',
       HAPPIER_ACCESS_TOKEN: 'secret-token-that-must-not-be-embedded',
     });
     vi.resetModules();
@@ -140,12 +140,12 @@ describe('buildHappierToolsShellBridgeCommand', () => {
 
     const command = buildHappierToolsShellBridgeCommand(['list', '--json']);
 
-    expect(command).toContain(`HAPPIER_HOME_DIR='${happierHome}'`);
-    expect(command).not.toContain('HAPPIER_ACTIVE_SERVER_ID=');
-    expect(command).not.toContain('HAPPIER_SERVER_URL=');
-    expect(command).not.toContain('HAPPIER_LOCAL_SERVER_URL=');
-    expect(command).not.toContain('HAPPIER_PUBLIC_SERVER_URL=');
-    expect(command).not.toContain('HAPPIER_WEBAPP_URL=');
+    expect(command).toContain(`HAPPIEST_HOME_DIR='${happierHome}'`);
+    expect(command).not.toContain('HAPPIEST_ACTIVE_SERVER_ID=');
+    expect(command).not.toContain('HAPPIEST_SERVER_URL=');
+    expect(command).not.toContain('HAPPIEST_LOCAL_SERVER_URL=');
+    expect(command).not.toContain('HAPPIEST_PUBLIC_SERVER_URL=');
+    expect(command).not.toContain('HAPPIEST_WEBAPP_URL=');
     expect(command).not.toContain('secret-token-that-must-not-be-embedded');
     expect(command).not.toContain('HAPPIER_ACCESS_TOKEN');
   });
@@ -155,12 +155,12 @@ describe('buildHappierToolsShellBridgeCommand', () => {
     tempDirs.add(happierHome);
     envScope.patch({
       HAPPIER_SHELL_BRIDGE_CONTEXT_ENV: 'full',
-      HAPPIER_HOME_DIR: happierHome,
-      HAPPIER_ACTIVE_SERVER_ID: 'preview',
-      HAPPIER_SERVER_URL: 'https://preview.happier.example',
-      HAPPIER_LOCAL_SERVER_URL: 'http://127.0.0.1:48999',
-      HAPPIER_PUBLIC_SERVER_URL: 'https://public.happier.example',
-      HAPPIER_WEBAPP_URL: 'https://app.happier.example',
+      HAPPIEST_HOME_DIR: happierHome,
+      HAPPIEST_ACTIVE_SERVER_ID: 'preview',
+      HAPPIEST_SERVER_URL: 'https://preview.happier.example',
+      HAPPIEST_LOCAL_SERVER_URL: 'http://127.0.0.1:48999',
+      HAPPIEST_PUBLIC_SERVER_URL: 'https://public.happier.example',
+      HAPPIEST_WEBAPP_URL: 'https://app.happier.example',
       HAPPIER_ACCESS_TOKEN: 'secret-token-that-must-not-be-embedded',
     });
     vi.resetModules();
@@ -169,11 +169,11 @@ describe('buildHappierToolsShellBridgeCommand', () => {
 
     const command = buildHappierToolsShellBridgeCommand(['list', '--json']);
 
-    expect(command).toContain(`HAPPIER_HOME_DIR='${happierHome}'`);
-    expect(command).toContain("HAPPIER_ACTIVE_SERVER_ID='preview'");
-    expect(command).toContain("HAPPIER_SERVER_URL='http://127.0.0.1:48999'");
-    expect(command).toContain("HAPPIER_PUBLIC_SERVER_URL='https://public.happier.example'");
-    expect(command).toContain("HAPPIER_WEBAPP_URL='https://app.happier.example'");
+    expect(command).toContain(`HAPPIEST_HOME_DIR='${happierHome}'`);
+    expect(command).toContain("HAPPIEST_ACTIVE_SERVER_ID='preview'");
+    expect(command).toContain("HAPPIEST_SERVER_URL='http://127.0.0.1:48999'");
+    expect(command).toContain("HAPPIEST_PUBLIC_SERVER_URL='https://public.happier.example'");
+    expect(command).toContain("HAPPIEST_WEBAPP_URL='https://app.happier.example'");
     expect(command).not.toContain('secret-token-that-must-not-be-embedded');
     expect(command).not.toContain('HAPPIER_ACCESS_TOKEN');
   });

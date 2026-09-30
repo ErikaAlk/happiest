@@ -7,7 +7,7 @@ import { createEnvKeyScope } from '@/testkit/env/envScope';
 import { createTempDirSync, removeTempDirSync } from '@/testkit/fs/tempDir';
 
 describe('logger', () => {
-    const envKeys = ['DEBUG', 'HAPPIER_HOME_DIR', 'HAPPIER_LOG_LEVEL', 'HAPPIER_SESSION_LOG_KEEP_COUNT', 'HAPPIER_CRASHED_SESSION_LOG_KEEP_COUNT'] as const;
+    const envKeys = ['DEBUG', 'HAPPIEST_HOME_DIR', 'HAPPIER_LOG_LEVEL', 'HAPPIER_SESSION_LOG_KEEP_COUNT', 'HAPPIER_CRASHED_SESSION_LOG_KEEP_COUNT'] as const;
     let envScope = createEnvKeyScope(envKeys);
     let tempDir: string;
     let originalArgv: string[];
@@ -17,7 +17,7 @@ describe('logger', () => {
         tempDir = createTempDirSync('happier-cli-logger-test-');
         originalArgv = [...process.argv];
         envScope.patch({
-            HAPPIER_HOME_DIR: tempDir,
+            HAPPIEST_HOME_DIR: tempDir,
             DEBUG: undefined,
             HAPPIER_LOG_LEVEL: undefined,
             HAPPIER_SESSION_LOG_KEEP_COUNT: undefined,

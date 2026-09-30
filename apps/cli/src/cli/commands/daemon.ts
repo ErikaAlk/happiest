@@ -736,8 +736,8 @@ export async function handleDaemonCliCommand(context: CommandContext): Promise<v
                 const snapshot = resolveDaemonServiceInstallationSnapshotFromEnv({
                   processEnv: {
                     ...process.env,
-                    HAPPIER_DAEMON_SERVICE_INSTANCE_ID: entry.serverId,
-                    HAPPIER_DAEMON_SERVICE_SERVER_URL: entry.serverUrl,
+                    HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: entry.serverId,
+                    HAPPIEST_DAEMON_SERVICE_SERVER_URL: entry.serverUrl,
                   },
                 });
                 if (!servicePlatform) servicePlatform = snapshot.platform;

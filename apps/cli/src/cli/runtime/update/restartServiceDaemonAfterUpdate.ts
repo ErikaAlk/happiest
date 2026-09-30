@@ -87,10 +87,10 @@ export async function restartServiceDaemonOntoInstalledCli(params: Readonly<{
     windowsHide: true,
     env: {
       ...processEnv,
-      HAPPIER_DAEMON_SERVICE_CHANNEL: channel,
+      HAPPIEST_DAEMON_SERVICE_CHANNEL: channel,
       HAPPIER_PUBLIC_RELEASE_CHANNEL: getReleaseRingCatalogEntry(channel).publicLabel,
-      HAPPIER_DAEMON_SERVICE_TARGET_MODE: params.plan.targetMode,
-      HAPPIER_DAEMON_SERVICE_INSTANCE_ID: params.plan.instanceId,
+      HAPPIEST_DAEMON_SERVICE_TARGET_MODE: params.plan.targetMode,
+      HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: params.plan.instanceId,
     },
   });
   if (result.status !== 0) {

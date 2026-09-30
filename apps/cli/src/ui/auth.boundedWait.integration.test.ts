@@ -33,14 +33,14 @@ function setStderrTtyForTest(isTTY: boolean): () => void {
 
 describe('terminal auth wait bound', () => {
   const envKeys = [
-    'HAPPIER_HOME_DIR',
+    'HAPPIEST_HOME_DIR',
     'HAPPIER_NO_BROWSER_OPEN',
     'HAPPIER_AUTH_METHOD',
     'HAPPIER_AUTH_POLL_INTERVAL_MS',
     'HAPPIER_AUTH_WAIT_TIMEOUT_MS',
     'HAPPIER_NO_ANIMATION',
-    'HAPPIER_SERVER_URL',
-    'HAPPIER_WEBAPP_URL',
+    'HAPPIEST_SERVER_URL',
+    'HAPPIEST_WEBAPP_URL',
     'NO_COLOR',
     'TERM',
   ] as const;
@@ -55,12 +55,12 @@ describe('terminal auth wait bound', () => {
     envScope = createEnvKeyScope(envKeys);
     homeDir = await createTempDir('happier-cli-auth-bounded-wait-');
     envScope.patch({
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
       HAPPIER_NO_BROWSER_OPEN: '1',
       HAPPIER_AUTH_METHOD: 'web',
       HAPPIER_AUTH_POLL_INTERVAL_MS: '1',
-      HAPPIER_SERVER_URL: 'http://happier-auth-bounded.test',
-      HAPPIER_WEBAPP_URL: 'http://example.test',
+      HAPPIEST_SERVER_URL: 'http://happier-auth-bounded.test',
+      HAPPIEST_WEBAPP_URL: 'http://example.test',
     });
     restoreTty = setStdioTtyForTest({ stdin: false, stdout: false });
   });
@@ -81,7 +81,7 @@ describe('terminal auth wait bound', () => {
 
     const app = pendingRelay();
     await app.ready();
-    const restoreAxios = installAxiosFastifyAdapter({ app, origin: process.env.HAPPIER_SERVER_URL ?? '' });
+    const restoreAxios = installAxiosFastifyAdapter({ app, origin: process.env.HAPPIEST_SERVER_URL ?? '' });
     vi.resetModules();
     const { doAuth } = await import('./auth');
 
@@ -119,7 +119,7 @@ describe('terminal auth wait bound', () => {
 
     const app = pendingRelay();
     await app.ready();
-    const restoreAxios = installAxiosFastifyAdapter({ app, origin: process.env.HAPPIER_SERVER_URL ?? '' });
+    const restoreAxios = installAxiosFastifyAdapter({ app, origin: process.env.HAPPIEST_SERVER_URL ?? '' });
     vi.resetModules();
     const { doAuth } = await import('./auth');
 
@@ -145,7 +145,7 @@ describe('terminal auth wait bound', () => {
     // `happier auth login` performs.
     const app = pendingRelay();
     await app.ready();
-    const restoreAxios = installAxiosFastifyAdapter({ app, origin: process.env.HAPPIER_SERVER_URL ?? '' });
+    const restoreAxios = installAxiosFastifyAdapter({ app, origin: process.env.HAPPIEST_SERVER_URL ?? '' });
     vi.resetModules();
     const { doAuth } = await import('./auth');
 

@@ -418,11 +418,11 @@ describe('createHsetupSystemTaskRegistry', () => {
         },
       ],
     });
-    const previousCliPath = process.env.HAPPIER_BOOTSTRAP_CLI_PATH;
+    const previousCliPath = process.env.HAPPIEST_BOOTSTRAP_CLI_PATH;
     const previousStatePath = process.env.HAPPIER_FAKE_CLI_STATE_PATH;
     const previousLogPath = process.env.HAPPIER_FAKE_CLI_LOG_PATH;
     try {
-      process.env.HAPPIER_BOOTSTRAP_CLI_PATH = fakeCli.cliPath;
+      process.env.HAPPIEST_BOOTSTRAP_CLI_PATH = fakeCli.cliPath;
       process.env.HAPPIER_FAKE_CLI_STATE_PATH = join(fakeCli.cliPath, '..', 'scenario.json');
       process.env.HAPPIER_FAKE_CLI_LOG_PATH = join(fakeCli.cliPath, '..', 'invocations.log');
 
@@ -461,7 +461,7 @@ describe('createHsetupSystemTaskRegistry', () => {
       });
       expect(fakeCli.readInvocations()).toContainEqual(['daemon', 'status', '--json']);
     } finally {
-      restoreEnvVar('HAPPIER_BOOTSTRAP_CLI_PATH', previousCliPath);
+      restoreEnvVar('HAPPIEST_BOOTSTRAP_CLI_PATH', previousCliPath);
       restoreEnvVar('HAPPIER_FAKE_CLI_STATE_PATH', previousStatePath);
       restoreEnvVar('HAPPIER_FAKE_CLI_LOG_PATH', previousLogPath);
       fakeCli.cleanup();
@@ -529,11 +529,11 @@ describe('createHsetupSystemTaskRegistry', () => {
         },
       ],
     });
-    const previousCliPath = process.env.HAPPIER_BOOTSTRAP_CLI_PATH;
+    const previousCliPath = process.env.HAPPIEST_BOOTSTRAP_CLI_PATH;
     const previousStatePath = process.env.HAPPIER_FAKE_CLI_STATE_PATH;
     const previousLogPath = process.env.HAPPIER_FAKE_CLI_LOG_PATH;
     try {
-      process.env.HAPPIER_BOOTSTRAP_CLI_PATH = fakeCli.cliPath;
+      process.env.HAPPIEST_BOOTSTRAP_CLI_PATH = fakeCli.cliPath;
       process.env.HAPPIER_FAKE_CLI_STATE_PATH = join(fakeCli.cliPath, '..', 'scenario.json');
       process.env.HAPPIER_FAKE_CLI_LOG_PATH = join(fakeCli.cliPath, '..', 'invocations.log');
 
@@ -573,7 +573,7 @@ describe('createHsetupSystemTaskRegistry', () => {
         ['daemon', 'status', '--json'],
       ]);
     } finally {
-      restoreEnvVar('HAPPIER_BOOTSTRAP_CLI_PATH', previousCliPath);
+      restoreEnvVar('HAPPIEST_BOOTSTRAP_CLI_PATH', previousCliPath);
       restoreEnvVar('HAPPIER_FAKE_CLI_STATE_PATH', previousStatePath);
       restoreEnvVar('HAPPIER_FAKE_CLI_LOG_PATH', previousLogPath);
       fakeCli.cleanup();
@@ -937,7 +937,7 @@ posixDescribe('createHsetupSystemTaskRegistry cli.pathExposure kinds', () => {
     const homeDir = mkdtempSync(join(tmpdir(), 'hsetup-registry-cli-path-'));
     const previousHome = process.env.HOME;
     const previousShell = process.env.SHELL;
-    const previousHappierHome = process.env.HAPPIER_HOME_DIR;
+    const previousHappierHome = process.env.HAPPIEST_HOME_DIR;
     const previousNoPathUpdate = process.env.HAPPIER_NO_PATH_UPDATE;
     const previousPath = process.env.PATH;
     const zshrcPath = join(homeDir, '.zshrc');
@@ -945,7 +945,7 @@ posixDescribe('createHsetupSystemTaskRegistry cli.pathExposure kinds', () => {
     try {
       process.env.HOME = homeDir;
       process.env.SHELL = '/bin/zsh';
-      process.env.HAPPIER_HOME_DIR = join(homeDir, '.happier');
+      process.env.HAPPIEST_HOME_DIR = join(homeDir, '.happier');
       process.env.PATH = '';
       delete process.env.HAPPIER_NO_PATH_UPDATE;
       const registry = createHsetupSystemTaskRegistry();
@@ -983,7 +983,7 @@ posixDescribe('createHsetupSystemTaskRegistry cli.pathExposure kinds', () => {
     } finally {
       restoreEnvVar('HOME', previousHome);
       restoreEnvVar('SHELL', previousShell);
-      restoreEnvVar('HAPPIER_HOME_DIR', previousHappierHome);
+      restoreEnvVar('HAPPIEST_HOME_DIR', previousHappierHome);
       restoreEnvVar('HAPPIER_NO_PATH_UPDATE', previousNoPathUpdate);
       restoreEnvVar('PATH', previousPath);
       rmSync(homeDir, { recursive: true, force: true });

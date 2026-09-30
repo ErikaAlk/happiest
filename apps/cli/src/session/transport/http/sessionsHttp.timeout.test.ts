@@ -6,17 +6,17 @@ import { createSessionListResponseFixture } from '@/testkit/backends/sessionFixt
 import { createEnvKeyScope } from '@/testkit/env/envScope';
 
 describe('sessionControl.sessionsHttp timeouts', () => {
-  let envScope = createEnvKeyScope(['HAPPIER_SERVER_URL', 'HAPPIER_SESSION_CONTROL_HTTP_TIMEOUT_MS']);
+  let envScope = createEnvKeyScope(['HAPPIEST_SERVER_URL', 'HAPPIER_SESSION_CONTROL_HTTP_TIMEOUT_MS']);
 
   afterEach(() => {
     envScope.restore();
-    envScope = createEnvKeyScope(['HAPPIER_SERVER_URL', 'HAPPIER_SESSION_CONTROL_HTTP_TIMEOUT_MS']);
+    envScope = createEnvKeyScope(['HAPPIEST_SERVER_URL', 'HAPPIER_SESSION_CONTROL_HTTP_TIMEOUT_MS']);
     vi.restoreAllMocks();
     vi.resetModules();
   });
 
   it('uses configuration.sessionControlHttpTimeoutMs for fetchSessionById and fetchSessionsPage', async () => {
-    process.env.HAPPIER_SERVER_URL = 'http://server.example.test';
+    process.env.HAPPIEST_SERVER_URL = 'http://server.example.test';
     process.env.HAPPIER_SESSION_CONTROL_HTTP_TIMEOUT_MS = '54321';
 
     vi.resetModules();

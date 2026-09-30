@@ -18,7 +18,7 @@ const { execFileSyncSpy, runtimeState } = vi.hoisted(() => ({
 const envKeys = [
   'HOME',
   'PATH',
-  'HAPPIER_HOME_DIR',
+  'HAPPIEST_HOME_DIR',
   'HAPPIER_CLAUDE_PATH',
   'HAPPIER_JS_RUNTIME_PATH',
   'HAPPIER_MANAGED_NODE_BIN',

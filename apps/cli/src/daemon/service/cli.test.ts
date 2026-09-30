@@ -36,27 +36,27 @@ function doMockChildProcessSpawnSync(
 }
 
 const SCOPED_ENV_KEYS = [
-  'HAPPIER_DAEMON_SERVICE_PLATFORM',
-  'HAPPIER_DAEMON_SERVICE_USER_HOME_DIR',
-  'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR',
-  'HAPPIER_DAEMON_SERVICE_INSTANCE_ID',
-  'HAPPIER_DAEMON_SERVICE_NODE_PATH',
-  'HAPPIER_DAEMON_SERVICE_ENTRY_PATH',
-  'HAPPIER_DAEMON_SERVICE_MODE',
-  'HAPPIER_DAEMON_SERVICE_SYSTEM_USER',
-  'HAPPIER_DAEMON_SERVICE_CHANNEL',
-  'HAPPIER_DAEMON_SERVICE_TARGET_MODE',
-  'HAPPIER_DAEMON_SERVICE_AUTOSTART',
+  'HAPPIEST_DAEMON_SERVICE_PLATFORM',
+  'HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR',
+  'HAPPIEST_DAEMON_SERVICE_HOME_DIR',
+  'HAPPIEST_DAEMON_SERVICE_INSTANCE_ID',
+  'HAPPIEST_DAEMON_SERVICE_NODE_PATH',
+  'HAPPIEST_DAEMON_SERVICE_ENTRY_PATH',
+  'HAPPIEST_DAEMON_SERVICE_MODE',
+  'HAPPIEST_DAEMON_SERVICE_SYSTEM_USER',
+  'HAPPIEST_DAEMON_SERVICE_CHANNEL',
+  'HAPPIEST_DAEMON_SERVICE_TARGET_MODE',
+  'HAPPIEST_DAEMON_SERVICE_AUTOSTART',
   'HAPPIER_PUBLIC_RELEASE_CHANNEL',
-  'HAPPIER_SERVER_URL',
-  'HAPPIER_PUBLIC_SERVER_URL',
-  'HAPPIER_LOCAL_SERVER_URL',
-  'HAPPIER_WEBAPP_URL',
-  'HAPPIER_HOME_DIR',
-  'HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS',
-  'HAPPIER_DAEMON_SERVICE_OWNERSHIP_ACTIVE_GRACE_TIMEOUT_MS',
-  'HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS',
-  'HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS',
+  'HAPPIEST_SERVER_URL',
+  'HAPPIEST_PUBLIC_SERVER_URL',
+  'HAPPIEST_LOCAL_SERVER_URL',
+  'HAPPIEST_WEBAPP_URL',
+  'HAPPIEST_HOME_DIR',
+  'HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS',
+  'HAPPIEST_DAEMON_SERVICE_OWNERSHIP_ACTIVE_GRACE_TIMEOUT_MS',
+  'HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS',
+  'HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS',
   'HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS',
   'HAPPIER_DAEMON_START_WAIT_POLL_MS',
   'HAPPIER_CLI_INVOKER_NAME',
@@ -82,8 +82,8 @@ function writeValidInstalledDaemonServiceFile(
       execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
       env: {
         HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: options.targetMode ?? 'default-following',
-        HAPPIER_ACTIVE_SERVER_ID: options.activeServerId ?? 'cloud',
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: options.targetMode ?? 'default-following',
+        HAPPIEST_ACTIVE_SERVER_ID: options.activeServerId ?? 'cloud',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: options.releaseChannel ?? 'stable',
       },
       wantedBy: 'default.target',
@@ -107,11 +107,11 @@ function writeValidInstalledWindowsDaemonServiceFile(
             workingDirectory: 'C:\\Users\\tester',
             programArgs: ['C:\\hq\\happier.exe', 'daemon', 'start-sync'],
             env: {
-                HAPPIER_HOME_DIR: happierHomeDir,
-                HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+                HAPPIEST_HOME_DIR: happierHomeDir,
+                HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
                 HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-                HAPPIER_DAEMON_SERVICE_TARGET_MODE: options.targetMode ?? 'default-following',
-                HAPPIER_ACTIVE_SERVER_ID: options.activeServerId ?? 'cloud',
+                HAPPIEST_DAEMON_SERVICE_TARGET_MODE: options.targetMode ?? 'default-following',
+                HAPPIEST_ACTIVE_SERVER_ID: options.activeServerId ?? 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: options.releaseChannel ?? 'stable',
             },
       stdoutPath: 'C:\\hq\\daemon.out.log',
@@ -173,15 +173,15 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-restart-takeover-failure-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '200',
         HAPPIER_DAEMON_START_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '300',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '40',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '300',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '40',
       });
       vi.resetModules();
       doMockChildProcessSpawnSync(() => ({ status: 1, stdout: Buffer.from(''), stderr: Buffer.from('systemctl restart failed') }));
@@ -225,15 +225,15 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-install-takeover-failure-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '200',
         HAPPIER_DAEMON_START_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '300',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '40',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '300',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '40',
       });
       vi.resetModules();
       doMockChildProcessSpawnSync(() => ({ status: 1, stdout: Buffer.from(''), stderr: Buffer.from('systemctl enable failed') }));
@@ -271,10 +271,10 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-install-takeover-postcondition-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
@@ -318,10 +318,10 @@ describe('runDaemonServiceCliCommand', () => {
       let writeDaemonStateImpl: ((state: DaemonLocallyPersistedState) => void) | null = null;
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
@@ -380,16 +380,16 @@ describe('runDaemonServiceCliCommand', () => {
       let writeDaemonStateImpl: ((state: DaemonLocallyPersistedState) => void) | null = null;
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '200',
         HAPPIER_DAEMON_START_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '300',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '40',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '300',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '40',
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
@@ -402,7 +402,7 @@ describe('runDaemonServiceCliCommand', () => {
             label: expectedServiceLabel,
             programArgs: ['/Users/other/.happier/cli/current/happier', 'daemon', 'start-sync'],
             env: {
-              HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+              HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
               HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             },
             workingDirectory: '/tmp',
@@ -468,15 +468,15 @@ describe('runDaemonServiceCliCommand', () => {
       let writeDaemonStateImpl: ((state: DaemonLocallyPersistedState) => void) | null = null;
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '50',
         HAPPIER_DAEMON_START_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '500',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '500',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
@@ -558,16 +558,16 @@ describe('runDaemonServiceCliCommand', () => {
       let writeDaemonStateImpl: ((state: DaemonLocallyPersistedState) => void) | null = null;
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_INSTANCE_ID: 'company',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: 'company',
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '50',
         HAPPIER_DAEMON_START_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '500',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '500',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
@@ -652,15 +652,15 @@ describe('runDaemonServiceCliCommand', () => {
       let writeDaemonStateImpl: ((state: DaemonLocallyPersistedState) => void) | null = null;
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '50',
         HAPPIER_DAEMON_START_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '500',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '500',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
@@ -751,13 +751,13 @@ describe('runDaemonServiceCliCommand', () => {
       let restartObserved = false;
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       vi.doMock('node:child_process', async (importOriginal) => {
@@ -792,8 +792,8 @@ describe('runDaemonServiceCliCommand', () => {
                 execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
                 env: {
                   HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-                  HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-                  HAPPIER_DAEMON_SERVICE_LABEL: expectedServiceLabel,
+                  HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+                  HAPPIEST_DAEMON_SERVICE_LABEL: expectedServiceLabel,
                   HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
                 },
                 wantedBy: 'default.target',
@@ -831,15 +831,15 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-install-wait-for-auth-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '50',
         HAPPIER_DAEMON_START_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       vi.doMock('node:child_process', async (importOriginal) => {
@@ -898,15 +898,15 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-install-systemd-env-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '50',
         HAPPIER_DAEMON_START_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
 
       const previousXdgRuntimeDir = process.env.XDG_RUNTIME_DIR;
@@ -967,14 +967,14 @@ describe('runDaemonServiceCliCommand', () => {
       let ownerWritten = false;
       let writeDaemonStateImpl: ((state: DaemonLocallyPersistedState) => void) | null = null;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
@@ -1034,13 +1034,13 @@ describe('runDaemonServiceCliCommand', () => {
       let healthChecks = 0;
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '40',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '40',
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
@@ -1105,9 +1105,9 @@ describe('runDaemonServiceCliCommand', () => {
       resolveDaemonServicePaths,
     } = await loadCliModule();
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '/tmp/happier',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: '/tmp/happier',
     });
 
     const stdout = captureStdout();
@@ -1137,7 +1137,7 @@ describe('runDaemonServiceCliCommand', () => {
     const runtime = resolveDaemonServiceCliRuntimeFromEnv({
       processEnv: {
         ...process.env,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
         HOME: '/isolated-stack-home',
         USERPROFILE: '/isolated-stack-home',
       },
@@ -1149,7 +1149,7 @@ describe('runDaemonServiceCliCommand', () => {
   it('prefers the invoking sudo user home + happier home for user-scoped service operations run as root', async () => {
     envScope.patch({
       // Mirror typical `sudo` behavior where user env is not preserved unless explicitly requested.
-      HAPPIER_HOME_DIR: '',
+      HAPPIEST_HOME_DIR: '',
     });
     vi.resetModules();
 
@@ -1176,8 +1176,8 @@ describe('runDaemonServiceCliCommand', () => {
     const runtime = resolveDaemonServiceCliRuntimeFromEnv({
       processEnv: {
         ...process.env,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_UID: '0',
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_UID: '0',
         SUDO_USER: 'sudo-user',
         HOME: '/root',
       },
@@ -1192,11 +1192,11 @@ describe('runDaemonServiceCliCommand', () => {
     const runtime = resolveDaemonServiceCliRuntimeFromEnv({
       processEnv: {
         ...process.env,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
         HOME: '/scoped/home',
         USERPROFILE: '/scoped/home',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '~/service-home',
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '~/service-happier',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '~/service-home',
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: '~/service-happier',
       },
     });
 
@@ -1208,15 +1208,15 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-start-owner-conflict-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '200',
         HAPPIER_DAEMON_START_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '300',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '40',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '300',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '40',
       });
       vi.resetModules();
 
@@ -1236,8 +1236,8 @@ describe('runDaemonServiceCliCommand', () => {
           execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
           env: {
             HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-            HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
           },
           wantedBy: 'default.target',
@@ -1275,15 +1275,15 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-start-wait-for-auth-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '50',
         HAPPIER_DAEMON_START_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       vi.doMock('node:child_process', async (importOriginal) => {
@@ -1332,16 +1332,16 @@ describe('runDaemonServiceCliCommand', () => {
       let writeDaemonStateImpl: ((state: DaemonLocallyPersistedState) => void) | null = null;
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '50',
         HAPPIER_DAEMON_START_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_ACTIVE_GRACE_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_ACTIVE_GRACE_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       vi.doMock('node:child_process', async (importOriginal) => {
@@ -1409,16 +1409,16 @@ describe('runDaemonServiceCliCommand', () => {
       let writeDaemonStateImpl: ((state: DaemonLocallyPersistedState) => void) | null = null;
 
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: 'preview',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_ACTIVE_GRACE_TIMEOUT_MS: '0',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_ACTIVE_GRACE_TIMEOUT_MS: '0',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
@@ -1488,20 +1488,20 @@ describe('runDaemonServiceCliCommand', () => {
       let serviceActive = false;
 
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-        HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
         // The desktop drives the managed CLI; its launcher is the managed shim.
-        HAPPIER_DAEMON_SERVICE_NODE_PATH: managedShim,
-        HAPPIER_DAEMON_SERVICE_ENTRY_PATH: '',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_ACTIVE_GRACE_TIMEOUT_MS: '0',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_DAEMON_SERVICE_NODE_PATH: managedShim,
+        HAPPIEST_DAEMON_SERVICE_ENTRY_PATH: '',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_ACTIVE_GRACE_TIMEOUT_MS: '0',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
@@ -1588,16 +1588,16 @@ describe('runDaemonServiceCliCommand', () => {
       let writeDaemonStateImpl: ((state: DaemonLocallyPersistedState) => void) | null = null;
 
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: 'preview',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_ACTIVE_GRACE_TIMEOUT_MS: '0',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_ACTIVE_GRACE_TIMEOUT_MS: '0',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
@@ -1680,18 +1680,18 @@ describe('runDaemonServiceCliCommand', () => {
       let writeDaemonStateImpl: ((state: DaemonLocallyPersistedState) => void) | null = null;
 
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: 'preview',
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '50',
         HAPPIER_DAEMON_START_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_ACTIVE_GRACE_TIMEOUT_MS: '0',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_ACTIVE_GRACE_TIMEOUT_MS: '0',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
@@ -1776,14 +1776,14 @@ describe('runDaemonServiceCliCommand', () => {
       let ownerWritten = false;
       let writeDaemonStateImpl: ((state: DaemonLocallyPersistedState) => void) | null = null;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
@@ -1856,13 +1856,13 @@ describe('runDaemonServiceCliCommand', () => {
       const happierHomeDir = `${homeDir}/.happier`;
       const observedWaitTimeouts: number[] = [];
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'win32',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'win32',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       doMockChildProcessSpawnSync(() => ({ status: 0, stdout: Buffer.from(''), stderr: Buffer.from('') }));
@@ -1900,16 +1900,16 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-restart-stale-owner-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '50',
         HAPPIER_DAEMON_START_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_ACTIVE_GRACE_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_ACTIVE_GRACE_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       vi.doMock('node:child_process', async (importOriginal) => {
@@ -1959,14 +1959,14 @@ describe('runDaemonServiceCliCommand', () => {
       const lifecycleEvents: string[] = [];
       let writeDaemonStateImpl: ((state: DaemonLocallyPersistedState) => void) | null = null;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'win32',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'win32',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       vi.doMock('node:child_process', async (importOriginal) => {
@@ -2072,16 +2072,16 @@ describe('runDaemonServiceCliCommand', () => {
       const lifecycleEvents: string[] = [];
       let writeDaemonStateImpl: ((state: DaemonLocallyPersistedState) => void) | null = null;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'win32',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'win32',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
         HAPPIER_PUBLIC_RELEASE_CHANNEL: 'preview',
-        HAPPIER_DAEMON_SERVICE_CHANNEL: 'preview',
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_DAEMON_SERVICE_CHANNEL: 'preview',
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       vi.doMock('node:child_process', async (importOriginal) => {
@@ -2175,10 +2175,10 @@ describe('runDaemonServiceCliCommand', () => {
       let writeDaemonStateImpl: ((state: DaemonLocallyPersistedState) => void) | null = null;
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
@@ -2221,8 +2221,8 @@ describe('runDaemonServiceCliCommand', () => {
           execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
           env: {
             HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-            HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
           },
           wantedBy: 'default.target',
@@ -2263,10 +2263,10 @@ describe('runDaemonServiceCliCommand', () => {
       let writeDaemonStateImpl: ((state: DaemonLocallyPersistedState) => void) | null = null;
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
@@ -2309,8 +2309,8 @@ describe('runDaemonServiceCliCommand', () => {
           execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
           env: {
             HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-            HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
           },
           wantedBy: 'default.target',
@@ -2348,15 +2348,15 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-start-owner-takeover-postcondition-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '200',
         HAPPIER_DAEMON_START_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '300',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '40',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '300',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '40',
       });
       vi.resetModules();
       doMockChildProcessSpawnSync(() => ({ status: 0, stdout: Buffer.from(''), stderr: Buffer.from('') }));
@@ -2385,8 +2385,8 @@ describe('runDaemonServiceCliCommand', () => {
           execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
           env: {
             HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-            HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
           },
           wantedBy: 'default.target',
@@ -2418,14 +2418,14 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-start-same-owner-noop-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '500',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '500',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       const launchctlCalls: string[][] = [];
@@ -2459,8 +2459,8 @@ describe('runDaemonServiceCliCommand', () => {
       const paths = resolveDaemonServicePaths(runtime);
       const installRuntimeTarget = await resolveDaemonServiceInstallRuntimeTarget({
         currentExecPath: process.execPath,
-        explicitNodePath: process.env.HAPPIER_DAEMON_SERVICE_NODE_PATH ?? '',
-        explicitEntryPath: process.env.HAPPIER_DAEMON_SERVICE_ENTRY_PATH ?? '',
+        explicitNodePath: process.env.HAPPIEST_DAEMON_SERVICE_NODE_PATH ?? '',
+        explicitEntryPath: process.env.HAPPIEST_DAEMON_SERVICE_ENTRY_PATH ?? '',
         targetMode: runtime.targetMode,
         processEnv: process.env,
       });
@@ -2521,11 +2521,11 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-restart-same-owner-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
       });
       vi.resetModules();
 
@@ -2540,8 +2540,8 @@ describe('runDaemonServiceCliCommand', () => {
       const paths = resolveDaemonServicePaths(runtime);
       const installRuntimeTarget = await resolveDaemonServiceInstallRuntimeTarget({
         currentExecPath: process.execPath,
-        explicitNodePath: process.env.HAPPIER_DAEMON_SERVICE_NODE_PATH ?? '',
-        explicitEntryPath: process.env.HAPPIER_DAEMON_SERVICE_ENTRY_PATH ?? '',
+        explicitNodePath: process.env.HAPPIEST_DAEMON_SERVICE_NODE_PATH ?? '',
+        explicitEntryPath: process.env.HAPPIEST_DAEMON_SERVICE_ENTRY_PATH ?? '',
         targetMode: runtime.targetMode,
         processEnv: process.env,
       });
@@ -2596,15 +2596,15 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-restart-wait-for-auth-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
         HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS: '50',
         HAPPIER_DAEMON_START_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '120',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       vi.doMock('node:child_process', async (importOriginal) => {
@@ -2669,16 +2669,16 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-start-darwin-refreshes-plist-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_CHANNEL: '',
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_CHANNEL: '',
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
         HAPPIER_PUBLIC_RELEASE_CHANNEL: '',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '500',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '500',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
       const originalArgv = process.argv;
@@ -2749,9 +2749,9 @@ describe('runDaemonServiceCliCommand', () => {
           env: {
             PATH: '/usr/bin:/bin',
             HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-            HAPPIER_DAEMON_SERVICE_LABEL: paths.label,
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-            HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+            HAPPIEST_DAEMON_SERVICE_LABEL: paths.label,
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
           },
           stdoutPath: `${happierHomeDir}/logs/daemon-service.out.log`,
@@ -2782,14 +2782,14 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-install-same-owner-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '500',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
-        HAPPIER_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_TIMEOUT_MS: '500',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_WAIT_POLL_MS: '10',
+        HAPPIEST_DAEMON_SERVICE_OWNERSHIP_STABLE_MS: '20',
       });
       vi.resetModules();
 
@@ -2837,8 +2837,8 @@ describe('runDaemonServiceCliCommand', () => {
       const paths = resolveDaemonServicePaths(runtime);
       const installRuntimeTarget = await resolveDaemonServiceInstallRuntimeTarget({
         currentExecPath: process.execPath,
-        explicitNodePath: process.env.HAPPIER_DAEMON_SERVICE_NODE_PATH ?? '',
-        explicitEntryPath: process.env.HAPPIER_DAEMON_SERVICE_ENTRY_PATH ?? '',
+        explicitNodePath: process.env.HAPPIEST_DAEMON_SERVICE_NODE_PATH ?? '',
+        explicitEntryPath: process.env.HAPPIEST_DAEMON_SERVICE_ENTRY_PATH ?? '',
       });
       mkdirSync(dirname(paths.installedPath), { recursive: true });
       const expectedInstallPlan = planDaemonServiceInstall({
@@ -2886,11 +2886,11 @@ describe('runDaemonServiceCliCommand', () => {
     const runtime = resolveDaemonServiceCliRuntimeFromEnv({
       processEnv: {
         ...process.env,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'pinned',
-        HAPPIER_PUBLIC_SERVER_URL: 'https://public.example.test',
-        HAPPIER_SERVER_URL: 'http://127.0.0.1:4010',
-        HAPPIER_WEBAPP_URL: 'https://app.example.test',
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'pinned',
+        HAPPIEST_PUBLIC_SERVER_URL: 'https://public.example.test',
+        HAPPIEST_SERVER_URL: 'http://127.0.0.1:4010',
+        HAPPIEST_WEBAPP_URL: 'https://app.example.test',
       },
     });
 
@@ -2902,9 +2902,9 @@ describe('runDaemonServiceCliCommand', () => {
   it('supports help JSON output', async () => {
     const { runDaemonServiceCliCommand } = await loadCliModule();
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '/tmp/happier',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: '/tmp/happier',
     });
 
     const output = captureStdoutJsonOutput<{
@@ -2928,9 +2928,9 @@ describe('runDaemonServiceCliCommand', () => {
   it('treats --mode system as a flag (not as a subcommand) and reports systemd system paths (linux)', async () => {
     const { runDaemonServiceCliCommand } = await loadCliModule();
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '/tmp/happier',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: '/tmp/happier',
     });
 
     const output = captureStdoutJsonOutput<{
@@ -2954,13 +2954,13 @@ describe('runDaemonServiceCliCommand', () => {
   it('defaults service install dry-runs to the singleton default background service', async () => {
     const { runDaemonServiceCliCommand } = await loadCliModule();
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '/tmp/happier',
-      HAPPIER_DAEMON_SERVICE_CHANNEL: 'preview',
-      HAPPIER_DAEMON_SERVICE_INSTANCE_ID: 'company',
-      HAPPIER_DAEMON_SERVICE_NODE_PATH: '/usr/local/bin/happier',
-      HAPPIER_DAEMON_SERVICE_ENTRY_PATH: '',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: '/tmp/happier',
+      HAPPIEST_DAEMON_SERVICE_CHANNEL: 'preview',
+      HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: 'company',
+      HAPPIEST_DAEMON_SERVICE_NODE_PATH: '/usr/local/bin/happier',
+      HAPPIEST_DAEMON_SERVICE_ENTRY_PATH: '',
       PATH: '/usr/bin',
     });
 
@@ -2974,10 +2974,10 @@ describe('runDaemonServiceCliCommand', () => {
       const payload = output.json();
       expect(payload.ok).toBe(true);
       expect(payload.plan.files[0]?.path).toBe('/tmp/.config/systemd/user/happier-daemon.default.service');
-      expect(payload.plan.files[0]?.content).toContain('Environment=HAPPIER_DAEMON_SERVICE_TARGET_MODE=default-following');
+      expect(payload.plan.files[0]?.content).toContain('Environment=HAPPIEST_DAEMON_SERVICE_TARGET_MODE=default-following');
       expect(payload.plan.files[0]?.content).toContain('Environment=HAPPIER_PUBLIC_RELEASE_CHANNEL=preview');
-      expect(payload.plan.files[0]?.content).not.toContain('Environment=HAPPIER_ACTIVE_SERVER_ID=');
-      expect(payload.plan.files[0]?.content).not.toContain('Environment=HAPPIER_SERVER_URL=');
+      expect(payload.plan.files[0]?.content).not.toContain('Environment=HAPPIEST_ACTIVE_SERVER_ID=');
+      expect(payload.plan.files[0]?.content).not.toContain('Environment=HAPPIEST_SERVER_URL=');
     } finally {
       output.restore();
     }
@@ -2986,11 +2986,11 @@ describe('runDaemonServiceCliCommand', () => {
   it('reports the autostart mode in install dry-run JSON and drops the login trigger on request', async () => {
     const { runDaemonServiceCliCommand } = await loadCliModule();
     const baseEnv = {
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '/tmp/happier',
-      HAPPIER_DAEMON_SERVICE_NODE_PATH: '/usr/local/bin/happier',
-      HAPPIER_DAEMON_SERVICE_ENTRY_PATH: '',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: '/tmp/happier',
+      HAPPIEST_DAEMON_SERVICE_NODE_PATH: '/usr/local/bin/happier',
+      HAPPIEST_DAEMON_SERVICE_ENTRY_PATH: '',
       PATH: '/usr/bin',
     } as const;
 
@@ -3020,7 +3020,7 @@ describe('runDaemonServiceCliCommand', () => {
     expect(onDemand.autostart).toBe('on-demand');
     expect(commandText(onDemand)).toContain('systemctl --user disable happier-daemon.default.service');
     expect(commandText(onDemand)).not.toContain('systemctl --user enable happier-daemon.default.service');
-    expect(onDemand.plan.files[0]?.content).toContain('Environment=HAPPIER_DAEMON_SERVICE_AUTOSTART=on-demand');
+    expect(onDemand.plan.files[0]?.content).toContain('Environment=HAPPIEST_DAEMON_SERVICE_AUTOSTART=on-demand');
 
     const explicit = await runInstallPreview(['install', '--dry-run', '--json', '--autostart=on-demand']);
     expect(explicit.autostart).toBe('on-demand');
@@ -3028,7 +3028,7 @@ describe('runDaemonServiceCliCommand', () => {
 
   /**
    * Resolution order for the autostart dimension: an explicit flag, then what the installed
-   * service already declares, then `HAPPIER_DAEMON_SERVICE_AUTOSTART` — which a process started
+   * service already declares, then `HAPPIEST_DAEMON_SERVICE_AUTOSTART` — which a process started
    * *by* the service inherits, so it may only decide when nothing is installed to inherit from.
    * Letting it outrank the installed definition re-arms a login trigger the user turned off,
    * from a stale value, with no flag and no prompt.
@@ -3037,12 +3037,12 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-install-autostart-precedence-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       const baseEnv = {
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_NODE_PATH: '/usr/local/bin/happier',
-        HAPPIER_DAEMON_SERVICE_ENTRY_PATH: '',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_NODE_PATH: '/usr/local/bin/happier',
+        HAPPIEST_DAEMON_SERVICE_ENTRY_PATH: '',
         PATH: '/usr/bin',
       } as const;
       envScope.patch({ ...baseEnv });
@@ -3067,7 +3067,7 @@ describe('runDaemonServiceCliCommand', () => {
       // Nothing installed yet: the inherited env is the only thing that proves an intent.
       expect(await previewAutostart(
         ['install', '--dry-run', '--json'],
-        { HAPPIER_DAEMON_SERVICE_AUTOSTART: 'on-demand' },
+        { HAPPIEST_DAEMON_SERVICE_AUTOSTART: 'on-demand' },
       )).toBe('on-demand');
 
       // Now a service is installed on-demand. The stale env must not move it.
@@ -3095,13 +3095,13 @@ describe('runDaemonServiceCliCommand', () => {
 
       expect(await previewAutostart(
         ['install', '--dry-run', '--json'],
-        { HAPPIER_DAEMON_SERVICE_AUTOSTART: 'at-login' },
+        { HAPPIEST_DAEMON_SERVICE_AUTOSTART: 'at-login' },
       )).toBe('on-demand');
 
       // An explicit request still wins over both.
       expect(await previewAutostart(
         ['install', '--dry-run', '--json', '--autostart=at-login'],
-        { HAPPIER_DAEMON_SERVICE_AUTOSTART: 'on-demand' },
+        { HAPPIEST_DAEMON_SERVICE_AUTOSTART: 'on-demand' },
       )).toBe('at-login');
     });
   });
@@ -3117,13 +3117,13 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-install-dry-run-conflict-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_CHANNEL: 'preview',
-        HAPPIER_DAEMON_SERVICE_NODE_PATH: '/usr/local/bin/happier',
-        HAPPIER_DAEMON_SERVICE_ENTRY_PATH: '',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_CHANNEL: 'preview',
+        HAPPIEST_DAEMON_SERVICE_NODE_PATH: '/usr/local/bin/happier',
+        HAPPIEST_DAEMON_SERVICE_ENTRY_PATH: '',
         PATH: '/usr/bin',
       });
       vi.resetModules();
@@ -3143,8 +3143,8 @@ describe('runDaemonServiceCliCommand', () => {
           execStart: ['/usr/local/bin/happier', 'daemon', 'start-sync'],
           env: {
             HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-            HAPPIER_HOME_DIR: happierHomeDir,
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_HOME_DIR: happierHomeDir,
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
           },
           wantedBy: 'default.target',
@@ -3184,13 +3184,13 @@ describe('runDaemonServiceCliCommand', () => {
       const managedShim = `${happierHomeDir}/bin/happier`;
       const userCli = '/usr/local/lib/node_modules/@happier-dev/cli/bin/happier';
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
-        HAPPIER_DAEMON_SERVICE_NODE_PATH: '',
-        HAPPIER_DAEMON_SERVICE_ENTRY_PATH: '',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
+        HAPPIEST_DAEMON_SERVICE_NODE_PATH: '',
+        HAPPIEST_DAEMON_SERVICE_ENTRY_PATH: '',
         PATH: '/usr/bin',
       });
       vi.resetModules();
@@ -3248,14 +3248,14 @@ describe('runDaemonServiceCliCommand', () => {
       const managedShim = `${happierHomeDir}/bin/happier`;
       const userCli = '/usr/local/lib/node_modules/@happier-dev/cli/bin/happier';
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
         // The kept npm CLI runs this install; its launcher is itself.
-        HAPPIER_DAEMON_SERVICE_NODE_PATH: userCli,
-        HAPPIER_DAEMON_SERVICE_ENTRY_PATH: '',
+        HAPPIEST_DAEMON_SERVICE_NODE_PATH: userCli,
+        HAPPIEST_DAEMON_SERVICE_ENTRY_PATH: '',
         PATH: '/usr/bin',
       });
       vi.resetModules();
@@ -3318,18 +3318,18 @@ describe('runDaemonServiceCliCommand', () => {
     const { runDaemonServiceCliCommand } = await loadCliModule();
 
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'darwin',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '/tmp/happier',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'darwin',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: '/tmp/happier',
     });
     await expect(runDaemonServiceCliCommand({ argv: ['paths', '--json', '--mode', 'system'] })).rejects.toThrow(
       'System mode background services are only supported on Linux',
     );
 
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'win32',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '/tmp/happier',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'win32',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: '/tmp/happier',
     });
     await expect(runDaemonServiceCliCommand({ argv: ['paths', '--json', '--mode', 'system'] })).rejects.toThrow(
       'System mode background services are only supported on Linux',
@@ -3361,11 +3361,11 @@ describe('runDaemonServiceCliCommand', () => {
 
     const { runDaemonServiceCliCommand } = await loadCliModule();
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'pinned',
-      HAPPIER_DAEMON_SERVICE_INSTANCE_ID: 'company',
-      HAPPIER_DAEMON_SERVICE_NODE_PATH: '/usr/local/bin/happier',
-      HAPPIER_DAEMON_SERVICE_ENTRY_PATH: '',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'pinned',
+      HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: 'company',
+      HAPPIEST_DAEMON_SERVICE_NODE_PATH: '/usr/local/bin/happier',
+      HAPPIEST_DAEMON_SERVICE_ENTRY_PATH: '',
       PATH: '/usr/bin',
     });
 
@@ -3385,7 +3385,7 @@ describe('runDaemonServiceCliCommand', () => {
       expect(installPayload.plan.files[0]?.path).toBe('/etc/systemd/system/happier-daemon.company.service');
       expect(installPayload.plan.files[0]?.content).toContain('User=happier');
       expect(installPayload.plan.files[0]?.content).toContain('WorkingDirectory=/home/happier');
-      expect(installPayload.plan.files[0]?.content).toContain('Environment=HAPPIER_HOME_DIR=/home/happier/.happier');
+      expect(installPayload.plan.files[0]?.content).toContain('Environment=HAPPIEST_HOME_DIR=/home/happier/.happier');
       expect(installPayload.plan.files[0]?.content).toContain('Environment=PATH=');
       expect(installPayload.plan.files[0]?.content).toContain('/home/happier/.local/bin');
       expect(installPayload.plan.files[0]?.content).toContain('/home/happier/bin');
@@ -3436,12 +3436,12 @@ describe('runDaemonServiceCliCommand', () => {
 
     const { runDaemonServiceCliCommand } = await loadCliModule();
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_CHANNEL: 'dev',
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'pinned',
-      HAPPIER_DAEMON_SERVICE_INSTANCE_ID: 'company',
-      HAPPIER_DAEMON_SERVICE_NODE_PATH: '/usr/local/bin/happier',
-      HAPPIER_DAEMON_SERVICE_ENTRY_PATH: '',
+      HAPPIEST_DAEMON_SERVICE_CHANNEL: 'dev',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'pinned',
+      HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: 'company',
+      HAPPIEST_DAEMON_SERVICE_NODE_PATH: '/usr/local/bin/happier',
+      HAPPIEST_DAEMON_SERVICE_ENTRY_PATH: '',
       PATH: '/usr/bin',
     });
 
@@ -3469,9 +3469,9 @@ describe('runDaemonServiceCliCommand', () => {
   it('reports daemon service status as not installed when the service file is absent', async () => {
     const { runDaemonServiceCliCommand } = await loadCliModule();
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '/tmp/happier',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: '/tmp/happier',
     });
 
     const output = captureStdoutJsonOutput<{
@@ -3495,10 +3495,10 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-status-owner-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
       });
       vi.resetModules();
 
@@ -3516,7 +3516,7 @@ describe('runDaemonServiceCliCommand', () => {
           description: 'Happier Daemon',
           execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
           env: {
-            HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+            HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
             HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
           },
@@ -3570,16 +3570,16 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-status-inventory-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-        HAPPIER_ACTIVE_SERVER_ID: 'cloud',
-        HAPPIER_SERVER_URL: 'https://cloud.example.test',
-        HAPPIER_PUBLIC_SERVER_URL: 'https://cloud.example.test',
-        HAPPIER_WEBAPP_URL: 'https://cloud.example.test',
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
+        HAPPIEST_SERVER_URL: 'https://cloud.example.test',
+        HAPPIEST_PUBLIC_SERVER_URL: 'https://cloud.example.test',
+        HAPPIEST_WEBAPP_URL: 'https://cloud.example.test',
       });
       vi.resetModules();
 
@@ -3612,8 +3612,8 @@ describe('runDaemonServiceCliCommand', () => {
           execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
           env: {
             HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-            HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-            HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+            HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+            HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
           },
           wantedBy: 'default.target',
@@ -3667,10 +3667,10 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-status-owner-legacy-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
       });
       vi.resetModules();
 
@@ -3721,10 +3721,10 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-install-owner-conflict-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
       });
       vi.resetModules();
 
@@ -3765,10 +3765,10 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-install-owner-takeover-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
       });
       vi.resetModules();
 
@@ -3809,10 +3809,10 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-install-owner-legacy-conflict-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
       });
       vi.resetModules();
 
@@ -3853,10 +3853,10 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-install-owner-legacy-takeover-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
       });
       vi.resetModules();
 
@@ -3895,9 +3895,9 @@ describe('runDaemonServiceCliCommand', () => {
   it('fails closed when starting a daemon service that is not installed', async () => {
     const { runDaemonServiceCliCommand, resolveDaemonServiceCliRuntimeFromEnv, resolveDaemonServicePaths } = await loadCliModule();
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '/tmp/happier',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '/tmp',
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: '/tmp/happier',
     });
 
     const output = captureStdoutJsonOutput<{
@@ -3921,10 +3921,10 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-start-invalid-installed-file-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
       });
       vi.resetModules();
 
@@ -3948,10 +3948,10 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-stop-owner-note-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
       envScope.patch({
-        HAPPIER_HOME_DIR: happierHomeDir,
-        HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: happierHomeDir,
+        HAPPIEST_HOME_DIR: happierHomeDir,
+        HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: happierHomeDir,
       });
       vi.resetModules();
 
@@ -3999,16 +3999,16 @@ describe('runDaemonServiceCliCommand', () => {
       {
         prefix: 'happier-daemon-service-uninstall-all-',
         env: {
-          HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-          HAPPIER_DAEMON_SERVICE_CHANNEL: 'stable',
-          HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '',
-          HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '',
+          HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+          HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
+          HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '',
+          HAPPIEST_DAEMON_SERVICE_HOME_DIR: '',
         },
       },
       async ({ homeDir }) => {
-        process.env.HAPPIER_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
-        process.env.HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR = join(homeDir, '.happier');
-        process.env.HAPPIER_DAEMON_SERVICE_CHANNEL = 'stable';
+        process.env.HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR = homeDir;
+        process.env.HAPPIEST_DAEMON_SERVICE_HOME_DIR = join(homeDir, '.happier');
+        process.env.HAPPIEST_DAEMON_SERVICE_CHANNEL = 'stable';
         await writeDaemonSettingsFixture(homeDir);
 
         const stableRuntime = resolveDaemonServiceCliRuntimeFromEnv({
@@ -4054,9 +4054,9 @@ describe('runDaemonServiceCliCommand', () => {
 
   it('respects an explicit linux service list mode filter', async () => {
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '/tmp/happier-list-home',
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '/tmp/happier-list-home/.happier',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '/tmp/happier-list-home',
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: '/tmp/happier-list-home/.happier',
     });
     vi.resetModules();
 
@@ -4128,9 +4128,9 @@ describe('runDaemonServiceCliCommand', () => {
 
   it('builds uninstall --all plans across user and system services on linux when system mode is selected', async () => {
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '/tmp/happier-uninstall-home',
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '/tmp/happier-uninstall-home/.happier',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '/tmp/happier-uninstall-home',
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: '/tmp/happier-uninstall-home/.happier',
     });
     vi.spyOn(process as NodeJS.Process & { getuid: () => number }, 'getuid').mockReturnValue(0);
     vi.resetModules();
@@ -4202,9 +4202,9 @@ describe('runDaemonServiceCliCommand', () => {
 
   it('passes the discovered installed path into uninstall --all execution', async () => {
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
-      HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: '/tmp/happier-uninstall-runtime-home',
-      HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: '/tmp/happier-uninstall-runtime-home/.happier',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: '/tmp/happier-uninstall-runtime-home',
+      HAPPIEST_DAEMON_SERVICE_HOME_DIR: '/tmp/happier-uninstall-runtime-home/.happier',
     });
     vi.resetModules();
 
@@ -4251,7 +4251,7 @@ describe('runDaemonServiceCliCommand', () => {
 
   it('builds user-mode uninstall plans from the invoking user home during system-mode cleanup', async () => {
     envScope.patch({
-      HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
+      HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
       HOME: '/root',
       SUDO_USER: 'sudo-user',
     });

@@ -307,18 +307,18 @@ function hasDarwinDaemonStartSyncCommand(contents: string): boolean {
 }
 
 function hasLegacyManagedLinuxServiceEnv(path: string): boolean {
-  return readInstalledDaemonServiceEnvValue({ platform: 'linux', path, key: 'HAPPIER_HOME_DIR' }) !== null
-    || readInstalledDaemonServiceEnvValue({ platform: 'linux', path, key: 'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR' }) !== null;
+  return readInstalledDaemonServiceEnvValue({ platform: 'linux', path, key: 'HAPPIEST_HOME_DIR' }) !== null
+    || readInstalledDaemonServiceEnvValue({ platform: 'linux', path, key: 'HAPPIEST_DAEMON_SERVICE_HOME_DIR' }) !== null;
 }
 
 function hasLegacyManagedDarwinServiceEnv(path: string): boolean {
-  return readInstalledDaemonServiceEnvValue({ platform: 'darwin', path, key: 'HAPPIER_HOME_DIR' }) !== null
-    || readInstalledDaemonServiceEnvValue({ platform: 'darwin', path, key: 'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR' }) !== null;
+  return readInstalledDaemonServiceEnvValue({ platform: 'darwin', path, key: 'HAPPIEST_HOME_DIR' }) !== null
+    || readInstalledDaemonServiceEnvValue({ platform: 'darwin', path, key: 'HAPPIEST_DAEMON_SERVICE_HOME_DIR' }) !== null;
 }
 
 function hasLegacyManagedWindowsServiceEnv(path: string): boolean {
-  return readInstalledDaemonServiceEnvValue({ platform: 'win32', path, key: 'HAPPIER_HOME_DIR' }) !== null
-    || readInstalledDaemonServiceEnvValue({ platform: 'win32', path, key: 'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR' }) !== null;
+  return readInstalledDaemonServiceEnvValue({ platform: 'win32', path, key: 'HAPPIEST_HOME_DIR' }) !== null
+    || readInstalledDaemonServiceEnvValue({ platform: 'win32', path, key: 'HAPPIEST_DAEMON_SERVICE_HOME_DIR' }) !== null;
 }
 
 export function readInstalledDaemonServiceEnvValue(params: Readonly<{
@@ -391,7 +391,7 @@ function resolveInstalledDaemonServiceTargetMode(params: Readonly<{
   const declared = readInstalledDaemonServiceEnvValue({
     platform: params.platform,
     path: params.path,
-    key: 'HAPPIER_DAEMON_SERVICE_TARGET_MODE',
+    key: 'HAPPIEST_DAEMON_SERVICE_TARGET_MODE',
   });
   if (declared === 'default-following' || declared === 'pinned') {
     return declared;
@@ -495,9 +495,9 @@ function parseInstalledServiceMetadata(params: Readonly<{
     key,
   });
 
-  const parsedServerId = readValue('HAPPIER_ACTIVE_SERVER_ID');
-  const parsedHappierHomeDir = readValue('HAPPIER_HOME_DIR') ?? readValue('HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR');
-  const parsedRelayUrl = readValue('HAPPIER_PUBLIC_SERVER_URL') ?? readValue('HAPPIER_SERVER_URL');
+  const parsedServerId = readValue('HAPPIEST_ACTIVE_SERVER_ID');
+  const parsedHappierHomeDir = readValue('HAPPIEST_HOME_DIR') ?? readValue('HAPPIEST_DAEMON_SERVICE_HOME_DIR');
+  const parsedRelayUrl = readValue('HAPPIEST_PUBLIC_SERVER_URL') ?? readValue('HAPPIEST_SERVER_URL');
   const parsedReleaseChannel = normalizeParsedReleaseChannel(readValue('HAPPIER_PUBLIC_RELEASE_CHANNEL'));
   return {
     activeServerId: parsedServerId,

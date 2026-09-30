@@ -69,8 +69,8 @@ async function resolveDefaultFollowingRelayMatch(
 
 function resolveInstalledServiceHomeDir(entry: InstalledDaemonServiceEntry): string | null {
   return String(entry.happierHomeDir ?? '').trim()
-    || readInstalledDaemonServiceEnvValue({ platform: entry.platform, path: entry.path, key: 'HAPPIER_HOME_DIR' })
-    || readInstalledDaemonServiceEnvValue({ platform: entry.platform, path: entry.path, key: 'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR' });
+    || readInstalledDaemonServiceEnvValue({ platform: entry.platform, path: entry.path, key: 'HAPPIEST_HOME_DIR' })
+    || readInstalledDaemonServiceEnvValue({ platform: entry.platform, path: entry.path, key: 'HAPPIEST_DAEMON_SERVICE_HOME_DIR' });
 }
 
 type SettingsSnapshot = Readonly<{
@@ -285,11 +285,11 @@ export function hasInstalledBackgroundServiceConflictForCurrentInstallation(para
     const configuredServiceHome = readInstalledDaemonServiceEnvValue({
       platform: params.runtime.platform,
       path: service.path,
-      key: 'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR',
+      key: 'HAPPIEST_DAEMON_SERVICE_HOME_DIR',
     }) ?? readInstalledDaemonServiceEnvValue({
       platform: params.runtime.platform,
       path: service.path,
-      key: 'HAPPIER_HOME_DIR',
+      key: 'HAPPIEST_HOME_DIR',
     });
     if (configuredServiceHome) {
       const configuredComparableKey = resolveHappierHomeDirComparableKey(configuredServiceHome);

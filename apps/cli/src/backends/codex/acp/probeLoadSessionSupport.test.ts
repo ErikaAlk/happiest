@@ -13,7 +13,7 @@ vi.mock('@/capabilities/probes/acpProbe', () => ({
 
 describe.sequential('probeCodexAcpLoadSessionSupport', () => {
   const originalEnv = {
-    HAPPIER_HOME_DIR: process.env.HAPPIER_HOME_DIR,
+    HAPPIEST_HOME_DIR: process.env.HAPPIEST_HOME_DIR,
     HAPPIER_CODEX_ACP_ALLOW_NPX: process.env.HAPPIER_CODEX_ACP_ALLOW_NPX,
     CODEX_HOME: process.env.CODEX_HOME,
     PATH: process.env.PATH,
@@ -27,7 +27,7 @@ describe.sequential('probeCodexAcpLoadSessionSupport', () => {
     probeAcpAgentCapabilitiesMock.mockReset();
     homeDir = mkdtempSync(resolve(tmpdir(), 'happier-codex-acp-probe-'));
     pathDir = mkdtempSync(resolve(tmpdir(), 'happier-codex-acp-probe-path-'));
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     delete process.env.HAPPIER_CODEX_ACP_ALLOW_NPX;
     process.env.PATH = pathDir;
     codexHomeDir = mkdtempSync(resolve(tmpdir(), 'happier-codex-acp-config-'));
@@ -40,8 +40,8 @@ describe.sequential('probeCodexAcpLoadSessionSupport', () => {
   });
 
   afterEach(() => {
-    if (originalEnv.HAPPIER_HOME_DIR === undefined) delete process.env.HAPPIER_HOME_DIR;
-    else process.env.HAPPIER_HOME_DIR = originalEnv.HAPPIER_HOME_DIR;
+    if (originalEnv.HAPPIEST_HOME_DIR === undefined) delete process.env.HAPPIEST_HOME_DIR;
+    else process.env.HAPPIEST_HOME_DIR = originalEnv.HAPPIEST_HOME_DIR;
     if (originalEnv.HAPPIER_CODEX_ACP_ALLOW_NPX === undefined) delete process.env.HAPPIER_CODEX_ACP_ALLOW_NPX;
     else process.env.HAPPIER_CODEX_ACP_ALLOW_NPX = originalEnv.HAPPIER_CODEX_ACP_ALLOW_NPX;
     if (originalEnv.CODEX_HOME === undefined) delete process.env.CODEX_HOME;

@@ -12,18 +12,18 @@ vi.mock('@/daemon/runtime/spawnDetachedDaemonStartSync', () => ({
 
 describe('ensureDaemonRunningForSessionCommand conflict handling', () => {
     const envScope = createEnvKeyScope([
-        'HAPPIER_HOME_DIR',
-        'HAPPIER_ACTIVE_SERVER_ID',
+        'HAPPIEST_HOME_DIR',
+        'HAPPIEST_ACTIVE_SERVER_ID',
         'HAPPIER_PUBLIC_RELEASE_CHANNEL',
         'HAPPIER_DAEMON_STARTUP_SOURCE',
-        'HAPPIER_DAEMON_SERVICE_PLATFORM',
-        'HAPPIER_DAEMON_SERVICE_USER_HOME_DIR',
-        'HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR',
-        'HAPPIER_DAEMON_SERVICE_CHANNEL',
-        'HAPPIER_DAEMON_SERVICE_TARGET_MODE',
-        'HAPPIER_SERVER_URL',
-        'HAPPIER_PUBLIC_SERVER_URL',
-        'HAPPIER_WEBAPP_URL',
+        'HAPPIEST_DAEMON_SERVICE_PLATFORM',
+        'HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR',
+        'HAPPIEST_DAEMON_SERVICE_HOME_DIR',
+        'HAPPIEST_DAEMON_SERVICE_CHANNEL',
+        'HAPPIEST_DAEMON_SERVICE_TARGET_MODE',
+        'HAPPIEST_SERVER_URL',
+        'HAPPIEST_PUBLIC_SERVER_URL',
+        'HAPPIEST_WEBAPP_URL',
         'HAPPIER_DAEMON_START_WAIT_TIMEOUT_MS',
         'HAPPIER_DAEMON_START_WAIT_POLL_MS',
     ]);
@@ -47,8 +47,8 @@ describe('ensureDaemonRunningForSessionCommand conflict handling', () => {
     it('warns and skips autostart when a different background service is already running for the selected relay', async () => {
         await withTempDir('happier-ensure-daemon-conflict-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             });
             vi.resetModules();
@@ -87,8 +87,8 @@ describe('ensureDaemonRunningForSessionCommand conflict handling', () => {
     it('warns and skips autostart when a different manually started daemon is already running for the selected relay', async () => {
         await withTempDir('happier-ensure-daemon-manual-conflict-', async (homeDir) => {
             envScope.patch({
-                HAPPIER_HOME_DIR: homeDir,
-                HAPPIER_ACTIVE_SERVER_ID: 'cloud',
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             });
             vi.resetModules();
@@ -126,7 +126,7 @@ describe('ensureDaemonRunningForSessionCommand conflict handling', () => {
     it('warns and skips autostart when a background service is installed but no daemon is active', async () => {
         envScope.patch({
             HAPPIER_DAEMON_STARTUP_SOURCE: '',
-            HAPPIER_DAEMON_SERVICE_PLATFORM: 'linux',
+            HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
         });
         vi.resetModules();
         vi.doMock('@/daemon/controlClient', async (importOriginal) => {

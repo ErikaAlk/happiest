@@ -5,7 +5,7 @@ import { createTempDirSync, removeTempDirSync } from '@/testkit/fs/tempDir';
 
 describe('configuration prompt transfer JSON max bytes', () => {
   const envKeys = [
-    'HAPPIER_HOME_DIR',
+    'HAPPIEST_HOME_DIR',
     'HAPPIER_PROMPT_TRANSFER_JSON_MAX_BYTES',
   ] as const;
   let envScope = createEnvKeyScope(envKeys);
@@ -24,7 +24,7 @@ describe('configuration prompt transfer JSON max bytes', () => {
   it('defaults prompt transfer JSON max bytes to the UI-aligned value', async () => {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     delete process.env.HAPPIER_PROMPT_TRANSFER_JSON_MAX_BYTES;
 
     const configMod = await import('./configuration');
@@ -39,7 +39,7 @@ describe('configuration prompt transfer JSON max bytes', () => {
   it('reads prompt transfer JSON max bytes from env through configuration.ts only', async () => {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     process.env.HAPPIER_PROMPT_TRANSFER_JSON_MAX_BYTES = '1234';
 
     const configMod = await import('./configuration');
@@ -53,7 +53,7 @@ describe('configuration prompt transfer JSON max bytes', () => {
   it('clamps prompt transfer JSON max bytes to defensive maximums', async () => {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
-    process.env.HAPPIER_HOME_DIR = homeDir;
+    process.env.HAPPIEST_HOME_DIR = homeDir;
     process.env.HAPPIER_PROMPT_TRANSFER_JSON_MAX_BYTES = String(500_000_000);
 
     const configMod = await import('./configuration');

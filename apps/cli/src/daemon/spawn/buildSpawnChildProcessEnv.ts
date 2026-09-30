@@ -64,14 +64,14 @@ export function buildSpawnChildProcessEnv(params: {
     // via the shared runtime-context resolver (single source of truth shared with
     // the coding-agent spawn seam). For a non-split stack the resolver omits the
     // local/public URLs, so they must be cleared here first.
-    delete env.HAPPIER_PUBLIC_SERVER_URL;
-    delete env.HAPPIER_LOCAL_SERVER_URL;
+    delete env.HAPPIEST_PUBLIC_SERVER_URL;
+    delete env.HAPPIEST_LOCAL_SERVER_URL;
     Object.assign(env, resolveHappierRuntimeContextEnv({
       // Older stack daemons used the stable active-server id for both credentials and daemon
       // lifecycle. Promote that already-resolved daemon selection for children when the explicit
       // lifecycle variable is absent; current daemons keep the two scopes independent.
       daemonLifecycleScopeId:
-        String(params.processEnv.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID ?? '').trim()
+        String(params.processEnv.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID ?? '').trim()
         || params.serverSelectionEnv.activeServerId,
       server: params.serverSelectionEnv,
     }));

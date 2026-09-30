@@ -31,7 +31,7 @@ function writeValidInstalledDaemonServiceForCurrentRuntime(homeDir: string, serv
         programArgs: ['/usr/local/bin/happier', 'daemon', 'start-sync'],
         env: {
           HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-          HAPPIER_ACTIVE_SERVER_ID: serverId,
+          HAPPIEST_ACTIVE_SERVER_ID: serverId,
           HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
         },
         stdoutPath: join(homeDir, 'logs', 'daemon-service.default.out.log'),
@@ -51,8 +51,8 @@ function writeValidInstalledDaemonServiceForCurrentRuntime(homeDir: string, serv
         execStart: ['/usr/local/bin/happier', 'daemon', 'start-sync'],
         env: {
           HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-          HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-          HAPPIER_ACTIVE_SERVER_ID: serverId,
+          HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+          HAPPIEST_ACTIVE_SERVER_ID: serverId,
           HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
         },
         wantedBy: 'default.target',
@@ -68,11 +68,11 @@ function writeValidInstalledDaemonServiceForCurrentRuntime(homeDir: string, serv
       workingDirectory: homeDir,
       programArgs: ['C:\\hq\\happier.exe', 'daemon', 'start-sync'],
       env: {
-        HAPPIER_HOME_DIR: homeDir,
-        HAPPIER_DAEMON_SERVICE_HAPPIER_HOME_DIR: homeDir,
+        HAPPIEST_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_HOME_DIR: homeDir,
         HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
-        HAPPIER_DAEMON_SERVICE_TARGET_MODE: 'default-following',
-        HAPPIER_ACTIVE_SERVER_ID: serverId,
+        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+        HAPPIEST_ACTIVE_SERVER_ID: serverId,
         HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
       },
       stdoutPath: join(homeDir, 'logs', 'daemon-service.default.out.log'),
@@ -185,9 +185,9 @@ describe('multi-daemon helpers', () => {
       {
         prefix: 'happier-multi-daemon-active-env-',
         env: {
-          HAPPIER_ACTIVE_SERVER_ID: 'stack_qa-agent-4__id_default',
-          HAPPIER_SERVER_URL: 'http://127.0.0.1:3999',
-          HAPPIER_WEBAPP_URL: 'http://happier-qa-agent-4.localhost:8085',
+          HAPPIEST_ACTIVE_SERVER_ID: 'stack_qa-agent-4__id_default',
+          HAPPIEST_SERVER_URL: 'http://127.0.0.1:3999',
+          HAPPIEST_WEBAPP_URL: 'http://happier-qa-agent-4.localhost:8085',
         },
       },
       async ({ homeDir }) => {
