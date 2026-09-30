@@ -1,3 +1,15 @@
+diff --git a/node_modules/react-native-view-shot/babel.config.js b/node_modules/react-native-view-shot/babel.config.js
+deleted file mode 100644
+index c0155c1..0000000
+--- a/node_modules/react-native-view-shot/babel.config.js
++++ /dev/null
+@@ -1,6 +0,0 @@
+-module.exports = {
+-  presets: [
+-    ["@babel/preset-env", {targets: {node: "current"}}],
+-    ["@babel/preset-react", {runtime: "automatic"}],
+-  ],
+-};
 diff --git a/node_modules/react-native-view-shot/src/index.tsx b/node_modules/react-native-view-shot/src/index.tsx
 index a47e1c1..a4027c6 100644
 --- a/node_modules/react-native-view-shot/src/index.tsx
