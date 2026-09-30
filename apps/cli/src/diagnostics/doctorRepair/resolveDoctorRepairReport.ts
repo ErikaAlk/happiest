@@ -10,6 +10,7 @@ import { configuration } from '@/configuration';
 import { resolveInvokerName } from '@/cli/runtime/resolveInvokerName';
 import { resolveCliVersionFromBinary } from '@/daemon/service/resolveCliVersionFromBinary';
 import type { BackgroundServiceRepairPlan } from '@/diagnostics/backgroundServiceRepair';
+import { isLegacyChannelScopedDefaultService } from '@/diagnostics/backgroundServiceRepair/buildBackgroundServiceRepairPlan';
 import { resolveBackgroundServiceRepairPlanForCurrentRuntime } from '@/diagnostics/backgroundServiceRepair/resolveBackgroundServiceRepairPlanForCurrentRuntime';
 import type { DaemonServiceMode } from '@/daemon/service/plan';
 import type { DaemonServiceInventoryEntry } from '@/daemon/service/cli';
@@ -215,30 +216,9 @@ function buildAutomaticStartupEntries(params: Readonly<{
   };
   const currentHome = normalizeHome(params.currentHappierHomeDir);
 
-  // Build a lookup of "is legacy channel scoped" by path, by rerunning the
-  // same detection used inside the plan builder (lean on a small signature).
   const legacyPaths = new Set(
     params.plan.existingServices
-      .filter((s) => {
-        const label = String(s.label ?? '').trim().toLowerCase();
-        const filename = String(s.path ?? '').toLowerCase().split(/[\\/]+/).pop() ?? '';
-        const canonicalLabels = new Set([
-          'happier-daemon.default',
-          'com.happier.cli.daemon.default',
-          'happier\\happier-daemon.default',
-        ]);
-        const canonicalFiles = new Set([
-          'happier-daemon.default.service',
-          'com.happier.cli.daemon.default.plist',
-          'com.happier.cli.daemon.default',
-          'happier-daemon.default.ps1',
-        ]);
-        if (canonicalLabels.has(label) || canonicalFiles.has(filename)) return false;
-        if (s.targetMode !== 'default-following') return false;
-        if (label.endsWith('.default')) return true;
-        if (filename.endsWith('.default.service') || filename.endsWith('.default.plist') || filename.endsWith('.default.ps1')) return true;
-        return false;
-      })
+      .filter((s) => isLegacyChannelScopedDefaultService(s))
       .map((s) => s.path),
   );
 

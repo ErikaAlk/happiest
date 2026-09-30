@@ -14,11 +14,12 @@ describe('resolveRelayRuntimeDefaults', () => {
       channel: 'stable',
       homeDir: '/Users/alex',
     })).toMatchObject({
-      installRoot: '/Users/alex/.happier/self-host',
-      configDir: '/Users/alex/.happier/self-host/config',
-      dataDir: '/Users/alex/.happier/self-host/data',
-      logDir: '/Users/alex/.happier/self-host/logs',
-      serviceName: 'happier-server',
+      installRoot: '/Users/alex/.happiest/self-host',
+      configDir: '/Users/alex/.happiest/self-host/config',
+      dataDir: '/Users/alex/.happiest/self-host/data',
+      logDir: '/Users/alex/.happiest/self-host/logs',
+      serviceName: 'happiest-server',
+      serverPort: 3015,
     });
 
     expect(resolveRelayRuntimeDefaults({
@@ -27,9 +28,10 @@ describe('resolveRelayRuntimeDefaults', () => {
       channel: 'preview',
       homeDir: 'C:\\Users\\alex',
     })).toMatchObject({
-      installRoot: 'C:\\Users\\alex\\.happier\\self-host-preview',
-      binDir: 'C:\\Users\\alex\\.happier\\bin',
-      serviceName: 'happier-server-preview',
+      installRoot: 'C:\\Users\\alex\\.happiest\\self-host-preview',
+      binDir: 'C:\\Users\\alex\\.happiest\\bin',
+      serviceName: 'happiest-server-preview',
+      serverPort: 3015,
     });
   });
 
@@ -40,11 +42,12 @@ describe('resolveRelayRuntimeDefaults', () => {
       channel: 'publicdev',
       homeDir: '/ignored',
     })).toMatchObject({
-      installRoot: '/opt/happier-dev',
-      configDir: '/etc/happier-dev',
-      dataDir: '/var/lib/happier-dev',
-      logDir: '/var/log/happier-dev',
-      serviceName: 'happier-server-dev',
+      installRoot: '/opt/happiest-dev',
+      configDir: '/etc/happiest-dev',
+      dataDir: '/var/lib/happiest-dev',
+      logDir: '/var/log/happiest-dev',
+      serviceName: 'happiest-server-dev',
+      serverPort: 3015,
     });
   });
 });
@@ -88,8 +91,8 @@ describe('resolveConfiguredRelayRuntimePaths', () => {
     expect(mod.resolveConfiguredRelayRuntimeBinaryOverride({
       HOME: '/scoped/home',
       USERPROFILE: '/scoped/home',
-      HAPPIEST_SELF_HOST_SERVER_BINARY: '~/bin/happier-server',
-    })).toBe('/scoped/home/bin/happier-server');
+      HAPPIEST_SELF_HOST_SERVER_BINARY: '~/bin/happiest-server',
+    })).toBe('/scoped/home/bin/happiest-server');
   });
 });
 

@@ -26,7 +26,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
     await withTempDir('happier-discover-service-entry-', async (homeDir) => {
       const servicesDir = join(homeDir, '.config', 'systemd', 'user');
       mkdirSync(servicesDir, { recursive: true });
-      const path = join(servicesDir, 'happier-daemon.env_9675c02.service');
+      const path = join(servicesDir, 'happiest-daemon.env_9675c02.service');
       writeFileSync(
         path,
         renderSystemdServiceUnit({
@@ -74,7 +74,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
     await withTempDir('happier-discover-service-entry-pinned-default-segment-', async (homeDir) => {
       const servicesDir = join(homeDir, '.config', 'systemd', 'user');
       mkdirSync(servicesDir, { recursive: true });
-      const path = join(servicesDir, 'happier-daemon.default.service');
+      const path = join(servicesDir, 'happiest-daemon.default.service');
       writeFileSync(
         path,
         renderSystemdServiceUnit({
@@ -109,7 +109,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
     await withTempDir('happier-discover-service-entry-pinned-active-profile-', async (homeDir) => {
       const servicesDir = join(homeDir, '.config', 'systemd', 'user');
       mkdirSync(servicesDir, { recursive: true });
-      const path = join(servicesDir, 'happier-daemon.service-instance.service');
+      const path = join(servicesDir, 'happiest-daemon.service-instance.service');
       writeFileSync(
         path,
         renderSystemdServiceUnit({
@@ -162,12 +162,12 @@ describe('discoverInstalledDaemonServiceEntries', () => {
      */
     it('reads the darwin login trigger from RunAtLoad, not from the recorded declaration', async () => {
       await withTempDir('happier-autostart-darwin-runatload-', async (homeDir) => {
-        const path = join(homeDir, 'Library', 'LaunchAgents', 'com.happier.cli.daemon.default.plist');
+        const path = join(homeDir, 'Library', 'LaunchAgents', 'com.happiest.cli.daemon.default.plist');
         mkdirSync(join(homeDir, 'Library', 'LaunchAgents'), { recursive: true });
         writeFileSync(
           path,
           buildLaunchdPlistXml({
-            label: 'com.happier.cli.daemon.default',
+            label: 'com.happiest.cli.daemon.default',
             programArgs: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
             env: {
               HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
@@ -187,12 +187,12 @@ describe('discoverInstalledDaemonServiceEntries', () => {
 
     it('reads an at-login darwin definition from RunAtLoad', async () => {
       await withTempDir('happier-autostart-darwin-runatload-login-', async (homeDir) => {
-        const path = join(homeDir, 'Library', 'LaunchAgents', 'com.happier.cli.daemon.default.plist');
+        const path = join(homeDir, 'Library', 'LaunchAgents', 'com.happiest.cli.daemon.default.plist');
         mkdirSync(join(homeDir, 'Library', 'LaunchAgents'), { recursive: true });
         writeFileSync(
           path,
           buildLaunchdPlistXml({
-            label: 'com.happier.cli.daemon.default',
+            label: 'com.happiest.cli.daemon.default',
             programArgs: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
             env: {
               HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
@@ -222,7 +222,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
      */
     it('keeps the recorded declaration on win32', async () => {
       await withTempDir('happier-autostart-win32-declaration-', async (homeDir) => {
-        const path = join(homeDir, '.happier', 'services', 'happier-daemon.default.ps1');
+        const path = join(homeDir, '.happier', 'services', 'happiest-daemon.default.ps1');
         mkdirSync(join(homeDir, '.happier', 'services'), { recursive: true });
         writeFileSync(
           path,
@@ -244,7 +244,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
 
     it('keeps the recorded declaration on linux', async () => {
       await withTempDir('happier-autostart-linux-declaration-', async (homeDir) => {
-        const path = join(homeDir, '.config', 'systemd', 'user', 'happier-daemon.default.service');
+        const path = join(homeDir, '.config', 'systemd', 'user', 'happiest-daemon.default.service');
         mkdirSync(join(homeDir, '.config', 'systemd', 'user'), { recursive: true });
         writeFileSync(
           path,
@@ -270,7 +270,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
       const servicesDir = join(homeDir, 'Library', 'LaunchAgents');
       mkdirSync(servicesDir, { recursive: true });
       writeFileSync(
-        join(servicesDir, 'com.happier.cli.daemon.default.plist'),
+        join(servicesDir, 'com.happiest.cli.daemon.default.plist'),
         '# installed background service',
         'utf-8',
       );
@@ -290,12 +290,12 @@ describe('discoverInstalledDaemonServiceEntries', () => {
   it('accepts legacy darwin launch agents installed by older Happier installers without startup-source metadata', async () => {
     await withTempDir('happier-discover-service-entry-darwin-legacy-', async (homeDir) => {
       const servicesDir = join(homeDir, 'Library', 'LaunchAgents');
-      const path = join(servicesDir, 'com.happier.cli.daemon.default.plist');
+      const path = join(servicesDir, 'com.happiest.cli.daemon.default.plist');
       mkdirSync(servicesDir, { recursive: true });
       writeFileSync(
         path,
         buildLaunchdPlistXml({
-          label: 'com.happier.cli.daemon.default',
+          label: 'com.happiest.cli.daemon.default',
           programArgs: [
             '/Users/tester/.happier/cli/current/happier',
             'daemon',
@@ -306,8 +306,8 @@ describe('discoverInstalledDaemonServiceEntries', () => {
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
             HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
           },
-          stdoutPath: '/tmp/happier-daemon.log',
-          stderrPath: '/tmp/happier-daemon.log',
+          stdoutPath: '/tmp/happiest-daemon.log',
+          stderrPath: '/tmp/happiest-daemon.log',
         }),
         'utf-8',
       );
@@ -338,7 +338,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
       const servicesDir = join(homeDir, '.config', 'systemd', 'user');
       mkdirSync(servicesDir, { recursive: true });
       writeFileSync(
-        join(servicesDir, 'happier-daemon.default.service'),
+        join(servicesDir, 'happiest-daemon.default.service'),
         renderSystemdServiceUnit({
           description: 'Happier Daemon',
           execStart: ['/usr/bin/env', 'bash', '-lc', 'echo not-happier'],
@@ -366,7 +366,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
   it('accepts linux units that launch daemon start-sync through the package-dist node entrypoint', async () => {
     await withTempDir('happier-discover-service-entry-linux-package-dist-', async (homeDir) => {
       const servicesDir = join(homeDir, '.config', 'systemd', 'user');
-      const path = join(servicesDir, 'happier-daemon.default.service');
+      const path = join(servicesDir, 'happiest-daemon.default.service');
       mkdirSync(servicesDir, { recursive: true });
       writeFileSync(
         path,
@@ -412,7 +412,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
   it('accepts legacy linux units installed by older Happier installers without startup-source metadata', async () => {
     await withTempDir('happier-discover-service-entry-linux-legacy-', async (homeDir) => {
       const servicesDir = join(homeDir, '.config', 'systemd', 'user');
-      const path = join(servicesDir, 'happier-daemon.default.service');
+      const path = join(servicesDir, 'happiest-daemon.default.service');
       mkdirSync(servicesDir, { recursive: true });
       writeFileSync(
         path,
@@ -458,7 +458,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
   it('accepts raw legacy linux daemon units installed before default-following unit names', async () => {
     await withTempDir('happier-discover-service-entry-linux-raw-legacy-', async (homeDir) => {
       const servicesDir = join(homeDir, '.config', 'systemd', 'user');
-      const path = join(servicesDir, 'happier-daemon.service');
+      const path = join(servicesDir, 'happiest-daemon.service');
       mkdirSync(servicesDir, { recursive: true });
       writeFileSync(
         path,
@@ -495,7 +495,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
           happierHomeDir: '/home/tester/.happier',
           targetMode: 'default-following',
           releaseChannel: 'preview',
-          label: 'happier-daemon',
+          label: 'happiest-daemon',
           path,
         }),
       ]);
@@ -505,7 +505,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
   it('unquotes systemd Environment values so discovered metadata does not include surrounding quotes', async () => {
     await withTempDir('happier-discover-service-entry-linux-quoted-env-', async (homeDir) => {
       const servicesDir = join(homeDir, '.config', 'systemd', 'user');
-      const path = join(servicesDir, 'happier-daemon.default.service');
+      const path = join(servicesDir, 'happiest-daemon.default.service');
       mkdirSync(servicesDir, { recursive: true });
 
       writeFileSync(
@@ -551,7 +551,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
       const servicesDir = join(homeDir, '.config', 'systemd', 'user');
       mkdirSync(servicesDir, { recursive: true });
       writeFileSync(
-        join(servicesDir, 'happier-daemon.default.service'),
+        join(servicesDir, 'happiest-daemon.default.service'),
         renderSystemdServiceUnit({
           description: 'Happier Daemon',
           execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
@@ -578,7 +578,7 @@ describe('discoverInstalledDaemonServiceEntries', () => {
   it('accepts legacy Windows wrappers installed by older Happier installers without startup-source metadata', async () => {
     await withTempDir('happier-discover-service-entry-windows-legacy-', async (homeDir) => {
       const servicesDir = join(homeDir, '.happier', 'services');
-      const path = join(servicesDir, 'happier-daemon.default.ps1');
+      const path = join(servicesDir, 'happiest-daemon.default.ps1');
       mkdirSync(servicesDir, { recursive: true });
       writeFileSync(
         path,
@@ -634,18 +634,18 @@ describe('discoverInstalledDaemonServiceEntries', () => {
         if (normalizedArgs.join(' ') === '/Query /FO CSV /NH') {
           return {
             status: 0,
-            stdout: '"\\\\Happier\\\\happier-daemon.default","N/A"\r\n',
+            stdout: '"\\\\Happiest\\\\happiest-daemon.default","N/A"\r\n',
             stderr: '',
           } as never;
         }
-        if (normalizedArgs.join(' ') === '/Query /TN Happier\\happier-daemon.default /XML') {
+        if (normalizedArgs.join(' ') === '/Query /TN Happiest\\happiest-daemon.default /XML') {
           return {
             status: 0,
             stdout: `
               <Task>
                 <Actions>
                   <Exec>
-                    <Arguments>-NoProfile -ExecutionPolicy Bypass -File "C:\\Users\\tester\\.happier\\services\\happier-daemon.default.ps1"</Arguments>
+                    <Arguments>-NoProfile -ExecutionPolicy Bypass -File "C:\\Users\\tester\\.happier\\services\\happiest-daemon.default.ps1"</Arguments>
                   </Exec>
                 </Actions>
               </Task>
@@ -671,8 +671,8 @@ describe('discoverInstalledDaemonServiceEntries', () => {
           happierHomeDir: 'C:\\Users\\tester\\.happier',
           targetMode: 'default-following',
           releaseChannel: 'stable',
-          label: 'Happier\\happier-daemon.default',
-          path: 'C:\\Users\\tester\\.happier\\services\\happier-daemon.default.ps1',
+          label: 'Happiest\\happiest-daemon.default',
+          path: 'C:\\Users\\tester\\.happier\\services\\happiest-daemon.default.ps1',
         }),
       ]);
     });
@@ -691,23 +691,23 @@ describe('discoverInstalledDaemonServiceEntries', () => {
         if (normalizedArgs.join(' ') === '/Query /FO CSV /NH') {
           return {
             status: 0,
-            stdout: '"\\\\Happier\\\\happier-daemon.default","N/A"\r\n',
+            stdout: '"\\\\Happiest\\\\happiest-daemon.default","N/A"\r\n',
             stderr: '',
           } as never;
         }
-        if (normalizedArgs.join(' ') === '/Query /TN Happier\\happier-daemon.default /XML') {
+        if (normalizedArgs.join(' ') === '/Query /TN Happiest\\happiest-daemon.default /XML') {
           return {
             status: 1,
             stdout: '',
             stderr: 'xml unavailable',
           } as never;
         }
-        if (normalizedArgs.join(' ') === '/Query /TN Happier\\happier-daemon.default /FO LIST /V') {
+        if (normalizedArgs.join(' ') === '/Query /TN Happiest\\happiest-daemon.default /FO LIST /V') {
           return {
             status: 0,
             stdout: [
-              'TaskName: Happier\\happier-daemon.default',
-              'Task To Run: powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\\Users\\tester\\.happier-l21-alt\\services\\happier-daemon.default.ps1"',
+              'TaskName: Happiest\\happiest-daemon.default',
+              'Task To Run: powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\\Users\\tester\\.happier-l21-alt\\services\\happiest-daemon.default.ps1"',
               '',
             ].join('\r\n'),
             stderr: '',
@@ -731,8 +731,8 @@ describe('discoverInstalledDaemonServiceEntries', () => {
           happierHomeDir: 'C:\\Users\\tester\\.happier-l21-alt',
           targetMode: 'default-following',
           releaseChannel: 'stable',
-          label: 'Happier\\happier-daemon.default',
-          path: 'C:\\Users\\tester\\.happier-l21-alt\\services\\happier-daemon.default.ps1',
+          label: 'Happiest\\happiest-daemon.default',
+          path: 'C:\\Users\\tester\\.happier-l21-alt\\services\\happiest-daemon.default.ps1',
         }),
       ]);
     });
@@ -751,18 +751,18 @@ describe('discoverInstalledDaemonServiceEntries', () => {
         if (normalizedArgs.join(' ') === '/Query /FO CSV /NH') {
           return {
             status: 0,
-            stdout: '"\\\\Happier\\\\happier-daemon.default","N/A"\r\n',
+            stdout: '"\\\\Happiest\\\\happiest-daemon.default","N/A"\r\n',
             stderr: '',
           } as never;
         }
-        if (normalizedArgs.join(' ') === '/Query /TN Happier\\happier-daemon.default /XML') {
+        if (normalizedArgs.join(' ') === '/Query /TN Happiest\\happiest-daemon.default /XML') {
           return {
             status: 1,
             stdout: '',
             stderr: 'xml unavailable',
           } as never;
         }
-        if (normalizedArgs.join(' ') === '/Query /TN Happier\\happier-daemon.default /FO LIST /V') {
+        if (normalizedArgs.join(' ') === '/Query /TN Happiest\\happiest-daemon.default /FO LIST /V') {
           return {
             status: 1,
             stdout: '',
@@ -799,18 +799,18 @@ describe('discoverInstalledDaemonServiceEntries', () => {
         if (normalizedArgs.join(' ') === '/Query /FO CSV /NH') {
           return {
             status: 0,
-            stdout: '"\\\\Happier\\\\happier-daemon.default","N/A"\r\n',
+            stdout: '"\\\\Happiest\\\\happiest-daemon.default","N/A"\r\n',
             stderr: '',
           } as never;
         }
-        if (normalizedArgs.join(' ') === '/Query /TN Happier\\happier-daemon.default /XML') {
+        if (normalizedArgs.join(' ') === '/Query /TN Happiest\\happiest-daemon.default /XML') {
           return {
             status: 0,
             stdout: `
               <Task>
                 <Actions>
                   <Exec>
-                    <Arguments>-NoProfile -ExecutionPolicy Bypass -File "C:\\Users\\tester\\.happier\\services\\happier-daemon.default.ps1"</Arguments>
+                    <Arguments>-NoProfile -ExecutionPolicy Bypass -File "C:\\Users\\tester\\.happier\\services\\happiest-daemon.default.ps1"</Arguments>
                   </Exec>
                 </Actions>
               </Task>

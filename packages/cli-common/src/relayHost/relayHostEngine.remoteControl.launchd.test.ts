@@ -25,7 +25,7 @@ describe('RelayHostEngine (remote launchd control)', () => {
       },
       copyLocalDirectoryToRemote: async () => {},
       installRemoteComponent: async () => ({
-        binaryPath: '$HOME/.happier/happier-server/current/happier-server',
+        binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server',
         versionId: 'publicdev-1',
       }),
     });
@@ -45,7 +45,7 @@ describe('RelayHostEngine (remote launchd control)', () => {
 
     const kickstartCommand = remoteCommands.find((cmd) => cmd.includes('launchctl kickstart -k'));
     expect(kickstartCommand).toBeTruthy();
-    expect(kickstartCommand).toContain('gui/$(id -u)/happier-server-preview');
-    expect(kickstartCommand).not.toContain(`gui/${typeof process.getuid === 'function' ? process.getuid() : 0}/happier-server-preview`);
+    expect(kickstartCommand).toContain('gui/$(id -u)/happiest-server-preview');
+    expect(kickstartCommand).not.toContain(`gui/${typeof process.getuid === 'function' ? process.getuid() : 0}/happiest-server-preview`);
   }, 60_000);
 });

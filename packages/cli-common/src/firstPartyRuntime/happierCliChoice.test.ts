@@ -42,26 +42,26 @@ describe('the computer-scoped CLI choice (R12)', () => {
         expect(readHappierCliChoiceSync({ processEnv })).toBeNull();
 
         await writeHappierCliChoice({ choice: { mode: 'own', command: '/usr/local/bin/happier' }, processEnv });
-        expect(resolveHappierCliChoiceStatePath({ processEnv })).toBe(join(homeDir, '.happier', 'cli-choice.json'));
+        expect(resolveHappierCliChoiceStatePath({ processEnv })).toBe(join(homeDir, '.happiest', 'cli-choice.json'));
         expect(readHappierCliChoiceSync({ processEnv })).toEqual({ mode: 'own', command: '/usr/local/bin/happier' });
 
         await writeHappierCliChoice({ choice: { mode: 'managed' }, processEnv });
         expect(readHappierCliChoiceSync({ processEnv })).toEqual({ mode: 'managed' });
-        expect(JSON.parse(await readFile(join(homeDir, '.happier', 'cli-choice.json'), 'utf8'))).toEqual({ mode: 'managed' });
+        expect(JSON.parse(await readFile(join(homeDir, '.happiest', 'cli-choice.json'), 'utf8'))).toEqual({ mode: 'managed' });
     });
 
     it('reads an unreadable or incomplete record as no choice, never as a mode', async () => {
         const homeDir = await createHome();
         const processEnv = { HOME: homeDir };
-        await mkdir(join(homeDir, '.happier'), { recursive: true });
+        await mkdir(join(homeDir, '.happiest'), { recursive: true });
 
-        await writeFile(join(homeDir, '.happier', 'cli-choice.json'), '{ not json', 'utf8');
+        await writeFile(join(homeDir, '.happiest', 'cli-choice.json'), '{ not json', 'utf8');
         expect(readHappierCliChoiceSync({ processEnv })).toBeNull();
 
-        await writeFile(join(homeDir, '.happier', 'cli-choice.json'), JSON.stringify({ mode: 'own' }), 'utf8');
+        await writeFile(join(homeDir, '.happiest', 'cli-choice.json'), JSON.stringify({ mode: 'own' }), 'utf8');
         expect(readHappierCliChoiceSync({ processEnv })).toBeNull();
 
-        await writeFile(join(homeDir, '.happier', 'cli-choice.json'), JSON.stringify({ mode: 'something' }), 'utf8');
+        await writeFile(join(homeDir, '.happiest', 'cli-choice.json'), JSON.stringify({ mode: 'something' }), 'utf8');
         expect(readHappierCliChoiceSync({ processEnv })).toBeNull();
     });
 });

@@ -93,8 +93,8 @@ describe('optional runtime release pinning', () => {
     const scratch = await mkdtemp(join(tmpdir(), 'component-release-fixture-'));
     const componentId = 'happier-difftastic';
     const versionId = '0.2.12-preview.1';
-    const archiveName = `${componentId}-v${versionId}-linux-x64.tar.gz`;
-    const checksumsName = `checksums-${componentId}-v${versionId}.txt`;
+    const archiveName = `happiest-difftastic-v${versionId}-linux-x64.tar.gz`;
+    const checksumsName = `checksums-happiest-difftastic-v${versionId}.txt`;
     try {
       await mkdir(join(scratch, 'payload'));
       await writeFile(join(scratch, 'payload', 'difft'), 'signed fixture executable');
@@ -132,12 +132,15 @@ describe('optional runtime release pinning', () => {
     }
   });
 
-  it.each(['happier-memory-runtime', 'happier-difftastic'] as const)('pins %s to the exact CLI tag and rejects different asset versions', async (componentId) => {
+  it.each([
+    ['happier-memory-runtime', 'happiest-memory-runtime'],
+    ['happier-difftastic', 'happiest-difftastic'],
+  ] as const)('pins %s to the exact CLI tag and rejects different asset versions', async (componentId, releaseProductName) => {
     const version = '0.2.12-preview.2';
     fetchGitHubReleaseByTagMock.mockResolvedValue({ assets: [
-      `checksums-${componentId}-v${version}.txt`,
-      `checksums-${componentId}-v${version}.txt.minisig`,
-      `${componentId}-v${version}-linux-x64.tar.gz`,
+      `checksums-${releaseProductName}-v${version}.txt`,
+      `checksums-${releaseProductName}-v${version}.txt.minisig`,
+      `${releaseProductName}-v${version}-linux-x64.tar.gz`,
     ].map((name) => ({ name, browser_download_url: 'data:text/plain,invalid-signature' })) });
     await expect(prepareFirstPartyComponentPayloadFromGitHubRelease({
       componentId, channel: 'preview', versionId: '0.2.12-preview.1', os: 'linux', arch: 'x64',

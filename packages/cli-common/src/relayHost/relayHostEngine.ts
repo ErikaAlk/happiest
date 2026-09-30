@@ -6,6 +6,7 @@ import { createConnection } from 'node:net';
 import { homedir, tmpdir } from 'node:os';
 import { basename, dirname, join } from 'node:path';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { normalizePublicReleaseRingId, type PublicReleaseRingId } from '@happier-dev/release-runtime/releaseRings';
 
 import {
@@ -15,13 +16,23 @@ import {
   buildServiceDefinition,
   parseWindowsScheduledTaskStatusPowerShellJson,
   planServiceAction,
+  qualifyWindowsScheduledTaskName,
   resolveServiceBackend,
   type ServiceBackend,
   type ServiceSpec,
 } from '../service/index.js';
 import { buildLaunchdPlistXml } from '../service/launchd.js';
 import { renderSystemdServiceUnit } from '../service/systemd.js';
-import { checkRelayRuntimeHealth, resolveRelayRuntimeDefaults, type RelayRuntimeDefaults } from '../firstPartyRuntime/relayRuntime.js';
+import {
+  RELAY_RUNTIME_SERVICE_BASE_NAME,
+  checkRelayRuntimeHealth,
+  resolveRelayRuntimeDefaults,
+  type RelayRuntimeDefaults,
+} from '../firstPartyRuntime/relayRuntime.js';
+import {
+  SERVER_RUNTIME_EXECUTABLE_BASE_NAMES,
+  resolveServerRuntimeExecutableNames,
+} from '../firstPartyRuntime/serverRuntimeArtifactLayout.js';
 import {
   installOrUpdateRelayRuntimeLocal,
   shouldMigrateLegacyUnsuffixedRelayRuntimeInstallRoot,
@@ -143,7 +154,7 @@ function resolveRemoteHomeDirForRuntime(): string {
 }
 
 function resolveRemoteHomeDirForComponents(): string {
-  return '$HOME/.happier';
+  return `$HOME/${productIdentity.homeDirName}`;
 }
 
 function buildRelayRuntimeServiceSpec(params: Readonly<{
@@ -156,7 +167,7 @@ function buildRelayRuntimeServiceSpec(params: Readonly<{
 }>): ServiceSpec {
   return {
     label: params.label,
-    description: `Happier Relay Runtime (${params.label})`,
+    description: `${productIdentity.productName} Relay Runtime (${params.label})`,
     programArgs: [params.serverBinaryPath],
     workingDirectory: params.installRoot,
     env: params.env,
@@ -489,9 +500,9 @@ function resolveWindowsWrapperDefinitionPath(params: Readonly<{
   homeDir: string;
 }>): string {
   if (params.backend === 'schtasks-system') {
-    return `C:\\ProgramData\\happier\\services\\${params.label}.ps1`;
+    return `C:\\ProgramData\\${productIdentity.systemDirName}\\services\\${params.label}.ps1`;
   }
-  return `${params.homeDir}\\.happier\\services\\${params.label}.ps1`;
+  return `${params.homeDir}\\${productIdentity.homeDirName}\\services\\${params.label}.ps1`;
 }
 
 function parseSystemdUnitWorkingDirectory(unitText: string): string | null {
@@ -623,7 +634,7 @@ async function detectLocalRelayStrandedLegacyState(params: Readonly<{
 
   const legacyDefinitionPath = resolveSystemdUnitDefinitionPath({
     backend: params.backend,
-    unitName: 'happier-server',
+    unitName: RELAY_RUNTIME_SERVICE_BASE_NAME,
     homeDir: homedir(),
   });
   if (!existsSync(legacyDefinitionPath)) return null;
@@ -869,7 +880,7 @@ export function createRelayHostEngine(deps: RelayHostEngineDeps): RelayHostEngin
   const resolveLocalWindowsScheduledTaskState = (params: Readonly<{
     label: string;
   }>): Readonly<{ loadState: string; activeState: string; enabledState: string }> => {
-    const result = runLocalText('schtasks', ['/Query', '/TN', `Happier\\${params.label}`, '/FO', 'LIST', '/V']);
+    const result = runLocalText('schtasks', ['/Query', '/TN', qualifyWindowsScheduledTaskName(params.label), '/FO', 'LIST', '/V']);
     const powerShellStatus = runLocalText('powershell.exe', [
       '-NoProfile',
       '-Command',
@@ -953,7 +964,7 @@ export function createRelayHostEngine(deps: RelayHostEngineDeps): RelayHostEngin
       return params.defaults.serviceName;
     }
 
-    const legacyUnitName = 'happier-server';
+    const legacyUnitName = RELAY_RUNTIME_SERVICE_BASE_NAME;
     const legacyOwnedByInstallRoot = await resolveLocalServiceOwnedByInstallRoot({
       backend: params.backend,
       label: legacyUnitName,
@@ -1133,7 +1144,7 @@ export function createRelayHostEngine(deps: RelayHostEngineDeps): RelayHostEngin
       return params.defaults.serviceName;
     }
 
-    const legacyUnitName = 'happier-server';
+    const legacyUnitName = RELAY_RUNTIME_SERVICE_BASE_NAME;
     const legacyOwnedByInstallRoot = params.backend === 'systemd-user' || params.backend === 'systemd-system'
       ? await resolveRemoteSystemdUnitOwnedByInstallRoot({
         ssh: params.ssh,
@@ -1224,7 +1235,7 @@ export function createRelayHostEngine(deps: RelayHostEngineDeps): RelayHostEngin
       channel,
       homeDir: homedir(),
     });
-    const serverBinaryName = process.platform === 'win32' ? 'happier-server.exe' : 'happier-server';
+    const serverBinaryName = resolveServerRuntimeExecutableNames(process.platform).server;
     const statePath = join(defaults.installRoot, 'self-host-state.json');
     const installBinaryPath = join(defaults.installRoot, 'bin', serverBinaryName);
     const stateText = existsSync(statePath) ? await readFile(statePath, 'utf8').catch(() => '') : '';
@@ -1330,11 +1341,11 @@ export function createRelayHostEngine(deps: RelayHostEngineDeps): RelayHostEngin
       envOverrides: parsed.env,
     });
 
-    // Surface port reassignment so users aren't surprised that dev landed on
-    // an ephemeral port instead of the default 3005. The reassignment happens
-    // transparently in resolveLocalDesiredRelayUrl when another channel
-    // already owns the default port. Writes to stderr so it doesn't pollute
-    // the JSON output envelope.
+    // Surface port reassignment so users aren't surprised that the relay landed
+    // on an ephemeral port instead of the default one. The reassignment happens
+    // transparently in resolveLocalDesiredRelayUrl when another channel's relay
+    // or another program already holds the default port. Writes to stderr so it
+    // doesn't pollute the JSON output envelope.
     try {
       const desiredPort = Number.parseInt(new URL(desiredRelayUrl).port, 10);
       if (Number.isInteger(desiredPort) && desiredPort !== defaults.serverPort) {
@@ -1343,8 +1354,8 @@ export function createRelayHostEngine(deps: RelayHostEngineDeps): RelayHostEngin
         const hadPortOverride = Boolean(String((parsed.env ?? {}).PORT ?? '').trim());
         if (!hadExistingEnv && !hadPortOverride) {
           process.stderr.write(
-            `[relay-host] Port ${defaults.serverPort} is already used by another channel's relay; `
-            + `installing ${formatRelayChannelLabel(channel)} on port ${desiredPort} (data is independent per channel).\n`,
+            `[relay-host] Port ${defaults.serverPort} is already in use on this machine; `
+            + `installing ${formatRelayChannelLabel(channel)} on port ${desiredPort}.\n`,
           );
         }
       }
@@ -1363,7 +1374,7 @@ export function createRelayHostEngine(deps: RelayHostEngineDeps): RelayHostEngin
 
     const ignoreStableLaneConflict = await (async () => {
       if (channel === 'stable') return false;
-      const legacyUnitName = 'happier-server';
+      const legacyUnitName = RELAY_RUNTIME_SERVICE_BASE_NAME;
       const legacyDefinitionPath =
         backend === 'systemd-user' || backend === 'systemd-system'
           ? resolveSystemdUnitDefinitionPath({ backend, unitName: legacyUnitName, homeDir: homedir() })
@@ -1385,7 +1396,7 @@ export function createRelayHostEngine(deps: RelayHostEngineDeps): RelayHostEngin
     await (async () => {
       if (channel === 'stable') return;
       if (backend !== 'systemd-user' && backend !== 'systemd-system') return;
-      const legacyUnitName = 'happier-server';
+      const legacyUnitName = RELAY_RUNTIME_SERVICE_BASE_NAME;
       const legacyDefinitionPath = resolveSystemdUnitDefinitionPath({
         backend,
         unitName: legacyUnitName,
@@ -1422,7 +1433,7 @@ export function createRelayHostEngine(deps: RelayHostEngineDeps): RelayHostEngin
       if (legacyBaseUrl !== desiredRelayUrl) return;
       if (!legacyWorkingDir) {
         throw new Error(
-          `An active legacy happier-server.service is already using ${desiredRelayUrl} from an unknown root. `
+          `An active legacy ${legacyUnitName}.service is already using ${desiredRelayUrl} from an unknown root. `
           + `Stop or uninstall that legacy service before installing the ${formatRelayChannelLabel(channel)} relay.`,
         );
       }
@@ -1532,7 +1543,7 @@ export function createRelayHostEngine(deps: RelayHostEngineDeps): RelayHostEngin
 
     await (async () => {
       if (channel === 'stable') return undefined;
-      const legacyUnitName = 'happier-server';
+      const legacyUnitName = RELAY_RUNTIME_SERVICE_BASE_NAME;
       const legacyDefinitionPath =
         backend === 'systemd-user' || backend === 'systemd-system'
           ? resolveSystemdUnitDefinitionPath({ backend, unitName: legacyUnitName, homeDir: homedir() })
@@ -1565,8 +1576,8 @@ export function createRelayHostEngine(deps: RelayHostEngineDeps): RelayHostEngin
 
       if (backend === 'schtasks-user' || backend === 'schtasks-system') {
         if (policy.runServiceCommands !== false) {
-          runLocalText('schtasks', ['/End', '/TN', `Happier\\${legacyUnitName}`]);
-          runLocalText('schtasks', ['/Delete', '/F', '/TN', `Happier\\${legacyUnitName}`]);
+          runLocalText('schtasks', ['/End', '/TN', qualifyWindowsScheduledTaskName(legacyUnitName)]);
+          runLocalText('schtasks', ['/Delete', '/F', '/TN', qualifyWindowsScheduledTaskName(legacyUnitName)]);
         }
         await rm(legacyDefinitionPath, { force: true }).catch(() => undefined);
         return undefined;
@@ -1625,7 +1636,7 @@ export function createRelayHostEngine(deps: RelayHostEngineDeps): RelayHostEngin
       channel,
       homeDir: homedir(),
     });
-    const serverBinaryName = process.platform === 'win32' ? 'happier-server.exe' : 'happier-server';
+    const serverBinaryName = resolveServerRuntimeExecutableNames(process.platform).server;
     const installServerBinaryPath = join(defaults.installRoot, 'bin', serverBinaryName);
     const statePath = join(defaults.installRoot, 'self-host-state.json');
     const stdoutPath = join(defaults.logDir, 'server.out.log');
@@ -1726,7 +1737,7 @@ export function createRelayHostEngine(deps: RelayHostEngineDeps): RelayHostEngin
       commandResult: serviceResult,
     });
 
-    const installBinaryPath = `${defaults.installRoot}/bin/happier-server`;
+    const installBinaryPath = `${defaults.installRoot}/bin/${SERVER_RUNTIME_EXECUTABLE_BASE_NAMES.server}`;
     const binaryExists = await deps.runRemoteText({
       ssh: params.ssh,
       knownHostsMode,
@@ -1925,7 +1936,7 @@ export function createRelayHostEngine(deps: RelayHostEngineDeps): RelayHostEngin
       throw new Error(
         remoteMessage
         || result.stderr.trim()
-        || 'Remote relay host uninstall did not report success. Ensure the installed Happier CLI is present and retry.',
+        || `Remote relay host uninstall did not report success. Ensure the installed ${productIdentity.productName} CLI is present and retry.`,
       );
     }
   }
@@ -2058,7 +2069,7 @@ export function createRelayHostEngine(deps: RelayHostEngineDeps): RelayHostEngin
           await ensureLocalRelayHealthy();
           return;
         }
-        const taskName = `Happier\\${effectiveServiceName}`;
+        const taskName = qualifyWindowsScheduledTaskName(effectiveServiceName);
         const args = parsed.action === 'stop'
           ? ['/End', '/TN', taskName]
           : ['/Run', '/TN', taskName];

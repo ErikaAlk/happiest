@@ -571,7 +571,7 @@ describe('runDaemonServiceCliCommand', () => {
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
-        if (command === 'systemctl' && args.includes('disable') && args.includes('happier-daemon.service')) {
+        if (command === 'systemctl' && args.includes('disable') && args.includes('happiest-daemon.service')) {
           return { status: 1, stdout: Buffer.from(''), stderr: Buffer.from('legacy cleanup should not run') };
         }
         if (command === 'systemctl' && args.includes('is-active')) {
@@ -664,11 +664,11 @@ describe('runDaemonServiceCliCommand', () => {
       });
       vi.resetModules();
       doMockChildProcessSpawnSync((command: string, args: readonly string[] = []) => {
-        if (command === 'systemctl' && args.includes('disable') && args.includes('happier-daemon.service')) {
+        if (command === 'systemctl' && args.includes('disable') && args.includes('happiest-daemon.service')) {
           return {
             status: 1,
             stdout: Buffer.from(''),
-            stderr: Buffer.from('Failed to disable unit: Unit file happier-daemon.service does not exist.'),
+            stderr: Buffer.from('Failed to disable unit: Unit file happiest-daemon.service does not exist.'),
           };
         }
         if (command === 'systemctl' && args.includes('is-active')) {
@@ -847,11 +847,11 @@ describe('runDaemonServiceCliCommand', () => {
         return {
           ...actual,
           spawnSync: vi.fn((command: string, args: readonly string[] = []) => {
-            if (command === 'systemctl' && args.includes('disable') && args.includes('happier-daemon.service')) {
+            if (command === 'systemctl' && args.includes('disable') && args.includes('happiest-daemon.service')) {
               return {
                 status: 1,
                 stdout: Buffer.from(''),
-                stderr: Buffer.from('Failed to disable unit: Unit file happier-daemon.service does not exist.'),
+                stderr: Buffer.from('Failed to disable unit: Unit file happiest-daemon.service does not exist.'),
               };
             }
             if (command === 'systemctl' && args.includes('is-active')) {
@@ -1480,7 +1480,7 @@ describe('runDaemonServiceCliCommand', () => {
     await withTempDir('happier-service-start-foreign-runtime-', async (homeDir) => {
       const spawnedCommands: Array<{ command: string; args: readonly string[] }> = [];
       const happierHomeDir = `${homeDir}/.happier`;
-      const managedShim = `${happierHomeDir}/bin/happier`;
+      const managedShim = `${happierHomeDir}/bin/happiest`;
       const userCli = '/usr/local/lib/node_modules/@happier-dev/cli/bin/happier';
       let expectedServiceLabel = '';
       let expectedCliVersion = '';
@@ -2660,7 +2660,7 @@ describe('runDaemonServiceCliCommand', () => {
     expect(plan.commands).toEqual([
       {
         cmd: 'launchctl',
-        args: ['kickstart', '-k', `gui/${uid}/com.happier.cli.daemon.default`],
+        args: ['kickstart', '-k', `gui/${uid}/com.happiest.cli.daemon.default`],
       },
     ]);
   });
@@ -2945,7 +2945,7 @@ describe('runDaemonServiceCliCommand', () => {
       expect(payload.ok).toBe(true);
       expect(payload.platform).toBe('linux');
       expect(payload.paths.unitPath).toContain('/etc/systemd/system/');
-      expect(payload.paths.unitName).toContain('happier-daemon.');
+      expect(payload.paths.unitName).toContain('happiest-daemon.');
     } finally {
       output.restore();
     }
@@ -2973,7 +2973,7 @@ describe('runDaemonServiceCliCommand', () => {
 
       const payload = output.json();
       expect(payload.ok).toBe(true);
-      expect(payload.plan.files[0]?.path).toBe('/tmp/.config/systemd/user/happier-daemon.default.service');
+      expect(payload.plan.files[0]?.path).toBe('/tmp/.config/systemd/user/happiest-daemon.default.service');
       expect(payload.plan.files[0]?.content).toContain('Environment=HAPPIEST_DAEMON_SERVICE_TARGET_MODE=default-following');
       expect(payload.plan.files[0]?.content).toContain('Environment=HAPPIER_PUBLIC_RELEASE_CHANNEL=preview');
       expect(payload.plan.files[0]?.content).not.toContain('Environment=HAPPIEST_ACTIVE_SERVER_ID=');
@@ -3014,12 +3014,12 @@ describe('runDaemonServiceCliCommand', () => {
 
     const byDefault = await runInstallPreview(['install', '--dry-run', '--json']);
     expect(byDefault.autostart).toBe('at-login');
-    expect(commandText(byDefault)).toContain('systemctl --user enable happier-daemon.default.service');
+    expect(commandText(byDefault)).toContain('systemctl --user enable happiest-daemon.default.service');
 
     const onDemand = await runInstallPreview(['install', '--dry-run', '--json', '--no-autostart']);
     expect(onDemand.autostart).toBe('on-demand');
-    expect(commandText(onDemand)).toContain('systemctl --user disable happier-daemon.default.service');
-    expect(commandText(onDemand)).not.toContain('systemctl --user enable happier-daemon.default.service');
+    expect(commandText(onDemand)).toContain('systemctl --user disable happiest-daemon.default.service');
+    expect(commandText(onDemand)).not.toContain('systemctl --user enable happiest-daemon.default.service');
     expect(onDemand.plan.files[0]?.content).toContain('Environment=HAPPIEST_DAEMON_SERVICE_AUTOSTART=on-demand');
 
     const explicit = await runInstallPreview(['install', '--dry-run', '--json', '--autostart=on-demand']);
@@ -3170,7 +3170,7 @@ describe('runDaemonServiceCliCommand', () => {
           message: expect.stringContaining('Competing background services detected'),
         }));
         expect(payload.installConflict?.competingServices).toEqual([
-          expect.objectContaining({ label: 'happier-daemon.default' }),
+          expect.objectContaining({ label: 'happiest-daemon.default' }),
         ]);
       } finally {
         output.restore();
@@ -3181,7 +3181,7 @@ describe('runDaemonServiceCliCommand', () => {
   it('reports a service that runs another CLI as an install conflict needing consent instead of rewriting it', async () => {
     await withTempDir('happier-service-install-dry-run-foreign-runtime-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
-      const managedShim = `${happierHomeDir}/bin/happier`;
+      const managedShim = `${happierHomeDir}/bin/happiest`;
       const userCli = '/usr/local/lib/node_modules/@happier-dev/cli/bin/happier';
       envScope.patch({
         HAPPIEST_HOME_DIR: happierHomeDir,
@@ -3245,7 +3245,7 @@ describe('runDaemonServiceCliCommand', () => {
   it('after "Keep my own" reports a service that runs the managed CLI as a switch to the kept CLI, never as drift (R13)', async () => {
     await withTempDir('happier-service-install-dry-run-kept-runtime-', async (homeDir) => {
       const happierHomeDir = `${homeDir}/.happier`;
-      const managedShim = `${happierHomeDir}/bin/happier`;
+      const managedShim = `${happierHomeDir}/bin/happiest`;
       const userCli = '/usr/local/lib/node_modules/@happier-dev/cli/bin/happier';
       envScope.patch({
         HAPPIEST_HOME_DIR: happierHomeDir,
@@ -3382,15 +3382,15 @@ describe('runDaemonServiceCliCommand', () => {
 
       const installPayload = installOutput.json();
       expect(installPayload.ok).toBe(true);
-      expect(installPayload.plan.files[0]?.path).toBe('/etc/systemd/system/happier-daemon.company.service');
+      expect(installPayload.plan.files[0]?.path).toBe('/etc/systemd/system/happiest-daemon.company.service');
       expect(installPayload.plan.files[0]?.content).toContain('User=happier');
       expect(installPayload.plan.files[0]?.content).toContain('WorkingDirectory=/home/happier');
-      expect(installPayload.plan.files[0]?.content).toContain('Environment=HAPPIEST_HOME_DIR=/home/happier/.happier');
+      expect(installPayload.plan.files[0]?.content).toContain('Environment=HAPPIEST_HOME_DIR=/home/happier/.happiest');
       expect(installPayload.plan.files[0]?.content).toContain('Environment=PATH=');
       expect(installPayload.plan.files[0]?.content).toContain('/home/happier/.local/bin');
       expect(installPayload.plan.files[0]?.content).toContain('/home/happier/bin');
       expect(installPayload.plan.files[0]?.content).not.toContain('/root/.local/bin');
-      expect(installPayload.plan.files[0]?.content).not.toContain('/root/.happier');
+      expect(installPayload.plan.files[0]?.content).not.toContain('/root/.happiest');
     } finally {
       installOutput.restore();
     }
@@ -3404,8 +3404,8 @@ describe('runDaemonServiceCliCommand', () => {
 
       const pathsPayload = pathsOutput.json();
       expect(pathsPayload.ok).toBe(true);
-      expect(pathsPayload.paths.stdoutPath).toBe('/home/happier/.happier/logs/daemon-service.company.out.log');
-      expect(pathsPayload.paths.stderrPath).toBe('/home/happier/.happier/logs/daemon-service.company.err.log');
+      expect(pathsPayload.paths.stdoutPath).toBe('/home/happier/.happiest/logs/daemon-service.company.out.log');
+      expect(pathsPayload.paths.stderrPath).toBe('/home/happier/.happiest/logs/daemon-service.company.err.log');
     } finally {
       pathsOutput.restore();
     }
@@ -3459,7 +3459,7 @@ describe('runDaemonServiceCliCommand', () => {
 
       const installPayload = installOutput.json();
       expect(installPayload.ok).toBe(true);
-      expect(installPayload.plan.files[0]?.path).toBe('/etc/systemd/system/happier-daemon.dev.company.service');
+      expect(installPayload.plan.files[0]?.path).toBe('/etc/systemd/system/happiest-daemon.dev.company.service');
       expect(installPayload.plan.files[0]?.content).toContain('Environment=HAPPIER_PUBLIC_RELEASE_CHANNEL=dev');
     } finally {
       installOutput.restore();
@@ -4066,12 +4066,12 @@ describe('runDaemonServiceCliCommand', () => {
           serverId: 'company',
           name: 'Company',
           installed: true as const,
-          path: '/etc/systemd/system/happier-daemon.company.service',
+          path: '/etc/systemd/system/happiest-daemon.company.service',
           platform: 'linux' as const,
           mode: 'system' as const,
           happierHomeDir: '/tmp/happier-list-home/.happier',
           releaseChannel: 'stable' as const,
-          label: 'happier-daemon.company',
+          label: 'happiest-daemon.company',
           targetMode: 'pinned' as const,
         }];
       }
@@ -4080,12 +4080,12 @@ describe('runDaemonServiceCliCommand', () => {
         serverId: 'cloud',
         name: 'Default background service',
         installed: true as const,
-        path: '/tmp/happier-list-home/.config/systemd/user/happier-daemon.default.service',
+        path: '/tmp/happier-list-home/.config/systemd/user/happiest-daemon.default.service',
         platform: 'linux' as const,
         mode: 'user' as const,
         happierHomeDir: '/tmp/happier-list-home/.happier',
         releaseChannel: 'preview' as const,
-        label: 'happier-daemon.default',
+        label: 'happiest-daemon.default',
         targetMode: 'default-following' as const,
       }];
     });
@@ -4118,7 +4118,7 @@ describe('runDaemonServiceCliCommand', () => {
         expect.objectContaining({
           serverId: 'company',
           mode: 'system',
-          path: '/etc/systemd/system/happier-daemon.company.service',
+          path: '/etc/systemd/system/happiest-daemon.company.service',
         }),
       ]);
     } finally {
@@ -4141,12 +4141,12 @@ describe('runDaemonServiceCliCommand', () => {
           serverId: 'company',
           name: 'Company',
           installed: true as const,
-          path: '/etc/systemd/system/happier-daemon.company.legacy.service',
+          path: '/etc/systemd/system/happiest-daemon.company.legacy.service',
           platform: 'linux' as const,
           mode: 'system' as const,
           happierHomeDir: '/tmp/happier-uninstall-home/.happier',
           releaseChannel: 'stable' as const,
-          label: 'happier-daemon.company',
+          label: 'happiest-daemon.company',
           targetMode: 'pinned' as const,
         }];
       }
@@ -4155,12 +4155,12 @@ describe('runDaemonServiceCliCommand', () => {
         serverId: 'cloud',
         name: 'Default background service',
         installed: true as const,
-        path: '/tmp/happier-uninstall-home/.config/systemd/user/happier-daemon.default.legacy.service',
+        path: '/tmp/happier-uninstall-home/.config/systemd/user/happiest-daemon.default.legacy.service',
         platform: 'linux' as const,
         mode: 'user' as const,
         happierHomeDir: '/tmp/happier-uninstall-home/.happier',
         releaseChannel: 'preview' as const,
-        label: 'happier-daemon.default',
+        label: 'happiest-daemon.default',
         targetMode: 'default-following' as const,
       }];
     });
@@ -4189,10 +4189,10 @@ describe('runDaemonServiceCliCommand', () => {
       expect(output.json()).toEqual(expect.objectContaining({ ok: true, removed: 2 }));
       expect(output.json().plans).toEqual(expect.arrayContaining([
         expect.objectContaining({
-          filesToRemove: expect.arrayContaining(['/tmp/happier-uninstall-home/.config/systemd/user/happier-daemon.default.legacy.service']),
+          filesToRemove: expect.arrayContaining(['/tmp/happier-uninstall-home/.config/systemd/user/happiest-daemon.default.legacy.service']),
         }),
         expect.objectContaining({
-          filesToRemove: expect.arrayContaining(['/etc/systemd/system/happier-daemon.company.legacy.service']),
+          filesToRemove: expect.arrayContaining(['/etc/systemd/system/happiest-daemon.company.legacy.service']),
         }),
       ]));
     } finally {
@@ -4208,7 +4208,7 @@ describe('runDaemonServiceCliCommand', () => {
     });
     vi.resetModules();
 
-    const legacyUserUnitPath = '/tmp/happier-uninstall-runtime-home/.config/systemd/user/happier-daemon.default.legacy.service';
+    const legacyUserUnitPath = '/tmp/happier-uninstall-runtime-home/.config/systemd/user/happiest-daemon.default.legacy.service';
     const discoverInstalledDaemonServiceEntriesMock = vi.fn(async () => [{
       serverId: 'cloud',
       name: 'Default background service',
@@ -4218,7 +4218,7 @@ describe('runDaemonServiceCliCommand', () => {
       mode: 'user' as const,
       happierHomeDir: '/tmp/happier-uninstall-runtime-home/.happier',
       releaseChannel: 'stable' as const,
-      label: 'happier-daemon.default',
+      label: 'happiest-daemon.default',
       targetMode: 'default-following' as const,
     }]);
 
@@ -4292,12 +4292,12 @@ describe('runDaemonServiceCliCommand', () => {
           serverId: 'company',
           name: 'Company',
           installed: true as const,
-          path: '/etc/systemd/system/happier-daemon.company.service',
+          path: '/etc/systemd/system/happiest-daemon.company.service',
           platform: 'linux' as const,
           mode: 'system' as const,
           happierHomeDir: '/srv/happier/.happier',
           releaseChannel: 'stable' as const,
-          label: 'happier-daemon.company',
+          label: 'happiest-daemon.company',
           targetMode: 'pinned' as const,
         }];
       }
@@ -4306,12 +4306,12 @@ describe('runDaemonServiceCliCommand', () => {
         serverId: 'cloud',
         name: 'Default background service',
         installed: true as const,
-        path: '/home/sudo-user/.config/systemd/user/happier-daemon.default.service',
+        path: '/home/sudo-user/.config/systemd/user/happiest-daemon.default.service',
         platform: 'linux' as const,
         mode: 'user' as const,
         happierHomeDir: '/home/sudo-user/.happier',
         releaseChannel: 'preview' as const,
-        label: 'happier-daemon.default',
+        label: 'happiest-daemon.default',
         targetMode: 'default-following' as const,
       }];
     });
@@ -4339,10 +4339,10 @@ describe('runDaemonServiceCliCommand', () => {
       expect(output.json()).toEqual(expect.objectContaining({ ok: true, removed: 2 }));
       expect(output.json().plans).toEqual(expect.arrayContaining([
         expect.objectContaining({
-          filesToRemove: expect.arrayContaining(['/home/sudo-user/.config/systemd/user/happier-daemon.default.service']),
+          filesToRemove: expect.arrayContaining(['/home/sudo-user/.config/systemd/user/happiest-daemon.default.service']),
         }),
         expect.objectContaining({
-          filesToRemove: expect.arrayContaining(['/etc/systemd/system/happier-daemon.company.service']),
+          filesToRemove: expect.arrayContaining(['/etc/systemd/system/happiest-daemon.company.service']),
         }),
       ]));
     } finally {

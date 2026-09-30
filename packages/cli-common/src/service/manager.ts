@@ -3,6 +3,8 @@ import { chmod, mkdir, rename, writeFile } from 'node:fs/promises';
 import { spawnSync, type SpawnSyncReturns } from 'node:child_process';
 import { userInfo } from 'node:os';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 import { commandExistsOnPath } from '../process/index.js';
 import { buildLaunchdPlistXml } from './launchd.js';
 import { mergeServiceEnvWithPath } from './path.js';
@@ -14,6 +16,7 @@ import {
   buildStopWindowsScheduledTaskIfRunningPowerShellCommand,
   buildWindowsScheduledTaskPowerShellAction,
   parseWindowsScheduledTaskStatusPowerShellJson,
+  qualifyWindowsScheduledTaskName,
   renderWindowsScheduledTaskWrapperPs1,
   splitQualifiedWindowsScheduledTaskName,
 } from './windows.js';
@@ -106,9 +109,9 @@ function launchdPlistPathForLabel(params: Readonly<{ homeDir: string; label: str
 function windowsWrapperPathForLabel(params: Readonly<{ homeDir: string; label: string; mode: ServiceMode }>): string {
   const base = String(params.homeDir ?? '').trim() || 'C:\\Users\\Default';
   if (params.mode === 'system') {
-    return `C:\\ProgramData\\happier\\services\\${params.label}.ps1`;
+    return `C:\\ProgramData\\${productIdentity.systemDirName}\\services\\${params.label}.ps1`;
   }
-  return `${base}\\.happier\\services\\${params.label}.ps1`;
+  return `${base}\\${productIdentity.homeDirName}\\services\\${params.label}.ps1`;
 }
 
 export function resolveServiceDefinitionPath(params: Readonly<{
@@ -169,8 +172,8 @@ export function buildServiceDefinition(params: Readonly<{ backend: ServiceBacken
       label: s.label,
       programArgs: s.programArgs,
       env: mergedEnv,
-      stdoutPath: s.stdoutPath || (mode === 'system' ? `/var/log/${s.label}.out.log` : join(String(params.homeDir ?? '').trim() || '', '.happier', 'logs', `${s.label}.out.log`)),
-      stderrPath: s.stderrPath || (mode === 'system' ? `/var/log/${s.label}.err.log` : join(String(params.homeDir ?? '').trim() || '', '.happier', 'logs', `${s.label}.err.log`)),
+      stdoutPath: s.stdoutPath || (mode === 'system' ? `/var/log/${s.label}.out.log` : join(String(params.homeDir ?? '').trim() || '', productIdentity.homeDirName, 'logs', `${s.label}.out.log`)),
+      stderrPath: s.stderrPath || (mode === 'system' ? `/var/log/${s.label}.err.log` : join(String(params.homeDir ?? '').trim() || '', productIdentity.homeDirName, 'logs', `${s.label}.err.log`)),
       workingDirectory: s.workingDirectory,
       keepAliveOnFailure: true,
     });
@@ -366,7 +369,7 @@ export function planServiceAction(params: Readonly<{
   }
 
   if (backend === 'schtasks-user' || backend === 'schtasks-system') {
-    const name = taskName || `Happier\\${label}`;
+    const name = taskName || qualifyWindowsScheduledTaskName(label);
     if (action !== 'start' && !definitionPath) {
       throw new Error(`definitionPath is required for schtasks ${action}`);
     }
@@ -572,7 +575,7 @@ export function inspectServiceRegistration(params: Readonly<{
     cmd = 'launchctl';
     args = ['print', `${domain}/${label}`];
   } else {
-    const qualifiedTaskName = String(params.taskName ?? '').trim() || `Happier\\${label}`;
+    const qualifiedTaskName = String(params.taskName ?? '').trim() || qualifyWindowsScheduledTaskName(label);
     const { taskName, taskPath } = splitQualifiedWindowsScheduledTaskName(qualifiedTaskName);
     cmd = 'powershell.exe';
     args = [...windowsPowerShellCommandArgs(buildReadWindowsScheduledTaskStatusPowerShellCommand({ taskName, taskPath }))];

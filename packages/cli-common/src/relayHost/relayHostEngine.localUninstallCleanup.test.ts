@@ -31,14 +31,14 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '/tmp/happier-server', versionId: 'dev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '/tmp/happiest-server', versionId: 'dev-1' }),
       });
 
       await engine.control({ target: { kind: 'local' }, mode: 'user', channel: 'dev', action: 'uninstall' });
 
-      expect(rmCalls).not.toContain('/tmp/happy-home/.happier/self-host-dev/config');
-      expect(rmCalls).not.toContain('/tmp/happy-home/.happier/self-host-dev/data');
-      expect(rmCalls).not.toContain('/tmp/happy-home/.happier/self-host-dev');
+      expect(rmCalls).not.toContain('/tmp/happy-home/.happiest/self-host-dev/config');
+      expect(rmCalls).not.toContain('/tmp/happy-home/.happiest/self-host-dev/data');
+      expect(rmCalls).not.toContain('/tmp/happy-home/.happiest/self-host-dev');
     } finally {
       Object.defineProperty(process, 'platform', { value: originalPlatform });
       if (originalGetuid) (process as unknown as { getuid?: (() => number) | undefined }).getuid = originalGetuid;
@@ -56,7 +56,7 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
     (process as unknown as { getuid?: (() => number) | undefined }).getuid = () => 501;
 
     const rmCalls: Array<{ path: string; recursive?: boolean; force?: boolean }> = [];
-    const installRoot = '/tmp/happy-home/.happier/self-host-dev';
+    const installRoot = '/tmp/happy-home/.happiest/self-host-dev';
     let installRootRmAttempts = 0;
 
     try {
@@ -111,7 +111,7 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
       });
 
       await engine.control({
@@ -140,7 +140,7 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
     (process as unknown as { getuid?: (() => number) | undefined }).getuid = () => 501;
 
     const rmCalls: Array<{ path: string; recursive?: boolean; force?: boolean }> = [];
-    const installRoot = '/tmp/happy-home/.happier/self-host-dev';
+    const installRoot = '/tmp/happy-home/.happiest/self-host-dev';
     const statePath = `${installRoot}/self-host-state.json`;
 
     try {
@@ -184,7 +184,7 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
       });
 
       await engine.control({
@@ -212,7 +212,7 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
     (process as unknown as { getuid?: (() => number) | undefined }).getuid = () => 501;
 
     const invoked: string[] = [];
-    const installRoot = '/tmp/happy-home/.happier/self-host-preview';
+    const installRoot = '/tmp/happy-home/.happiest/self-host-preview';
 
     try {
       vi.doMock('node:os', async () => {
@@ -231,10 +231,10 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
             invoked.push([cmd, ...(Array.isArray(args) ? args : [])].join(' '));
             if (cmd === 'launchctl' && Array.isArray(args) && args[0] === 'list') {
               const label = String(args[1] ?? '');
-              if (label === 'happier-server-preview') {
+              if (label === 'happiest-server-preview') {
                 return { status: 1, stdout: '', stderr: '' };
               }
-              if (label === 'happier-server') {
+              if (label === 'happiest-server') {
                 return { status: 0, stdout: '', stderr: '' };
               }
             }
@@ -247,7 +247,7 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
         const actual = await vi.importActual<typeof import('node:fs')>('node:fs');
         return {
           ...actual,
-          existsSync: (path: string) => path.endsWith('happier-server.plist'),
+          existsSync: (path: string) => path.endsWith('happiest-server.plist'),
         };
       });
 
@@ -256,12 +256,12 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
         return {
           ...actual,
           readFile: async (path: string) => {
-            if (path.endsWith('happier-server.plist')) {
+            if (path.endsWith('happiest-server.plist')) {
               return `<?xml version="1.0" encoding="UTF-8"?>
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>happier-server</string>
+    <string>happiest-server</string>
     <key>WorkingDirectory</key>
     <string>${installRoot}</string>
   </dict>
@@ -280,7 +280,7 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'preview-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'preview-1' }),
       });
 
       await engine.control({
@@ -290,9 +290,9 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
         action: 'uninstall',
       });
 
-      expect(invoked).toContain('launchctl bootout gui/501/happier-server');
-      expect(invoked).toContain('launchctl disable gui/501/happier-server');
-      expect(invoked).not.toContain('launchctl bootout gui/501/happier-server-preview');
+      expect(invoked).toContain('launchctl bootout gui/501/happiest-server');
+      expect(invoked).toContain('launchctl disable gui/501/happiest-server');
+      expect(invoked).not.toContain('launchctl bootout gui/501/happiest-server-preview');
     } finally {
       Object.defineProperty(process, 'platform', { value: originalPlatform });
       if (originalGetuid) (process as unknown as { getuid?: (() => number) | undefined }).getuid = originalGetuid;
@@ -310,7 +310,7 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
     process.env.PATH = '/tmp/windows-system32';
 
     const invoked: string[] = [];
-    const installRoot = 'C:\\Users\\tester\\.happier\\self-host-preview';
+    const installRoot = 'C:\\Users\\tester\\.happiest\\self-host-preview';
 
     try {
       vi.doMock('node:os', async () => {
@@ -329,19 +329,19 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
             invoked.push([cmd, ...(Array.isArray(args) ? args : [])].join(' '));
             if (cmd === 'schtasks' && Array.isArray(args) && args[0] === '/Query') {
               const taskName = String(args[2] ?? '');
-              if (taskName === 'Happier\\happier-server-preview') {
+              if (taskName === 'Happiest\\happiest-server-preview') {
                 return { status: 1, stdout: '', stderr: '' };
               }
-              if (taskName === 'Happier\\happier-server') {
+              if (taskName === 'Happiest\\happiest-server') {
                 return { status: 0, stdout: 'Status: Running', stderr: '' };
               }
             }
             if (cmd === 'powershell.exe') {
               const script = String(args?.at(-1) ?? '');
-              if (script.includes('$taskName = "happier-server-preview"')) {
+              if (script.includes('$taskName = "happiest-server-preview"')) {
                 return { status: 0, stdout: '{"exists":false}', stderr: '' };
               }
-              if (script.includes('$taskName = "happier-server"')) {
+              if (script.includes('$taskName = "happiest-server"')) {
                 return { status: 0, stdout: '{"exists":true,"enabled":true,"active":true}', stderr: '' };
               }
             }
@@ -362,7 +362,7 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
           ...actual,
           readdirSync,
           existsSync: (path: string) =>
-            path.endsWith('happier-server.ps1')
+            path.endsWith('happiest-server.ps1')
             || path === '/tmp/windows-system32/powershell.exe',
         };
       });
@@ -372,7 +372,7 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
         return {
           ...actual,
           readFile: async (path: string) => {
-            if (path.endsWith('happier-server.ps1')) {
+            if (path.endsWith('happiest-server.ps1')) {
               return `$ErrorActionPreference = "Stop"\nSet-Location -LiteralPath "${installRoot}"\n`;
             }
             return '';
@@ -387,7 +387,7 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '%USERPROFILE%\\.happier\\self-host\\current\\happier-server.exe', versionId: 'preview-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '%USERPROFILE%\\.happiest\\self-host\\current\\happiest-server.exe', versionId: 'preview-1' }),
       });
 
       await engine.control({
@@ -400,12 +400,12 @@ describe('RelayHostEngine (local uninstall cleanup)', () => {
       expect(invoked.some((cmd) =>
         cmd.includes('powershell.exe')
         && cmd.includes('Stop-ScheduledTask')
-        && cmd.includes('$taskName = "happier-server"'),
+        && cmd.includes('$taskName = "happiest-server"'),
       ), invoked.join('\n')).toBe(true);
       expect(invoked.some((cmd) =>
         cmd.includes('powershell.exe')
         && cmd.includes('Unregister-ScheduledTask')
-        && cmd.includes('$taskName = "happier-server"'),
+        && cmd.includes('$taskName = "happiest-server"'),
       )).toBe(true);
     } finally {
       Object.defineProperty(process, 'platform', { value: originalPlatform });

@@ -105,13 +105,13 @@ function installedDefaultFollowingService(happierHomeDir: string): DaemonService
         serverId: 'default',
         name: 'Default background service',
         installed: true,
-        path: '/tmp/happier-daemon.default.service',
+        path: '/tmp/happiest-daemon.default.service',
         happierHomeDir,
         platform: process.platform === 'darwin' || process.platform === 'linux' || process.platform === 'win32'
             ? process.platform
             : 'linux',
         releaseChannel: configuration.publicReleaseRing,
-        label: 'happier-daemon.default',
+        label: 'happiest-daemon.default',
         targetMode: 'default-following',
     };
 }
@@ -125,7 +125,7 @@ async function runRelay(args: readonly string[]): Promise<string[]> {
         const argv = ['relay', ...args];
         await commandRegistry.relay({
             args: argv,
-            rawArgv: ['node', 'hprev', ...argv],
+            rawArgv: ['node', 'happiest-preview', ...argv],
             terminalRuntime: null,
         });
         return [...output.logs];
@@ -159,8 +159,8 @@ describe('happier relay background service reconciliation', () => {
         envScope = createEnvKeyScope(['HAPPIEST_HOME_DIR']);
         home = await createTempDir('happier-relay-service-followup-home-');
         preparedPayloadRoot = await createTempDir('happier-relay-service-followup-prepared-');
-        writeFileSync(join(preparedPayloadRoot, 'happier-server'), '#!/usr/bin/env bash\nexit 0\n', 'utf8');
-        chmodSync(join(preparedPayloadRoot, 'happier-server'), 0o755);
+        writeFileSync(join(preparedPayloadRoot, 'happiest-server'), '#!/usr/bin/env bash\nexit 0\n', 'utf8');
+        chmodSync(join(preparedPayloadRoot, 'happiest-server'), 0o755);
         mockedPreparedPayloadRoot = preparedPayloadRoot;
         envScope.patch({ HAPPIEST_HOME_DIR: home });
         reloadConfiguration();

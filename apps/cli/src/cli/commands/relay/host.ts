@@ -14,9 +14,11 @@ import { getActiveServerProfile, upsertServerProfileByUrl, type ServerProfile } 
 import { runServerSelectionBackgroundServiceFollowUp } from '../backgroundServiceFollowUp';
 
 import {
+  SERVER_RUNTIME_EXECUTABLE_BASE_NAMES,
   prepareFirstPartyComponentPayloadFromGitHubRelease,
   resolveManagedCliReleaseChannelSync,
   resolveRelayRuntimeDefaults,
+  resolveServerRuntimeExecutableNames,
 } from '@happier-dev/cli-common/firstPartyRuntime';
 import { createRelayHostEngine } from '@happier-dev/cli-common/relayHost';
 import {
@@ -292,7 +294,7 @@ function resolveFirstExistingPath(candidates: readonly string[]): string {
 function resolveLocalServerBinaryFromPayloadRoot(payloadRoot: string): string {
   const root = String(payloadRoot ?? '').trim();
   if (!root) return '';
-  const name = process.platform === 'win32' ? 'happier-server.exe' : 'happier-server';
+  const name = resolveServerRuntimeExecutableNames(process.platform).server;
   return resolveFirstExistingPath([
     join(root, name),
     join(root, 'bin', name),
@@ -815,7 +817,7 @@ export async function runRelayHostSubcommand(args: string[]): Promise<void> {
           try {
             const serverBinaryPath = selfHostRelayBinaryOverride || resolveLocalServerBinaryFromPayloadRoot(prepared.payloadRoot);
             if (!serverBinaryPath) {
-              throw new Error('Unable to resolve relay binary (happier-server) from prepared payload.');
+              throw new Error(`Unable to resolve relay binary (${SERVER_RUNTIME_EXECUTABLE_BASE_NAMES.server}) from prepared payload.`);
             }
 
             const engine = createLocalRelayHostEngine({

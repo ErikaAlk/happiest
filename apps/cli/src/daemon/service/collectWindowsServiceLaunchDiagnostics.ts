@@ -3,6 +3,7 @@ import { existsSync, readFileSync, statSync } from 'node:fs';
 import {
   buildReadWindowsScheduledTaskStatusPowerShellCommand,
   parseWindowsScheduledTaskStatusPowerShellJson,
+  WINDOWS_SCHEDULED_TASK_FOLDER_PATH,
 } from '@happier-dev/cli-common/service';
 
 /**
@@ -107,7 +108,7 @@ function splitWindowsScheduledTaskName(taskName: string): { taskPath: string; le
   const normalized = String(taskName ?? '').trim().replaceAll('/', '\\');
   const parts = normalized.split('\\').map((part) => part.trim()).filter(Boolean);
   const leafTaskName = parts.pop() ?? normalized;
-  const taskPath = parts.length > 0 ? `\\${parts.join('\\')}\\` : '\\Happier\\';
+  const taskPath = parts.length > 0 ? `\\${parts.join('\\')}\\` : WINDOWS_SCHEDULED_TASK_FOLDER_PATH;
   return { taskPath, leafTaskName };
 }
 

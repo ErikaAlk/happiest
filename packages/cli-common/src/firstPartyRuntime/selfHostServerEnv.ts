@@ -2,6 +2,8 @@ import { existsSync } from 'node:fs';
 import { dirname, join, win32 as win32Path } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { resolveServerRuntimeExecutableNames } from './serverRuntimeArtifactLayout.js';
+
 export const DEFAULT_PRISMA_SQLITE_BUSY_TIMEOUT_MS = 30_000;
 export const DEFAULT_SERVER_LIGHT_SQLITE_CONNECTION_LIMIT = 1;
 const PRISMA_SQLITE_BUSY_TIMEOUT_MS_MAX = 600_000;
@@ -43,10 +45,11 @@ export function resolveSelfHostServerMigrationPlan(params: Readonly<{
     }
 
     const serverBinDir = platform === 'win32' ? win32Path.dirname(params.serverBinaryPath) : dirname(params.serverBinaryPath);
+    const migrateExecutableName = resolveServerRuntimeExecutableNames(platform).migrate;
     return {
         command: platform === 'win32'
-            ? win32Path.join(serverBinDir, 'happier-server-migrate.exe')
-            : join(serverBinDir, 'happier-server-migrate'),
+            ? win32Path.join(serverBinDir, migrateExecutableName)
+            : join(serverBinDir, migrateExecutableName),
         args: [],
     };
 }

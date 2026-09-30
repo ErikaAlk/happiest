@@ -27,7 +27,7 @@ function writeInstalledDefaultUnit(params: Readonly<{
   writeFileSync(
     params.unitPath,
     renderSystemdServiceUnit({
-      description: 'Happier CLI daemon (default)',
+      description: 'Happiest CLI daemon (default)',
       execStart: ['/usr/local/bin/happier', 'daemon', 'start-sync', '--takeover'],
       env: {
         HAPPIEST_HOME_DIR: params.happierHomeDir,
@@ -74,14 +74,14 @@ describe('daemon service install — autostart selection', () => {
       const preview = await previewDefaultInstall({ homeDir });
 
       expect(preview.autostart).toBe('at-login');
-      expect(commandText(preview)).toContain('systemctl --user enable happier-daemon.default.service');
+      expect(commandText(preview)).toContain('systemctl --user enable happiest-daemon.default.service');
     });
   });
 
   it('keeps the installed on-demand mode when the caller selects nothing (repair, drift refresh, reinstall)', async () => {
     await withTempDir('happier-autostart-inherit-', async (homeDir) => {
       writeInstalledDefaultUnit({
-        unitPath: `${homeDir}/.config/systemd/user/happier-daemon.default.service`,
+        unitPath: `${homeDir}/.config/systemd/user/happiest-daemon.default.service`,
         happierHomeDir: `${homeDir}/.happier`,
         autostart: 'on-demand',
       });
@@ -89,15 +89,15 @@ describe('daemon service install — autostart selection', () => {
       const preview = await previewDefaultInstall({ homeDir });
 
       expect(preview.autostart).toBe('on-demand');
-      expect(commandText(preview)).toContain('systemctl --user disable happier-daemon.default.service');
-      expect(commandText(preview)).not.toContain('systemctl --user enable happier-daemon.default.service');
+      expect(commandText(preview)).toContain('systemctl --user disable happiest-daemon.default.service');
+      expect(commandText(preview)).not.toContain('systemctl --user enable happiest-daemon.default.service');
     });
   });
 
   it('treats a definition with no declaration as at-login', async () => {
     await withTempDir('happier-autostart-legacy-', async (homeDir) => {
       writeInstalledDefaultUnit({
-        unitPath: `${homeDir}/.config/systemd/user/happier-daemon.default.service`,
+        unitPath: `${homeDir}/.config/systemd/user/happiest-daemon.default.service`,
         happierHomeDir: `${homeDir}/.happier`,
         autostart: null,
       });
@@ -110,7 +110,7 @@ describe('daemon service install — autostart selection', () => {
 
   it('changes the mode of an already-installed service when one is selected explicitly', async () => {
     await withTempDir('happier-autostart-switch-', async (homeDir) => {
-      const unitPath = `${homeDir}/.config/systemd/user/happier-daemon.default.service`;
+      const unitPath = `${homeDir}/.config/systemd/user/happiest-daemon.default.service`;
       writeInstalledDefaultUnit({
         unitPath,
         happierHomeDir: `${homeDir}/.happier`,
@@ -119,7 +119,7 @@ describe('daemon service install — autostart selection', () => {
 
       const toOnDemand = await previewDefaultInstall({ homeDir, autostart: 'on-demand' });
       expect(toOnDemand.autostart).toBe('on-demand');
-      expect(commandText(toOnDemand)).toContain('systemctl --user disable happier-daemon.default.service');
+      expect(commandText(toOnDemand)).toContain('systemctl --user disable happiest-daemon.default.service');
       // The switch has to reach the filesystem. The systemd login trigger is an
       // enable symlink, invisible to the definition comparator that decides
       // whether installDaemonService returns early — so the definition itself
@@ -132,7 +132,7 @@ describe('daemon service install — autostart selection', () => {
       writeInstalledDefaultUnit({ unitPath, happierHomeDir: `${homeDir}/.happier`, autostart: 'on-demand' });
       const backToLogin = await previewDefaultInstall({ homeDir, autostart: 'at-login' });
       expect(backToLogin.autostart).toBe('at-login');
-      expect(commandText(backToLogin)).toContain('systemctl --user enable happier-daemon.default.service');
+      expect(commandText(backToLogin)).toContain('systemctl --user enable happiest-daemon.default.service');
       expect(backToLogin.plan.files[0]?.content ?? '')
         .toContain('Environment=HAPPIEST_DAEMON_SERVICE_AUTOSTART=at-login');
     });
@@ -146,7 +146,7 @@ describe('daemon service install — autostart selection', () => {
    */
   it('changes only the linux login trigger, without restarting the running daemon, when the unit is otherwise unchanged', async () => {
     await withTempDir('happier-autostart-trigger-only-', async (homeDir) => {
-      const unitPath = `${homeDir}/.config/systemd/user/happier-daemon.default.service`;
+      const unitPath = `${homeDir}/.config/systemd/user/happiest-daemon.default.service`;
       const installed = await previewDefaultInstall({ homeDir, autostart: 'at-login' });
       mkdirSync(dirname(unitPath), { recursive: true });
       writeFileSync(unitPath, installed.plan.files[0]?.content ?? '', 'utf-8');
@@ -154,8 +154,8 @@ describe('daemon service install — autostart selection', () => {
       const switched = await previewDefaultInstall({ homeDir, autostart: 'on-demand' });
 
       expect(switched.autostart).toBe('on-demand');
-      expect(commandText(switched)).toContain('systemctl --user disable happier-daemon.default.service');
-      expect(commandText(switched)).not.toContain('systemctl --user restart happier-daemon.default.service');
+      expect(commandText(switched)).toContain('systemctl --user disable happiest-daemon.default.service');
+      expect(commandText(switched)).not.toContain('systemctl --user restart happiest-daemon.default.service');
       // The new declaration still reaches the unit file, so the mode is reported back correctly.
       expect(switched.plan.files[0]?.content ?? '')
         .toContain('Environment=HAPPIEST_DAEMON_SERVICE_AUTOSTART=on-demand');
@@ -164,7 +164,7 @@ describe('daemon service install — autostart selection', () => {
 
   it('restarts a stale linux daemon even when the only definition change is the login trigger', async () => {
     await withTempDir('happier-autostart-trigger-stale-daemon-', async (homeDir) => {
-      const unitPath = `${homeDir}/.config/systemd/user/happier-daemon.default.service`;
+      const unitPath = `${homeDir}/.config/systemd/user/happiest-daemon.default.service`;
       const installed = await previewDefaultInstall({ homeDir, autostart: 'at-login' });
       mkdirSync(dirname(unitPath), { recursive: true });
       writeFileSync(unitPath, installed.plan.files[0]?.content ?? '', 'utf-8');
@@ -187,13 +187,13 @@ describe('daemon service install — autostart selection', () => {
         entryPath: '',
       });
 
-      expect(commandText(switched)).toContain('systemctl --user restart happier-daemon.default.service');
+      expect(commandText(switched)).toContain('systemctl --user restart happiest-daemon.default.service');
     });
   });
 
   it('still restarts when the definition changed for any other reason', async () => {
     await withTempDir('happier-autostart-trigger-and-drift-', async (homeDir) => {
-      const unitPath = `${homeDir}/.config/systemd/user/happier-daemon.default.service`;
+      const unitPath = `${homeDir}/.config/systemd/user/happiest-daemon.default.service`;
       // A hand-rolled unit that is a valid Happier definition but not the one this install
       // would write: the definition itself drifted, so the new one has to be applied.
       writeInstalledDefaultUnit({
@@ -204,8 +204,8 @@ describe('daemon service install — autostart selection', () => {
 
       const switched = await previewDefaultInstall({ homeDir, autostart: 'on-demand' });
 
-      expect(commandText(switched)).toContain('systemctl --user disable happier-daemon.default.service');
-      expect(commandText(switched)).toContain('systemctl --user restart happier-daemon.default.service');
+      expect(commandText(switched)).toContain('systemctl --user disable happiest-daemon.default.service');
+      expect(commandText(switched)).toContain('systemctl --user restart happiest-daemon.default.service');
     });
   });
 });

@@ -7,6 +7,7 @@ import { commandExists, compileBunBinary, ensureFileExists, execOrThrow, resolve
 import { finalizeRuntimeArtifactPayload } from './finalizeRuntimeArtifactPayload.js';
 import { compilePrismaMigrateBinary } from './compilePrismaMigrateBinary.js';
 import { resolveRequestedServerDbProviders, resolveServerBinarySidecarEntries, type ServerComponent } from './serverSidecars.js';
+import { SERVER_RUNTIME_EXECUTABLE_BASE_NAMES } from '../firstPartyRuntime/serverRuntimeArtifactLayout.js';
 
 function resolvePrismaEngineFileNameForTarget(target: BinaryTarget): string {
   const key = `${target.os}-${target.arch}`;
@@ -114,7 +115,7 @@ export async function buildServerBinaryArtifactPayload({
   await rm(payloadDir, { recursive: true, force: true });
   await mkdir(payloadDir, { recursive: true });
 
-  const executableName = resolveExecutableName({ baseName: 'happier-server', target });
+  const executableName = resolveExecutableName({ baseName: SERVER_RUNTIME_EXECUTABLE_BASE_NAMES.server, target });
   await compileBinary({
     entrypoint,
     bunTarget: target.bunTarget,
@@ -128,7 +129,7 @@ export async function buildServerBinaryArtifactPayload({
 
   const migrationSourceEntrypoint = join(repoRoot, 'apps', 'server', 'scripts', 'runtime', 'migrateFullRuntime.ts');
   await ensureFileExists(migrationSourceEntrypoint);
-  const migrationEntrypoint = resolveExecutableName({ baseName: 'happier-server-migrate', target });
+  const migrationEntrypoint = resolveExecutableName({ baseName: SERVER_RUNTIME_EXECUTABLE_BASE_NAMES.migrate, target });
   await compileBinary({
     entrypoint: migrationSourceEntrypoint,
     bunTarget: target.bunTarget,

@@ -1,3 +1,5 @@
+import { join } from 'node:path';
+
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -43,11 +45,11 @@ describe('sessionHandoffPathNormalization', () => {
         })).toBe('C:\\Users\\guest/.happier/wsrepl-qa-fixtures/large-repo');
     });
 
-    it('normalizeSessionHandoffTargetPathForLocalMachine rebases /.happier/ paths onto the local home', () => {
+    it('normalizeSessionHandoffTargetPathForLocalMachine rebases product home paths onto the local home', () => {
         expect(normalizeSessionHandoffTargetPathForLocalMachine({
-            requestedTargetPath: '/Users/leeroy/.happier/wsrepl-qa-fixtures/large-repo',
+            requestedTargetPath: '/srv/leeroy/.happiest/wsrepl-qa-fixtures/large-repo',
             homeDir: '/home/leeroy.guest',
-        })).toBe('/home/leeroy.guest/.happier/wsrepl-qa-fixtures/large-repo');
+        })).toBe(join('/home/leeroy.guest', '.happiest', 'wsrepl-qa-fixtures/large-repo'));
     });
 
     it('normalizeSessionHandoffTargetPathForLocalMachine rebases /Users/<user>/ paths onto the local home', () => {
@@ -67,17 +69,25 @@ describe('sessionHandoffPathNormalization', () => {
         })).toBe(requestedTargetPath);
     });
 
-    it('resolveSessionHandoffLocalHomeDir prefers the activeServerDir /.happier/ prefix over os homedir', () => {
+    it('resolveSessionHandoffLocalHomeDir prefers the activeServerDir product home prefix over os homedir', () => {
         expect(resolveSessionHandoffLocalHomeDir({
-            activeServerDir: '/home/leeroy.guest/.happier/wsrepl-qa/servers/stack_wsrepl__id_default',
+            activeServerDir: '/home/leeroy.guest/.happiest/wsrepl-qa/servers/stack_wsrepl__id_default',
             fallbackHomeDir: '/Users/leeroy',
         })).toBe('/home/leeroy.guest');
     });
 
-    it('resolveSessionHandoffLocalHomeDir prefers the activeServerDir \\.happier\\ prefix over os homedir on Windows', () => {
+    it('resolveSessionHandoffLocalHomeDir prefers the activeServerDir product home prefix over os homedir on Windows', () => {
         expect(resolveSessionHandoffLocalHomeDir({
-            activeServerDir: 'C:\\Users\\leeroy.guest\\.happier\\wsrepl-qa\\servers\\stack_wsrepl__id_default',
+            activeServerDir: 'C:\\Users\\leeroy.guest\\.happiest\\wsrepl-qa\\servers\\stack_wsrepl__id_default',
             fallbackHomeDir: 'C:\\Users\\leeroy\\',
         })).toBe('C:\\Users\\leeroy.guest');
+    });
+
+    // An upstream Happier home belongs to another product installed on the same machine.
+    it('resolveSessionHandoffLocalHomeDir does not treat an upstream Happier home as the product home', () => {
+        expect(resolveSessionHandoffLocalHomeDir({
+            activeServerDir: '/home/leeroy.guest/.happier/servers/cloud',
+            fallbackHomeDir: '/Users/leeroy',
+        })).toBe('/Users/leeroy');
     });
 });

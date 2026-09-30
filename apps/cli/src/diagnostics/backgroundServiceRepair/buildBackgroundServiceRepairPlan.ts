@@ -1,9 +1,28 @@
 import type { PublicReleaseRingId } from '@happier-dev/release-runtime/releaseRings';
 import type { DaemonServiceListEntry } from '@/daemon/service/cli';
-import type { DaemonServiceMode } from '@/daemon/service/plan';
+import {
+  resolveDaemonServiceLaunchdLabel,
+  resolveDaemonServiceSystemdUnitLabel,
+  resolveWindowsDaemonTaskName,
+  type DaemonServiceMode,
+} from '@/daemon/service/plan';
 import { resolveHappierHomeDirComparableKey } from '@/daemon/ownership/happierHomeDirComparableKey';
 
 import type { BackgroundServiceRepairAction, BackgroundServiceRepairPlan } from './types';
+
+const DEFAULT_FOLLOWING_UNIT_LABEL = resolveDaemonServiceSystemdUnitLabel('default', 'stable', 'default-following').toLowerCase();
+const DEFAULT_FOLLOWING_LAUNCHD_LABEL = resolveDaemonServiceLaunchdLabel('default', 'stable', 'default-following').toLowerCase();
+const CANONICAL_DEFAULT_FOLLOWING_LABELS: ReadonlySet<string> = new Set([
+  DEFAULT_FOLLOWING_UNIT_LABEL,
+  DEFAULT_FOLLOWING_LAUNCHD_LABEL,
+  resolveWindowsDaemonTaskName({ instanceId: 'default', targetMode: 'default-following' }).toLowerCase(),
+]);
+const CANONICAL_DEFAULT_FOLLOWING_FILENAMES: ReadonlySet<string> = new Set([
+  `${DEFAULT_FOLLOWING_UNIT_LABEL}.service`,
+  `${DEFAULT_FOLLOWING_LAUNCHD_LABEL}.plist`,
+  DEFAULT_FOLLOWING_LAUNCHD_LABEL,
+  `${DEFAULT_FOLLOWING_UNIT_LABEL}.ps1`,
+]);
 
 function isCompatibleDefaultService(params: Readonly<{
   service: DaemonServiceListEntry;
@@ -54,22 +73,15 @@ function isCanonicalDefaultFollowingService(service: DaemonServiceListEntry): bo
   }
 
   const label = String(service.label ?? '').trim().toLowerCase();
-  if (
-    label === 'happier-daemon.default'
-    || label === 'com.happier.cli.daemon.default'
-    || label === 'happier\\happier-daemon.default'
-  ) {
+  if (CANONICAL_DEFAULT_FOLLOWING_LABELS.has(label)) {
     return true;
   }
 
   const filename = resolveServiceFilename(service.path).toLowerCase();
-  return filename === 'happier-daemon.default.service'
-    || filename === 'com.happier.cli.daemon.default.plist'
-    || filename === 'com.happier.cli.daemon.default'
-    || filename === 'happier-daemon.default.ps1';
+  return CANONICAL_DEFAULT_FOLLOWING_FILENAMES.has(filename);
 }
 
-function isLegacyChannelScopedDefaultService(service: DaemonServiceListEntry): boolean {
+export function isLegacyChannelScopedDefaultService(service: DaemonServiceListEntry): boolean {
   if (service.targetMode !== 'default-following') {
     return false;
   }

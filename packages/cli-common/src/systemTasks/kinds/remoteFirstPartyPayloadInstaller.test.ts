@@ -17,7 +17,7 @@ async function createPayloadRootFixture(): Promise<Readonly<{
   const rootDir = await mkdtemp(join(tmpdir(), 'happier-remote-first-party-fixture-'));
   const payloadRoot = join(rootDir, 'payload-root');
   await mkdir(payloadRoot, { recursive: true });
-  await writeFile(join(payloadRoot, 'happier'), '#!/usr/bin/env bash\nexit 0\n', 'utf8');
+  await writeFile(join(payloadRoot, 'happiest'), '#!/usr/bin/env bash\nexit 0\n', 'utf8');
   return {
     payloadRoot,
     cleanup: async () => {
@@ -83,14 +83,14 @@ describe('installRemoteFirstPartyComponent', () => {
       );
 
       expect(copiedRemotePaths).toEqual([
-        '.happier/bootstrap-staging/happier-cli-preview-1-123',
+        '.happiest/bootstrap-staging/happier-cli-preview-1-123',
       ]);
-      expect(remoteTextCommands.some((command) => command.includes('mkdir -p $HOME/.happier'))).toBe(true);
+      expect(remoteTextCommands.some((command) => command.includes('mkdir -p $HOME/.happiest'))).toBe(true);
       expect(remoteTextCommands.some((command) => command.includes('/versions/'))).toBe(true);
       expect(remoteTextCommands.some((command) => command.includes('tar -xf'))).toBe(true);
       expect(remoteTextCommands.some((command) => command.includes('ln -sfn'))).toBe(true);
       expect(remoteTextCommands.some((command) => command.includes('chmod +x'))).toBe(true);
-      expect(remoteTextCommands.some((command) => command.includes('bash $HOME/.happier'))).toBe(false);
+      expect(remoteTextCommands.some((command) => command.includes('bash $HOME/.happiest'))).toBe(false);
       expect(remoteTextCommands.some((command) => command.includes('pipefail'))).toBe(false);
     } finally {
       await fixture.cleanup();
@@ -99,7 +99,7 @@ describe('installRemoteFirstPartyComponent', () => {
 
   it('installs an explicit local binary instead of downloading the channel artifact', async () => {
     const rootDir = await mkdtemp(join(tmpdir(), 'happier-remote-first-party-local-binary-'));
-    const localBinaryPath = join(rootDir, 'happier-server');
+    const localBinaryPath = join(rootDir, 'happiest-server');
     let preparePayloadCalled = false;
 
     try {
@@ -127,7 +127,7 @@ describe('installRemoteFirstPartyComponent', () => {
             const extracted = await extractTarFixture({ archivePath: join(localPath, 'payload-root.tar') });
             try {
               expect(
-                await readFile(join(extracted.extractRoot, 'payload-root', 'happier-server'), 'utf8'),
+                await readFile(join(extracted.extractRoot, 'payload-root', 'happiest-server'), 'utf8'),
               ).toBe('local-server-binary');
               expect(
                 await readFile(
@@ -239,7 +239,7 @@ describe('installRemoteFirstPartyComponent', () => {
 
       await writeFile(externalTargetPath, 'console.log("tool")\n', 'utf8');
       await mkdir(join(payloadRoot, 'node_modules', '.bin'), { recursive: true });
-      await writeFile(join(payloadRoot, 'happier'), '#!/usr/bin/env bash\nexit 0\n', 'utf8');
+      await writeFile(join(payloadRoot, 'happiest'), '#!/usr/bin/env bash\nexit 0\n', 'utf8');
       await symlink(externalTargetPath, symlinkPath);
       await symlink(missingTargetPath, brokenSymlinkPath);
 
@@ -299,7 +299,7 @@ describe('installRemoteFirstPartyComponent', () => {
       const symlinkPath = join(payloadRoot, 'node_modules', '.bin', 'tool');
 
       await mkdir(join(payloadRoot, 'node_modules', '.bin'), { recursive: true });
-      await writeFile(join(payloadRoot, 'happier'), '#!/usr/bin/env bash\nexit 0\n', 'utf8');
+      await writeFile(join(payloadRoot, 'happiest'), '#!/usr/bin/env bash\nexit 0\n', 'utf8');
       await symlink('../missing-tool.js', symlinkPath);
 
       await installRemoteFirstPartyComponent(

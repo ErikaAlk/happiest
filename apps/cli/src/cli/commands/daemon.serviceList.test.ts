@@ -107,7 +107,7 @@ describe('happier daemon service list', () => {
         const unitDir = join(homeDir, '.config', 'systemd', 'user');
         fs.mkdirSync(unitDir, { recursive: true });
         writeValidLinuxDaemonServiceDefinition({
-          path: join(unitDir, 'happier-daemon.company.prod.service'),
+          path: join(unitDir, 'happiest-daemon.company.prod.service'),
           happierHomeDir: join(homeDir, '.happier'),
         });
 
@@ -126,7 +126,7 @@ describe('happier daemon service list', () => {
             expect.objectContaining({
               serverId: 'company.prod',
               installed: true,
-              path: join(homeDir, '.config', 'systemd', 'user', 'happier-daemon.company.prod.service'),
+              path: join(homeDir, '.config', 'systemd', 'user', 'happiest-daemon.company.prod.service'),
             }),
           ]));
         } finally {
@@ -154,7 +154,7 @@ describe('happier daemon service list', () => {
         const unitDir = join(homeDir, '.config', 'systemd', 'user');
         fs.mkdirSync(unitDir, { recursive: true });
         writeValidLinuxDaemonServiceDefinition({
-          path: join(unitDir, 'happier-daemon.default.service'),
+          path: join(unitDir, 'happiest-daemon.default.service'),
           targetMode: 'default-following',
           releaseChannel: 'preview',
           happierHomeDir: join(homeDir, '.happier'),
@@ -176,7 +176,7 @@ describe('happier daemon service list', () => {
               serviceType: 'daemon',
               ring: 'preview',
               targetMode: 'default-following',
-              label: 'happier-daemon.default',
+              label: 'happiest-daemon.default',
             }),
           ]));
         } finally {
@@ -301,7 +301,7 @@ describe('happier daemon service list', () => {
           'utf-8',
         );
 
-        const managedCliPath = join(homeDir, '.happier', 'cli', 'current', 'happier');
+        const managedCliPath = join(homeDir, '.happier', 'cli', 'current', 'happiest');
         fs.mkdirSync(dirname(managedCliPath), { recursive: true });
         fs.writeFileSync(
           managedCliPath,
@@ -767,7 +767,7 @@ describe('happier daemon service list', () => {
           const unitDir = join(homeDir, '.config', 'systemd', 'user');
           fs.mkdirSync(unitDir, { recursive: true });
           writeValidLinuxDaemonServiceDefinition({
-            path: join(unitDir, 'happier-daemon.company.prod.service'),
+            path: join(unitDir, 'happiest-daemon.company.prod.service'),
             happierHomeDir: join(homeDir, '.happier'),
           });
 
@@ -775,7 +775,7 @@ describe('happier daemon service list', () => {
 
           const out = output.text();
           expect(out).toContain('company.prod');
-          expect(out).toContain('happier-daemon.company.prod.service');
+          expect(out).toContain('happiest-daemon.company.prod.service');
           expect(out.toLowerCase()).toContain('installed');
         },
       );
@@ -858,7 +858,7 @@ describe('happier daemon service list', () => {
               targetMode: 'pinned',
             }),
           ]));
-          expect(output.json().services?.[0]?.label).toContain('happier-daemon.company');
+          expect(output.json().services?.[0]?.label).toContain('happiest-daemon.company');
         } finally {
           output.restore();
         }
@@ -895,7 +895,7 @@ describe('happier daemon service list', () => {
           process.env.USERPROFILE = scopedHome;
           await writeDaemonSettingsFixture(homeDir);
 
-          const unitPath = join(scopedHome, 'service-home', '.config', 'systemd', 'user', 'happier-daemon.company.service');
+          const unitPath = join(scopedHome, 'service-home', '.config', 'systemd', 'user', 'happiest-daemon.company.service');
           fs.mkdirSync(dirname(unitPath), { recursive: true });
           writeValidLinuxDaemonServiceDefinition({
             path: unitPath,
@@ -957,7 +957,7 @@ describe('happier daemon service list', () => {
           mockedRealHomeDir = join(homeDir, 'real-user-home');
           await writeDaemonSettingsFixture(homeDir);
 
-          const unitPath = join(mockedRealHomeDir, '.config', 'systemd', 'user', 'happier-daemon.company.service');
+          const unitPath = join(mockedRealHomeDir, '.config', 'systemd', 'user', 'happiest-daemon.company.service');
           fs.mkdirSync(dirname(unitPath), { recursive: true });
           writeValidLinuxDaemonServiceDefinition({
             path: unitPath,

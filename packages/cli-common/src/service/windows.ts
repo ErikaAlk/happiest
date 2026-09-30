@@ -1,3 +1,13 @@
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
+/** Task Scheduler folder path (`\Happiest\`) that holds every scheduled task of this product. */
+export const WINDOWS_SCHEDULED_TASK_FOLDER_PATH = `\\${productIdentity.windowsTaskFolder}\\`;
+
+/** Qualifies a task label with this product's Task Scheduler folder (`Happiest\<label>`). */
+export function qualifyWindowsScheduledTaskName(label: string): string {
+  return `${productIdentity.windowsTaskFolder}\\${label}`;
+}
+
 function psDoubleQuote(s: string): string {
   // PowerShell double-quoted string escape: `"
   return String(s ?? '').replaceAll('`', '``').replaceAll('"', '`"');
@@ -97,7 +107,7 @@ export function buildReadWindowsScheduledTaskStatusPowerShellCommand(params: Rea
   taskPath?: string;
 }>): string {
   const taskName = String(params.taskName ?? '').trim();
-  const taskPath = String(params.taskPath ?? '\\Happier\\').trim() || '\\Happier\\';
+  const taskPath = String(params.taskPath ?? WINDOWS_SCHEDULED_TASK_FOLDER_PATH).trim() || WINDOWS_SCHEDULED_TASK_FOLDER_PATH;
   return [
     '$ErrorActionPreference = "Stop"',
     `$taskPath = ${psQuoted(taskPath)}`,

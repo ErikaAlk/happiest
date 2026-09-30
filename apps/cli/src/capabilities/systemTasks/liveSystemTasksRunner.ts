@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 import { SystemTaskSpecSchema } from '@happier-dev/protocol';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import {
   createRelayRuntimeInstallOrUpdateTaskKind,
   createRelayRuntimeStartTaskKind,
@@ -40,7 +41,7 @@ function deriveBaseUrl(status: Awaited<ReturnType<typeof readLiveRelayRuntimeSta
     const url = new URL(status.health.url);
     return `${url.protocol}//${url.host}`;
   } catch {
-    return 'http://127.0.0.1:3005';
+    return `http://127.0.0.1:${productIdentity.relayDefaultPort}`;
   }
 }
 

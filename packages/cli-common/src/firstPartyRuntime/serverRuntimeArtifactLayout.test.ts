@@ -23,15 +23,15 @@ describe('server runtime artifact layout', () => {
         await mkdir(join(root, 'prisma', 'migrations'), { recursive: true });
         await mkdir(join(root, 'generated'), { recursive: true });
         await mkdir(join(root, 'node_modules'), { recursive: true });
-        await writeFile(join(root, 'happier-server'), 'server\n');
-        await writeFile(join(root, 'happier-server-migrate'), 'migrate\n');
+        await writeFile(join(root, 'happiest-server'), 'server\n');
+        await writeFile(join(root, 'happiest-server-migrate'), 'migrate\n');
         await writeFile(join(root, 'runtime', 'runner'), 'runner\n');
         await writeFile(join(root, 'prisma', 'migrations', 'migration.sql'), '-- migration\n');
 
         const relocated = await relocateServerRuntimeArtifactClosure({ payloadRoot: root, platform: 'linux' });
 
-        expect(relocated.serverBinaryPath).toBe(join(root, 'bin', 'happier-server'));
-        expect(relocated.migrationBinaryPath).toBe(join(root, 'bin', 'happier-server-migrate'));
+        expect(relocated.serverBinaryPath).toBe(join(root, 'bin', 'happiest-server'));
+        expect(relocated.migrationBinaryPath).toBe(join(root, 'bin', 'happiest-server-migrate'));
         await expect(readFile(join(root, 'bin', 'runtime', 'runner'), 'utf8')).resolves.toBe('runner\n');
         await expect(readFile(join(root, 'bin', 'prisma', 'migrations', 'migration.sql'), 'utf8'))
             .resolves.toBe('-- migration\n');
@@ -40,15 +40,15 @@ describe('server runtime artifact layout', () => {
     });
 
     it('resolves one canonical managed runtime root on every platform', () => {
-        expect(resolveManagedServerRuntimePaths({ installRoot: '/opt/happier', platform: 'linux' })).toEqual({
-            runtimeRoot: '/opt/happier/bin',
-            serverBinaryPath: '/opt/happier/bin/happier-server',
-            migrationBinaryPath: '/opt/happier/bin/happier-server-migrate',
+        expect(resolveManagedServerRuntimePaths({ installRoot: '/opt/happiest', platform: 'linux' })).toEqual({
+            runtimeRoot: '/opt/happiest/bin',
+            serverBinaryPath: '/opt/happiest/bin/happiest-server',
+            migrationBinaryPath: '/opt/happiest/bin/happiest-server-migrate',
         });
-        expect(resolveManagedServerRuntimePaths({ installRoot: 'C:\\Happier', platform: 'win32' })).toEqual({
-            runtimeRoot: join('C:\\Happier', 'bin'),
-            serverBinaryPath: join('C:\\Happier', 'bin', 'happier-server.exe'),
-            migrationBinaryPath: join('C:\\Happier', 'bin', 'happier-server-migrate.exe'),
+        expect(resolveManagedServerRuntimePaths({ installRoot: 'C:\\Happiest', platform: 'win32' })).toEqual({
+            runtimeRoot: join('C:\\Happiest', 'bin'),
+            serverBinaryPath: join('C:\\Happiest', 'bin', 'happiest-server.exe'),
+            migrationBinaryPath: join('C:\\Happiest', 'bin', 'happiest-server-migrate.exe'),
         });
     });
 });

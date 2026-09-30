@@ -6,6 +6,8 @@ import { spawnSync } from 'node:child_process';
 import { homedir, tmpdir } from 'node:os';
 import { dirname, join, win32 as win32Path } from 'node:path';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 import {
     applyServicePlan,
     buildServiceDefinition,
@@ -28,6 +30,7 @@ import {
 } from './selfHostServerEnv.js';
 import {
     relocateServerRuntimeArtifactClosure,
+    resolveServerRuntimeExecutableNames,
     resolveServerRuntimePayloadRootFromBinaryPath,
 } from './serverRuntimeArtifactLayout.js';
 
@@ -156,7 +159,7 @@ async function migrateLegacyUnsuffixedRelayRuntimeInstallRootIfNeeded(params: Re
         const serverBinaryPath = join(
             legacyInstallRoot,
             'bin',
-            params.platform === 'win32' ? 'happier-server.exe' : 'happier-server',
+            resolveServerRuntimeExecutableNames(params.platform).server,
         );
         const stdoutPath = join(legacyInstallRoot, 'logs', 'server.out.log');
         const stderrPath = join(legacyInstallRoot, 'logs', 'server.err.log');
@@ -197,7 +200,7 @@ async function migrateLegacyUnsuffixedRelayRuntimeInstallRootIfNeeded(params: Re
         const serverBinaryPath = join(
             legacyInstallRoot,
             'bin',
-            params.platform === 'win32' ? 'happier-server.exe' : 'happier-server',
+            resolveServerRuntimeExecutableNames(params.platform).server,
         );
         const legacyServiceSpec = buildRelayRuntimeServiceSpec({
             serviceName: legacyDefaults.serviceName,
@@ -222,7 +225,7 @@ async function migrateLegacyUnsuffixedRelayRuntimeInstallRootIfNeeded(params: Re
         await applyServicePlan(uninstallLegacyPlan, { runCommands: true }).catch(() => undefined);
         await rm(legacyServiceDefinition.path, { force: true }).catch(() => undefined);
     }
-    const serverBinaryName = params.platform === 'win32' ? 'happier-server.exe' : 'happier-server';
+    const serverBinaryName = resolveServerRuntimeExecutableNames(params.platform).server;
     return {
         platform: params.platform,
         migratedInstallRoot: defaults.installRoot,
@@ -632,7 +635,7 @@ async function restoreRelayRuntimeInstallState(params: Readonly<{
     }
     await rm(params.shimPath, { force: true });
     if (params.payloadBackupDir) {
-        const serverBinaryName = params.platform === 'win32' ? 'happier-server.exe' : 'happier-server';
+        const serverBinaryName = resolveServerRuntimeExecutableNames(params.platform).server;
         const sourcePath = join(params.payloadDir, 'bin', serverBinaryName);
         if (existsSync(sourcePath)) {
             await installBinaryShim({
@@ -673,7 +676,7 @@ function buildRelayRuntimeServiceSpec(params: Readonly<{
 }>): ServiceSpec {
     return {
         label: params.serviceName,
-        description: `Happier Relay Runtime (${params.serviceName})`,
+        description: `${productIdentity.productName} Relay Runtime (${params.serviceName})`,
         programArgs: [params.serverBinaryPath],
         workingDirectory: params.installRoot,
         env: params.env,
@@ -716,7 +719,7 @@ export async function installOrUpdateRelayRuntimeLocal(params: Readonly<{
         homeDir,
     });
     const serviceName = String(params.serviceNameOverride ?? '').trim() || defaults.serviceName;
-    const serverBinaryName = platform === 'win32' ? 'happier-server.exe' : 'happier-server';
+    const serverBinaryName = resolveServerRuntimeExecutableNames(platform).server;
     const installServerBinaryPath = join(defaults.installRoot, 'bin', serverBinaryName);
     const statePath = join(defaults.installRoot, 'self-host-state.json');
     const configEnvPath = join(defaults.configDir, 'server.env');

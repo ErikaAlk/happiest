@@ -2,6 +2,8 @@ import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 export type LinuxSystemUserPaths = Readonly<{
   userHomeDir: string;
   happierHomeDir: string;
@@ -63,6 +65,6 @@ export function resolveLinuxSystemUserPaths(params: Readonly<{
 
   return {
     userHomeDir,
-    happierHomeDir: happierHomeDirOverride || join(userHomeDir, '.happier'),
+    happierHomeDir: happierHomeDirOverride || join(userHomeDir, productIdentity.homeDirName),
   };
 }

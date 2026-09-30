@@ -12,6 +12,7 @@ import {
   buildServiceDefinition,
   parseWindowsScheduledTaskStatusPowerShellJson,
   planServiceAction,
+  qualifyWindowsScheduledTaskName,
   resolveServiceBackend,
   type ServiceMode,
   type ServiceSpec,
@@ -19,14 +20,17 @@ import {
 import {
   checkRelayRuntimeHealth,
   extractReleasePayloadRootFromArchive,
+  getFirstPartyComponentCatalogEntry,
   resolveConfiguredRelayRuntimeBinaryOverride,
   resolveConfiguredRelayRuntimePaths,
   resolveRelayRuntimeDefaults,
+  resolveServerRuntimeExecutableNames,
   renderPrismaCompatibleSqliteDatabaseUrl,
   resolvePrismaSqliteDatabaseUrlOptionsFromEnv,
   type RelayRuntimeHealthResult,
   type RelayRuntimeNormalizedStatus,
 } from '@happier-dev/cli-common/firstPartyRuntime';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { resolveReleaseAssetBundle } from '@happier-dev/release-runtime/assets';
 import { fetchGitHubReleaseByTag } from '@happier-dev/release-runtime/github';
 import { DEFAULT_MINISIGN_PUBLIC_KEY } from '@happier-dev/release-runtime/minisign';
@@ -164,7 +168,7 @@ function resolveRelayRuntimeConfig(params: RelayRuntimeTaskParams): RelayRuntime
   const serverHost = String(process.env.HAPPIER_SERVER_HOST ?? defaults.serverHost).trim() || defaults.serverHost;
   const serverPort = parsePort(process.env.HAPPIER_SERVER_PORT, defaults.serverPort);
   const githubRepo = resolveHappierGithubRepo();
-  const serverBinaryName = platform === 'win32' ? 'happier-server.exe' : 'happier-server';
+  const serverBinaryName = resolveServerRuntimeExecutableNames(platform).server;
 
   return {
     platform,
@@ -223,7 +227,7 @@ function renderRelayRuntimeEnv(config: RelayRuntimeConfig, existingEnvText: stri
 function buildRelayRuntimeServiceSpec(config: RelayRuntimeConfig, envText: string): ServiceSpec {
   return {
     label: config.serviceName,
-    description: `Happier Relay Runtime (${config.serviceName})`,
+    description: `${productIdentity.productName} Relay Runtime (${config.serviceName})`,
     programArgs: [config.serverBinaryPath],
     workingDirectory: config.currentPath,
     env: parseEnvText(envText),
@@ -392,7 +396,7 @@ async function readServiceStatus(config: RelayRuntimeConfig): Promise<ServiceSta
         };
       }
     }
-    const result = runCommand('schtasks', ['/Query', '/TN', `Happier\\${config.serviceName}`, '/FO', 'LIST', '/V']);
+    const result = runCommand('schtasks', ['/Query', '/TN', qualifyWindowsScheduledTaskName(config.serviceName), '/FO', 'LIST', '/V']);
     const output = result.stdout;
     return {
       backend,
@@ -417,7 +421,7 @@ async function performServiceAction(config: RelayRuntimeConfig, action: 'install
   const spec = buildRelayRuntimeServiceSpec(config, envText);
   const backend = resolveServiceBackend({ platform: config.platform, mode: config.mode });
   const definition = buildServiceDefinition({ backend, homeDir: paramsHomeDir(config), spec });
-  const taskName = backend.startsWith('schtasks') ? `Happier\\${config.serviceName}` : '';
+  const taskName = backend.startsWith('schtasks') ? qualifyWindowsScheduledTaskName(config.serviceName) : '';
   const plan = planServiceAction({
     backend,
     action,
@@ -617,7 +621,7 @@ export async function installOrUpdateRelayRuntime(params: RelayRuntimeTaskParams
       });
       const bundle = resolveReleaseAssetBundle({
         assets: (release as { assets?: unknown }).assets,
-        product: 'happier-server',
+        product: getFirstPartyComponentCatalogEntry('happier-server').releaseProductName,
         os: normalizeOs(config.platform),
         arch: normalizeArch(),
         preferZipOnWindows: true,

@@ -15,7 +15,7 @@ async function createPayload(
     rootDir: string,
     versionId: string,
     contents: string,
-    binaryName: string = 'happier',
+    binaryName: string = 'happiest',
 ): Promise<string> {
     const payloadRoot = join(rootDir, `payload-${versionId}`);
     await mkdir(join(payloadRoot, 'package-dist'), { recursive: true });
@@ -34,7 +34,7 @@ describe('installVersionedPayload default release-channel persistence', () => {
         const homeDir = await mkdtemp(join(tmpdir(), 'happier-install-cancel-before-'));
         const env = { ...process.env, HAPPIEST_HOME_DIR: homeDir };
         const layout = resolveFirstPartyInstallLayout({ componentId: 'happier-cli', processEnv: env });
-        const binaryName = process.platform === 'win32' ? 'happier.exe' : 'happier';
+        const binaryName = process.platform === 'win32' ? 'happiest.exe' : 'happiest';
         try {
             await installVersionedPayload({
                 componentId: 'happier-cli', versionId: '1.0.0', processEnv: env,
@@ -64,7 +64,7 @@ describe('installVersionedPayload default release-channel persistence', () => {
         const env = { ...process.env, HAPPIEST_HOME_DIR: homeDir };
         const layout = resolveFirstPartyInstallLayout({ componentId: 'happier-cli', channel: 'preview', processEnv: env });
         const executableSuffix = process.platform === 'win32' ? '.exe' : '';
-        const binaryName = `happier${executableSuffix}`;
+        const binaryName = `happiest${executableSuffix}`;
         try {
             await installVersionedPayload({
                 componentId: 'happier-cli', versionId: '1.0.0', processEnv: env,
@@ -85,7 +85,7 @@ describe('installVersionedPayload default release-channel persistence', () => {
             expect(phases).toEqual(['installing', 'finalizing']);
             expect(await readInstalledVersionMarkers(layout)).toEqual({ currentVersionId: '2.0.0-preview.1', previousVersionId: null });
             expect(await readFile(join(layout.currentPath, binaryName), 'utf8')).toBe('preview-version');
-            expect(await readFile(join(layout.shimDir, `hprev${executableSuffix}`), 'utf8')).toBe('preview-version');
+            expect(await readFile(join(layout.shimDir, `happiest-preview${executableSuffix}`), 'utf8')).toBe('preview-version');
             // The installed stable CLI stays the default command (D2).
             expect(await readFile(join(layout.shimDir, binaryName), 'utf8')).toBe('stable-version');
             expect(await readJsonReleaseChannel(resolveDefaultManagedReleaseChannelStatePath({ processEnv: env }))).toBe('stable');
@@ -98,7 +98,7 @@ describe('installVersionedPayload default release-channel persistence', () => {
         const homeDir = await mkdtemp(join(tmpdir(), 'happier-install-versioned-payload-channel-'));
         const env = { ...process.env, HAPPIEST_HOME_DIR: homeDir };
         const statePath = resolveDefaultManagedReleaseChannelStatePath({ processEnv: env });
-        const binaryName = process.platform === 'win32' ? 'happier.exe' : 'happier';
+        const binaryName = process.platform === 'win32' ? 'happiest.exe' : 'happiest';
         const defaultShimPath = join(homeDir, 'bin', binaryName);
 
         try {
@@ -113,7 +113,7 @@ describe('installVersionedPayload default release-channel persistence', () => {
             expect(await readJsonReleaseChannel(statePath)).toBe('preview');
             expect(await readFile(defaultShimPath, 'utf8')).toBe('preview-version');
 
-            // Acquiring stable (a stable app, a stable self-update) never repoints `happier`.
+            // Acquiring stable (a stable app, a stable self-update) never repoints `happiest`.
             await installVersionedPayload({
                 componentId: 'happier-cli',
                 versionId: '1.0.0',
@@ -187,7 +187,7 @@ describe('installVersionedPayload default release-channel persistence', () => {
             await installVersionedPayload({
                 componentId: 'happier-server',
                 versionId: '2.0.0-preview.1',
-                payloadRoot: await createPayload(homeDir, '2.0.0-preview.1', 'preview-server', 'happier-server'),
+                payloadRoot: await createPayload(homeDir, '2.0.0-preview.1', 'preview-server', 'happiest-server'),
                 processEnv: env,
                 channel: 'preview',
             });

@@ -171,7 +171,7 @@ describe('happier relay --json', () => {
 
             await commandRegistry.relay({
                 args: ['relay', 'set', 'https://api.example.test', '--json'],
-                rawArgv: ['node', 'happier', 'relay', 'set', 'https://api.example.test', '--json'],
+                rawArgv: ['node', 'happiest', 'relay', 'set', 'https://api.example.test', '--json'],
                 terminalRuntime: null,
             });
 
@@ -198,7 +198,7 @@ describe('happier relay --json', () => {
 
             await commandRegistry.relay({
                 args: ['relay', 'set', 'https://api.example.test', '--use', '--json'],
-                rawArgv: ['node', 'happier', 'relay', 'set', 'https://api.example.test', '--use', '--json'],
+                rawArgv: ['node', 'happiest', 'relay', 'set', 'https://api.example.test', '--use', '--json'],
                 terminalRuntime: null,
             });
 
@@ -224,7 +224,7 @@ describe('happier relay --json', () => {
 
             await commandRegistry.relay({
                 args: ['relay', 'inspect-target', '--json'],
-                rawArgv: ['node', 'happier', 'relay', 'inspect-target', '--json'],
+                rawArgv: ['node', 'happiest', 'relay', 'inspect-target', '--json'],
                 terminalRuntime: null,
             });
 
@@ -250,7 +250,7 @@ describe('happier relay --json', () => {
 
             await commandRegistry.relay({
                 args: ['relay', 'set', '--json'],
-                rawArgv: ['node', 'happier', 'relay', 'set', '--json'],
+                rawArgv: ['node', 'happiest', 'relay', 'set', '--json'],
                 terminalRuntime: null,
             });
 
@@ -273,7 +273,7 @@ describe('happier relay --json', () => {
 
             await commandRegistry.relay({
                 args: ['relay', 'set', 'notaurl', '--json'],
-                rawArgv: ['node', 'happier', 'relay', 'set', 'notaurl', '--json'],
+                rawArgv: ['node', 'happiest', 'relay', 'set', 'notaurl', '--json'],
                 terminalRuntime: null,
             });
 
@@ -309,7 +309,7 @@ describe('happier relay --json', () => {
                 ],
                 rawArgv: [
                     'node',
-                    'happier',
+                    'happiest',
                     'relay',
                     'set',
                     '--server-url',
@@ -361,7 +361,7 @@ describe('happier relay --json', () => {
             await withPatchedPath(fakeSsh.binDir, async () => {
                 await commandRegistry.relay({
                     args: ['relay', 'host', 'status', '--ssh', 'dev@example.test', '--json'],
-                    rawArgv: ['node', 'happier', 'relay', 'host', 'status', '--ssh', 'dev@example.test', '--json'],
+                    rawArgv: ['node', 'happiest', 'relay', 'host', 'status', '--ssh', 'dev@example.test', '--json'],
                     terminalRuntime: null,
                 });
             });
@@ -399,7 +399,7 @@ describe('happier relay --json', () => {
             await withPatchedPath(fakeSsh.binDir, async () => {
                 await commandRegistry.relay({
                     args: ['relay', 'host', 'status', '--ssh', 'dev@example.test', '--json'],
-                    rawArgv: ['node', 'happier', 'relay', 'host', 'status', '--ssh', 'dev@example.test', '--json'],
+                    rawArgv: ['node', 'happiest', 'relay', 'host', 'status', '--ssh', 'dev@example.test', '--json'],
                     terminalRuntime: null,
                 });
             });
@@ -420,10 +420,10 @@ describe('happier relay --json', () => {
 
     it('prints a JSON envelope for relay host install over ssh', async () => {
         const payloadRoot = await createTempDir('happier-first-party-payload-');
-        writeFileSync(join(payloadRoot, 'happier'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
-        chmodSync(join(payloadRoot, 'happier'), 0o755);
-        writeFileSync(join(payloadRoot, 'happier-server'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
-        chmodSync(join(payloadRoot, 'happier-server'), 0o755);
+        writeFileSync(join(payloadRoot, 'happiest'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
+        chmodSync(join(payloadRoot, 'happiest'), 0o755);
+        writeFileSync(join(payloadRoot, 'happiest-server'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
+        chmodSync(join(payloadRoot, 'happiest-server'), 0o755);
         envScope.patch({
             HAPPIER_TEST_FIRST_PARTY_PAYLOAD_ROOT: payloadRoot,
             HAPPIER_TEST_FIRST_PARTY_PAYLOAD_VERSION_ID: 'test-1',
@@ -449,7 +449,7 @@ describe('happier relay --json', () => {
             await withPatchedPath(fakeSsh.binDir, async () => {
                 await commandRegistry.relay({
                     args: ['relay', 'host', 'install', '--ssh', 'dev@example.test', '--json'],
-                    rawArgv: ['node', 'happier', 'relay', 'host', 'install', '--ssh', 'dev@example.test', '--json'],
+                    rawArgv: ['node', 'happiest', 'relay', 'host', 'install', '--ssh', 'dev@example.test', '--json'],
                     terminalRuntime: null,
                 });
             });
@@ -474,10 +474,10 @@ describe('happier relay --json', () => {
 
     it('defaults relay host install to the current CLI release lane when --channel is omitted', async () => {
         const payloadRoot = await createTempDir('happier-first-party-payload-preview-default-');
-        writeFileSync(join(payloadRoot, 'happier'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
-        chmodSync(join(payloadRoot, 'happier'), 0o755);
-        writeFileSync(join(payloadRoot, 'happier-server'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
-        chmodSync(join(payloadRoot, 'happier-server'), 0o755);
+        writeFileSync(join(payloadRoot, 'happiest'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
+        chmodSync(join(payloadRoot, 'happiest'), 0o755);
+        writeFileSync(join(payloadRoot, 'happiest-server'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
+        chmodSync(join(payloadRoot, 'happiest-server'), 0o755);
         envScope.patch({
             HAPPIER_PUBLIC_RELEASE_CHANNEL: 'preview',
             HAPPIER_TEST_FIRST_PARTY_PAYLOAD_ROOT: payloadRoot,
@@ -502,7 +502,7 @@ describe('happier relay --json', () => {
             await withPatchedPath(fakeSsh.binDir, async () => {
                 await commandRegistry.relay({
                     args: ['relay', 'host', 'install', '--ssh', 'dev@example.test', '--json'],
-                    rawArgv: ['node', 'hprev', 'relay', 'host', 'install', '--ssh', 'dev@example.test', '--json'],
+                    rawArgv: ['node', 'happiest-preview', 'relay', 'host', 'install', '--ssh', 'dev@example.test', '--json'],
                     terminalRuntime: null,
                 });
             });
@@ -535,7 +535,7 @@ describe('happier relay --json', () => {
 
             await commandRegistry.relay({
                 args: ['relay', 'host', 'install', '--server-binary', '/tmp/does-not-exist', '--env', 'PORT=43117', '--json'],
-                rawArgv: ['node', 'happier', 'relay', 'host', 'install', '--server-binary', '/tmp/does-not-exist', '--env', 'PORT=43117', '--json'],
+                rawArgv: ['node', 'happiest', 'relay', 'host', 'install', '--server-binary', '/tmp/does-not-exist', '--env', 'PORT=43117', '--json'],
                 terminalRuntime: null,
             });
 
@@ -553,8 +553,8 @@ describe('happier relay --json', () => {
 
     it('reconciles the active server profile to the installed local relay after relay host install', async () => {
         const payloadRoot = await createTempDir('happier-first-party-payload-local-profile-');
-        writeFileSync(join(payloadRoot, 'happier-server'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
-        chmodSync(join(payloadRoot, 'happier-server'), 0o755);
+        writeFileSync(join(payloadRoot, 'happiest-server'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
+        chmodSync(join(payloadRoot, 'happiest-server'), 0o755);
 
         envScope.patch({
             HAPPIER_TEST_FIRST_PARTY_PAYLOAD_ROOT: undefined,
@@ -587,8 +587,8 @@ describe('happier relay --json', () => {
         process.exitCode = undefined;
         try {
             await freshCommandRegistry.relay({
-                args: ['relay', 'host', 'install', '--server-binary', join(payloadRoot, 'happier-server'), '--json'],
-                rawArgv: ['node', 'happier', 'relay', 'host', 'install', '--server-binary', join(payloadRoot, 'happier-server'), '--json'],
+                args: ['relay', 'host', 'install', '--server-binary', join(payloadRoot, 'happiest-server'), '--json'],
+                rawArgv: ['node', 'happiest', 'relay', 'host', 'install', '--server-binary', join(payloadRoot, 'happiest-server'), '--json'],
                 terminalRuntime: null,
             });
 
@@ -608,7 +608,7 @@ describe('happier relay --json', () => {
         try {
             await freshCommandRegistry.server({
                 args: ['server', 'current', '--json'],
-                rawArgv: ['node', 'happier', 'server', 'current', '--json'],
+                rawArgv: ['node', 'happiest', 'server', 'current', '--json'],
                 terminalRuntime: null,
             });
 
@@ -629,8 +629,8 @@ describe('happier relay --json', () => {
 
     it('preserves the active server profile when relay host install uses --preserve-active-server', async () => {
         const payloadRoot = await createTempDir('happier-first-party-payload-preserve-active-profile-');
-        writeFileSync(join(payloadRoot, 'happier-server'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
-        chmodSync(join(payloadRoot, 'happier-server'), 0o755);
+        writeFileSync(join(payloadRoot, 'happiest-server'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
+        chmodSync(join(payloadRoot, 'happiest-server'), 0o755);
 
         envScope.patch({
             HAPPIER_TEST_FIRST_PARTY_PAYLOAD_ROOT: undefined,
@@ -665,8 +665,8 @@ describe('happier relay --json', () => {
         process.exitCode = undefined;
         try {
             await freshCommandRegistry.relay({
-                args: ['relay', 'host', 'install', '--server-binary', join(payloadRoot, 'happier-server'), '--preserve-active-server', '--json'],
-                rawArgv: ['node', 'happier', 'relay', 'host', 'install', '--server-binary', join(payloadRoot, 'happier-server'), '--preserve-active-server', '--json'],
+                args: ['relay', 'host', 'install', '--server-binary', join(payloadRoot, 'happiest-server'), '--preserve-active-server', '--json'],
+                rawArgv: ['node', 'happiest', 'relay', 'host', 'install', '--server-binary', join(payloadRoot, 'happiest-server'), '--preserve-active-server', '--json'],
                 terminalRuntime: null,
             });
 
@@ -694,8 +694,8 @@ describe('happier relay --json', () => {
 
     it('preserves the authenticated public relay profile when local relay install runs through a tunnel', async () => {
         const payloadRoot = await createTempDir('happier-first-party-payload-local-profile-tunnel-');
-        writeFileSync(join(payloadRoot, 'happier-server'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
-        chmodSync(join(payloadRoot, 'happier-server'), 0o755);
+        writeFileSync(join(payloadRoot, 'happiest-server'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
+        chmodSync(join(payloadRoot, 'happiest-server'), 0o755);
 
         const localRelayUrl = 'http://127.0.0.1:3005';
         const publicRelayUrl = 'http://127.0.0.1:43005';
@@ -747,8 +747,8 @@ describe('happier relay --json', () => {
         process.exitCode = undefined;
         try {
             await freshCommandRegistry.relay({
-                args: ['relay', 'host', 'install', '--server-binary', join(payloadRoot, 'happier-server'), '--json'],
-                rawArgv: ['node', 'hprev', 'relay', 'host', 'install', '--server-binary', join(payloadRoot, 'happier-server'), '--json'],
+                args: ['relay', 'host', 'install', '--server-binary', join(payloadRoot, 'happiest-server'), '--json'],
+                rawArgv: ['node', 'happiest-preview', 'relay', 'host', 'install', '--server-binary', join(payloadRoot, 'happiest-server'), '--json'],
                 terminalRuntime: null,
             });
 
@@ -775,10 +775,10 @@ describe('happier relay --json', () => {
 
     it('rejects the legacy --self-host-server-binary flag over ssh', async () => {
         const payloadRoot = await createTempDir('happier-first-party-payload-legacy-');
-        writeFileSync(join(payloadRoot, 'happier'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
-        chmodSync(join(payloadRoot, 'happier'), 0o755);
-        writeFileSync(join(payloadRoot, 'happier-server'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
-        chmodSync(join(payloadRoot, 'happier-server'), 0o755);
+        writeFileSync(join(payloadRoot, 'happiest'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
+        chmodSync(join(payloadRoot, 'happiest'), 0o755);
+        writeFileSync(join(payloadRoot, 'happiest-server'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
+        chmodSync(join(payloadRoot, 'happiest-server'), 0o755);
         envScope.patch({
             HAPPIER_TEST_FIRST_PARTY_PAYLOAD_ROOT: payloadRoot,
             HAPPIER_TEST_FIRST_PARTY_PAYLOAD_VERSION_ID: 'test-legacy-1',
@@ -804,7 +804,7 @@ describe('happier relay --json', () => {
             await withPatchedPath(fakeSsh.binDir, async () => {
                 await commandRegistry.relay({
                     args: ['relay', 'host', 'install', '--ssh', 'dev@example.test', '--self-host-server-binary', '/tmp/relay', '--json'],
-                    rawArgv: ['node', 'happier', 'relay', 'host', 'install', '--ssh', 'dev@example.test', '--self-host-server-binary', '/tmp/relay', '--json'],
+                    rawArgv: ['node', 'happiest', 'relay', 'host', 'install', '--ssh', 'dev@example.test', '--self-host-server-binary', '/tmp/relay', '--json'],
                     terminalRuntime: null,
                 });
             });
@@ -828,10 +828,10 @@ describe('happier relay --json', () => {
 
     it('accepts --env overrides for relay host install over ssh', async () => {
         const payloadRoot = await createTempDir('happier-first-party-payload-env-');
-        writeFileSync(join(payloadRoot, 'happier'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
-        chmodSync(join(payloadRoot, 'happier'), 0o755);
-        writeFileSync(join(payloadRoot, 'happier-server'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
-        chmodSync(join(payloadRoot, 'happier-server'), 0o755);
+        writeFileSync(join(payloadRoot, 'happiest'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
+        chmodSync(join(payloadRoot, 'happiest'), 0o755);
+        writeFileSync(join(payloadRoot, 'happiest-server'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
+        chmodSync(join(payloadRoot, 'happiest-server'), 0o755);
         envScope.patch({
             HAPPIER_TEST_FIRST_PARTY_PAYLOAD_ROOT: payloadRoot,
             HAPPIER_TEST_FIRST_PARTY_PAYLOAD_VERSION_ID: 'test-env-1',
@@ -857,7 +857,7 @@ describe('happier relay --json', () => {
             await withPatchedPath(fakeSsh.binDir, async () => {
                 await commandRegistry.relay({
                     args: ['relay', 'host', 'install', '--ssh', 'dev@example.test', '--env', 'HAPPIER_DB_PROVIDER=sqlite', '--json'],
-                    rawArgv: ['node', 'happier', 'relay', 'host', 'install', '--ssh', 'dev@example.test', '--env', 'HAPPIER_DB_PROVIDER=sqlite', '--json'],
+                    rawArgv: ['node', 'happiest', 'relay', 'host', 'install', '--ssh', 'dev@example.test', '--env', 'HAPPIER_DB_PROVIDER=sqlite', '--json'],
                     terminalRuntime: null,
                 });
             });
@@ -882,9 +882,9 @@ describe('happier relay --json', () => {
     it('uploads a local server-binary override payload when relay host install runs over ssh', async () => {
         const cliPayloadRoot = await createTempDir('happier-first-party-payload-cli-');
         const serverPayloadRoot = await createTempDir('happier-first-party-payload-server-');
-        const serverBinaryPath = join(serverPayloadRoot, 'happier-server');
-        writeFileSync(join(cliPayloadRoot, 'happier'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
-        chmodSync(join(cliPayloadRoot, 'happier'), 0o755);
+        const serverBinaryPath = join(serverPayloadRoot, 'happiest-server');
+        writeFileSync(join(cliPayloadRoot, 'happiest'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
+        chmodSync(join(cliPayloadRoot, 'happiest'), 0o755);
         writeFileSync(serverBinaryPath, '#!/usr/bin/env bash\necho stub\n', 'utf8');
         chmodSync(serverBinaryPath, 0o755);
         envScope.patch({
@@ -912,7 +912,7 @@ describe('happier relay --json', () => {
             await withPatchedPath(fakeSsh.binDir, async () => {
                 await commandRegistry.relay({
                     args: ['relay', 'host', 'install', '--ssh', 'dev@example.test', '--server-binary', serverBinaryPath, '--json'],
-                    rawArgv: ['node', 'happier', 'relay', 'host', 'install', '--ssh', 'dev@example.test', '--server-binary', serverBinaryPath, '--json'],
+                    rawArgv: ['node', 'happiest', 'relay', 'host', 'install', '--ssh', 'dev@example.test', '--server-binary', serverBinaryPath, '--json'],
                     terminalRuntime: null,
                 });
             });
@@ -943,10 +943,10 @@ describe('happier relay --json', () => {
         const cliPayloadRoot = await createTempDir('happier-first-party-payload-cli-');
         const serverPayloadRoot = await createTempDir('happier-first-party-payload-server-');
         const serverBinDir = join(serverPayloadRoot, 'bin');
-        const serverBinaryPath = join(serverBinDir, 'happier-server');
+        const serverBinaryPath = join(serverBinDir, 'happiest-server');
         mkdirSync(serverBinDir, { recursive: true });
-        writeFileSync(join(cliPayloadRoot, 'happier'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
-        chmodSync(join(cliPayloadRoot, 'happier'), 0o755);
+        writeFileSync(join(cliPayloadRoot, 'happiest'), '#!/usr/bin/env bash\necho stub\n', 'utf8');
+        chmodSync(join(cliPayloadRoot, 'happiest'), 0o755);
         writeFileSync(serverBinaryPath, '#!/usr/bin/env bash\necho stub\n', 'utf8');
         chmodSync(serverBinaryPath, 0o755);
         envScope.patch({
@@ -974,7 +974,7 @@ describe('happier relay --json', () => {
             await withPatchedPath(fakeSsh.binDir, async () => {
                 await commandRegistry.relay({
                     args: ['relay', 'host', 'install', '--ssh', 'dev@example.test', '--server-binary', serverBinaryPath, '--json'],
-                    rawArgv: ['node', 'happier', 'relay', 'host', 'install', '--ssh', 'dev@example.test', '--server-binary', serverBinaryPath, '--json'],
+                    rawArgv: ['node', 'happiest', 'relay', 'host', 'install', '--ssh', 'dev@example.test', '--server-binary', serverBinaryPath, '--json'],
                     terminalRuntime: null,
                 });
             });
@@ -1023,7 +1023,7 @@ describe('happier relay --json', () => {
             await withPatchedPath(fakeSsh.binDir, async () => {
                 await commandRegistry.relay({
                     args: ['relay', 'host', 'uninstall', '--ssh', 'dev@example.test', '--json'],
-                    rawArgv: ['node', 'happier', 'relay', 'host', 'uninstall', '--ssh', 'dev@example.test', '--json'],
+                    rawArgv: ['node', 'happiest', 'relay', 'host', 'uninstall', '--ssh', 'dev@example.test', '--json'],
                     terminalRuntime: null,
                 });
             });

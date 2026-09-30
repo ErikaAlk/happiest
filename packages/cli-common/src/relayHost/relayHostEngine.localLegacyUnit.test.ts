@@ -30,14 +30,14 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
           spawnSync: (cmd: string, args?: readonly string[]) => {
             if (cmd === 'systemctl' && Array.isArray(args) && args.includes('show')) {
               const unit = String(args.find((value) => value.endsWith('.service')) ?? '');
-              if (unit === 'happier-server-preview.service') {
+              if (unit === 'happiest-server-preview.service') {
                 return {
                   status: 0,
                   stdout: 'LoadState=not-found\nUnitFileState=\nActiveState=inactive\nSubState=dead\n',
                   stderr: '',
                 };
               }
-              if (unit === 'happier-server.service') {
+              if (unit === 'happiest-server.service') {
                 return {
                   status: 0,
                   stdout: 'LoadState=loaded\nActiveState=active\nSubState=running\nUnitFileState=enabled\n',
@@ -56,9 +56,9 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
           ...actual,
           existsSync: (path: string) =>
             path.includes('self-host-state.json')
-            || path.endsWith('/bin/happier-server')
+            || path.endsWith('/bin/happiest-server')
             || path.endsWith('/server.env')
-            || path.endsWith('/happier-server.service'),
+            || path.endsWith('/happiest-server.service'),
         };
       });
 
@@ -87,8 +87,8 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
             if (path.endsWith('self-host-state.json')) {
               return '{"version":"0.2.1"}\n';
             }
-            if (path.endsWith('happier-server.service')) {
-              return '[Service]\nWorkingDirectory=/tmp/happy-home/.happier/self-host-preview\n';
+            if (path.endsWith('happiest-server.service')) {
+              return '[Service]\nWorkingDirectory=/tmp/happy-home/.happiest/self-host-preview\n';
             }
             if (path.endsWith('server.env')) {
               return 'PORT=3005\nHAPPIER_SERVER_HOST=127.0.0.1\n';
@@ -104,7 +104,7 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'preview-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'preview-1' }),
       });
 
       const status = await engine.readStatus({
@@ -153,14 +153,14 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
             invoked.push([cmd, ...(Array.isArray(args) ? args : [])].join(' '));
             if (cmd === 'systemctl' && Array.isArray(args) && args.includes('show')) {
               const unit = String(args.find((value) => value.endsWith('.service')) ?? '');
-              if (unit === 'happier-server-preview.service') {
+              if (unit === 'happiest-server-preview.service') {
                 return {
                   status: 0,
                   stdout: 'LoadState=not-found\nUnitFileState=\nActiveState=inactive\nSubState=dead\n',
                   stderr: '',
                 };
               }
-              if (unit === 'happier-server.service') {
+              if (unit === 'happiest-server.service') {
                 return {
                   status: 0,
                   stdout: 'LoadState=loaded\nActiveState=active\nSubState=running\nUnitFileState=enabled\n',
@@ -179,9 +179,9 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
           ...actual,
           existsSync: (path: string) =>
             path.includes('self-host-state.json')
-            || path.endsWith('/bin/happier-server')
+            || path.endsWith('/bin/happiest-server')
             || path.endsWith('/server.env')
-            || path.endsWith('/happier-server.service'),
+            || path.endsWith('/happiest-server.service'),
         };
       });
 
@@ -210,8 +210,8 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
             if (path.endsWith('server.env')) {
               return 'PORT=3005\nHAPPIER_SERVER_HOST=127.0.0.1\n';
             }
-            if (path.endsWith('happier-server.service')) {
-              return '[Service]\nWorkingDirectory=/tmp/happy-home/.happier/self-host-preview\n';
+            if (path.endsWith('happiest-server.service')) {
+              return '[Service]\nWorkingDirectory=/tmp/happy-home/.happiest/self-host-preview\n';
             }
             return '';
           },
@@ -224,7 +224,7 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'preview-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'preview-1' }),
       });
 
       await expect(engine.control({
@@ -234,7 +234,7 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
         action: 'start',
       })).resolves.toBeUndefined();
 
-      expect(invoked.some((cmd) => cmd.includes('systemctl --user start happier-server.service'))).toBe(true);
+      expect(invoked.some((cmd) => cmd.includes('systemctl --user start happiest-server.service'))).toBe(true);
     } finally {
       Object.defineProperty(process, 'platform', { value: originalPlatform });
       globalThis.fetch = originalFetch;
@@ -271,10 +271,10 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
           spawnSync: (cmd: string, args?: readonly string[]) => {
             if (cmd === 'launchctl' && Array.isArray(args) && args[0] === 'list') {
               const label = String(args[1] ?? '');
-              if (label === 'happier-server-preview') {
+              if (label === 'happiest-server-preview') {
                 return { status: 1, stdout: '', stderr: '' };
               }
-              if (label === 'happier-server') {
+              if (label === 'happiest-server') {
                 return { status: 0, stdout: '', stderr: '' };
               }
             }
@@ -289,9 +289,9 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
           ...actual,
           existsSync: (path: string) =>
             path.includes('self-host-state.json')
-            || path.endsWith('/bin/happier-server')
+            || path.endsWith('/bin/happiest-server')
             || path.endsWith('/server.env')
-            || path.endsWith('/Library/LaunchAgents/happier-server.plist'),
+            || path.endsWith('/Library/LaunchAgents/happiest-server.plist'),
         };
       });
 
@@ -320,14 +320,14 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
             if (path.endsWith('self-host-state.json')) {
               return '{"version":"0.2.1"}\n';
             }
-            if (path.endsWith('happier-server.plist')) {
+            if (path.endsWith('happiest-server.plist')) {
               return `<?xml version="1.0" encoding="UTF-8"?>
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>happier-server</string>
+    <string>happiest-server</string>
     <key>WorkingDirectory</key>
-    <string>/tmp/happy-home/.happier/self-host-preview</string>
+    <string>/tmp/happy-home/.happiest/self-host-preview</string>
   </dict>
 </plist>
 `;
@@ -346,7 +346,7 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'darwin', arch: 'arm64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'preview-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'preview-1' }),
       });
 
       const status = await engine.readStatus({
@@ -395,10 +395,10 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
             invoked.push([cmd, ...(Array.isArray(args) ? args : [])].join(' '));
             if (cmd === 'launchctl' && Array.isArray(args) && args[0] === 'list') {
               const label = String(args[1] ?? '');
-              if (label === 'happier-server-preview') {
+              if (label === 'happiest-server-preview') {
                 return { status: 1, stdout: '', stderr: '' };
               }
-              if (label === 'happier-server') {
+              if (label === 'happiest-server') {
                 return { status: 0, stdout: '', stderr: '' };
               }
             }
@@ -413,7 +413,7 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
           ...actual,
           existsSync: (path: string) =>
             path.endsWith('/server.env')
-            || path.endsWith('/Library/LaunchAgents/happier-server.plist'),
+            || path.endsWith('/Library/LaunchAgents/happiest-server.plist'),
         };
       });
 
@@ -442,14 +442,14 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
             if (path.endsWith('server.env')) {
               return 'PORT=3005\nHAPPIER_SERVER_HOST=127.0.0.1\n';
             }
-            if (path.endsWith('happier-server.plist')) {
+            if (path.endsWith('happiest-server.plist')) {
               return `<?xml version="1.0" encoding="UTF-8"?>
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>happier-server</string>
+    <string>happiest-server</string>
     <key>WorkingDirectory</key>
-    <string>/tmp/happy-home/.happier/self-host-preview</string>
+    <string>/tmp/happy-home/.happiest/self-host-preview</string>
   </dict>
 </plist>
 `;
@@ -465,7 +465,7 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'darwin', arch: 'arm64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'preview-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'preview-1' }),
       });
 
       await expect(engine.control({
@@ -475,13 +475,13 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
         action: 'start',
       })).resolves.toBeUndefined();
 
-      expect(invoked.some((cmd) => cmd.includes('launchctl bootstrap gui/') && cmd.includes('happier-server.plist'))).toBe(true);
-      expect(invoked.some((cmd) => cmd.includes('gui/') && cmd.includes('/happier-server'))).toBe(true);
+      expect(invoked.some((cmd) => cmd.includes('launchctl bootstrap gui/') && cmd.includes('happiest-server.plist'))).toBe(true);
+      expect(invoked.some((cmd) => cmd.includes('gui/') && cmd.includes('/happiest-server'))).toBe(true);
       expect(
         invoked.some(
           (cmd) =>
             (cmd.includes('launchctl bootstrap') || cmd.includes('launchctl kickstart'))
-            && cmd.includes('happier-server-preview'),
+            && cmd.includes('happiest-server-preview'),
         ),
       ).toBe(false);
     } finally {
@@ -513,10 +513,10 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
           spawnSync: (cmd: string, args?: readonly string[]) => {
             if (cmd === 'schtasks' && Array.isArray(args) && args[0] === '/Query') {
               const taskName = String(args[args.indexOf('/TN') + 1] ?? '');
-              if (taskName === 'Happier\\happier-server-preview') {
+              if (taskName === 'Happiest\\happiest-server-preview') {
                 return { status: 1, stdout: '', stderr: 'ERROR: The system cannot find the file specified.\r\n' };
               }
-              if (taskName === 'Happier\\happier-server') {
+              if (taskName === 'Happiest\\happiest-server') {
                 return { status: 0, stdout: 'Status: Ready\r\nScheduled Task State: Enabled\r\n', stderr: '' };
               }
             }
@@ -524,14 +524,14 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
               const commandText = String(args[args.indexOf('-Command') + 1] ?? '');
               const taskNameMatch = commandText.match(/\$taskName = "([^"]+)"/u);
               const taskName = taskNameMatch?.[1] ?? '';
-              if (taskName === 'happier-server-preview') {
+              if (taskName === 'happiest-server-preview') {
                 return {
                   status: 0,
                   stdout: '{"exists":false,"enabled":false,"active":false,"stateLabel":"not_installed"}\n',
                   stderr: '',
                 };
               }
-              if (taskName === 'happier-server') {
+              if (taskName === 'happiest-server') {
                 return {
                   status: 0,
                   stdout: '{"exists":true,"enabled":true,"active":false,"stateLabel":"Ready"}\n',
@@ -550,9 +550,9 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
           ...actual,
           existsSync: (path: string) =>
             path.includes('self-host-state.json')
-            || path.endsWith('\\bin\\happier-server.exe')
+            || path.endsWith('\\bin\\happiest-server.exe')
             || path.endsWith('\\server.env')
-            || path.endsWith('\\.happier\\services\\happier-server.ps1'),
+            || path.endsWith('\\.happiest\\services\\happiest-server.ps1'),
         };
       });
 
@@ -564,8 +564,8 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
             if (path.endsWith('self-host-state.json')) {
               return '{"version":"0.2.1"}\n';
             }
-            if (path.endsWith('happier-server.ps1')) {
-              return '$ErrorActionPreference = "Stop"\nSet-Location -LiteralPath "C:\\Users\\tester\\.happier\\self-host-preview"\n';
+            if (path.endsWith('happiest-server.ps1')) {
+              return '$ErrorActionPreference = "Stop"\nSet-Location -LiteralPath "C:\\Users\\tester\\.happiest\\self-host-preview"\n';
             }
             if (path.endsWith('server.env')) {
               return 'PORT=3005\r\nHAPPIER_SERVER_HOST=127.0.0.1\r\n';
@@ -581,7 +581,7 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '%USERPROFILE%\\.happier\\self-host\\current\\happier-server.exe', versionId: 'preview-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '%USERPROFILE%\\.happiest\\self-host\\current\\happiest-server.exe', versionId: 'preview-1' }),
       });
 
       const status = await engine.readStatus({
@@ -629,10 +629,10 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
             invoked.push([cmd, ...(Array.isArray(args) ? args : [])].join(' '));
             if (cmd === 'schtasks' && Array.isArray(args) && args[0] === '/Query') {
               const taskName = String(args[args.indexOf('/TN') + 1] ?? '');
-              if (taskName === 'Happier\\happier-server-preview') {
+              if (taskName === 'Happiest\\happiest-server-preview') {
                 return { status: 1, stdout: '', stderr: 'ERROR: The system cannot find the file specified.\r\n' };
               }
-              if (taskName === 'Happier\\happier-server') {
+              if (taskName === 'Happiest\\happiest-server') {
                 return { status: 0, stdout: 'Status: Running\r\nScheduled Task State: Enabled\r\n', stderr: '' };
               }
             }
@@ -640,14 +640,14 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
               const commandText = String(args[args.indexOf('-Command') + 1] ?? '');
               const taskNameMatch = commandText.match(/\$taskName = "([^"]+)"/u);
               const taskName = taskNameMatch?.[1] ?? '';
-              if (taskName === 'happier-server-preview') {
+              if (taskName === 'happiest-server-preview') {
                 return {
                   status: 0,
                   stdout: '{"exists":false,"enabled":false,"active":false,"stateLabel":"not_installed"}\n',
                   stderr: '',
                 };
               }
-              if (taskName === 'happier-server') {
+              if (taskName === 'happiest-server') {
                 return {
                   status: 0,
                   stdout: '{"exists":true,"enabled":true,"active":true,"stateLabel":"Running"}\n',
@@ -666,7 +666,7 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
           ...actual,
           existsSync: (path: string) =>
             path.endsWith('\\server.env')
-            || path.endsWith('\\.happier\\services\\happier-server.ps1'),
+            || path.endsWith('\\.happiest\\services\\happiest-server.ps1'),
         };
       });
 
@@ -692,8 +692,8 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
         return {
           ...actual,
           readFile: async (path: string) => {
-            if (path.endsWith('happier-server.ps1')) {
-              return '$ErrorActionPreference = "Stop"\nSet-Location -LiteralPath "C:\\Users\\tester\\.happier\\self-host-preview"\n';
+            if (path.endsWith('happiest-server.ps1')) {
+              return '$ErrorActionPreference = "Stop"\nSet-Location -LiteralPath "C:\\Users\\tester\\.happiest\\self-host-preview"\n';
             }
             if (path.endsWith('server.env')) {
               return 'PORT=3005\r\nHAPPIER_SERVER_HOST=127.0.0.1\r\n';
@@ -709,7 +709,7 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '%USERPROFILE%\\.happier\\self-host\\current\\happier-server.exe', versionId: 'preview-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '%USERPROFILE%\\.happiest\\self-host\\current\\happiest-server.exe', versionId: 'preview-1' }),
       });
 
       await expect(engine.control({
@@ -719,8 +719,8 @@ describe('RelayHostEngine (local legacy service name compatibility)', () => {
         action: 'start',
       })).resolves.toBeUndefined();
 
-      expect(invoked.some((cmd) => cmd.includes('schtasks /Run /TN Happier\\happier-server'))).toBe(true);
-      expect(invoked.some((cmd) => cmd.includes('schtasks /Run /TN Happier\\happier-server-preview'))).toBe(false);
+      expect(invoked.some((cmd) => cmd.includes('schtasks /Run /TN Happiest\\happiest-server'))).toBe(true);
+      expect(invoked.some((cmd) => cmd.includes('schtasks /Run /TN Happiest\\happiest-server-preview'))).toBe(false);
     } finally {
       Object.defineProperty(process, 'platform', { value: originalPlatform });
       globalThis.fetch = originalFetch;

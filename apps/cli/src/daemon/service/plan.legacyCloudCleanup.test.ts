@@ -29,7 +29,7 @@ describe('daemon service plan legacy cloud cleanup', () => {
           command.cmd === 'systemctl' &&
           command.args.includes('disable') &&
           command.args.includes('--now') &&
-          command.args.includes('happier-daemon.service'),
+          command.args.includes('happiest-daemon.service'),
       ),
     ).toBe(true);
   });
@@ -47,7 +47,7 @@ describe('daemon service plan legacy cloud cleanup', () => {
           command.cmd === 'systemctl' &&
           command.args.includes('disable') &&
           command.args.includes('--now') &&
-          command.args.includes('happier-daemon.service'),
+          command.args.includes('happiest-daemon.service'),
       ),
     ).toBe(true);
   });

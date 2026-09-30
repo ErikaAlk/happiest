@@ -57,7 +57,7 @@ describe('RelayHostEngine (local health control)', () => {
         const actual = await vi.importActual<typeof import('node:fs')>('node:fs');
         return {
           ...actual,
-          existsSync: (path: string) => path.includes('self-host-state.json') || path.endsWith('\\bin\\happier-server.exe') || path.endsWith('\\server.env'),
+          existsSync: (path: string) => path.includes('self-host-state.json') || path.endsWith('\\bin\\happiest-server.exe') || path.endsWith('\\server.env'),
         };
       });
 
@@ -100,7 +100,7 @@ describe('RelayHostEngine (local health control)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '%USERPROFILE%\\.happier\\self-host\\current\\happier-server.exe', versionId: 'publicdev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '%USERPROFILE%\\.happiest\\self-host\\current\\happiest-server.exe', versionId: 'publicdev-1' }),
       });
 
       const status = await engine.readStatus({
@@ -164,7 +164,7 @@ describe('RelayHostEngine (local health control)', () => {
         const actual = await vi.importActual<typeof import('node:fs')>('node:fs');
         return {
           ...actual,
-          existsSync: (path: string) => path.includes('self-host-state.json') || path.endsWith('/bin/happier-server') || path.endsWith('/server.env'),
+          existsSync: (path: string) => path.includes('self-host-state.json') || path.endsWith('/bin/happiest-server') || path.endsWith('/server.env'),
         };
       });
 
@@ -207,7 +207,7 @@ describe('RelayHostEngine (local health control)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
       });
 
       const status = await engine.readStatus({
@@ -307,7 +307,7 @@ describe('RelayHostEngine (local health control)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
       });
 
       await expect(engine.control({
@@ -403,7 +403,7 @@ describe('RelayHostEngine (local health control)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
       });
 
       const controlPromise = engine.control({
@@ -506,7 +506,7 @@ describe('RelayHostEngine (local health control)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
       });
 
       const controlPromise = engine.control({
@@ -598,7 +598,7 @@ describe('RelayHostEngine (local health control)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
       });
 
       await expect(engine.control({
@@ -652,7 +652,7 @@ describe('RelayHostEngine (local health control)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
       });
 
       await expect(engine.control({

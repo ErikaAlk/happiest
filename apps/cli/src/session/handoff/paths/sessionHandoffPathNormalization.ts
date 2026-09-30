@@ -1,5 +1,10 @@
 import { join } from 'node:path';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
+const PRODUCT_HOME_SUFFIX = `/${productIdentity.homeDirName}`;
+const PRODUCT_HOME_MARKER = `${PRODUCT_HOME_SUFFIX}/`;
+
 function trimTrailingSeparators(path: string): string {
     return path.trim().replace(/[\\/]+$/, '');
 }
@@ -35,8 +40,7 @@ export function resolveSessionHandoffLocalHomeDir(params: Readonly<{
     const fallbackHomeDir = trimTrailingSeparators(params.fallbackHomeDir);
     const normalizedActiveServerDir = activeServerDir.replace(/\\/g, '/');
 
-    const marker = '/.happier/';
-    const markerIndex = normalizedActiveServerDir.indexOf(marker);
+    const markerIndex = normalizedActiveServerDir.indexOf(PRODUCT_HOME_MARKER);
     if (markerIndex > 0) {
         return activeServerDir.slice(0, markerIndex);
     }
@@ -44,8 +48,8 @@ export function resolveSessionHandoffLocalHomeDir(params: Readonly<{
         return fallbackHomeDir;
     }
 
-    if (normalizedActiveServerDir.endsWith('/.happier')) {
-        const prefix = activeServerDir.slice(0, -'/.happier'.length);
+    if (normalizedActiveServerDir.endsWith(PRODUCT_HOME_SUFFIX)) {
+        const prefix = activeServerDir.slice(0, -PRODUCT_HOME_SUFFIX.length);
         return prefix || fallbackHomeDir;
     }
 
@@ -93,17 +97,17 @@ export function normalizeSessionHandoffTargetPathForLocalMachine(params: Readonl
         return expanded;
     }
 
-    // Handoff commonly uses app-owned `~/.happier/**` roots. When the request carries an absolute path
-    // from another machine (macOS `/Users/...` vs Linux `/home/...`), rebase that `/.happier/` suffix
-    // onto the local home dir so the target machine always uses a machine-local writable root.
-    const marker = '/.happier/';
-    const markerIndex = normalizedExpanded.indexOf(marker);
+    // Handoff commonly uses app-owned roots under the product home (`~/.happiest/**`). When the request
+    // carries an absolute path from another machine (macOS `/Users/...` vs Linux `/home/...`), rebase
+    // that product-home suffix onto the local home dir so the target machine always uses a
+    // machine-local writable root.
+    const markerIndex = normalizedExpanded.indexOf(PRODUCT_HOME_MARKER);
     if (markerIndex >= 0) {
-        const remainder = normalizedExpanded.slice(markerIndex + marker.length);
-        return join(homeDir, '.happier', remainder);
+        const remainder = normalizedExpanded.slice(markerIndex + PRODUCT_HOME_MARKER.length);
+        return join(homeDir, productIdentity.homeDirName, remainder);
     }
-    if (normalizedExpanded.endsWith('/.happier')) {
-        return join(homeDir, '.happier');
+    if (normalizedExpanded.endsWith(PRODUCT_HOME_SUFFIX)) {
+        return join(homeDir, productIdentity.homeDirName);
     }
 
     // General cross-machine normalization: when a caller passes a macOS/Linux home-rooted path

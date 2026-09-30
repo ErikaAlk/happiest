@@ -92,15 +92,38 @@ async function pickEphemeralPort(): Promise<number | null> {
 }
 
 /**
+ * Whether the relay could listen on `port` at its loopback host right now. A port another program
+ * holds (for example an upstream Happier relay, which writes no server.env this product reads) is
+ * not free.
+ */
+async function isLoopbackPortFree(port: number): Promise<boolean> {
+  return await new Promise((resolve, reject) => {
+    const server = createServer();
+    server.once('error', (error: NodeJS.ErrnoException) => {
+      if (error.code === 'EADDRINUSE' || error.code === 'EACCES') {
+        resolve(false);
+        return;
+      }
+      reject(error);
+    });
+    server.listen(port, '127.0.0.1', () => {
+      server.close(() => resolve(true));
+    });
+  });
+}
+
+/**
  * Resolve a relay port that does not collide with any other channel's
  * installed relay on this machine.
  *
  * Policy:
  *  - If `configuredPort` (from existing server.env or an override) is set
- *    and doesn't collide, honor it.
+ *    and doesn't collide, honor it. The channel's own installed relay may be
+ *    listening on it during an update, so it is not probed.
  *  - If `configuredPort` collides, fall back to an ephemeral port that
  *    also doesn't collide.
- *  - If `configuredPort` isn't set, prefer the `defaultPort` when free.
+ *  - If `configuredPort` isn't set, prefer the `defaultPort` when no sibling
+ *    uses it and no process listens on it.
  *  - If nothing works within `MAX_EPHEMERAL_ATTEMPTS` rebinds, throw.
  */
 export async function resolveNonCollidingRelayPort(params: Readonly<{
@@ -112,10 +135,13 @@ export async function resolveNonCollidingRelayPort(params: Readonly<{
   configuredPort: number | null;
 }>): Promise<number> {
   const siblings = await readSiblingRelayPorts(params);
-  const preferred = params.configuredPort ?? params.defaultPort;
 
-  if (!siblings.has(preferred)) {
-    return preferred;
+  if (params.configuredPort !== null) {
+    if (!siblings.has(params.configuredPort)) {
+      return params.configuredPort;
+    }
+  } else if (!siblings.has(params.defaultPort) && await isLoopbackPortFree(params.defaultPort)) {
+    return params.defaultPort;
   }
 
   for (let attempt = 0; attempt < MAX_EPHEMERAL_ATTEMPTS; attempt += 1) {
@@ -125,7 +151,7 @@ export async function resolveNonCollidingRelayPort(params: Readonly<{
   }
 
   throw new Error(
-    `Unable to pick a relay port that doesn't collide with another installed relay on this machine `
+    `Unable to pick a relay port that is free and doesn't collide with another installed relay on this machine `
     + `(siblings: ${[...siblings].join(', ')}). Pass --env PORT=<free-port> to choose one explicitly.`,
   );
 }

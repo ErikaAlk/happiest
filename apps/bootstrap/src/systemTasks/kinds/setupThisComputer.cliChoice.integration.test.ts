@@ -88,8 +88,8 @@ async function createComputer(options: Readonly<{ brokenNpmCli?: boolean }> = {}
   const payloadRoot = join(root, 'payload');
   await mkdir(join(payloadRoot, 'package-dist'), { recursive: true });
   await writeFile(join(payloadRoot, 'package-dist', 'index.mjs'), 'export {};\n');
-  const managedShim = join(home, '.happier', 'bin', 'happier');
-  await writeFile(join(payloadRoot, 'happier'), fakeCliScript({
+  const managedShim = join(home, '.happiest', 'bin', 'happiest');
+  await writeFile(join(payloadRoot, 'happiest'), fakeCliScript({
     version: MANAGED_VERSION,
     logPath,
     dryRun: {
@@ -104,7 +104,7 @@ async function createComputer(options: Readonly<{ brokenNpmCli?: boolean }> = {}
       },
     },
   }));
-  await chmod(join(payloadRoot, 'happier'), 0o755);
+  await chmod(join(payloadRoot, 'happiest'), 0o755);
 
   for (const name of ['HAPPIEST_HOME_DIR', 'HAPPIEST_BOOTSTRAP_CLI_PATH', 'HAPPIER_BOOTSTRAP_HAPPIER_PATH', 'HAPPIEST_ACTIVE_SERVER_ID', 'HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID', 'HAPPIER_NO_PATH_UPDATE']) {
     vi.stubEnv(name, undefined);
@@ -168,7 +168,7 @@ describe.skipIf(process.platform === 'win32')('one CLI per computer, composed (R
     expect(prompts).toEqual([SETUP_CLI_CHOICE_PROMPT_KIND]);
     expect(result).toMatchObject({ cliProvenance: 'override', cliVersion: NPM_VERSION });
     expect(computer.preparePayload).not.toHaveBeenCalled();
-    expect(existsSync(join(computer.home, '.happier', 'cli'))).toBe(false);
+    expect(existsSync(join(computer.home, '.happiest', 'cli'))).toBe(false);
     expect(existsSync(join(computer.home, '.bashrc'))).toBe(false);
     expect(existsSync(join(computer.home, '.profile'))).toBe(false);
 
@@ -196,7 +196,7 @@ describe.skipIf(process.platform === 'win32')('one CLI per computer, composed (R
     expect(managedCommands).toContain('daemon service install --yes --replace-existing=all --json');
 
     // The PATH line lands even though the npm CLI resolves, and a new terminal then runs ours first.
-    const binDir = join(computer.home, '.happier', 'bin');
+    const binDir = join(computer.home, '.happiest', 'bin');
     await vi.waitFor(async () => {
       expect(await readFile(join(computer.home, '.bashrc'), 'utf8')).toContain(`export PATH="${binDir}:$PATH"`);
     });
@@ -243,8 +243,8 @@ describe.skipIf(process.platform === 'win32')('one CLI per computer, composed (R
     expect(prompts).toEqual([SETUP_CLI_CHOICE_PROMPT_KIND]);
     expect(computer.preparePayload).toHaveBeenCalledWith(expect.objectContaining({ channel: 'stable' }));
     expect(result).toMatchObject({ cliProvenance: 'managed', cliVersion: MANAGED_VERSION });
-    expect(existsSync(join(computer.home, '.happier', 'cli', 'current.version'))).toBe(true);
-    expect(existsSync(join(computer.home, '.happier', 'cli-preview'))).toBe(false);
+    expect(existsSync(join(computer.home, '.happiest', 'cli', 'current.version'))).toBe(true);
+    expect(existsSync(join(computer.home, '.happiest', 'cli-preview'))).toBe(false);
   });
 
   it('a kept CLI that disappeared is asked about before anything stands in for it: "own" names reinstalling, "manage" goes on (R13)', async () => {

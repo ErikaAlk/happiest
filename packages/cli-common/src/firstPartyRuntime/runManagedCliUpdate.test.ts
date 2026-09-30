@@ -30,7 +30,7 @@ async function withPlatform<T>(platform: NodeJS.Platform, run: () => Promise<T>)
 }
 
 function binaryName(): string {
-  return process.platform === 'win32' ? 'happier.exe' : 'happier';
+  return process.platform === 'win32' ? 'happiest.exe' : 'happiest';
 }
 
 async function createPayload(rootDir: string, versionId: string): Promise<string> {
@@ -264,7 +264,7 @@ describe('runManagedCliUpdate — the one CLI update transaction', () => {
     expect(previewOutcome).toMatchObject({ code: 'FIRST_PARTY_PAYLOAD_MUTATION_IN_PROGRESS' });
     expect(result).toMatchObject({ outcome: 'rolledBack', previousVersion: '1.0.0' });
     expect(await readFile(join(layout.shimDir, binaryName()), 'utf8')).toBe('binary-1.0.0');
-    expect(await readFile(join(layout.shimDir, process.platform === 'win32' ? 'hprev.exe' : 'hprev'), 'utf8')).toBe('binary-1.0.0-preview.1');
+    expect(await readFile(join(layout.shimDir, process.platform === 'win32' ? 'happiest-preview.exe' : 'happiest-preview'), 'utf8')).toBe('binary-1.0.0-preview.1');
   });
 
   it('recovers first and records the outcome only after the previous version is proven, even when records cannot be written', async () => {

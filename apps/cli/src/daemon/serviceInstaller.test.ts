@@ -23,7 +23,7 @@ describe('daemon service installer', () => {
         runCommands: false,
       });
 
-      expect(existsSync(join(userHomeDir, '.config', 'systemd', 'user', 'happier-daemon.cloud.service'))).toBe(true);
+      expect(existsSync(join(userHomeDir, '.config', 'systemd', 'user', 'happiest-daemon.cloud.service'))).toBe(true);
 
       await uninstallDaemonService({
         platform: 'linux',
@@ -34,14 +34,14 @@ describe('daemon service installer', () => {
         runCommands: false,
       });
 
-      expect(existsSync(join(userHomeDir, '.config', 'systemd', 'user', 'happier-daemon.cloud.service'))).toBe(false);
+      expect(existsSync(join(userHomeDir, '.config', 'systemd', 'user', 'happiest-daemon.cloud.service'))).toBe(false);
     });
   });
 
   it('installs and uninstalls a darwin LaunchAgent (no launchctl)', async () => {
     await withTempDir('happier-service-installer-home-', async (userHomeDir) => {
       const happierHomeDir = join(userHomeDir, '.happier');
-      const plistPath = join(userHomeDir, 'Library', 'LaunchAgents', 'com.happier.cli.daemon.cloud.plist');
+      const plistPath = join(userHomeDir, 'Library', 'LaunchAgents', 'com.happiest.cli.daemon.cloud.plist');
       await installDaemonService({
         platform: 'darwin',
         uid: 501,
@@ -136,7 +136,7 @@ describe('daemon service installer', () => {
           runCommands: false,
         });
 
-        const unitPath = join(userHomeDir, '.config', 'systemd', 'user', 'happier-daemon.company.service');
+        const unitPath = join(userHomeDir, '.config', 'systemd', 'user', 'happiest-daemon.company.service');
         expect(existsSync(unitPath)).toBe(true);
         const raw = await (await import('node:fs/promises')).readFile(unitPath, 'utf-8');
         expect(raw).toContain('Environment=HAPPIEST_ACTIVE_SERVER_ID=company');

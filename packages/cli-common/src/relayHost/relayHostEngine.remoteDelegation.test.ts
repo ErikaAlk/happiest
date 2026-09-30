@@ -11,7 +11,7 @@ describe('RelayHostEngine remote installation ownership', () => {
       copyLocalDirectoryToRemote: async () => {},
       installRemoteComponent: async ({ componentId }) => {
         installedComponents.push(componentId);
-        return { binaryPath: '$HOME/.happier/cli-dev/current/happier', versionId: 'cli-dev-1' };
+        return { binaryPath: '$HOME/.happiest/cli-dev/current/happiest', versionId: 'cli-dev-1' };
       },
       runRemoteText: async ({ remoteCommand }) => {
         commands.push(remoteCommand);
@@ -58,8 +58,8 @@ describe('RelayHostEngine remote installation ownership', () => {
         installations.push({ componentId, ...(localBinaryPath ? { localBinaryPath } : {}) });
         return {
           binaryPath: componentId === 'happier-cli'
-            ? '$HOME/.happier/cli-preview/current/happier'
-            : '$HOME/.happier/happier-server/preview/current/bin/happier-server',
+            ? '$HOME/.happiest/cli-preview/current/happiest'
+            : '$HOME/.happiest/happiest-server/preview/current/bin/happiest-server',
           versionId: 'preview-1',
         };
       },
@@ -88,7 +88,7 @@ describe('RelayHostEngine remote installation ownership', () => {
       target: { kind: 'ssh', ssh: { target: 'dev@example.test', auth: 'agent' } },
       channel: 'preview',
       mode: 'system',
-      selfHostRelayBinaryOverride: '/tmp/local/happier-server',
+      selfHostRelayBinaryOverride: '/tmp/local/happiest-server',
       env: {
         PORT: '3999',
         HAPPIER_DB_PROVIDER: 'postgres',
@@ -98,15 +98,15 @@ describe('RelayHostEngine remote installation ownership', () => {
 
     expect(installations).toEqual([
       { componentId: 'happier-cli' },
-      { componentId: 'happier-server', localBinaryPath: '/tmp/local/happier-server' },
+      { componentId: 'happier-server', localBinaryPath: '/tmp/local/happiest-server' },
     ]);
-    expect(installCommand).toContain(`--self-host-server-binary "$HOME"/'.happier/happier-server/preview/current/bin/happier-server'`);
+    expect(installCommand).toContain(`--self-host-server-binary "$HOME"/'.happiest/happiest-server/preview/current/bin/happiest-server'`);
     expect(installCommand).not.toContain('--server-binary');
     expect(installCommand).toContain('--mode system');
     expect(installCommand).toMatch(/^sudo -n /u);
     expect(installCommand).toContain('--env \'HAPPIER_DB_PROVIDER=postgres\'');
     expect(installCommand).toContain('--env \'DATABASE_URL=postgresql://happier:secret@postgres/happier\'');
-    expect(commands.some((command) => command.includes('happier-server-migrate'))).toBe(false);
+    expect(commands.some((command) => command.includes('happiest-server-migrate'))).toBe(false);
   });
 
   it('surfaces the canonical remote installer error instead of interpreting partial output', async () => {
@@ -114,7 +114,7 @@ describe('RelayHostEngine remote installation ownership', () => {
       resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
       copyLocalDirectoryToRemote: async () => {},
       installRemoteComponent: async () => ({
-        binaryPath: '$HOME/.happier/cli/current/happier',
+        binaryPath: '$HOME/.happiest/cli/current/happiest',
         versionId: 'stable-1',
       }),
       runRemoteText: async () => ({
@@ -166,7 +166,7 @@ describe('RelayHostEngine remote installation ownership', () => {
     })).resolves.toBeUndefined();
 
     expect(commands).toHaveLength(1);
-    expect(commands[0]).toContain('$HOME/.happier/cli-preview/current/happier relay host uninstall');
+    expect(commands[0]).toContain('$HOME/.happiest/cli-preview/current/happiest relay host uninstall');
     expect(commands[0]).toContain('--channel \'preview\'');
     expect(commands[0]).toContain('--mode system');
     expect(commands[0]).toContain('--yes');

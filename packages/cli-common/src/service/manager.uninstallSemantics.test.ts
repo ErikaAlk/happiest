@@ -145,6 +145,6 @@ describe('resolveServiceDefinitionPath', () => {
     expect(resolveServiceDefinitionPath({ platform: 'linux', mode: 'system', homeDir: '/home/alice', label: 'dev.happier.stack.exp' }))
       .toBe('/etc/systemd/system/dev.happier.stack.exp.service');
     expect(resolveServiceDefinitionPath({ platform: 'win32', mode: 'user', homeDir: 'C:\\Users\\alice', label: 'dev.happier.stack.exp' }))
-      .toBe('C:\\Users\\alice\\.happier\\services\\dev.happier.stack.exp.ps1');
+      .toBe('C:\\Users\\alice\\.happiest\\services\\dev.happier.stack.exp.ps1');
   });
 });

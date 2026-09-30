@@ -30,8 +30,8 @@ describe('resolveDaemonServiceListEntries', () => {
     await withTempDir('happier-daemon-service-list-managed-default-shim-', async (userHomeDir) => {
       const happierHomeDir = join(userHomeDir, '.happier');
       const managedBinDir = join(happierHomeDir, 'bin');
-      const defaultShimPath = join(managedBinDir, 'happier');
-      const previewShimPath = join(managedBinDir, 'hprev');
+      const defaultShimPath = join(managedBinDir, 'happiest');
+      const previewShimPath = join(managedBinDir, 'happiest-preview');
       mkdirSync(managedBinDir, { recursive: true });
       writeFileSync(defaultShimPath, '#!/bin/sh\n', 'utf8');
       writeFileSync(previewShimPath, '#!/bin/sh\n', 'utf8');
@@ -147,7 +147,7 @@ describe('resolveDaemonServiceListEntries', () => {
 
       const expectedServicePath = plannedFile?.path ?? '';
       const expectedServiceContents = plannedFile?.content ?? '';
-      expect(expectedServicePath).toMatch(/happier-daemon\.default\.service$/u);
+      expect(expectedServicePath).toMatch(/happiest-daemon\.default\.service$/u);
 
       const installedServiceContents = expectedServiceContents
         .replaceAll(/^ManagedOOMPreference=.*\n/gmu, '');
@@ -165,7 +165,7 @@ describe('resolveDaemonServiceListEntries', () => {
     await withTempDir('happier-daemon-service-list-windows-wrapper-missing-', async (hostHomeDir) => {
       const userHomeDir = 'C:\\Users\\tester';
       const happierHomeDir = 'C:\\Users\\tester\\.happier';
-      const expectedWrapperPath = 'C:\\Users\\tester\\.happier\\services\\happier-daemon.default.ps1';
+      const expectedWrapperPath = 'C:\\Users\\tester\\.happier\\services\\happiest-daemon.default.ps1';
 
       envScope.patch({
         HAPPIEST_HOME_DIR: join(hostHomeDir, '.happier'),
@@ -189,7 +189,7 @@ describe('resolveDaemonServiceListEntries', () => {
             mode: 'user',
             happierHomeDir,
             releaseChannel: 'preview',
-            label: 'Happier\\happier-daemon.default',
+            label: 'Happiest\\happiest-daemon.default',
             targetMode: 'default-following',
           }],
         };

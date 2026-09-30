@@ -57,7 +57,7 @@ describe('happier relay host status warnings', () => {
 
             await commandRegistry.relay({
                 args: ['relay', 'host', 'status', '--json'],
-                rawArgv: ['node', 'hprev', 'relay', 'host', 'status', '--json'],
+                rawArgv: ['node', 'happiest-preview', 'relay', 'host', 'status', '--json'],
                 terminalRuntime: null,
             });
 

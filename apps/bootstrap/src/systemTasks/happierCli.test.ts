@@ -33,8 +33,8 @@ function writeInstalledPayloadFixture(params: Readonly<{
   const currentPath = join(installRoot, 'current');
   for (const dir of [versionPath, currentPath]) {
     mkdirSync(dir, { recursive: true });
-    writeFileSync(join(dir, 'happier'), params.binaryContents, 'utf8');
-    chmodSync(join(dir, 'happier'), 0o755);
+    writeFileSync(join(dir, 'happiest'), params.binaryContents, 'utf8');
+    chmodSync(join(dir, 'happiest'), 0o755);
   }
   writeFileSync(join(installRoot, 'current.version'), `${params.versionId}\n`, 'utf8');
 }
@@ -69,7 +69,7 @@ describe('runLocalHappierJsonCommand', () => {
     const rootDir = mkdtempSync(join(tmpdir(), 'hsetup-cli-install-'));
     const happyHomeDir = join(rootDir, '.happier-home');
     const payloadRoot = join(rootDir, 'payload');
-    const installedBinaryPath = join(payloadRoot, 'happier');
+    const installedBinaryPath = join(payloadRoot, 'happiest');
 
     try {
       mkdirSync(payloadRoot, { recursive: true });
@@ -319,7 +319,7 @@ describe('ensureSetupCapableLocalHappierCli', () => {
 
       await expect(ensureSetupCapableLocalHappierCli({ releaseRing: 'preview', processEnv }, { readVersion }))
         .resolves.toEqual({
-          command: join(happyHomeDir, 'cli', 'current', 'happier'),
+          command: join(happyHomeDir, 'cli', 'current', 'happiest'),
           provenance: 'managed',
           version: SETUP_CLI_VERSION_FLOOR,
         });
@@ -393,7 +393,7 @@ describe('ensureSetupCapableLocalHappierCli', () => {
   it('reacquires a managed CLI below the floor when the ring has a newer one', async () => {
     const rootDir = mkdtempSync(join(tmpdir(), 'hsetup-setup-floor-reacquire-'));
     const happyHomeDir = join(rootDir, '.happier-home');
-    const binaryPath = join(happyHomeDir, 'cli', 'current', 'happier');
+    const binaryPath = join(happyHomeDir, 'cli', 'current', 'happiest');
     try {
       writeInstalledPayloadFixture({
         happyHomeDir,
@@ -417,12 +417,12 @@ describe('ensureSetupCapableLocalHappierCli', () => {
 });
 
 describe('updateManagedLocalHappierCli', () => {
-  /** A staged release payload whose `happier` prints `versionId`, as the real one does. */
+  /** A staged release payload whose `happiest` prints `versionId`, as the real one does. */
   function stagePayload(rootDir: string, versionId: string, reports: string = versionId): string {
     const payloadRoot = join(rootDir, `payload-${versionId}`);
     mkdirSync(join(payloadRoot, 'package-dist'), { recursive: true });
-    writeFileSync(join(payloadRoot, 'happier'), `#!/bin/sh\necho ${reports}\n`, 'utf8');
-    chmodSync(join(payloadRoot, 'happier'), 0o755);
+    writeFileSync(join(payloadRoot, 'happiest'), `#!/bin/sh\necho ${reports}\n`, 'utf8');
+    chmodSync(join(payloadRoot, 'happiest'), 0o755);
     writeFileSync(join(payloadRoot, 'package-dist', 'index.mjs'), 'export {};\n', 'utf8');
     return payloadRoot;
   }
@@ -457,7 +457,7 @@ describe('updateManagedLocalHappierCli', () => {
 
       expect(updated).toEqual({
         previousVersion: '0.2.13',
-        cli: { command: join(happyHomeDir, 'cli', 'current', 'happier'), provenance: 'managed', version: '0.2.14' },
+        cli: { command: join(happyHomeDir, 'cli', 'current', 'happiest'), provenance: 'managed', version: '0.2.14' },
         restarted: false,
       });
       expect(readFileSync(join(happyHomeDir, 'cli', 'current.version'), 'utf8').trim()).toBe('0.2.14');
@@ -487,7 +487,7 @@ describe('updateManagedLocalHappierCli', () => {
 
       expect(restarts).toEqual(['activated:0.2.14', 'restored:0.2.13']);
       expect(readFileSync(join(happyHomeDir, 'cli', 'current.version'), 'utf8').trim()).toBe('0.2.13');
-      expect(readFileSync(join(happyHomeDir, 'cli', 'current', 'happier'), 'utf8')).toContain('0.2.13');
+      expect(readFileSync(join(happyHomeDir, 'cli', 'current', 'happiest'), 'utf8')).toContain('0.2.13');
     } finally {
       rmSync(rootDir, { recursive: true, force: true });
     }

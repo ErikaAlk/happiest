@@ -1,10 +1,17 @@
 import { basename, join, win32 as win32Path } from 'node:path';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { getReleaseRingCatalogEntry, type PublicReleaseRingId } from '@happier-dev/release-runtime/releaseRings';
 import { isServerIdFilesystemSafe } from '@/server/serverId';
 
 import { buildLaunchAgentPlistXml, buildLaunchdPath } from './darwin';
-import { buildServicePath, planServiceAction, renderSystemdServiceUnit, renderWindowsScheduledTaskWrapperPs1 } from '@happier-dev/cli-common/service';
+import {
+  buildServicePath,
+  planServiceAction,
+  qualifyWindowsScheduledTaskName,
+  renderSystemdServiceUnit,
+  renderWindowsScheduledTaskWrapperPs1,
+} from '@happier-dev/cli-common/service';
 
 export type DaemonServicePlatform = 'darwin' | 'linux' | 'win32';
 export type DaemonServiceMode = 'user' | 'system';
@@ -48,11 +55,13 @@ export type DaemonServiceUninstallPlan = Readonly<{
   commands: DaemonServicePlannedCommand[];
 }>;
 
-const DAEMON_SERVICE_LAUNCHD_LABEL_PREFIX = 'com.happier.cli.daemon';
-const DAEMON_SERVICE_SYSTEMD_UNIT_PREFIX = 'happier-daemon';
+const DAEMON_SERVICE_LAUNCHD_LABEL_PREFIX = productIdentity.daemonServiceLaunchdLabelPrefix;
+const DAEMON_SERVICE_SYSTEMD_UNIT_PREFIX = productIdentity.daemonServiceUnitPrefix;
 
-const LEGACY_DAEMON_SERVICE_LAUNCHD_LABEL = 'com.happier.cli.daemon';
-const LEGACY_DAEMON_SERVICE_SYSTEMD_UNIT_NAME = 'happier-daemon.service';
+// Pre-instance service names of this product. They are derived from the product identity so the
+// cleanup never touches another product's service installed on the same machine.
+const LEGACY_DAEMON_SERVICE_LAUNCHD_LABEL = DAEMON_SERVICE_LAUNCHD_LABEL_PREFIX;
+const LEGACY_DAEMON_SERVICE_SYSTEMD_UNIT_NAME = `${DAEMON_SERVICE_SYSTEMD_UNIT_PREFIX}.service`;
 
 export function resolveDaemonServiceChannelSegment(channel: PublicReleaseRingId): '' | 'preview' | 'dev' {
   const label = getReleaseRingCatalogEntry(channel).publicLabel;
@@ -169,7 +178,7 @@ export function resolveWindowsDaemonTaskName(params: Readonly<{
   targetMode?: DaemonServiceTargetMode;
 }>): string {
   const label = resolveDaemonServiceSystemdUnitLabel(params.instanceId, params.channel ?? 'stable', params.targetMode ?? 'pinned');
-  return `Happier\\${label}`;
+  return qualifyWindowsScheduledTaskName(label);
 }
 
 export function resolveWindowsDaemonWrapperPath(params: Readonly<{
@@ -427,9 +436,9 @@ export function planDaemonServiceInstall(params: Readonly<{
 
     const commands: DaemonServicePlannedCommand[] = [];
     if (shouldApplyRawLegacyDefaultFollowingCleanup({ targetMode })) {
-      const legacyUnitLabel = DAEMON_SERVICE_SYSTEMD_UNIT_PREFIX;
-      commands.push({ cmd: 'schtasks', args: ['/End', '/TN', `Happier\\${legacyUnitLabel}`], ignoreFailure: true });
-      commands.push({ cmd: 'schtasks', args: ['/Delete', '/F', '/TN', `Happier\\${legacyUnitLabel}`], ignoreFailure: true });
+      const legacyTaskName = qualifyWindowsScheduledTaskName(DAEMON_SERVICE_SYSTEMD_UNIT_PREFIX);
+      commands.push({ cmd: 'schtasks', args: ['/End', '/TN', legacyTaskName], ignoreFailure: true });
+      commands.push({ cmd: 'schtasks', args: ['/Delete', '/F', '/TN', legacyTaskName], ignoreFailure: true });
       // Note: legacy wrapper path is best-effort removed via filesToRemove on uninstall.
     }
     commands.push(...basePlan.commands.map((c) => ({ cmd: c.cmd, args: c.args })));
@@ -453,7 +462,9 @@ export function planDaemonServiceInstall(params: Readonly<{
     : resolveSystemdUserUnitPath({ userHomeDir: params.userHomeDir, instanceId, channel, targetMode });
 
   const unit = renderSystemdServiceUnit({
-    description: targetMode === 'default-following' ? 'Happier CLI daemon (default)' : `Happier CLI daemon (${instanceId})`,
+    description: targetMode === 'default-following'
+      ? `${productIdentity.productName} CLI daemon (default)`
+      : `${productIdentity.productName} CLI daemon (${instanceId})`,
     execStart: programArgs,
     workingDirectory: mode === 'system' ? params.userHomeDir : '%h',
     env: {
@@ -568,7 +579,7 @@ export function planDaemonServiceUninstall(params: Readonly<{
     }
     const wrapperPath = installedPath || resolveWindowsDaemonWrapperPath({ happierHomeDir, instanceId, channel, targetMode });
     const installedUnitLabel = basename(wrapperPath, '.ps1');
-    const taskName = `Happier\\${installedUnitLabel}`;
+    const taskName = qualifyWindowsScheduledTaskName(installedUnitLabel);
     const plan = planServiceAction({
       backend: 'schtasks-user',
       action: 'uninstall',
@@ -584,14 +595,15 @@ export function planDaemonServiceUninstall(params: Readonly<{
         ? `${DAEMON_SERVICE_SYSTEMD_UNIT_PREFIX}.${legacyIdentitySegment}`
         : null;
       if (legacyUnitLabel && legacyUnitLabel !== installedUnitLabel) {
-        commands.push({ cmd: 'schtasks', args: ['/End', '/TN', `Happier\\${legacyUnitLabel}`], ignoreFailure: true });
-        commands.push({ cmd: 'schtasks', args: ['/Delete', '/F', '/TN', `Happier\\${legacyUnitLabel}`], ignoreFailure: true });
+        const legacyTaskName = qualifyWindowsScheduledTaskName(legacyUnitLabel);
+        commands.push({ cmd: 'schtasks', args: ['/End', '/TN', legacyTaskName], ignoreFailure: true });
+        commands.push({ cmd: 'schtasks', args: ['/Delete', '/F', '/TN', legacyTaskName], ignoreFailure: true });
       }
     }
     if (shouldApplyRawLegacyDefaultFollowingCleanup({ targetMode })) {
-      const legacyUnitLabel = DAEMON_SERVICE_SYSTEMD_UNIT_PREFIX;
-      commands.push({ cmd: 'schtasks', args: ['/End', '/TN', `Happier\\${legacyUnitLabel}`] });
-      commands.push({ cmd: 'schtasks', args: ['/Delete', '/F', '/TN', `Happier\\${legacyUnitLabel}`] });
+      const legacyTaskName = qualifyWindowsScheduledTaskName(DAEMON_SERVICE_SYSTEMD_UNIT_PREFIX);
+      commands.push({ cmd: 'schtasks', args: ['/End', '/TN', legacyTaskName] });
+      commands.push({ cmd: 'schtasks', args: ['/Delete', '/F', '/TN', legacyTaskName] });
     }
     commands.push(...plan.commands.map((c) => ({ cmd: c.cmd, args: c.args })));
     const filesToRemove = [wrapperPath];

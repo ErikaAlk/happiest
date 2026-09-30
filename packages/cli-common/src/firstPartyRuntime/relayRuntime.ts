@@ -1,5 +1,7 @@
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { normalizePublicReleaseRingId, type PublicReleaseRingId } from '@happier-dev/release-runtime/releaseRings';
 import { expandHomeDirPath } from '../path/expandHomeDirPath.js';
+import { getFirstPartyComponentCatalogEntry } from './componentCatalog.js';
 
 type RelayRuntimeMode = 'user' | 'system';
 
@@ -79,6 +81,9 @@ export type RelayRuntimeHealthResult = Readonly<{
   statusCode: number | null;
   version: string | null;
 }>;
+
+/** Service name of the stable-ring local relay; other rings append their channel suffix. */
+export const RELAY_RUNTIME_SERVICE_BASE_NAME = getFirstPartyComponentCatalogEntry('happier-server').executableBaseName;
 
 function resolveChannelSuffix(channel: PublicReleaseRingId): string {
   if (channel === 'stable') return '';
@@ -193,25 +198,28 @@ export function resolveRelayRuntimeDefaults(params: Readonly<{
   const channel = normalizeChannel(params.channel);
   const homeDir = String(params.homeDir ?? '').trim();
 
+  const serviceName = appendChannelSuffix(RELAY_RUNTIME_SERVICE_BASE_NAME, channel);
+  const systemDirName = productIdentity.systemDirName;
+
   if (mode === 'system') {
     return {
       channel,
       mode,
-      installRoot: appendChannelSuffix('/opt/happier', channel),
+      installRoot: appendChannelSuffix(`/opt/${systemDirName}`, channel),
       binDir: '/usr/local/bin',
-      configDir: appendChannelSuffix('/etc/happier', channel),
-      dataDir: appendChannelSuffix('/var/lib/happier', channel),
-      logDir: appendChannelSuffix('/var/log/happier', channel),
-      serviceName: appendChannelSuffix('happier-server', channel),
+      configDir: appendChannelSuffix(`/etc/${systemDirName}`, channel),
+      dataDir: appendChannelSuffix(`/var/lib/${systemDirName}`, channel),
+      logDir: appendChannelSuffix(`/var/log/${systemDirName}`, channel),
+      serviceName,
       serverHost: '127.0.0.1',
-      serverPort: 3005,
+      serverPort: productIdentity.relayDefaultPort,
       healthPath: '/v1/version',
     };
   }
 
   const happierHome = platform === 'win32'
-    ? `${homeDir || 'C:\\Users\\Default'}\\.happier`
-    : `${homeDir || '/tmp'}/.happier`;
+    ? `${homeDir || 'C:\\Users\\Default'}\\${productIdentity.homeDirName}`
+    : `${homeDir || '/tmp'}/${productIdentity.homeDirName}`;
   const installRoot = appendChannelSuffix(
     platform === 'win32' ? `${happierHome}\\self-host` : `${happierHome}/self-host`,
     channel,
@@ -225,9 +233,9 @@ export function resolveRelayRuntimeDefaults(params: Readonly<{
     configDir: platform === 'win32' ? `${installRoot}\\config` : `${installRoot}/config`,
     dataDir: platform === 'win32' ? `${installRoot}\\data` : `${installRoot}/data`,
     logDir: platform === 'win32' ? `${installRoot}\\logs` : `${installRoot}/logs`,
-    serviceName: appendChannelSuffix('happier-server', channel),
+    serviceName,
     serverHost: '127.0.0.1',
-    serverPort: 3005,
+    serverPort: productIdentity.relayDefaultPort,
     healthPath: '/v1/version',
   };
 }
@@ -284,7 +292,7 @@ export async function checkRelayRuntimeHealth(params: Readonly<{
   }>>;
 }>): Promise<RelayRuntimeHealthResult> {
   const host = String(params.host ?? '').trim() || '127.0.0.1';
-  const port = Number.isFinite(params.port) ? Math.floor(params.port) : 3005;
+  const port = Number.isFinite(params.port) ? Math.floor(params.port) : productIdentity.relayDefaultPort;
   const timeoutMs = Number.isFinite(params.timeoutMs) ? Math.max(1, Math.floor(params.timeoutMs)) : 30_000;
   const url = buildRelayRuntimeUrl({ host, port, path: params.path ?? '/v1/version' });
 

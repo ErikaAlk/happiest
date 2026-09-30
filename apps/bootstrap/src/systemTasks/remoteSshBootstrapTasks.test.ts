@@ -239,7 +239,7 @@ describe('installRemoteCliDefault', () => {
             installRemoteFirstPartyComponent: async (params) => {
                 invocations.push(params as Record<string, unknown>);
                 return {
-                    binaryPath: '$HOME/.happier/cli/current/happier',
+                    binaryPath: '$HOME/.happiest/cli/current/happiest',
                     versionId: '1.2.3',
                     source: 'https://example.test/happier.tgz',
                 };
@@ -363,8 +363,8 @@ describe('runRemoteBootstrapCommandDefault', () => {
             });
 
             const remoteCommand = fakeSsh.readInvocations().at(-1)?.at(-1) ?? '';
-            expect(remoteCommand).toContain('$HOME/.happier/cli-preview/current/happier auth status --json');
-            expect(remoteCommand).not.toContain('$HOME/.happier/bin/happier');
+            expect(remoteCommand).toContain('$HOME/.happiest/cli-preview/current/happiest auth status --json');
+            expect(remoteCommand).not.toContain('$HOME/.happiest/bin/happiest');
         } finally {
             fakeSsh.cleanup();
         }

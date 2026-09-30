@@ -1,9 +1,11 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { mkdtempSync } from 'node:fs';
+import { createServer, type Server } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { describe, expect, it } from 'vitest';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import { resolveNonCollidingRelayPort, readSiblingRelayPorts } from './resolveNonCollidingRelayPort.js';
 
@@ -13,25 +15,65 @@ function setupFakeHome(): string {
 }
 
 function writeSiblingServerEnv(home: string, channelSuffix: string, port: number): void {
-  // Mirror resolveRelayRuntimeDefaults layout: <home>/.happier/self-host[-<channel>]/config/server.env
+  // Mirror resolveRelayRuntimeDefaults layout: <home>/<product home>/self-host[-<channel>]/config/server.env
   const suffix = channelSuffix ? `-${channelSuffix}` : '';
-  const configDir = join(home, '.happier', `self-host${suffix}`, 'config');
+  const configDir = join(home, productIdentity.homeDirName, `self-host${suffix}`, 'config');
   mkdirSync(configDir, { recursive: true });
   writeFileSync(join(configDir, 'server.env'), `PORT=${port}\n`, 'utf8');
 }
 
+const listeners: Server[] = [];
+
+async function listenOnLoopback(port: number): Promise<number> {
+  const server = createServer();
+  listeners.push(server);
+  return await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(port, '127.0.0.1', () => {
+      const address = server.address();
+      if (!address || typeof address !== 'object') {
+        reject(new Error('listener has no address'));
+        return;
+      }
+      resolve(address.port);
+    });
+  });
+}
+
+async function findFreePort(): Promise<number> {
+  const server = createServer();
+  const port = await new Promise<number>((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', () => {
+      const address = server.address();
+      if (!address || typeof address !== 'object') {
+        reject(new Error('listener has no address'));
+        return;
+      }
+      resolve(address.port);
+    });
+  });
+  await new Promise<void>((resolve) => server.close(() => resolve()));
+  return port;
+}
+
+afterEach(async () => {
+  await Promise.all(listeners.splice(0).map((server) => new Promise<void>((resolve) => server.close(() => resolve()))));
+});
+
 describe('resolveNonCollidingRelayPort', () => {
   it('returns the default port when no other channels are installed', async () => {
     const home = setupFakeHome();
+    const defaultPort = await findFreePort();
     const port = await resolveNonCollidingRelayPort({
       platform: 'darwin',
       mode: 'user',
       channel: 'publicdev',
       homeDir: home,
-      defaultPort: 3005,
+      defaultPort,
       configuredPort: null,
     });
-    expect(port).toBe(3005);
+    expect(port).toBe(defaultPort);
   });
 
   it('honors the configured port when it does not collide with siblings', async () => {
@@ -63,6 +105,39 @@ describe('resolveNonCollidingRelayPort', () => {
     expect(port).not.toBe(3005);
     expect(port).toBeGreaterThan(0);
     expect(port).toBeLessThanOrEqual(65535);
+  });
+
+  // Another program on this machine (for example an upstream Happier relay) already listens on the
+  // default port without any server.env this product could read.
+  it('picks another port when a process already listens on the default port', async () => {
+    const home = setupFakeHome();
+    const occupiedPort = await listenOnLoopback(0);
+    const port = await resolveNonCollidingRelayPort({
+      platform: 'darwin',
+      mode: 'user',
+      channel: 'stable',
+      homeDir: home,
+      defaultPort: occupiedPort,
+      configuredPort: null,
+    });
+    expect(port).not.toBe(occupiedPort);
+    expect(port).toBeGreaterThan(0);
+  });
+
+  // The configured port belongs to this channel's own installed relay, which is listening on it
+  // while an update runs.
+  it('keeps the configured port while the installed relay is listening on it', async () => {
+    const home = setupFakeHome();
+    const configuredPort = await listenOnLoopback(0);
+    const port = await resolveNonCollidingRelayPort({
+      platform: 'darwin',
+      mode: 'user',
+      channel: 'stable',
+      homeDir: home,
+      defaultPort: 3005,
+      configuredPort,
+    });
+    expect(port).toBe(configuredPort);
   });
 
   it('ignores the current channel when scanning for collisions', async () => {

@@ -58,7 +58,7 @@ async function createStagedPayload(rootDir: string, versionId: string, contents:
     const stagedPayloadPath = join(rootDir, `stage-${versionId}`);
     await mkdir(stagedPayloadPath, { recursive: true });
     await mkdir(join(stagedPayloadPath, 'package-dist'), { recursive: true });
-    await writeFile(join(stagedPayloadPath, 'happier.exe'), contents, 'utf8');
+    await writeFile(join(stagedPayloadPath, 'happiest.exe'), contents, 'utf8');
     await writeFile(join(stagedPayloadPath, 'package-dist', 'index.mjs'), `export default ${JSON.stringify(versionId)};\n`, 'utf8');
     return stagedPayloadPath;
 }
@@ -88,10 +88,10 @@ describe('syncInstalledFirstPartyShims Windows copy fallback', () => {
                     stagedPayloadPath: await createStagedPayload(homeDir, '1.0.0-preview.1', 'preview-binary'),
                 });
 
-                const happierShimPath = join(homeDir, 'bin', 'happier.exe');
-                const hprevShimPath = join(homeDir, 'bin', 'hprev.exe');
-                linkFailureTargets.add(happierShimPath);
-                linkFailureTargets.add(hprevShimPath);
+                const happiestShimPath = join(homeDir, 'bin', 'happiest.exe');
+                const previewShimPath = join(homeDir, 'bin', 'happiest-preview.exe');
+                linkFailureTargets.add(happiestShimPath);
+                linkFailureTargets.add(previewShimPath);
 
                 const result = await syncInstalledFirstPartyShims({
                     componentId: 'happier-cli',
@@ -100,11 +100,11 @@ describe('syncInstalledFirstPartyShims Windows copy fallback', () => {
                     defaultReleaseChannelOverride: 'preview',
                 });
 
-                expect(result.shimPaths).toEqual([happierShimPath, hprevShimPath]);
-                expect(existsSync(happierShimPath)).toBe(true);
-                expect(existsSync(hprevShimPath)).toBe(true);
-                expect(await readFile(happierShimPath, 'utf8')).toBe('preview-binary');
-                expect(await readFile(hprevShimPath, 'utf8')).toBe('preview-binary');
+                expect(result.shimPaths).toEqual([happiestShimPath, previewShimPath]);
+                expect(existsSync(happiestShimPath)).toBe(true);
+                expect(existsSync(previewShimPath)).toBe(true);
+                expect(await readFile(happiestShimPath, 'utf8')).toBe('preview-binary');
+                expect(await readFile(previewShimPath, 'utf8')).toBe('preview-binary');
             }
             finally {
                 await rm(homeDir, { recursive: true, force: true });

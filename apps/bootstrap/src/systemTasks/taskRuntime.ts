@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { runCommandCapture as runProcessCommandCapture } from '@happier-dev/cli-common/process';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 export interface CommandExecutionResult {
   status: number;
@@ -87,7 +88,7 @@ export function parseFirstJsonObject(text: string): unknown {
 }
 
 export function resolveDefaultKnownHostsPath(): string {
-  return `${process.env.HOME ?? process.env.USERPROFILE ?? '/tmp'}/.happier/ssh/known_hosts`;
+  return `${process.env.HOME ?? process.env.USERPROFILE ?? '/tmp'}/${productIdentity.homeDirName}/ssh/known_hosts`;
 }
 
 export function extractSshHost(target: string): string {

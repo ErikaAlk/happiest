@@ -1,5 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 import type { RepairFinding } from '@/diagnostics/doctorRepair';
 
 import { promptConfirmYesNo } from '@/terminal/prompts/promptConfirmYesNo';
@@ -473,7 +475,7 @@ function retryHintFor(finding: RepairFinding, invoker: string): string {
     case 'background_service_not_running':
       return `see message above · retry: ${code(`${invoker} service start --takeover`)}`;
     case 'background_service_crash_looping':
-      return `see message above · inspect logs under ${code('~/.happier/logs/')}`;
+      return `see message above · inspect logs under ${code(`~/${productIdentity.homeDirName}/logs/`)}`;
     case 'local_relay_lane_missing':
     case 'local_relay_version_stale':
       return `see message above · retry: ${code(`${invoker} relay host install`)}`;

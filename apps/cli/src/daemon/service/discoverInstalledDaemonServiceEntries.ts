@@ -2,10 +2,14 @@ import * as fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { basename, join, win32 as win32Path } from 'node:path';
 
+import { qualifyWindowsScheduledTaskName } from '@happier-dev/cli-common/service';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import type { PublicReleaseRingId } from '@happier-dev/release-runtime/releaseRings';
 import { readPositiveIntEnv } from '@/utils/readPositiveIntEnv';
 
 import { DAEMON_SERVICE_AUTOSTART_ENV_KEY, type DaemonServiceAutostartMode, type DaemonServiceMode, type DaemonServiceTargetMode } from './plan';
+
+const DAEMON_SERVICE_TASK_NAME_PREFIX = qualifyWindowsScheduledTaskName(productIdentity.daemonServiceUnitPrefix).toLowerCase();
 
 export type InstalledDaemonServiceEntry = Readonly<{
   serverId: string;
@@ -29,20 +33,24 @@ type InstalledServicePathMatch = Readonly<{
   targetMode: DaemonServiceTargetMode;
 }>;
 
+function resolveInstalledServiceFileNaming(platform: 'darwin' | 'linux' | 'win32'): Readonly<{ prefix: string; extension: string }> {
+  if (platform === 'darwin') {
+    return { prefix: productIdentity.daemonServiceLaunchdLabelPrefix, extension: '.plist' };
+  }
+  return { prefix: productIdentity.daemonServiceUnitPrefix, extension: platform === 'linux' ? '.service' : '.ps1' };
+}
+
 function parseInstalledServicePath(platform: 'darwin' | 'linux' | 'win32', path: string): InstalledServicePathMatch | null {
   const fileName = platform === 'win32' ? win32Path.basename(path) : basename(path);
-  const rawLegacyMatch =
-    platform === 'linux'
-      ? /^happier-daemon\.service$/i.test(fileName)
-      : platform === 'darwin'
-        ? /^com\.happier\.cli\.daemon\.plist$/i.test(fileName)
-        : /^happier-daemon\.ps1$/i.test(fileName);
-  if (rawLegacyMatch) {
-    const label = platform === 'win32'
-      ? `Happier\\${win32Path.basename(path, '.ps1')}`
-      : platform === 'darwin'
-        ? basename(path, '.plist')
-        : basename(path, '.service');
+  const { prefix, extension } = resolveInstalledServiceFileNaming(platform);
+  if (!fileName.toLowerCase().endsWith(extension)) {
+    return null;
+  }
+  const stem = fileName.slice(0, -extension.length);
+  const label = platform === 'win32' ? qualifyWindowsScheduledTaskName(stem) : stem;
+  const lowerStem = stem.toLowerCase();
+  const lowerPrefix = prefix.toLowerCase();
+  if (lowerStem === lowerPrefix) {
     return {
       serverId: 'default',
       releaseChannel: 'stable',
@@ -50,13 +58,11 @@ function parseInstalledServicePath(platform: 'darwin' | 'linux' | 'win32', path:
       targetMode: 'default-following',
     };
   }
+  if (!lowerStem.startsWith(`${lowerPrefix}.`)) {
+    return null;
+  }
 
-  const match =
-    platform === 'linux'
-      ? /^happier-daemon(?:\.(preview|dev))?\.(.+)\.service$/i.exec(fileName)
-      : platform === 'darwin'
-        ? /^com\.happier\.cli\.daemon(?:\.(preview|dev))?\.(.+)\.plist$/i.exec(fileName)
-        : /^happier-daemon(?:\.(preview|dev))?\.(.+)\.ps1$/i.exec(fileName);
+  const match = /^(?:(preview|dev)\.)?(.+)$/i.exec(stem.slice(prefix.length + 1));
   if (!match) {
     return null;
   }
@@ -71,11 +77,6 @@ function parseInstalledServicePath(platform: 'darwin' | 'linux' | 'win32', path:
       ? 'publicdev'
       : 'stable';
   const targetMode: DaemonServiceTargetMode = serverId === 'default' ? 'default-following' : 'pinned';
-  const label = platform === 'win32'
-    ? `Happier\\${win32Path.basename(path, '.ps1')}`
-    : platform === 'darwin'
-      ? basename(path, '.plist')
-      : basename(path, '.service');
   return { serverId, releaseChannel, label, targetMode };
 }
 
@@ -290,7 +291,7 @@ function listWindowsScheduledTaskWrapperPaths(servicesDir: string): readonly str
       .filter((taskName): taskName is string => Boolean(taskName))
       .map((taskName) => normalizeWindowsScheduledTaskName(taskName))
       .filter((taskName): taskName is string => Boolean(taskName))
-      .filter((taskName) => taskName.toLowerCase().startsWith('happier\\happier-daemon'))
+      .filter((taskName) => taskName.toLowerCase().startsWith(DAEMON_SERVICE_TASK_NAME_PREFIX))
       .map((taskName) => deriveWindowsScheduledTaskWrapperPath(taskName, servicesDir))
       .filter((wrapperPath): wrapperPath is string => Boolean(wrapperPath));
   } catch {

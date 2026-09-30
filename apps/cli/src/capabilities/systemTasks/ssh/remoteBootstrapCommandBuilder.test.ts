@@ -9,12 +9,12 @@ describe('buildRemoteBootstrapCommand', () => {
     expect(buildRemoteBootstrapCommand({
       label: 'auth.status',
       serverUrl: 'https://relay.example.test',
-    })).toContain('$HOME/.happier/cli/current/happier auth status --json');
+    })).toContain('$HOME/.happiest/cli/current/happiest auth status --json');
 
     expect(buildRemoteBootstrapCommand({
       label: 'auth.status',
       serverUrl: 'https://relay.example.test',
-    })).not.toContain('$HOME/.happier/bin/happier');
+    })).not.toContain('$HOME/.happiest/bin/happiest');
   });
 
   it('uses a real auth-status preflight and configures the selected server before pairing', () => {

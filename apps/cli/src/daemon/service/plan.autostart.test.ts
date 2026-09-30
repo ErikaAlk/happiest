@@ -74,14 +74,14 @@ describe('daemon service install plan — autostart dimension', () => {
       // KeepAlive dict would re-arm the login start this mode exists to remove.
       expect(content).not.toMatch(/KeepAlive/);
       // Installed, and started right now — just not at the next login.
-      expect(commandLines(plan)).toContain('launchctl bootstrap gui/501 /Users/test/Library/LaunchAgents/com.happier.cli.daemon.cloud.plist');
-      expect(commandLines(plan)).toContain('launchctl kickstart -k gui/501/com.happier.cli.daemon.cloud');
+      expect(commandLines(plan)).toContain('launchctl bootstrap gui/501 /Users/test/Library/LaunchAgents/com.happiest.cli.daemon.cloud.plist');
+      expect(commandLines(plan)).toContain('launchctl kickstart -k gui/501/com.happiest.cli.daemon.cloud');
       // `launchctl enable` is retained on purpose: it is launchd's allow-flag,
       // not a login trigger. Uninstall runs `launchctl disable` (see
       // planDaemonServiceUninstall), so dropping `enable` here would make
       // reinstall-after-uninstall fail at `bootstrap` and would leave an
       // on-demand service unstartable. `RunAtLoad` above is the login trigger.
-      expect(commandLines(plan)).toContain('launchctl enable gui/501/com.happier.cli.daemon.cloud');
+      expect(commandLines(plan)).toContain('launchctl enable gui/501/com.happiest.cli.daemon.cloud');
     });
 
     it('retains the login trigger by default', () => {
@@ -92,7 +92,7 @@ describe('daemon service install plan — autostart dimension', () => {
       // An at-login service is meant to be there whenever the user is logged in, so launchd
       // restarts it after a crash.
       expect(content).toMatch(/<key>KeepAlive<\/key>/);
-      expect(commandLines(plan)).toContain('launchctl enable gui/501/com.happier.cli.daemon.cloud');
+      expect(commandLines(plan)).toContain('launchctl enable gui/501/com.happiest.cli.daemon.cloud');
     });
   });
 
@@ -101,19 +101,19 @@ describe('daemon service install plan — autostart dimension', () => {
       const plan = planDaemonServiceInstall({ ...LINUX_BASE, autostart: 'on-demand' });
       const lines = commandLines(plan);
 
-      expect(lines).not.toContain('systemctl --user enable happier-daemon.cloud.service');
-      expect(lines).toContain('systemctl --user disable happier-daemon.cloud.service');
+      expect(lines).not.toContain('systemctl --user enable happiest-daemon.cloud.service');
+      expect(lines).toContain('systemctl --user disable happiest-daemon.cloud.service');
       // Still running now: `disable` without `--now` leaves the unit alone.
-      expect(lines).toContain('systemctl --user restart happier-daemon.cloud.service');
-      expect(lines.indexOf('systemctl --user disable happier-daemon.cloud.service'))
-        .toBeLessThan(lines.indexOf('systemctl --user restart happier-daemon.cloud.service'));
+      expect(lines).toContain('systemctl --user restart happiest-daemon.cloud.service');
+      expect(lines.indexOf('systemctl --user disable happiest-daemon.cloud.service'))
+        .toBeLessThan(lines.indexOf('systemctl --user restart happiest-daemon.cloud.service'));
     });
 
     it('enables the unit by default', () => {
       const lines = commandLines(planDaemonServiceInstall({ ...LINUX_BASE }));
 
-      expect(lines).toContain('systemctl --user enable happier-daemon.cloud.service');
-      expect(lines).not.toContain('systemctl --user disable happier-daemon.cloud.service');
+      expect(lines).toContain('systemctl --user enable happiest-daemon.cloud.service');
+      expect(lines).not.toContain('systemctl --user disable happiest-daemon.cloud.service');
     });
 
     it('does not enable a system-mode unit in on-demand mode', () => {
@@ -124,8 +124,8 @@ describe('daemon service install plan — autostart dimension', () => {
         autostart: 'on-demand',
       }));
 
-      expect(lines).not.toContain('systemctl enable happier-daemon.cloud.service');
-      expect(lines).toContain('systemctl disable happier-daemon.cloud.service');
+      expect(lines).not.toContain('systemctl enable happiest-daemon.cloud.service');
+      expect(lines).toContain('systemctl disable happiest-daemon.cloud.service');
     });
   });
 
@@ -152,7 +152,7 @@ describe('daemon service install plan — autostart dimension', () => {
       expect(args[args.indexOf('/ST') + 1]).toBe('00:00');
       // Installed and started right now, just never by the scheduler.
       expect(commandLines(planDaemonServiceInstall({ ...WIN32_BASE, autostart: 'on-demand' })))
-        .toContain('schtasks /Run /TN Happier\\happier-daemon.cloud');
+        .toContain('schtasks /Run /TN Happiest\\happiest-daemon.cloud');
     });
 
     it('registers the logon trigger by default', () => {

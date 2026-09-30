@@ -73,7 +73,7 @@ describe('installOrUpdateRelayRuntimeLocal legacy root migration', () => {
 
             const { installOrUpdateRelayRuntimeLocal } = await import('./relayRuntimeInstall.js');
             await expect(installOrUpdateRelayRuntimeLocal({
-                serverBinaryPath: join(homeDir, 'missing', 'happier-server'),
+                serverBinaryPath: join(homeDir, 'missing', 'happiest-server'),
                 channel: 'preview',
                 mode: 'user',
                 platform: 'linux',
@@ -120,7 +120,7 @@ describe('installOrUpdateRelayRuntimeLocal legacy root migration', () => {
             const migrationsSourceDir = join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init');
             await mkdir(migrationsSourceDir, { recursive: true });
             await writeFile(join(migrationsSourceDir, 'migration.sql'), '-- init\n', 'utf8');
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho ok\n', 'utf8');
 
             const { installOrUpdateRelayRuntimeLocal } = await import('./relayRuntimeInstall.js');
@@ -138,9 +138,9 @@ describe('installOrUpdateRelayRuntimeLocal legacy root migration', () => {
             const renameIndex = events.indexOf(`rename:${stableDefaults.installRoot}->${previewDefaults.installRoot}`);
             expect(renameIndex).toBeGreaterThanOrEqual(0);
             const preRenameEvents = events.slice(0, renameIndex);
-            expect(preRenameEvents).toContain('stop:happier-server');
-            expect(preRenameEvents).toContain('stop:happier-server-preview');
-            expect(events.slice(renameIndex + 1)).toContain('uninstall:happier-server');
+            expect(preRenameEvents).toContain('stop:happiest-server');
+            expect(preRenameEvents).toContain('stop:happiest-server-preview');
+            expect(events.slice(renameIndex + 1)).toContain('uninstall:happiest-server');
             expect(events.slice(renameIndex + 1)).toContain('rm-service-definition');
         } finally {
             await rm(homeDir, { recursive: true, force: true });
@@ -175,7 +175,7 @@ describe('installOrUpdateRelayRuntimeLocal legacy root migration', () => {
             const migrationsSourceDir = join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init');
             await mkdir(migrationsSourceDir, { recursive: true });
             await writeFile(join(migrationsSourceDir, 'migration.sql'), '-- init\n', 'utf8');
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho ok\n', 'utf8');
 
             const { installOrUpdateRelayRuntimeLocal } = await import('./relayRuntimeInstall.js');
@@ -193,9 +193,9 @@ describe('installOrUpdateRelayRuntimeLocal legacy root migration', () => {
 
             const renameIndex = events.indexOf(`rename:${legacyInstallRoot}->${previewDefaults.installRoot}`);
             expect(renameIndex).toBeGreaterThanOrEqual(0);
-            expect(events.slice(0, renameIndex)).toContain('stop:happier-server');
-            expect(events.slice(0, renameIndex)).toContain('stop:happier-server-preview');
-            expect(events.slice(renameIndex + 1)).toContain('uninstall:happier-server');
+            expect(events.slice(0, renameIndex)).toContain('stop:happiest-server');
+            expect(events.slice(0, renameIndex)).toContain('stop:happiest-server-preview');
+            expect(events.slice(renameIndex + 1)).toContain('uninstall:happiest-server');
             expect(events.slice(renameIndex + 1)).toContain('rm-service-definition');
             expect(existsSync(join(previewDefaults.installRoot, 'data', 'session-marker.txt'))).toBe(true);
             expect(existsSync(join(legacyInstallRoot, 'data', 'session-marker.txt'))).toBe(false);

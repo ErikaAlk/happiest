@@ -2,6 +2,7 @@ import { chmod, cp, lstat, mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, dirname, join } from 'node:path';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { normalizePublicReleaseRingId, type PublicReleaseRingId } from '@happier-dev/release-runtime/releaseRings';
 
 import type {
@@ -67,7 +68,7 @@ function normalizeBootstrapReleaseChannel(raw: unknown): PublicReleaseRingId {
 
 function normalizeRemoteHomeDir(raw: unknown): string {
   const trimmed = String(raw ?? '').trim();
-  const normalized = trimmed || '$HOME/.happier';
+  const normalized = trimmed || `$HOME/${productIdentity.homeDirName}`;
   if (normalized === '~') {
     return '$HOME';
   }

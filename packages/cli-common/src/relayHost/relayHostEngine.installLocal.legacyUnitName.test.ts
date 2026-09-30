@@ -14,7 +14,7 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
     await mkdir(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init'), { recursive: true });
     await writeFile(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init', 'migration.sql'), '-- init\n', 'utf8');
 
-    const serverBinaryPath = join(payloadRoot, 'happier-server');
+    const serverBinaryPath = join(payloadRoot, 'happiest-server');
     await writeFile(serverBinaryPath, '#!/bin/sh\necho ok\n', 'utf8');
 
     Object.defineProperty(process, 'platform', { value: 'linux' });
@@ -35,14 +35,14 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
           spawnSync: (cmd: string, args?: readonly string[]) => {
             if (cmd === 'systemctl' && Array.isArray(args) && args.includes('show')) {
               const unit = String(args.find((value) => value.endsWith('.service')) ?? '');
-              if (unit === 'happier-server-preview.service') {
+              if (unit === 'happiest-server-preview.service') {
                 return {
                   status: 0,
                   stdout: 'LoadState=not-found\nUnitFileState=\nActiveState=inactive\nSubState=dead\n',
                   stderr: '',
                 };
               }
-              if (unit === 'happier-server.service') {
+              if (unit === 'happiest-server.service') {
                 return {
                   status: 0,
                   stdout: 'LoadState=loaded\nActiveState=inactive\nSubState=dead\nUnitFileState=enabled\n',
@@ -55,12 +55,12 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         };
       });
 
-      const installRoot = join(homeDir, '.happier', 'self-host-preview');
+      const installRoot = join(homeDir, '.happiest', 'self-host-preview');
       const unitDir = join(homeDir, '.config', 'systemd', 'user');
       await mkdir(unitDir, { recursive: true });
       await writeFile(
-        join(unitDir, 'happier-server.service'),
-        `[Service]\nWorkingDirectory=${installRoot}\nEnvironment=PORT=3005\n`,
+        join(unitDir, 'happiest-server.service'),
+        `[Service]\nWorkingDirectory=${installRoot}\nEnvironment=PORT=3015\n`,
         'utf8',
       );
 
@@ -70,7 +70,7 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'preview-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'preview-1' }),
         localInstallPolicy: {
           runServiceCommands: false,
           skipHealthCheck: true,
@@ -87,8 +87,8 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         mode: 'user',
       });
 
-      await expect(access(join(homeDir, '.config', 'systemd', 'user', 'happier-server.service'))).rejects.toBeDefined();
-      await expect(access(join(homeDir, '.config', 'systemd', 'user', 'happier-server-preview.service'))).resolves.toBeUndefined();
+      await expect(access(join(homeDir, '.config', 'systemd', 'user', 'happiest-server.service'))).rejects.toBeDefined();
+      await expect(access(join(homeDir, '.config', 'systemd', 'user', 'happiest-server-preview.service'))).resolves.toBeUndefined();
     } finally {
       Object.defineProperty(process, 'platform', { value: originalPlatform });
       vi.resetModules();
@@ -106,7 +106,7 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
     await mkdir(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init'), { recursive: true });
     await writeFile(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init', 'migration.sql'), '-- init\n', 'utf8');
 
-    const serverBinaryPath = join(payloadRoot, 'happier-server');
+    const serverBinaryPath = join(payloadRoot, 'happiest-server');
     await writeFile(serverBinaryPath, '#!/bin/sh\necho ok\n', 'utf8');
 
     Object.defineProperty(process, 'platform', { value: 'linux' });
@@ -120,17 +120,17 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         };
       });
 
-      const installRoot = join(homeDir, '.happier', 'self-host-preview');
+      const installRoot = join(homeDir, '.happiest', 'self-host-preview');
       const unitDir = join(homeDir, '.config', 'systemd', 'user');
       await mkdir(unitDir, { recursive: true });
       await writeFile(
-        join(unitDir, 'happier-server-preview.service'),
-        `[Service]\nWorkingDirectory=${installRoot}\nEnvironment=PORT=3005\n`,
+        join(unitDir, 'happiest-server-preview.service'),
+        `[Service]\nWorkingDirectory=${installRoot}\nEnvironment=PORT=3015\n`,
         'utf8',
       );
       await writeFile(
-        join(unitDir, 'happier-server.service'),
-        `[Service]\nWorkingDirectory=${installRoot}\nEnvironment=PORT=3005\n`,
+        join(unitDir, 'happiest-server.service'),
+        `[Service]\nWorkingDirectory=${installRoot}\nEnvironment=PORT=3015\n`,
         'utf8',
       );
 
@@ -141,14 +141,14 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
           spawnSync: (cmd: string, args?: readonly string[]) => {
             if (cmd === 'systemctl' && Array.isArray(args) && args.includes('show')) {
               const unit = String(args.find((value) => value.endsWith('.service')) ?? '');
-              if (unit === 'happier-server-preview.service') {
+              if (unit === 'happiest-server-preview.service') {
                 return {
                   status: 0,
                   stdout: 'LoadState=loaded\nUnitFileState=enabled\nActiveState=active\nSubState=running\n',
                   stderr: '',
                 };
               }
-              if (unit === 'happier-server.service') {
+              if (unit === 'happiest-server.service') {
                 return {
                   status: 0,
                   stdout: 'LoadState=loaded\nActiveState=active\nSubState=running\nUnitFileState=enabled\n',
@@ -167,7 +167,7 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'preview-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'preview-1' }),
         localInstallPolicy: {
           runServiceCommands: false,
           skipHealthCheck: true,
@@ -184,8 +184,8 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         mode: 'user',
       });
 
-      await expect(access(join(unitDir, 'happier-server.service'))).rejects.toBeDefined();
-      await expect(access(join(unitDir, 'happier-server-preview.service'))).resolves.toBeUndefined();
+      await expect(access(join(unitDir, 'happiest-server.service'))).rejects.toBeDefined();
+      await expect(access(join(unitDir, 'happiest-server-preview.service'))).resolves.toBeUndefined();
     } finally {
       Object.defineProperty(process, 'platform', { value: originalPlatform });
       vi.resetModules();
@@ -203,7 +203,7 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
     await mkdir(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init'), { recursive: true });
     await writeFile(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init', 'migration.sql'), '-- init\n', 'utf8');
 
-    const serverBinaryPath = join(payloadRoot, 'happier-server');
+    const serverBinaryPath = join(payloadRoot, 'happiest-server');
     await writeFile(serverBinaryPath, '#!/bin/sh\necho ok\n', 'utf8');
 
     Object.defineProperty(process, 'platform', { value: 'darwin' });
@@ -224,7 +224,7 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
           spawnSync: (cmd: string, args?: readonly string[]) => {
             if (cmd === 'launchctl' && Array.isArray(args) && args[0] === 'list') {
               const label = String(args[1] ?? '');
-              if (label === 'happier-server') {
+              if (label === 'happiest-server') {
                 return { status: 0, stdout: '', stderr: '' };
               }
               return { status: 1, stdout: '', stderr: '' };
@@ -234,16 +234,16 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         };
       });
 
-      const installRoot = join(homeDir, '.happier', 'self-host-preview');
+      const installRoot = join(homeDir, '.happiest', 'self-host-preview');
       const launchAgentsDir = join(homeDir, 'Library', 'LaunchAgents');
       await mkdir(launchAgentsDir, { recursive: true });
       await writeFile(
-        join(launchAgentsDir, 'happier-server.plist'),
+        join(launchAgentsDir, 'happiest-server.plist'),
         `<?xml version="1.0" encoding="UTF-8"?>
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>happier-server</string>
+    <string>happiest-server</string>
     <key>WorkingDirectory</key>
     <string>${installRoot}</string>
   </dict>
@@ -258,7 +258,7 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'darwin', arch: 'arm64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'preview-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'preview-1' }),
         localInstallPolicy: {
           runServiceCommands: false,
           skipHealthCheck: true,
@@ -275,8 +275,8 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         mode: 'user',
       });
 
-      await expect(access(join(launchAgentsDir, 'happier-server.plist'))).rejects.toBeDefined();
-      await expect(access(join(launchAgentsDir, 'happier-server-preview.plist'))).resolves.toBeUndefined();
+      await expect(access(join(launchAgentsDir, 'happiest-server.plist'))).rejects.toBeDefined();
+      await expect(access(join(launchAgentsDir, 'happiest-server-preview.plist'))).resolves.toBeUndefined();
     } finally {
       Object.defineProperty(process, 'platform', { value: originalPlatform });
       vi.resetModules();
@@ -294,7 +294,7 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
     await mkdir(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init'), { recursive: true });
     await writeFile(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init', 'migration.sql'), '-- init\n', 'utf8');
 
-    const serverBinaryPath = join(payloadRoot, 'happier-server.exe');
+    const serverBinaryPath = join(payloadRoot, 'happiest-server.exe');
     await writeFile(serverBinaryPath, 'stub exe\n', 'utf8');
 
     Object.defineProperty(process, 'platform', { value: 'win32' });
@@ -317,14 +317,14 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
               const commandText = String(args[args.indexOf('-Command') + 1] ?? '');
               const taskNameMatch = commandText.match(/\$taskName = "([^"]+)"/u);
               const taskName = taskNameMatch?.[1] ?? '';
-              if (taskName === 'happier-server-preview') {
+              if (taskName === 'happiest-server-preview') {
                 return {
                   status: 0,
                   stdout: '{"exists":false,"enabled":false,"active":false,"stateLabel":"not_installed"}\n',
                   stderr: '',
                 };
               }
-              if (taskName === 'happier-server') {
+              if (taskName === 'happiest-server') {
                 return {
                   status: 0,
                   stdout: '{"exists":true,"enabled":true,"active":false,"stateLabel":"Ready"}\n',
@@ -340,9 +340,9 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         };
       });
 
-      const previewInstallRoot = `${homeDir}\\.happier\\self-host-preview`;
-      const legacyWrapperPath = `${homeDir}\\.happier\\services\\happier-server.ps1`;
-      await mkdir(join(homeDir, '.happier', 'services'), { recursive: true });
+      const previewInstallRoot = `${homeDir}\\.happiest\\self-host-preview`;
+      const legacyWrapperPath = `${homeDir}\\.happiest\\services\\happiest-server.ps1`;
+      await mkdir(join(homeDir, '.happiest', 'services'), { recursive: true });
       await writeFile(
         legacyWrapperPath,
         `$ErrorActionPreference = "Stop"\nSet-Location -LiteralPath "${previewInstallRoot}"\n`,
@@ -355,7 +355,7 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'preview-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'preview-1' }),
         localInstallPolicy: {
           runServiceCommands: false,
           skipHealthCheck: true,
@@ -373,7 +373,7 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
       });
 
       await expect(access(legacyWrapperPath)).rejects.toBeDefined();
-      await expect(access(`${homeDir}\\.happier\\services\\happier-server-preview.ps1`)).resolves.toBeUndefined();
+      await expect(access(`${homeDir}\\.happiest\\services\\happiest-server-preview.ps1`)).resolves.toBeUndefined();
     } finally {
       Object.defineProperty(process, 'platform', { value: originalPlatform });
       vi.resetModules();
@@ -391,7 +391,7 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
     await mkdir(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init'), { recursive: true });
     await writeFile(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init', 'migration.sql'), '-- init\n', 'utf8');
 
-    const serverBinaryPath = join(payloadRoot, 'happier-server');
+    const serverBinaryPath = join(payloadRoot, 'happiest-server');
     await writeFile(serverBinaryPath, '#!/bin/sh\necho ok\n', 'utf8');
 
     Object.defineProperty(process, 'platform', { value: 'linux' });
@@ -412,10 +412,10 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
           spawnSync: (cmd: string, args?: readonly string[]) => {
             if (cmd === 'systemctl' && Array.isArray(args) && args.includes('show')) {
               const unit = String(args.find((value) => String(value).endsWith('.service')) ?? '');
-              if (unit === 'happier-server-preview.service') {
+              if (unit === 'happiest-server-preview.service') {
                 return { status: 0, stdout: 'LoadState=not-found\nActiveState=inactive\nSubState=dead\nUnitFileState=\n', stderr: '' };
               }
-              if (unit === 'happier-server.service') {
+              if (unit === 'happiest-server.service') {
                 return { status: 0, stdout: 'LoadState=loaded\nActiveState=active\nSubState=running\nUnitFileState=enabled\n', stderr: '' };
               }
             }
@@ -424,8 +424,8 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         };
       });
 
-      const legacyInstallRoot = join(homeDir, '.happier', 'l1');
-      const previewInstallRoot = join(homeDir, '.happier', 'self-host-preview');
+      const legacyInstallRoot = join(homeDir, '.happiest', 'l1');
+      const previewInstallRoot = join(homeDir, '.happiest', 'self-host-preview');
       const unitDir = join(homeDir, '.config', 'systemd', 'user');
       await mkdir(legacyInstallRoot, { recursive: true });
       await mkdir(join(legacyInstallRoot, 'data'), { recursive: true });
@@ -437,15 +437,15 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         'utf8',
       );
       await writeFile(
-        join(unitDir, 'happier-server.service'),
+        join(unitDir, 'happiest-server.service'),
         [
           '[Unit]',
-          'Description=Happier Relay Runtime',
+          'Description=Happiest Relay Runtime',
           '[Service]',
           `WorkingDirectory=${legacyInstallRoot}`,
-          'Environment=PORT=3005',
+          'Environment=PORT=3015',
           'Environment=HAPPIER_SERVER_HOST=127.0.0.1',
-          `ExecStart=${legacyInstallRoot}/bin/happier-server`,
+          `ExecStart=${legacyInstallRoot}/bin/happiest-server`,
           '',
         ].join('\n'),
         'utf8',
@@ -460,7 +460,7 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'preview-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'preview-1' }),
       });
 
       await expect(engine.installOrUpdate({
@@ -489,7 +489,7 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
     await mkdir(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init'), { recursive: true });
     await writeFile(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init', 'migration.sql'), '-- init\n', 'utf8');
 
-    const serverBinaryPath = join(payloadRoot, 'happier-server');
+    const serverBinaryPath = join(payloadRoot, 'happiest-server');
     await writeFile(serverBinaryPath, '#!/bin/sh\necho ok\n', 'utf8');
 
     Object.defineProperty(process, 'platform', { value: 'linux' });
@@ -510,14 +510,14 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
           spawnSync: (cmd: string, args?: readonly string[]) => {
             if (cmd === 'systemctl' && Array.isArray(args) && args.includes('show')) {
               const unit = String(args.find((value) => value.endsWith('.service')) ?? '');
-              if (unit === 'happier-server-preview.service') {
+              if (unit === 'happiest-server-preview.service') {
                 return {
                   status: 0,
                   stdout: 'LoadState=loaded\nActiveState=active\nSubState=running\nUnitFileState=enabled\n',
                   stderr: '',
                 };
               }
-              if (unit === 'happier-server.service') {
+              if (unit === 'happiest-server.service') {
                 return {
                   status: 0,
                   stdout: 'LoadState=not-found\nActiveState=inactive\nSubState=dead\nUnitFileState=\n',
@@ -530,8 +530,8 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         };
       });
 
-      const customInstallRoot = join(homeDir, '.happier', 'l1');
-      const previewInstallRoot = join(homeDir, '.happier', 'self-host-preview');
+      const customInstallRoot = join(homeDir, '.happiest', 'l1');
+      const previewInstallRoot = join(homeDir, '.happiest', 'self-host-preview');
       const unitDir = join(homeDir, '.config', 'systemd', 'user');
       await mkdir(customInstallRoot, { recursive: true });
       await mkdir(join(customInstallRoot, 'data'), { recursive: true });
@@ -543,16 +543,16 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         'utf8',
       );
       await writeFile(
-        join(unitDir, 'happier-server-preview.service'),
+        join(unitDir, 'happiest-server-preview.service'),
         [
           '[Unit]',
-          'Description=Happier Relay Runtime (happier-server-preview)',
+          'Description=Happiest Relay Runtime (happiest-server-preview)',
           '[Service]',
           `WorkingDirectory=${customInstallRoot}`,
-          'Environment=PORT=3005',
+          'Environment=PORT=3015',
           'Environment=HAPPIER_SERVER_HOST=127.0.0.1',
           'Environment=HAPPIER_PUBLIC_SERVER_URL=http://127.0.0.1:43215',
-          `ExecStart=${customInstallRoot}/bin/happier-server`,
+          `ExecStart=${customInstallRoot}/bin/happiest-server`,
           '',
         ].join('\n'),
         'utf8',
@@ -567,7 +567,7 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'preview-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'preview-1' }),
       });
 
       await expect(engine.installOrUpdate({
@@ -596,7 +596,7 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
     await mkdir(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init'), { recursive: true });
     await writeFile(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init', 'migration.sql'), '-- init\n', 'utf8');
 
-    const serverBinaryPath = join(payloadRoot, 'happier-server');
+    const serverBinaryPath = join(payloadRoot, 'happiest-server');
     await writeFile(serverBinaryPath, '#!/bin/sh\necho ok\n', 'utf8');
 
     Object.defineProperty(process, 'platform', { value: 'linux' });
@@ -617,14 +617,14 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
           spawnSync: (cmd: string, args?: readonly string[]) => {
             if (cmd === 'systemctl' && Array.isArray(args) && args.includes('show')) {
               const unit = String(args.find((value) => value.endsWith('.service')) ?? '');
-              if (unit === 'happier-server-preview.service') {
+              if (unit === 'happiest-server-preview.service') {
                 return {
                   status: 0,
                   stdout: 'LoadState=loaded\nActiveState=active\nSubState=running\nUnitFileState=enabled\n',
                   stderr: '',
                 };
               }
-              if (unit === 'happier-server.service') {
+              if (unit === 'happiest-server.service') {
                 return {
                   status: 0,
                   stdout: 'LoadState=loaded\nActiveState=inactive\nSubState=dead\nUnitFileState=disabled\n',
@@ -637,8 +637,8 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         };
       });
 
-      const legacyInstallRoot = join(homeDir, '.happier', 'l1', 'self-host');
-      const previewInstallRoot = join(homeDir, '.happier', 'self-host-preview');
+      const legacyInstallRoot = join(homeDir, '.happiest', 'l1', 'self-host');
+      const previewInstallRoot = join(homeDir, '.happiest', 'self-host-preview');
       const unitDir = join(homeDir, '.config', 'systemd', 'user');
       await mkdir(join(legacyInstallRoot, 'data'), { recursive: true });
       await mkdir(join(previewInstallRoot, 'data'), { recursive: true });
@@ -653,29 +653,29 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         'utf8',
       );
       await writeFile(
-        join(unitDir, 'happier-server.service'),
+        join(unitDir, 'happiest-server.service'),
         [
           '[Unit]',
-          'Description=Happier Relay Runtime',
+          'Description=Happiest Relay Runtime',
           '[Service]',
           `WorkingDirectory=${legacyInstallRoot}`,
-          'Environment=PORT=3005',
+          'Environment=PORT=3015',
           'Environment=HAPPIER_SERVER_HOST=127.0.0.1',
-          `ExecStart=${legacyInstallRoot}/bin/happier-server`,
+          `ExecStart=${legacyInstallRoot}/bin/happiest-server`,
           '',
         ].join('\n'),
         'utf8',
       );
       await writeFile(
-        join(unitDir, 'happier-server-preview.service'),
+        join(unitDir, 'happiest-server-preview.service'),
         [
           '[Unit]',
-          'Description=Happier Relay Runtime (happier-server-preview)',
+          'Description=Happiest Relay Runtime (happiest-server-preview)',
           '[Service]',
           `WorkingDirectory=${previewInstallRoot}`,
-          'Environment=PORT=3005',
+          'Environment=PORT=3015',
           'Environment=HAPPIER_SERVER_HOST=127.0.0.1',
-          `ExecStart=${previewInstallRoot}/bin/happier-server`,
+          `ExecStart=${previewInstallRoot}/bin/happiest-server`,
           '',
         ].join('\n'),
         'utf8',
@@ -690,7 +690,7 @@ describe('RelayHostEngine (installOrUpdate local legacy unit name)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'preview-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'preview-1' }),
       });
 
       await expect(engine.installOrUpdate({

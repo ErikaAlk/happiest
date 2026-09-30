@@ -13,7 +13,7 @@ import {
 async function createPayload(rootDir: string, versionId: string, contents: string): Promise<string> {
     const payloadRoot = join(rootDir, `payload-${versionId}`);
     await mkdir(join(payloadRoot, 'package-dist'), { recursive: true });
-    await writeFile(join(payloadRoot, 'happier'), contents, 'utf8');
+    await writeFile(join(payloadRoot, 'happiest'), contents, 'utf8');
     await writeFile(join(payloadRoot, 'package-dist', 'index.mjs'), `export default ${JSON.stringify(versionId)};\n`, 'utf8');
     return payloadRoot;
 }
@@ -25,7 +25,7 @@ describe('promoteVersionedPayload', () => {
 
         try {
             const stagedPayloadPath = await createPayload(homeDir, '1.0.0', 'first-version');
-            await writeFile(join(stagedPayloadPath, '._happier'), 'appledouble', 'utf8');
+            await writeFile(join(stagedPayloadPath, '._happiest'), 'appledouble', 'utf8');
             await mkdir(join(stagedPayloadPath, 'package-dist', 'nested'), { recursive: true });
             await writeFile(join(stagedPayloadPath, 'package-dist', 'nested', '._index.mjs'), 'appledouble', 'utf8');
 
@@ -42,7 +42,7 @@ describe('promoteVersionedPayload', () => {
                 componentId: 'happier-cli',
                 processEnv: env,
             });
-            expect(existsSync(join(paths.currentPath, '._happier'))).toBe(false);
+            expect(existsSync(join(paths.currentPath, '._happiest'))).toBe(false);
             expect(existsSync(join(paths.currentPath, 'package-dist', 'nested', '._index.mjs'))).toBe(false);
             expect(await readFile(paths.binaryPath, 'utf8')).toBe('first-version');
         } finally {

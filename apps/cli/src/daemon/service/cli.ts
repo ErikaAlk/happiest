@@ -42,10 +42,12 @@ import { commandExistsInPath } from './commandExistsInPath';
 import { resolveDaemonServiceRuntimeTarget } from './runtimeTarget';
 import { isManagedCliDaemonServiceLauncher, resolveDaemonServiceInstallRuntimeTarget } from './resolveDaemonServiceInstallRuntimeTarget';
 import { resolveLinuxSystemUserPaths } from './resolveLinuxSystemUserPaths';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { getReleaseRingPublicLabel, type PublicReleaseRingId } from '@happier-dev/release-runtime/releaseRings';
 import { expandHomeDirPath } from '@happier-dev/cli-common/providers';
 import {
   DAEMON_SERVICE_MANAGED_CLI_RELEASE_CHANNEL_ENV_KEYS,
+  getFirstPartyComponentCatalogEntry,
   resolveManagedCliReleaseChannelSync,
 } from '@happier-dev/cli-common/firstPartyRuntime';
 import { stopDaemon } from '@/daemon/controlClient';
@@ -1074,14 +1076,14 @@ function mapDaemonServiceListEntriesToInventory(
         const marker = `${String.raw`/.config/systemd/user/`}`;
         const index = installedPath.indexOf(marker);
         if (index > 0) {
-          return join(installedPath.slice(0, index), '.happier');
+          return join(installedPath.slice(0, index), productIdentity.homeDirName);
         }
       }
       if (entry.platform === 'darwin') {
         const marker = `${String.raw`/Library/LaunchAgents/`}`;
         const index = installedPath.indexOf(marker);
         if (index > 0) {
-          return join(installedPath.slice(0, index), '.happier');
+          return join(installedPath.slice(0, index), productIdentity.homeDirName);
         }
       }
       if (entry.platform === 'win32') {
@@ -1105,7 +1107,8 @@ function mapDaemonServiceListEntriesToInventory(
       : entry.releaseChannel === 'publicdev'
         ? 'cli-dev'
         : 'cli';
-    const binaryName = entry.platform === 'win32' ? 'happier.exe' : 'happier';
+    const cliBinaryRelativePath = getFirstPartyComponentCatalogEntry('happier-cli').binaryRelativePath;
+    const binaryName = entry.platform === 'win32' ? `${cliBinaryRelativePath}.exe` : cliBinaryRelativePath;
     const binaryPath = join(happierHomeDir, installRoot, 'current', binaryName);
 
     if (configuredCliVersionByBinaryPathCache.has(binaryPath)) {

@@ -108,7 +108,7 @@ describe('RelayHostEngine (local health)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
       });
 
       const status = await engine.readStatus({
@@ -130,43 +130,43 @@ describe('RelayHostEngine (local health)', () => {
         channel: 'preview',
         homeDir,
       });
-      const legacyInstallRoot = join(homeDir, '.happier', 'l1', 'self-host');
+      const legacyInstallRoot = join(homeDir, '.happiest', 'l1', 'self-host');
       const unitDir = join(homeDir, '.config', 'systemd', 'user');
 
       await mkdir(defaults.configDir, { recursive: true });
       await mkdir(join(defaults.installRoot, 'data'), { recursive: true });
       await mkdir(join(legacyInstallRoot, 'data'), { recursive: true });
       await mkdir(unitDir, { recursive: true });
-      await writeFile(join(defaults.configDir, 'server.env'), 'PORT=3005\nHAPPIER_SERVER_HOST=127.0.0.1\n', 'utf8');
+      await writeFile(join(defaults.configDir, 'server.env'), 'PORT=3015\nHAPPIER_SERVER_HOST=127.0.0.1\n', 'utf8');
       await writeFile(join(defaults.installRoot, 'self-host-state.json'), JSON.stringify({ version: '0.2.4' }), 'utf8');
       await writeFile(join(defaults.installRoot, 'data', 'handy-master-secret.txt'), 'preview-secret\n', 'utf8');
       await writeFile(join(legacyInstallRoot, 'data', 'handy-master-secret.txt'), 'legacy-secret\n', 'utf8');
       await writeFile(join(defaults.installRoot, 'data', 'happier-server-light.sqlite'), 'preview-db\n', 'utf8');
       await writeFile(join(legacyInstallRoot, 'data', 'happier-server-light.sqlite'), 'legacy-db\n', 'utf8');
       await writeFile(
-        join(unitDir, 'happier-server.service'),
+        join(unitDir, 'happiest-server.service'),
         [
           '[Unit]',
-          'Description=Happier Relay Runtime',
+          'Description=Happiest Relay Runtime',
           '[Service]',
           `WorkingDirectory=${legacyInstallRoot}`,
-          'Environment=PORT=3005',
+          'Environment=PORT=3015',
           'Environment=HAPPIER_SERVER_HOST=127.0.0.1',
-          `ExecStart=${legacyInstallRoot}/bin/happier-server`,
+          `ExecStart=${legacyInstallRoot}/bin/happiest-server`,
           '',
         ].join('\n'),
         'utf8',
       );
       await writeFile(
-        join(unitDir, 'happier-server-preview.service'),
+        join(unitDir, 'happiest-server-preview.service'),
         [
           '[Unit]',
-          'Description=Happier Relay Runtime (happier-server-preview)',
+          'Description=Happiest Relay Runtime (happiest-server-preview)',
           '[Service]',
           `WorkingDirectory=${defaults.installRoot}`,
-          'Environment=PORT=3005',
+          'Environment=PORT=3015',
           'Environment=HAPPIER_SERVER_HOST=127.0.0.1',
-          `ExecStart=${defaults.installRoot}/bin/happier-server`,
+          `ExecStart=${defaults.installRoot}/bin/happiest-server`,
           '',
         ].join('\n'),
         'utf8',
@@ -187,10 +187,10 @@ describe('RelayHostEngine (local health)', () => {
           spawnSync: (cmd: string, args?: readonly string[]) => {
             if (cmd === 'systemctl' && Array.isArray(args) && args.includes('show')) {
               const unit = String(args.find((value) => String(value).endsWith('.service')) ?? '');
-              if (unit === 'happier-server-preview.service') {
+              if (unit === 'happiest-server-preview.service') {
                 return { status: 0, stdout: 'ActiveState=active\nSubState=running\nUnitFileState=enabled\nLoadState=loaded\n', stderr: '' };
               }
-              if (unit === 'happier-server.service') {
+              if (unit === 'happiest-server.service') {
                 return { status: 0, stdout: 'ActiveState=inactive\nSubState=dead\nUnitFileState=disabled\nLoadState=loaded\n', stderr: '' };
               }
             }
@@ -204,7 +204,7 @@ describe('RelayHostEngine (local health)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
       });
 
       const status = await engine.readStatus({
@@ -268,7 +268,7 @@ describe('RelayHostEngine (local health)', () => {
           resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
           runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
           copyLocalDirectoryToRemote: async () => {},
-          installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+          installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
         });
 
         await engine.control({
@@ -334,7 +334,7 @@ describe('RelayHostEngine (local health)', () => {
           resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
           runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
           copyLocalDirectoryToRemote: async () => {},
-          installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+          installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
         });
 
         await engine.control({
@@ -375,7 +375,7 @@ describe('RelayHostEngine (local health)', () => {
       await mkdir(payloadRoot, { recursive: true });
       await mkdir(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init'), { recursive: true });
       await writeFile(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init', 'migration.sql'), '-- init\n', 'utf8');
-      const previewBinaryPath = join(payloadRoot, 'happier-server');
+      const previewBinaryPath = join(payloadRoot, 'happiest-server');
       await writeFile(previewBinaryPath, '#!/usr/bin/env bash\n', 'utf8');
       Object.defineProperty(process, 'platform', { value: 'linux' });
       vi.doMock('node:os', async () => {
@@ -395,7 +395,7 @@ describe('RelayHostEngine (local health)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
       });
 
       await expect(engine.installOrUpdate({
@@ -419,14 +419,14 @@ describe('RelayHostEngine (local health)', () => {
 
       await mkdir(stableDefaults.configDir, { recursive: true });
       await mkdir(stableDefaults.installRoot, { recursive: true });
-      await writeFile(join(stableDefaults.configDir, 'server.env'), 'PORT=3005\nHAPPIER_SERVER_HOST=127.0.0.1\n', 'utf8');
+      await writeFile(join(stableDefaults.configDir, 'server.env'), 'PORT=3015\nHAPPIER_SERVER_HOST=127.0.0.1\n', 'utf8');
       await writeFile(join(stableDefaults.installRoot, 'self-host-state.json'), JSON.stringify({ version: '0.1.2' }), 'utf8');
 
       const payloadRoot = join(homeDir, 'payload');
       await mkdir(payloadRoot, { recursive: true });
       await mkdir(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init'), { recursive: true });
       await writeFile(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init', 'migration.sql'), '-- init\n', 'utf8');
-      const previewBinaryPath = join(payloadRoot, 'happier-server');
+      const previewBinaryPath = join(payloadRoot, 'happiest-server');
       await writeFile(previewBinaryPath, '#!/usr/bin/env bash\n', 'utf8');
       Object.defineProperty(process, 'platform', { value: 'linux' });
       vi.doMock('node:os', async () => {
@@ -446,7 +446,7 @@ describe('RelayHostEngine (local health)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
       });
 
       const result = await engine.installOrUpdate({
@@ -456,7 +456,7 @@ describe('RelayHostEngine (local health)', () => {
         selfHostRelayBinaryOverride: previewBinaryPath,
       });
 
-      expect(result.relayUrl).not.toMatch(/:3005(\/|$)/);
+      expect(result.relayUrl).not.toMatch(/:3015(\/|$)/);
       expect(result.relayUrl).toMatch(/^http:\/\/127\.0\.0\.1:\d+/);
     });
   });
@@ -470,7 +470,7 @@ describe('RelayHostEngine (local health)', () => {
         channel: 'preview',
         homeDir,
       });
-      const legacyInstallRoot = join(homeDir, '.happier', 'l1', 'self-host');
+      const legacyInstallRoot = join(homeDir, '.happiest', 'l1', 'self-host');
       const payloadRoot = join(homeDir, 'payload');
       const unitDir = join(homeDir, '.config', 'systemd', 'user');
 
@@ -479,19 +479,19 @@ describe('RelayHostEngine (local health)', () => {
       await mkdir(payloadRoot, { recursive: true });
       await mkdir(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init'), { recursive: true });
       await writeFile(join(payloadRoot, 'prisma', 'sqlite', 'migrations', '20200101000000_init', 'migration.sql'), '-- init\n', 'utf8');
-      const previewBinaryPath = join(payloadRoot, 'happier-server');
+      const previewBinaryPath = join(payloadRoot, 'happiest-server');
       await writeFile(previewBinaryPath, '#!/usr/bin/env bash\n', 'utf8');
       await mkdir(unitDir, { recursive: true });
       await writeFile(
-        join(unitDir, 'happier-server.service'),
+        join(unitDir, 'happiest-server.service'),
         [
           '[Unit]',
-          'Description=Happier Self-Host (happier-server)',
+          'Description=Happiest Self-Host (happiest-server)',
           '[Service]',
           `WorkingDirectory=${legacyInstallRoot}`,
           `Environment=PORT=${port}`,
           'Environment=HAPPIER_SERVER_HOST=127.0.0.1',
-          `ExecStart=${legacyInstallRoot}/bin/happier-server`,
+          `ExecStart=${legacyInstallRoot}/bin/happiest-server`,
           '',
         ].join('\n'),
         'utf8',
@@ -512,7 +512,7 @@ describe('RelayHostEngine (local health)', () => {
           spawnSync: (cmd: string, args?: readonly string[]) => {
             if (cmd === 'systemctl' && Array.isArray(args) && args.includes('show')) {
               const unitArg = args.find((entry) => typeof entry === 'string' && entry.endsWith('.service')) ?? '';
-              if (unitArg === 'happier-server.service') {
+              if (unitArg === 'happiest-server.service') {
                 return {
                   status: 0,
                   stdout: 'ActiveState=active\nSubState=running\nUnitFileState=enabled\nLoadState=loaded\n',
@@ -535,7 +535,7 @@ describe('RelayHostEngine (local health)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
       });
 
       await expect(engine.installOrUpdate({
@@ -571,21 +571,21 @@ describe('RelayHostEngine (local health)', () => {
       const unitDir = join(homeDir, '.config', 'systemd', 'user');
 
       await mkdir(stableDefaults.configDir, { recursive: true });
-      await writeFile(join(stableDefaults.configDir, 'server.env'), 'PORT=3005\nHAPPIER_SERVER_HOST=127.0.0.1\n', 'utf8');
+      await writeFile(join(stableDefaults.configDir, 'server.env'), 'PORT=3015\nHAPPIER_SERVER_HOST=127.0.0.1\n', 'utf8');
       await mkdir(unitDir, { recursive: true });
       await mkdir(stableDefaults.installRoot, { recursive: true });
       await mkdir(join(stableDefaults.installRoot, 'data'), { recursive: true });
       await writeFile(join(stableDefaults.installRoot, 'data', 'session-marker.txt'), 'legacy\n', 'utf8');
       await writeFile(
-        join(unitDir, 'happier-server.service'),
+        join(unitDir, 'happiest-server.service'),
         [
           '[Unit]',
-          'Description=Happier Self-Host (happier-server)',
+          'Description=Happiest Self-Host (happiest-server)',
           '[Service]',
           `WorkingDirectory=${stableDefaults.installRoot}`,
-          'Environment=PORT=3005',
+          'Environment=PORT=3015',
           'Environment=HAPPIER_SERVER_HOST=127.0.0.1',
-          `ExecStart=${stableDefaults.installRoot}/bin/happier-server`,
+          `ExecStart=${stableDefaults.installRoot}/bin/happiest-server`,
           '',
         ].join('\n'),
         'utf8',
@@ -593,7 +593,7 @@ describe('RelayHostEngine (local health)', () => {
 
       const payloadDir = join(homeDir, 'payload-preview');
       await mkdir(payloadDir, { recursive: true });
-      const previewBinaryPath = join(payloadDir, 'happier-server');
+      const previewBinaryPath = join(payloadDir, 'happiest-server');
       await writeFile(previewBinaryPath, '#!/usr/bin/env bash\n', 'utf8');
 
       Object.defineProperty(process, 'platform', { value: 'linux' });
@@ -611,7 +611,7 @@ describe('RelayHostEngine (local health)', () => {
           spawnSync: (cmd: string, args?: readonly string[]) => {
             if (cmd === 'systemctl' && Array.isArray(args) && args.includes('show')) {
               const unitArg = args.find((entry) => typeof entry === 'string' && entry.endsWith('.service')) ?? '';
-              if (unitArg === 'happier-server.service') {
+              if (unitArg === 'happiest-server.service') {
                 return { status: 0, stdout: 'ActiveState=active\nSubState=running\nUnitFileState=enabled\nLoadState=loaded\n', stderr: '' };
               }
               return { status: 1, stdout: 'LoadState=not-found\n', stderr: '' };
@@ -630,7 +630,7 @@ describe('RelayHostEngine (local health)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
       });
 
       await expect(engine.installOrUpdate({
@@ -662,7 +662,7 @@ describe('RelayHostEngine (local health)', () => {
       const unitDir = join(homeDir, '.config', 'systemd', 'user');
 
       await mkdir(stableDefaults.configDir, { recursive: true });
-      await writeFile(join(stableDefaults.configDir, 'server.env'), 'PORT=3005\nHAPPIER_SERVER_HOST=127.0.0.1\n', 'utf8');
+      await writeFile(join(stableDefaults.configDir, 'server.env'), 'PORT=3015\nHAPPIER_SERVER_HOST=127.0.0.1\n', 'utf8');
       await mkdir(unitDir, { recursive: true });
       await mkdir(stableDefaults.installRoot, { recursive: true });
       await mkdir(join(stableDefaults.installRoot, 'data'), { recursive: true });
@@ -673,15 +673,15 @@ describe('RelayHostEngine (local health)', () => {
         'utf8',
       );
       await writeFile(
-        join(unitDir, 'happier-server.service'),
+        join(unitDir, 'happiest-server.service'),
         [
           '[Unit]',
-          'Description=Happier Self-Host (happier-server)',
+          'Description=Happiest Self-Host (happiest-server)',
           '[Service]',
           `WorkingDirectory=${stableDefaults.installRoot}`,
-          'Environment=PORT=3005',
+          'Environment=PORT=3015',
           'Environment=HAPPIER_SERVER_HOST=127.0.0.1',
-          `ExecStart=${stableDefaults.installRoot}/bin/happier-server`,
+          `ExecStart=${stableDefaults.installRoot}/bin/happiest-server`,
           '',
         ].join('\n'),
         'utf8',
@@ -689,7 +689,7 @@ describe('RelayHostEngine (local health)', () => {
 
       const payloadDir = join(homeDir, 'payload-preview');
       await mkdir(payloadDir, { recursive: true });
-      const previewBinaryPath = join(payloadDir, 'happier-server');
+      const previewBinaryPath = join(payloadDir, 'happiest-server');
       await writeFile(previewBinaryPath, '#!/usr/bin/env bash\n', 'utf8');
 
       Object.defineProperty(process, 'platform', { value: 'linux' });
@@ -707,7 +707,7 @@ describe('RelayHostEngine (local health)', () => {
           spawnSync: (cmd: string, args?: readonly string[]) => {
             if (cmd === 'systemctl' && Array.isArray(args) && args.includes('show')) {
               const unitArg = args.find((entry) => typeof entry === 'string' && entry.endsWith('.service')) ?? '';
-              if (unitArg === 'happier-server.service') {
+              if (unitArg === 'happiest-server.service') {
                 return { status: 0, stdout: 'ActiveState=active\nSubState=running\nUnitFileState=enabled\nLoadState=loaded\n', stderr: '' };
               }
               return { status: 1, stdout: 'LoadState=not-found\n', stderr: '' };
@@ -726,7 +726,7 @@ describe('RelayHostEngine (local health)', () => {
         resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
         runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
         copyLocalDirectoryToRemote: async () => {},
-        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'publicdev-1' }),
+        installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'publicdev-1' }),
       });
 
       await expect(engine.installOrUpdate({

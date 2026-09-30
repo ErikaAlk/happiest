@@ -73,12 +73,12 @@ describe('happier relay host install local server-binary version tracking', () =
         preparedPayloadRoot = await createTempDir('happier-relay-local-version-prepared-');
         serverPayloadRoot = await createTempDir('candidate-server-0.2.4');
 
-        writeFileSync(join(preparedPayloadRoot, 'happier-server'), '#!/usr/bin/env bash\nexit 0\n', 'utf8');
-        chmodSync(join(preparedPayloadRoot, 'happier-server'), 0o755);
+        writeFileSync(join(preparedPayloadRoot, 'happiest-server'), '#!/usr/bin/env bash\nexit 0\n', 'utf8');
+        chmodSync(join(preparedPayloadRoot, 'happiest-server'), 0o755);
 
         mkdirSync(join(serverPayloadRoot, 'bin'), { recursive: true });
-        writeFileSync(join(serverPayloadRoot, 'bin', 'happier-server'), '#!/usr/bin/env bash\nexit 0\n', 'utf8');
-        chmodSync(join(serverPayloadRoot, 'bin', 'happier-server'), 0o755);
+        writeFileSync(join(serverPayloadRoot, 'bin', 'happiest-server'), '#!/usr/bin/env bash\nexit 0\n', 'utf8');
+        chmodSync(join(serverPayloadRoot, 'bin', 'happiest-server'), 0o755);
 
         mockedPreparedPayloadRoot = preparedPayloadRoot;
         mockedPreparedVersionId = 'preview-release-0.2.1';
@@ -106,8 +106,8 @@ describe('happier relay host install local server-binary version tracking', () =
             const { commandRegistry } = await import('../commandRegistry');
 
             await commandRegistry.relay({
-                args: ['relay', 'host', 'install', '--server-binary', join(serverPayloadRoot, 'bin', 'happier-server'), '--json'],
-                rawArgv: ['node', 'hprev', 'relay', 'host', 'install', '--server-binary', join(serverPayloadRoot, 'bin', 'happier-server'), '--json'],
+                args: ['relay', 'host', 'install', '--server-binary', join(serverPayloadRoot, 'bin', 'happiest-server'), '--json'],
+                rawArgv: ['node', 'happiest-preview', 'relay', 'host', 'install', '--server-binary', join(serverPayloadRoot, 'bin', 'happiest-server'), '--json'],
                 terminalRuntime: null,
             });
 
@@ -127,7 +127,7 @@ describe('happier relay host install local server-binary version tracking', () =
         const output = captureConsoleLogAndMuteStdout();
         const prevExitCode = process.exitCode;
         process.exitCode = undefined;
-        const serverBinaryPath = join(serverPayloadRoot, 'bin', 'happier-server');
+        const serverBinaryPath = join(serverPayloadRoot, 'bin', 'happiest-server');
 
         try {
             const { commandRegistry } = await import('../commandRegistry');
@@ -145,7 +145,7 @@ describe('happier relay host install local server-binary version tracking', () =
                 ],
                 rawArgv: [
                     'node',
-                    'hprev',
+                    'happiest-preview',
                     'relay',
                     'host',
                     'install',
@@ -176,7 +176,7 @@ describe('happier relay host install local server-binary version tracking', () =
 
             await commandRegistry.relay({
                 args: ['relay', 'host', 'install', '--yes', '--json'],
-                rawArgv: ['node', 'hprev', 'relay', 'host', 'install', '--yes', '--json'],
+                rawArgv: ['node', 'happiest-preview', 'relay', 'host', 'install', '--yes', '--json'],
                 terminalRuntime: null,
             });
 

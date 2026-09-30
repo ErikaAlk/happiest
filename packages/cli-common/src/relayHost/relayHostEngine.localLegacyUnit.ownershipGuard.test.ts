@@ -25,10 +25,10 @@ describe('RelayHostEngine (local legacy systemd unit ownership guard)', () => {
                         invoked.push([cmd, ...(Array.isArray(args) ? args : [])].join(' '));
                         if (cmd === 'systemctl' && Array.isArray(args) && args.includes('show') && args.includes('--property=LoadState')) {
                             const unit = String(args.find((value) => String(value).endsWith('.service')) ?? '');
-                            if (unit === 'happier-server-preview.service') {
+                            if (unit === 'happiest-server-preview.service') {
                                 return { status: 0, stdout: 'LoadState=not-found\n', stderr: '' };
                             }
-                            if (unit === 'happier-server.service') {
+                            if (unit === 'happiest-server.service') {
                                 return { status: 0, stdout: 'LoadState=loaded\n', stderr: '' };
                             }
                         }
@@ -41,7 +41,7 @@ describe('RelayHostEngine (local legacy systemd unit ownership guard)', () => {
                 const actual = await vi.importActual<typeof import('node:fs')>('node:fs');
                 return {
                     ...actual,
-                    existsSync: (path: string) => path.endsWith('/.config/systemd/user/happier-server.service'),
+                    existsSync: (path: string) => path.endsWith('/.config/systemd/user/happiest-server.service'),
                 };
             });
 
@@ -50,9 +50,9 @@ describe('RelayHostEngine (local legacy systemd unit ownership guard)', () => {
                 return {
                     ...actual,
                     readFile: async (path: string) => {
-                        if (path.endsWith('/.config/systemd/user/happier-server.service')) {
+                        if (path.endsWith('/.config/systemd/user/happiest-server.service')) {
                             // Stable install root, not preview.
-                            return '[Service]\nWorkingDirectory=/tmp/happy-home/.happier/self-host\n';
+                            return '[Service]\nWorkingDirectory=/tmp/happy-home/.happiest/self-host\n';
                         }
                         return '';
                     },
@@ -65,7 +65,7 @@ describe('RelayHostEngine (local legacy systemd unit ownership guard)', () => {
                 resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
                 runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
                 copyLocalDirectoryToRemote: async () => {},
-                installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'preview-1' }),
+                installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'preview-1' }),
             });
 
             await engine.control({
@@ -75,8 +75,8 @@ describe('RelayHostEngine (local legacy systemd unit ownership guard)', () => {
                 action: 'stop',
             });
 
-            expect(invoked.some((line) => line.includes('systemctl --user stop happier-server-preview.service'))).toBe(true);
-            expect(invoked.some((line) => line.includes('systemctl --user stop happier-server.service'))).toBe(false);
+            expect(invoked.some((line) => line.includes('systemctl --user stop happiest-server-preview.service'))).toBe(true);
+            expect(invoked.some((line) => line.includes('systemctl --user stop happiest-server.service'))).toBe(false);
         } finally {
             Object.defineProperty(process, 'platform', { value: originalPlatform });
             vi.resetModules();
@@ -108,10 +108,10 @@ describe('RelayHostEngine (local legacy systemd unit ownership guard)', () => {
                         invoked.push([cmd, ...(Array.isArray(args) ? args : [])].join(' '));
                         if (cmd === 'systemctl' && Array.isArray(args) && args.includes('show') && args.includes('--property=LoadState')) {
                             const unit = String(args.find((value) => String(value).endsWith('.service')) ?? '');
-                            if (unit === 'happier-server-preview.service') {
+                            if (unit === 'happiest-server-preview.service') {
                                 return { status: 0, stdout: 'LoadState=not-found\n', stderr: '' };
                             }
-                            if (unit === 'happier-server.service') {
+                            if (unit === 'happiest-server.service') {
                                 return { status: 0, stdout: 'LoadState=loaded\n', stderr: '' };
                             }
                         }
@@ -124,7 +124,7 @@ describe('RelayHostEngine (local legacy systemd unit ownership guard)', () => {
                 const actual = await vi.importActual<typeof import('node:fs')>('node:fs');
                 return {
                     ...actual,
-                    existsSync: (path: string) => path.endsWith('/.config/systemd/user/happier-server.service'),
+                    existsSync: (path: string) => path.endsWith('/.config/systemd/user/happiest-server.service'),
                 };
             });
 
@@ -133,8 +133,8 @@ describe('RelayHostEngine (local legacy systemd unit ownership guard)', () => {
                 return {
                     ...actual,
                     readFile: async (path: string) => {
-                        if (path.endsWith('/.config/systemd/user/happier-server.service')) {
-                            return '[Service]\nWorkingDirectory=/tmp/happy-home/.happier/self-host\n';
+                        if (path.endsWith('/.config/systemd/user/happiest-server.service')) {
+                            return '[Service]\nWorkingDirectory=/tmp/happy-home/.happiest/self-host\n';
                         }
                         return '';
                     },
@@ -147,7 +147,7 @@ describe('RelayHostEngine (local legacy systemd unit ownership guard)', () => {
                 resolveRemoteReleaseTarget: async () => ({ os: 'linux', arch: 'x64' }),
                 runRemoteText: async () => ({ status: 0, stdout: '', stderr: '' }),
                 copyLocalDirectoryToRemote: async () => {},
-                installRemoteComponent: async () => ({ binaryPath: '$HOME/.happier/happier-server/current/happier-server', versionId: 'preview-1' }),
+                installRemoteComponent: async () => ({ binaryPath: '$HOME/.happiest/happiest-server/current/happiest-server', versionId: 'preview-1' }),
             });
 
             await engine.control({
@@ -160,7 +160,7 @@ describe('RelayHostEngine (local legacy systemd unit ownership guard)', () => {
             expect(invoked.some((line) =>
                 line.includes('systemctl')
                 && line.includes('disable')
-                && line.includes('happier-server.service')
+                && line.includes('happiest-server.service')
             )).toBe(false);
         } finally {
             Object.defineProperty(process, 'platform', { value: originalPlatform });

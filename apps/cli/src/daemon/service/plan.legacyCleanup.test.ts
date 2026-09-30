@@ -21,7 +21,7 @@ describe('daemon service legacy cleanup planning', () => {
 
     expect(plan.commands).toContainEqual({
       cmd: 'systemctl',
-      args: ['--user', 'disable', '--now', 'happier-daemon.service'],
+      args: ['--user', 'disable', '--now', 'happiest-daemon.service'],
       ignoreFailure: true,
     });
   });
@@ -38,12 +38,12 @@ describe('daemon service legacy cleanup planning', () => {
 
     expect(plan.commands).toContainEqual({
       cmd: 'systemctl',
-      args: ['--user', 'disable', '--now', 'happier-daemon.service'],
+      args: ['--user', 'disable', '--now', 'happiest-daemon.service'],
       ignoreFailure: true,
     });
     expect(plan.commands).toContainEqual({
       cmd: 'systemctl',
-      args: ['--user', 'stop', 'happier-daemon.service'],
+      args: ['--user', 'stop', 'happiest-daemon.service'],
       ignoreFailure: true,
     });
   });
@@ -58,15 +58,15 @@ describe('daemon service legacy cleanup planning', () => {
       userHomeDir: '/home/tester',
     });
 
-    expect(plan.filesToRemove).toContain('/home/tester/.config/systemd/user/happier-daemon.dev.default.service');
+    expect(plan.filesToRemove).toContain('/home/tester/.config/systemd/user/happiest-daemon.dev.default.service');
     expect(plan.commands).toContainEqual({
       cmd: 'systemctl',
-      args: ['--user', 'disable', '--now', 'happier-daemon.dev.default.service'],
+      args: ['--user', 'disable', '--now', 'happiest-daemon.dev.default.service'],
       ignoreFailure: true,
     });
     expect(plan.commands).toContainEqual({
       cmd: 'systemctl',
-      args: ['--user', 'stop', 'happier-daemon.dev.default.service'],
+      args: ['--user', 'stop', 'happiest-daemon.dev.default.service'],
       ignoreFailure: true,
     });
   });
@@ -79,18 +79,18 @@ describe('daemon service legacy cleanup planning', () => {
       targetMode: 'default-following',
       instanceId: 'default',
       userHomeDir: '/home/tester',
-      installedPath: '/home/tester/.config/systemd/user/happier-daemon.dev.default.service',
+      installedPath: '/home/tester/.config/systemd/user/happiest-daemon.dev.default.service',
     });
 
-    expect(plan.filesToRemove).toContain('/home/tester/.config/systemd/user/happier-daemon.dev.default.service');
-    expect(plan.filesToRemove).not.toContain('/home/tester/.config/systemd/user/happier-daemon.default.service');
+    expect(plan.filesToRemove).toContain('/home/tester/.config/systemd/user/happiest-daemon.dev.default.service');
+    expect(plan.filesToRemove).not.toContain('/home/tester/.config/systemd/user/happiest-daemon.default.service');
     expect(plan.commands).toContainEqual({
       cmd: 'systemctl',
-      args: ['--user', 'disable', '--now', 'happier-daemon.dev.default.service'],
+      args: ['--user', 'disable', '--now', 'happiest-daemon.dev.default.service'],
     });
     expect(plan.commands).not.toContainEqual({
       cmd: 'systemctl',
-      args: ['--user', 'disable', '--now', 'happier-daemon.default.service'],
+      args: ['--user', 'disable', '--now', 'happiest-daemon.default.service'],
     });
   });
 
@@ -112,12 +112,12 @@ describe('daemon service legacy cleanup planning', () => {
 
     expect(plan.commands).toContainEqual({
       cmd: 'schtasks',
-      args: ['/End', '/TN', 'Happier\\happier-daemon'],
+      args: ['/End', '/TN', 'Happiest\\happiest-daemon'],
       ignoreFailure: true,
     });
     expect(plan.commands).toContainEqual({
       cmd: 'schtasks',
-      args: ['/Delete', '/F', '/TN', 'Happier\\happier-daemon'],
+      args: ['/Delete', '/F', '/TN', 'Happiest\\happiest-daemon'],
       ignoreFailure: true,
     });
   });

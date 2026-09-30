@@ -17,8 +17,8 @@ import { acquireManagedLocalFirstPartyComponentCommand } from './localFirstParty
 import { createHsetupSystemTaskRegistry } from './registry.js';
 
 const VERSION = '0.2.13';
-const ARCHIVE = `happier-v${VERSION}-${process.platform}-${process.arch}.tar.gz`;
-const CHECKSUMS = `checksums-happier-v${VERSION}.txt`;
+const ARCHIVE = `happiest-v${VERSION}-${process.platform}-${process.arch}.tar.gz`;
+const CHECKSUMS = `checksums-happiest-v${VERSION}.txt`;
 const cleanups: Array<() => Promise<void>> = [];
 
 afterEach(async () => {
@@ -40,11 +40,11 @@ async function createReleaseFixture() {
     auth: { authenticated: false, machineRegistered: false, machineId: null, needsAuth: true, accountId: null },
   } satisfies DoctorSnapshotDaemonStatus;
   // A real executable at the process boundary; all installation and task internals stay real.
-  await writeFile(join(payload, 'happier'), `#!${process.execPath}
+  await writeFile(join(payload, 'happiest'), `#!${process.execPath}
 if (process.argv.includes('--version')) console.log('${VERSION}');
 else console.log(JSON.stringify(${JSON.stringify(daemonStatus)}));
 `);
-  await chmod(join(payload, 'happier'), 0o755);
+  await chmod(join(payload, 'happiest'), 0o755);
   const archivePath = join(root, ARCHIVE);
   execFileSync('tar', ['-czf', archivePath, '-C', root, 'payload']);
   const archive = await readFile(archivePath);

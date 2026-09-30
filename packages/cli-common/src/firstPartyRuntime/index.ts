@@ -102,6 +102,7 @@ export type { SyncInstalledFirstPartyShimsResult } from './syncInstalledFirstPar
 export { resolveDesiredShimTargets } from './resolveDesiredShimTargets.js';
 export type { DesiredFirstPartyShimTarget } from './resolveDesiredShimTargets.js';
 export {
+  RELAY_RUNTIME_SERVICE_BASE_NAME,
   checkRelayRuntimeHealth,
   resolveConfiguredRelayRuntimeBinaryOverride,
   resolveConfiguredRelayRuntimePaths,
@@ -132,6 +133,7 @@ export type { PrismaSqliteDatabaseUrlOptions, SelfHostServerMigrationPlan } from
 
 export {
   SERVER_RUNTIME_DIRECTORY_ENTRY_NAMES,
+  SERVER_RUNTIME_EXECUTABLE_BASE_NAMES,
   assertPackagedServerRuntimeClosure,
   relocateServerRuntimeArtifactClosure,
   resolveManagedServerRuntimePaths,

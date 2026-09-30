@@ -17,6 +17,7 @@
   "dependencies": {
     "@happier-dev/cli-common": "0.0.0",
     "@happier-dev/protocol": "0.0.0",
+    "@happier-dev/release-runtime": "0.0.0",
     "zod": "4.3.6"
   },
   "devDependencies": {

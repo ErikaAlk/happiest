@@ -2,6 +2,8 @@ import { existsSync } from 'node:fs';
 import { mkdir, rename, stat } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
 
+import { getFirstPartyComponentCatalogEntry } from './componentCatalog.js';
+
 export const SERVER_RUNTIME_DIRECTORY_ENTRY_NAMES = Object.freeze([
     'generated',
     'node_modules',
@@ -9,14 +11,22 @@ export const SERVER_RUNTIME_DIRECTORY_ENTRY_NAMES = Object.freeze([
     'runtime',
 ] as const);
 
+const SERVER_EXECUTABLE_BASE_NAME = getFirstPartyComponentCatalogEntry('happier-server').executableBaseName;
+
+/** Executable names of a server payload before the platform suffix; the build and every installer read them here. */
+export const SERVER_RUNTIME_EXECUTABLE_BASE_NAMES = Object.freeze({
+    server: SERVER_EXECUTABLE_BASE_NAME,
+    migrate: `${SERVER_EXECUTABLE_BASE_NAME}-migrate`,
+});
+
 export function resolveServerRuntimeExecutableNames(platform: NodeJS.Platform = process.platform): Readonly<{
     server: string;
     migrate: string;
 }> {
     const suffix = platform === 'win32' ? '.exe' : '';
     return {
-        server: `happier-server${suffix}`,
-        migrate: `happier-server-migrate${suffix}`,
+        server: `${SERVER_RUNTIME_EXECUTABLE_BASE_NAMES.server}${suffix}`,
+        migrate: `${SERVER_RUNTIME_EXECUTABLE_BASE_NAMES.migrate}${suffix}`,
     };
 }
 

@@ -32,7 +32,7 @@ vi.mock('@happier-dev/cli-common/firstPartyRuntime', async (importOriginal) => {
             const arch = String(params.arch ?? '').trim() || 'unknown';
             const rootDir = mkdtempSync(join(tmpdir(), `happier-first-party-mock-${arch}-`));
             preparedRoots.push(rootDir);
-            for (const name of ['happier', 'happier-server']) {
+            for (const name of ['happiest', 'happiest-server']) {
                 const binPath = join(rootDir, name);
                 writeFileSync(binPath, '#!/usr/bin/env bash\necho stub\n', 'utf8');
                 chmodSync(binPath, 0o755);
@@ -190,7 +190,7 @@ describe('happier relay host arch resolution', () => {
             await withPatchedPath(fakeSsh.binDir, async () => {
                 await commandRegistry.relay({
                     args: ['relay', 'host', 'install', '--ssh', 'dev@example.test', '--json'],
-                    rawArgv: ['node', 'happier', 'relay', 'host', 'install', '--ssh', 'dev@example.test', '--json'],
+                    rawArgv: ['node', 'happiest', 'relay', 'host', 'install', '--ssh', 'dev@example.test', '--json'],
                     terminalRuntime: null,
                 });
             });
@@ -229,7 +229,7 @@ describe('happier relay host arch resolution', () => {
             await withPatchedPath(fakeSsh.binDir, async () => {
                 await commandRegistry.relay({
                     args: ['relay', 'host', 'status', '--ssh', 'dev@example.test', '--json'],
-                    rawArgv: ['node', 'happier', 'relay', 'host', 'status', '--ssh', 'dev@example.test', '--json'],
+                    rawArgv: ['node', 'happiest', 'relay', 'host', 'status', '--ssh', 'dev@example.test', '--json'],
                     terminalRuntime: null,
                 });
             });

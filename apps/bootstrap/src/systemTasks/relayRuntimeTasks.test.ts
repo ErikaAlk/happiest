@@ -151,11 +151,11 @@ describe('installOrUpdateRelayRuntimeDefault', () => {
         try {
             mkdirSync(payloadRoot, { recursive: true });
             writeFileSync(
-                join(payloadRoot, 'happier-server'),
+                join(payloadRoot, 'happiest-server'),
                 '#!/bin/sh\nexit 0\n',
                 'utf8',
             );
-            chmodSync(join(payloadRoot, 'happier-server'), 0o755);
+            chmodSync(join(payloadRoot, 'happiest-server'), 0o755);
 
             preparePayloadMock.mockImplementation(async ({ componentId }) => {
                 if (componentId === 'hstack') {
@@ -184,7 +184,7 @@ describe('installOrUpdateRelayRuntimeDefault', () => {
                 runLocalServiceCommands: false,
                 skipLocalHealthCheck: true,
             })).resolves.toMatchObject({
-                relayUrl: 'http://127.0.0.1:3005',
+                relayUrl: 'http://127.0.0.1:3015',
                 mode: 'user',
             });
 
@@ -193,9 +193,9 @@ describe('installOrUpdateRelayRuntimeDefault', () => {
             }));
             expect(createRelayHostEngineMock).toHaveBeenCalled();
 
-            const installRoot = join(fakeOsHomeDir, '.happier', 'self-host');
+            const installRoot = join(fakeOsHomeDir, '.happiest', 'self-host');
             expect(readFileSync(join(installRoot, 'self-host-state.json'), 'utf8')).toContain('"version"');
-            expect(readFileSync(join(installRoot, 'config', 'server.env'), 'utf8')).toContain('PORT=3005');
+            expect(readFileSync(join(installRoot, 'config', 'server.env'), 'utf8')).toContain('PORT=3015');
         } finally {
             if (previousHomeDir === undefined) {
                 delete process.env.HAPPIEST_HOME_DIR;
@@ -240,8 +240,8 @@ describe('installOrUpdateRelayRuntimeDefault', () => {
                 }, {}, {
                     installRemoteFirstPartyComponent: async ({ componentId }) => ({
                         binaryPath: componentId === 'happier-cli'
-                            ? '$HOME/.happier/cli/current/happier'
-                            : '$HOME/.happier/server/current/happier-server',
+                            ? '$HOME/.happiest/cli/current/happiest'
+                            : '$HOME/.happiest/server/current/happiest-server',
                         versionId: '1.2.3',
                         source: 'https://example.test/payload.tgz',
                     }),
@@ -275,13 +275,13 @@ describe('installOrUpdateRelayRuntimeDefault', () => {
                         switch (componentId) {
                             case 'happier-cli':
                                 return {
-                                    binaryPath: '$HOME/.happier/cli/current/happier',
+                                    binaryPath: '$HOME/.happiest/cli/current/happiest',
                                     versionId: '1.2.3',
                                     source: 'https://example.test/payload.tgz',
                                 };
                             case 'happier-server':
                                 return {
-                                    binaryPath: '$HOME/.happier/server/current/happier-server',
+                                    binaryPath: '$HOME/.happiest/server/current/happiest-server',
                                     versionId: '1.2.3',
                                     source: 'https://example.test/payload.tgz',
                                 };

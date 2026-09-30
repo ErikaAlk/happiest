@@ -96,7 +96,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
             await mkdir(payloadRoot, { recursive: true });
             await mkdir(join(payloadRoot, 'ui-web', 'current'), { recursive: true });
             await writeFile(join(payloadRoot, 'ui-web', 'current', 'index.html'), '<script src="/assets/index-a.js"></script>\n', 'utf8');
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho new-runtime\n', 'utf8');
             const defaults = resolveRelayRuntimeDefaults({
                 platform: 'linux',
@@ -154,14 +154,14 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
         try {
             const payloadRoot = join(homeDir, 'payload');
             await mkdir(payloadRoot, { recursive: true });
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\n', 'utf8');
             await mkdir(join(payloadRoot, 'runtime'), { recursive: true });
             await mkdir(join(payloadRoot, 'prisma', 'migrations'), { recursive: true });
             await writeFile(join(payloadRoot, 'runtime', 'fixture.txt'), 'runtime\n', 'utf8');
             await writeFile(join(payloadRoot, 'prisma', 'migrations', 'fixture.sql'), '-- fixture\n', 'utf8');
             const migrationMarkerPath = join(homeDir, 'migration-ran.txt');
-            const migrationBinaryPath = join(payloadRoot, 'happier-server-migrate');
+            const migrationBinaryPath = join(payloadRoot, 'happiest-server-migrate');
             await writeFile(migrationBinaryPath, [
                 '#!/bin/sh',
                 'set -eu',
@@ -193,7 +193,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
             await expect(readFile(join(defaults.installRoot, 'bin', 'runtime', 'fixture.txt'), 'utf8')).resolves.toBe('runtime\n');
             await expect(readFile(join(defaults.installRoot, 'bin', 'prisma', 'migrations', 'fixture.sql'), 'utf8'))
                 .resolves.toBe('-- fixture\n');
-            await expect(access(join(defaults.installRoot, 'happier-server-migrate'))).rejects.toMatchObject({ code: 'ENOENT' });
+            await expect(access(join(defaults.installRoot, 'happiest-server-migrate'))).rejects.toMatchObject({ code: 'ENOENT' });
         } finally {
             await rm(homeDir, { recursive: true, force: true });
         }
@@ -207,7 +207,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
             await mkdir(migrationsSourceDir, { recursive: true });
             await writeFile(join(migrationsSourceDir, 'migration.sql'), '-- init\n', 'utf8');
 
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho new-runtime\n', 'utf8');
 
             const { resolveRelayRuntimeDefaults } = await import('./relayRuntime.js');
@@ -218,7 +218,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
                 homeDir,
             });
 
-            const installServerBinaryPath = join(defaults.installRoot, 'bin', 'happier-server');
+            const installServerBinaryPath = join(defaults.installRoot, 'bin', 'happiest-server');
             await mkdir(join(dirname(installServerBinaryPath), 'generated'), { recursive: true });
             await mkdir(join(dirname(installServerBinaryPath), 'node_modules', '.prisma', 'client'), { recursive: true });
             await mkdir(join(dirname(installServerBinaryPath), 'node_modules', '@prisma', 'client'), { recursive: true });
@@ -270,7 +270,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
             await mkdir(migrationsSourceDir, { recursive: true });
             await writeFile(join(migrationsSourceDir, 'migration.sql'), '-- init\n', 'utf8');
 
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho new-runtime\n', 'utf8');
 
             checkRelayRuntimeHealthMock.mockResolvedValue({
@@ -303,7 +303,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
             await mkdir(migrationsSourceDir, { recursive: true });
             await writeFile(join(migrationsSourceDir, 'migration.sql'), '-- init\n', 'utf8');
 
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho new-runtime\n', 'utf8');
 
             const { installOrUpdateRelayRuntimeLocal } = await import('./relayRuntimeInstall.js');
@@ -333,7 +333,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
             await mkdir(migrationsSourceDir, { recursive: true });
             await writeFile(join(migrationsSourceDir, 'migration.sql'), '-- init\n', 'utf8');
 
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho new-runtime\n', 'utf8');
 
             const serviceDefinitionPath = '/tmp/happier-relay-runtime.service';
@@ -384,7 +384,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
             await mkdir(migrationsSourceDir, { recursive: true });
             await writeFile(join(migrationsSourceDir, 'migration.sql'), '-- init\n', 'utf8');
 
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho new-runtime\n', 'utf8');
 
             checkRelayRuntimeHealthMock.mockResolvedValue({
@@ -418,7 +418,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
             await mkdir(migrationsSourceDir, { recursive: true });
             await writeFile(join(migrationsSourceDir, 'migration.sql'), '-- init\n', 'utf8');
 
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho new-runtime\n', 'utf8');
 
             const { resolveRelayRuntimeDefaults } = await import('./relayRuntime.js');
@@ -429,7 +429,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
                 homeDir,
             });
 
-            const installServerBinaryPath = join(defaults.installRoot, 'bin', 'happier-server');
+            const installServerBinaryPath = join(defaults.installRoot, 'bin', 'happiest-server');
             const configEnvPath = join(defaults.configDir, 'server.env');
             const migrationsDestDir = join(defaults.dataDir, 'migrations', 'sqlite');
             await mkdir(dirname(installServerBinaryPath), { recursive: true });
@@ -488,7 +488,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
             await mkdir(migrationsSourceDir, { recursive: true });
             await writeFile(join(migrationsSourceDir, 'migration.sql'), '-- init\n', 'utf8');
 
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho new-runtime\n', 'utf8');
 
             const { resolveRelayRuntimeDefaults } = await import('./relayRuntime.js');
@@ -499,7 +499,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
                 homeDir,
             });
 
-            const installServerBinaryPath = join(defaults.installRoot, 'bin', 'happier-server');
+            const installServerBinaryPath = join(defaults.installRoot, 'bin', 'happiest-server');
             const configEnvPath = join(defaults.configDir, 'server.env');
             await mkdir(dirname(installServerBinaryPath), { recursive: true });
             await mkdir(dirname(configEnvPath), { recursive: true });
@@ -549,7 +549,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
             await mkdir(migrationsSourceDir, { recursive: true });
             await writeFile(join(migrationsSourceDir, 'migration.sql'), '-- init\n', 'utf8');
 
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho new-runtime\n', 'utf8');
             const { resolveRelayRuntimeDefaults } = await import('./relayRuntime.js');
             const defaults = resolveRelayRuntimeDefaults({
@@ -558,7 +558,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
                 channel: 'preview',
                 homeDir,
             });
-            const installedShimPath = join(defaults.installRoot, 'bin', 'happier-server');
+            const installedShimPath = join(defaults.installRoot, 'bin', 'happiest-server');
 
             const serviceModule = await import('../service/index.js');
             vi.mocked(serviceModule.applyServicePlan).mockImplementation(async (plan) => {
@@ -599,7 +599,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
             await mkdir(migrationsSourceDir, { recursive: true });
             await writeFile(join(migrationsSourceDir, 'migration.sql'), '-- init\n', 'utf8');
 
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho new-runtime\n', 'utf8');
 
             const { resolveRelayRuntimeDefaults } = await import('./relayRuntime.js');
@@ -610,7 +610,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
                 homeDir,
             });
 
-            const installServerBinaryPath = join(defaults.installRoot, 'bin', 'happier-server');
+            const installServerBinaryPath = join(defaults.installRoot, 'bin', 'happiest-server');
             const configEnvPath = join(defaults.configDir, 'server.env');
             await mkdir(dirname(installServerBinaryPath), { recursive: true });
             await mkdir(dirname(configEnvPath), { recursive: true });
@@ -653,11 +653,11 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
                 homeDir,
                 runServiceCommands: true,
                 skipHealthCheck: true,
-                serviceNameOverride: 'happier-server',
+                serviceNameOverride: 'happiest-server',
             })).rejects.toThrow(/install failed/);
 
             expect(specLabels).not.toContain(defaults.serviceName);
-            expect(specLabels).toContain('happier-server');
+            expect(specLabels).toContain('happiest-server');
         } finally {
             await rm(serviceDefinitionPath, { force: true }).catch(() => undefined);
             await rm(homeDir, { recursive: true, force: true });
@@ -676,7 +676,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
             await mkdir(migrationsSourceDir, { recursive: true });
             await writeFile(join(migrationsSourceDir, 'migration.sql'), '-- init\n', 'utf8');
 
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho new-runtime\n', 'utf8');
 
             const serviceModule = await import('../service/index.js');
@@ -695,7 +695,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
                 channel: 'preview',
                 homeDir,
             });
-            const installServerBinaryPath = join(defaults.installRoot, 'bin', 'happier-server');
+            const installServerBinaryPath = join(defaults.installRoot, 'bin', 'happiest-server');
 
             const { installOrUpdateRelayRuntimeLocal } = await import('./relayRuntimeInstall.js');
             await expect(installOrUpdateRelayRuntimeLocal({
@@ -730,9 +730,9 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
                 channel: 'preview',
                 homeDir,
             });
-            const installServerBinaryPath = join(defaults.installRoot, 'bin', 'happier-server');
+            const installServerBinaryPath = join(defaults.installRoot, 'bin', 'happiest-server');
             const payloadDir = dirname(installServerBinaryPath);
-            const shimPath = join(defaults.binDir, 'happier-server');
+            const shimPath = join(defaults.binDir, 'happiest-server');
 
             await mkdir(payloadDir, { recursive: true });
             await writeFile(join(payloadDir, 'readme.txt'), 'stale payload without binary\n', 'utf8');
@@ -743,7 +743,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
             await mkdir(migrationsSourceDir, { recursive: true });
             await writeFile(join(migrationsSourceDir, 'migration.sql'), '-- init\n', 'utf8');
 
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho new-runtime\n', 'utf8');
 
             checkRelayRuntimeHealthMock.mockResolvedValue({
@@ -779,7 +779,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
             await mkdir(migrationsSourceDir, { recursive: true });
             await writeFile(join(migrationsSourceDir, 'migration.sql'), '-- init\n', 'utf8');
 
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho new-runtime\n', 'utf8');
 
             const { resolveRelayRuntimeDefaults } = await import('./relayRuntime.js');
@@ -790,7 +790,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
                 homeDir,
             });
 
-            const installServerBinaryPath = join(defaults.installRoot, 'bin', 'happier-server');
+            const installServerBinaryPath = join(defaults.installRoot, 'bin', 'happiest-server');
             const configEnvPath = join(defaults.configDir, 'server.env');
             const statePath = join(defaults.installRoot, 'self-host-state.json');
             await mkdir(dirname(installServerBinaryPath), { recursive: true });
@@ -833,7 +833,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
             await mkdir(migrationsSourceDir, { recursive: true });
             await writeFile(join(migrationsSourceDir, 'migration.sql'), '-- init\n', 'utf8');
 
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho new-runtime\n', 'utf8');
 
             const { resolveRelayRuntimeDefaults } = await import('./relayRuntime.js');
@@ -855,7 +855,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
 
             checkRelayRuntimeHealthMock.mockResolvedValue({
                 reachable: false,
-                url: 'http://127.0.0.1:3005',
+                url: 'http://127.0.0.1:3015',
             });
 
             const { installOrUpdateRelayRuntimeLocal } = await import('./relayRuntimeInstall.js');
@@ -885,7 +885,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
             await mkdir(migrationsSourceDir, { recursive: true });
             await writeFile(join(migrationsSourceDir, 'migration.sql'), '-- init\n', 'utf8');
 
-            const serverBinaryPath = join(payloadRoot, 'happier-server');
+            const serverBinaryPath = join(payloadRoot, 'happiest-server');
             await writeFile(serverBinaryPath, '#!/bin/sh\necho ok\n', 'utf8');
             await chmod(readOnlyParent, 0o555);
 
@@ -899,7 +899,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
                 runServiceCommands: false,
                 skipHealthCheck: true,
             })).resolves.toMatchObject({
-                baseUrl: 'http://127.0.0.1:3005',
+                baseUrl: 'http://127.0.0.1:3015',
             });
 
             const defaults = resolveRelayRuntimeDefaults({
@@ -908,7 +908,7 @@ describe('installOrUpdateRelayRuntimeLocal sequencing', () => {
                 channel: 'preview',
                 homeDir,
             });
-            await expect(access(join(defaults.installRoot, 'bin', 'happier-server'))).resolves.toBeUndefined();
+            await expect(access(join(defaults.installRoot, 'bin', 'happiest-server'))).resolves.toBeUndefined();
         } finally {
             await chmod(readOnlyParent, 0o755).catch(() => undefined);
             await rm(readOnlyParent, { recursive: true, force: true });

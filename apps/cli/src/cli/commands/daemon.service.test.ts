@@ -68,7 +68,7 @@ describe('happier daemon service', () => {
 
         const parsed = output.json();
         expect(parsed.ok).toBe(true);
-        expect(parsed.paths?.unitPath).toBe(join(tmp, '.config', 'systemd', 'user', 'happier-daemon.default.service'));
+        expect(parsed.paths?.unitPath).toBe(join(tmp, '.config', 'systemd', 'user', 'happiest-daemon.default.service'));
       } finally {
         output.restore();
         envScope.restore();
@@ -91,7 +91,7 @@ describe('happier daemon service', () => {
         HAPPIEST_DAEMON_SERVICE_HOME_DIR: join(tmp, '.happier'),
       });
 
-      const unitPath = join(tmp, '.config', 'systemd', 'user', 'happier-daemon.default.service');
+      const unitPath = join(tmp, '.config', 'systemd', 'user', 'happiest-daemon.default.service');
 
       const output = captureStdoutJsonOutput<{
         ok: boolean;

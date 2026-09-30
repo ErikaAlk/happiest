@@ -28,7 +28,7 @@ describe('daemon service install plan', () => {
     });
 
     expect(plan.files).toHaveLength(1);
-    expect(plan.files[0]?.path).toBe('/Users/test/Library/LaunchAgents/com.happier.cli.daemon.cloud.plist');
+    expect(plan.files[0]?.path).toBe('/Users/test/Library/LaunchAgents/com.happiest.cli.daemon.cloud.plist');
     expect(plan.files[0]?.content).toContain('<string>/opt/homebrew/bin/node</string>');
     expect(plan.files[0]?.content).toContain('<string>/usr/local/lib/node_modules/@happier-dev/cli/dist/index.mjs</string>');
     expect(plan.files[0]?.content).toContain('<string>daemon</string>');
@@ -49,10 +49,10 @@ describe('daemon service install plan', () => {
       commandLines.push(`${c.cmd} ${c.args.join(' ')}`);
     }
     expect(hasLaunchctl).toBe(true);
-    expect(commandLines).toContain('launchctl enable gui/501/com.happier.cli.daemon.cloud');
-    expect(commandLines).toContain('launchctl bootstrap gui/501 /Users/test/Library/LaunchAgents/com.happier.cli.daemon.cloud.plist');
-    expect(commandLines.indexOf('launchctl bootstrap gui/501 /Users/test/Library/LaunchAgents/com.happier.cli.daemon.cloud.plist'))
-      .toBeGreaterThan(commandLines.indexOf('launchctl enable gui/501/com.happier.cli.daemon.cloud'));
+    expect(commandLines).toContain('launchctl enable gui/501/com.happiest.cli.daemon.cloud');
+    expect(commandLines).toContain('launchctl bootstrap gui/501 /Users/test/Library/LaunchAgents/com.happiest.cli.daemon.cloud.plist');
+    expect(commandLines.indexOf('launchctl bootstrap gui/501 /Users/test/Library/LaunchAgents/com.happiest.cli.daemon.cloud.plist'))
+      .toBeGreaterThan(commandLines.indexOf('launchctl enable gui/501/com.happiest.cli.daemon.cloud'));
   });
 
   it('enables the darwin LaunchAgent label before bootstrapping it', () => {
@@ -101,7 +101,7 @@ describe('daemon service install plan', () => {
     });
 
     expect(plan.files).toHaveLength(1);
-    expect(plan.files[0]?.path).toBe('/Users/test/Library/LaunchAgents/com.happier.cli.daemon.preview.cloud.plist');
+    expect(plan.files[0]?.path).toBe('/Users/test/Library/LaunchAgents/com.happiest.cli.daemon.preview.cloud.plist');
     expect(plan.files[0]?.content).toContain('<key>HAPPIER_PUBLIC_RELEASE_CHANNEL</key>');
     expect(plan.files[0]?.content).toContain('<string>preview</string>');
   });
@@ -123,10 +123,10 @@ describe('daemon service install plan', () => {
     });
 
     expect(plan.files[0]?.path).toBe(
-      '/Users/test/Library/LaunchAgents/com.happier.cli.daemon.preview.stack_macos-v0210_id_default.plist',
+      '/Users/test/Library/LaunchAgents/com.happiest.cli.daemon.preview.stack_macos-v0210_id_default.plist',
     );
     expect(plan.files[0]?.content).toContain(
-      '<string>com.happier.cli.daemon.preview.stack_macos-v0210_id_default</string>',
+      '<string>com.happiest.cli.daemon.preview.stack_macos-v0210_id_default</string>',
     );
     expect(plan.files[0]?.content).toContain('<key>HAPPIEST_ACTIVE_SERVER_ID</key>');
     expect(plan.files[0]?.content).toContain('<string>stack_macos-v0210__id_default</string>');
@@ -150,11 +150,11 @@ describe('daemon service install plan', () => {
     });
 
     expect(plan.files).toHaveLength(1);
-    expect(plan.files[0]?.path).toBe('/home/test/.config/systemd/user/happier-daemon.cloud.service');
+    expect(plan.files[0]?.path).toBe('/home/test/.config/systemd/user/happiest-daemon.cloud.service');
     expect(plan.files[0]?.content).toContain('ExecStart=/usr/bin/node /usr/lib/node_modules/@happier-dev/cli/dist/index.mjs daemon start-sync');
     expect(plan.files[0]?.content).toContain('Environment=HAPPIEST_HOME_DIR=/home/test/.happier');
     expect(plan.files[0]?.content).toContain('Environment=HAPPIER_DAEMON_STARTUP_SOURCE=background-service');
-    expect(plan.files[0]?.content).toContain('Environment=HAPPIEST_DAEMON_SERVICE_LABEL=com.happier.cli.daemon.cloud');
+    expect(plan.files[0]?.content).toContain('Environment=HAPPIEST_DAEMON_SERVICE_LABEL=com.happiest.cli.daemon.cloud');
     expect(plan.files[0]?.content).toContain('Environment=HAPPIEST_ACTIVE_SERVER_ID=cloud');
     expect(plan.files[0]?.content).toContain('Environment=HAPPIEST_SERVER_URL=https://api.happier.dev');
     expect(plan.files[0]?.content).toContain('Environment=HAPPIEST_PUBLIC_SERVER_URL=https://api.happier.dev');
@@ -193,10 +193,10 @@ describe('daemon service install plan', () => {
     });
 
     expect(plan.files).toHaveLength(1);
-    expect(plan.files[0]?.path).toBe('/home/test/.config/systemd/user/happier-daemon.default.service');
+    expect(plan.files[0]?.path).toBe('/home/test/.config/systemd/user/happiest-daemon.default.service');
     expect(plan.files[0]?.content).toContain('Environment=HAPPIEST_DAEMON_SERVICE_TARGET_MODE=default-following');
     expect(plan.files[0]?.content).toContain('Environment=HAPPIER_DAEMON_STARTUP_SOURCE=background-service');
-    expect(plan.files[0]?.content).toContain('Environment=HAPPIEST_DAEMON_SERVICE_LABEL=com.happier.cli.daemon.default');
+    expect(plan.files[0]?.content).toContain('Environment=HAPPIEST_DAEMON_SERVICE_LABEL=com.happiest.cli.daemon.default');
     expect(plan.files[0]?.content).toContain('Environment=HAPPIER_PUBLIC_RELEASE_CHANNEL=preview');
     expect(plan.files[0]?.content).not.toContain('Environment=HAPPIEST_ACTIVE_SERVER_ID=');
     expect(plan.files[0]?.content).not.toContain('Environment=HAPPIEST_SERVER_URL=');
@@ -223,7 +223,7 @@ describe('daemon service install plan', () => {
     });
 
     expect(plan.files).toHaveLength(1);
-    expect(plan.files[0]?.path).toBe('/home/test/.config/systemd/user/happier-daemon.dev.cloud.service');
+    expect(plan.files[0]?.path).toBe('/home/test/.config/systemd/user/happiest-daemon.dev.cloud.service');
     expect(plan.files[0]?.content).toContain('Environment=HAPPIER_PUBLIC_RELEASE_CHANNEL=dev');
   });
 
@@ -242,7 +242,7 @@ describe('daemon service install plan', () => {
     expect(plan.commands).toEqual([
       {
         cmd: 'launchctl',
-        args: ['print', 'gui/501/com.happier.cli.daemon.default'],
+        args: ['print', 'gui/501/com.happiest.cli.daemon.default'],
       },
     ]);
   });
@@ -263,7 +263,7 @@ describe('daemon service install plan', () => {
     expect(plan.commands).toEqual([
       {
         cmd: 'launchctl',
-        args: ['kickstart', '-k', 'gui/501/com.happier.cli.daemon.default'],
+        args: ['kickstart', '-k', 'gui/501/com.happiest.cli.daemon.default'],
       },
     ]);
   });
@@ -287,7 +287,7 @@ describe('daemon service install plan', () => {
     });
 
     expect(plan.files).toHaveLength(1);
-    expect(plan.files[0]?.path).toBe('/etc/systemd/system/happier-daemon.cloud.service');
+    expect(plan.files[0]?.path).toBe('/etc/systemd/system/happiest-daemon.cloud.service');
     expect(plan.files[0]?.content).toContain('ExecStart=/usr/local/bin/happier daemon start-sync');
     expect(plan.files[0]?.content).toContain('User=happier');
     expect(plan.files[0]?.content).toContain('WorkingDirectory=/home/happier');
@@ -301,8 +301,8 @@ describe('daemon service install plan', () => {
       .map((c) => c.args.join(' '))
       .join('\n');
     expect(systemctlArgsText).toContain('daemon-reload');
-    expect(systemctlArgsText).toContain('enable happier-daemon.cloud.service');
-    expect(systemctlArgsText).toContain('restart happier-daemon.cloud.service');
+    expect(systemctlArgsText).toContain('enable happiest-daemon.cloud.service');
+    expect(systemctlArgsText).toContain('restart happiest-daemon.cloud.service');
     expect(systemctlArgsText).not.toContain('--user');
   });
 
@@ -359,7 +359,7 @@ describe('daemon service install plan', () => {
       publicServerUrl: 'https://company.example.test',
     });
 
-    expect(plan.files[0]?.path).toBe('/home/test/.config/systemd/user/happier-daemon.company.service');
+    expect(plan.files[0]?.path).toBe('/home/test/.config/systemd/user/happiest-daemon.company.service');
     expect(plan.files[0]?.content).toContain('Environment=HAPPIEST_SERVER_URL=https://company.example.test');
   });
 
@@ -379,7 +379,7 @@ describe('daemon service install plan', () => {
     });
 
     expect(plan.files).toHaveLength(1);
-    expect(plan.files[0]?.path).toBe('C:\\Users\\test\\.happier\\services\\happier-daemon.cloud.ps1');
+    expect(plan.files[0]?.path).toBe('C:\\Users\\test\\.happier\\services\\happiest-daemon.cloud.ps1');
     expect(plan.files[0]?.content).toContain('$env:HAPPIEST_HOME_DIR');
     expect(plan.files[0]?.content).toContain('$env:HAPPIEST_ACTIVE_SERVER_ID');
     expect(plan.files[0]?.content).toContain('happier.exe');
@@ -405,7 +405,7 @@ describe('daemon service install plan', () => {
     });
 
     expect(plan.files).toHaveLength(1);
-    expect(plan.files[0]?.path).toBe('C:\\Users\\test\\.happier\\services\\happier-daemon.dev.cloud.ps1');
+    expect(plan.files[0]?.path).toBe('C:\\Users\\test\\.happier\\services\\happiest-daemon.dev.cloud.ps1');
     expect(plan.files[0]?.content).toContain('HAPPIER_PUBLIC_RELEASE_CHANNEL');
   });
 
@@ -423,7 +423,7 @@ describe('daemon service install plan', () => {
     expect(plan.commands).toEqual([
       {
         cmd: 'schtasks',
-        args: ['/Query', '/TN', 'Happier\\happier-daemon.default', '/FO', 'LIST', '/V'],
+        args: ['/Query', '/TN', 'Happiest\\happiest-daemon.default', '/FO', 'LIST', '/V'],
       },
     ]);
   });

@@ -115,7 +115,7 @@ async function runInstall(extraArgs: readonly string[] = []): Promise<string[]> 
         const args = ['relay', 'host', 'install', ...extraArgs];
         await commandRegistry.relay({
             args,
-            rawArgv: ['node', 'hprev', ...args],
+            rawArgv: ['node', 'happiest-preview', ...args],
             terminalRuntime: null,
         });
         return [...output.logs];
@@ -147,8 +147,8 @@ describe('happier relay host install reachable relay URL selection', () => {
         envScope = createEnvKeyScope(['HAPPIEST_HOME_DIR']);
         home = await createTempDir('happier-relay-reachable-home-');
         preparedPayloadRoot = await createTempDir('happier-relay-reachable-prepared-');
-        writeFileSync(join(preparedPayloadRoot, 'happier-server'), '#!/usr/bin/env bash\nexit 0\n', 'utf8');
-        chmodSync(join(preparedPayloadRoot, 'happier-server'), 0o755);
+        writeFileSync(join(preparedPayloadRoot, 'happiest-server'), '#!/usr/bin/env bash\nexit 0\n', 'utf8');
+        chmodSync(join(preparedPayloadRoot, 'happiest-server'), 0o755);
         mockedPreparedPayloadRoot = preparedPayloadRoot;
         envScope.patch({ HAPPIEST_HOME_DIR: home });
         reloadConfiguration();
@@ -224,7 +224,7 @@ describe('happier relay host install reachable relay URL selection', () => {
             const args = ['relay', 'host', 'install', '--json'];
             await commandRegistry.relay({
                 args,
-                rawArgv: ['node', 'hprev', ...args],
+                rawArgv: ['node', 'happiest-preview', ...args],
                 terminalRuntime: null,
             });
             text = stdout.text();
