@@ -138,9 +138,9 @@ describe('core e2e: direct Codex app-server sessions takeover+continue', () => {
         env: {
           ...process.env,
           CI: '1',
-          HAPPIER_HOME_DIR: daemonHomeDir,
-          HAPPIER_SERVER_URL: serverBaseUrl,
-          HAPPIER_WEBAPP_URL: serverBaseUrl,
+          HAPPIEST_HOME_DIR: daemonHomeDir,
+          HAPPIEST_SERVER_URL: serverBaseUrl,
+          HAPPIEST_WEBAPP_URL: serverBaseUrl,
           CODEX_HOME: codexHomeDir,
           HAPPIER_CODEX_APP_SERVER_BIN: fakeAppServer,
           HAPPIER_CODEX_APP_SERVER_RPC_TIMEOUT_MS: '2000',

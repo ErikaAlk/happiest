@@ -190,13 +190,13 @@ test(
     const serverUrl = `http://127.0.0.1:${serverPort}`;
     const commonEnv = {
       PATH: process.env.PATH ?? '',
-      HAPPIER_SELF_HOST_INSTALL_ROOT: installRoot,
-      HAPPIER_SELF_HOST_BIN_DIR: binDir,
-      HAPPIER_SELF_HOST_CONFIG_DIR: configDir,
-      HAPPIER_SELF_HOST_DATA_DIR: dataDir,
-      HAPPIER_SELF_HOST_LOG_DIR: logDir,
-      HAPPIER_SELF_HOST_SERVICE_NAME: serviceName,
-      HAPPIER_SELF_HOST_SERVER_BINARY: extractedServer.binaryPath,
+      HAPPIEST_SELF_HOST_INSTALL_ROOT: installRoot,
+      HAPPIEST_SELF_HOST_BIN_DIR: binDir,
+      HAPPIEST_SELF_HOST_CONFIG_DIR: configDir,
+      HAPPIEST_SELF_HOST_DATA_DIR: dataDir,
+      HAPPIEST_SELF_HOST_LOG_DIR: logDir,
+      HAPPIEST_SELF_HOST_SERVICE_NAME: serviceName,
+      HAPPIEST_SELF_HOST_SERVER_BINARY: extractedServer.binaryPath,
       HAPPIER_SELF_HOST_AUTO_UPDATE: '0',
       HAPPIER_SELF_HOST_HEALTH_TIMEOUT_MS: '240000',
       HAPPIER_NONINTERACTIVE: '1',
@@ -254,11 +254,11 @@ test(
 
     const daemonEnv = {
       ...process.env,
-      HAPPIER_HOME_DIR: cliHomeDir,
-      HAPPIER_ACTIVE_SERVER_ID: serverId,
-      HAPPIER_SERVER_URL: serverUrl,
-      HAPPIER_WEBAPP_URL: serverUrl,
-      HAPPIER_PUBLIC_SERVER_URL: serverUrl,
+      HAPPIEST_HOME_DIR: cliHomeDir,
+      HAPPIEST_ACTIVE_SERVER_ID: serverId,
+      HAPPIEST_SERVER_URL: serverUrl,
+      HAPPIEST_WEBAPP_URL: serverUrl,
+      HAPPIEST_PUBLIC_SERVER_URL: serverUrl,
       HAPPIER_NO_BROWSER_OPEN: '1',
       HAPPIER_NONINTERACTIVE: '1',
     };

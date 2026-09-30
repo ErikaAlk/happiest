@@ -31,7 +31,7 @@ export function resolveServerPortFromEnv({ env = process.env, defaultPort = 3005
     return explicitPort;
   }
 
-  const serverUrlRaw = (env.HAPPIER_SERVER_URL ?? '').toString().trim();
+  const serverUrlRaw = (env.HAPPIEST_SERVER_URL ?? '').toString().trim();
   if (serverUrlRaw) {
     try {
       const parsed = new URL(serverUrlRaw);

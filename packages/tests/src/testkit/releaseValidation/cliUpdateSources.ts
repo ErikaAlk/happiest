@@ -224,7 +224,7 @@ async function preparePublishedCliSourceSnapshot(params: {
             HAPPIER_NONINTERACTIVE: '1',
             HAPPIER_RELEASE_ASSETS_DIR: assetsDir,
             HAPPIER_INSTALL_VERSION: plan.version ?? '',
-            HAPPIER_GITHUB_REPO: repo,
+            HAPPIEST_GITHUB_REPO: repo,
         },
         stdoutPath: resolve(params.testDir, `cli-update.${params.role}.release-install.stdout.log`),
         stderrPath: resolve(params.testDir, `cli-update.${params.role}.release-install.stderr.log`),

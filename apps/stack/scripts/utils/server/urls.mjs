@@ -6,6 +6,9 @@ import { resolvePublicServerUrl } from '../../tailscale.mjs';
 import { resolveServerPortFromEnv } from './port.mjs';
 import { normalizeUrlNoTrailingSlash } from '../net/url.mjs';
 
+// The stack env file configures the relay server process, which reads HAPPIER_PUBLIC_SERVER_URL and
+// HAPPIER_WEBAPP_URL under these names. The CLI-side HAPPIEST_* URL variables are derived from them.
+
 function stackEnvExplicitlySetsPublicUrl({ env, stackName }) {
   try {
     const envPath =

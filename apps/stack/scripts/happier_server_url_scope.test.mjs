@@ -12,9 +12,9 @@ async function createMonorepoFixture(t, { prefix }) {
     prefix,
     distIndexScript: [
       "console.log(JSON.stringify({",
-      "  serverUrl: process.env.HAPPIER_SERVER_URL ?? null,",
-      "  activeServerId: process.env.HAPPIER_ACTIVE_SERVER_ID ?? null,",
-      "  homeDir: process.env.HAPPIER_HOME_DIR ?? null,",
+      "  serverUrl: process.env.HAPPIEST_SERVER_URL ?? null,",
+      "  activeServerId: process.env.HAPPIEST_ACTIVE_SERVER_ID ?? null,",
+      "  homeDir: process.env.HAPPIEST_HOME_DIR ?? null,",
       "}));",
       '',
     ].join('\n'),
@@ -26,7 +26,7 @@ function stackRootDirFromMeta(metaUrl) {
   return dirname(scriptsDir);
 }
 
-test('hstack happier --server-url clears stack-scoped HAPPIER_ACTIVE_SERVER_ID', async (t) => {
+test('hstack happier --server-url clears stack-scoped HAPPIEST_ACTIVE_SERVER_ID', async (t) => {
   const rootDir = stackRootDirFromMeta(import.meta.url);
   const fixture = await createMonorepoFixture(t, { prefix: 'hstack-happier-scope-' });
   const stackEnvPath = join(fixture.dir, 'stack.env');
@@ -38,9 +38,9 @@ test('hstack happier --server-url clears stack-scoped HAPPIER_ACTIVE_SERVER_ID',
     HAPPIER_STACK_STACK: 'test-stack',
     HAPPIER_STACK_ENV_FILE: stackEnvPath,
     HAPPIER_STACK_REPO_DIR: fixture.dir,
-    HAPPIER_HOME_DIR: join(fixture.dir, '.happy-home'),
+    HAPPIEST_HOME_DIR: join(fixture.dir, '.happy-home'),
     // Simulate a stack-scoped active server id (common in stack env files).
-    HAPPIER_ACTIVE_SERVER_ID: 'stack_main__id_default',
+    HAPPIEST_ACTIVE_SERVER_ID: 'stack_main__id_default',
   };
 
   const res = await runNodeCapture([hstackBinPath(rootDir), 'happier', '--server-url=http://localhost:3014'], { cwd: rootDir, env });
@@ -58,6 +58,6 @@ test('hstack happier --server-url clears stack-scoped HAPPIER_ACTIVE_SERVER_ID',
   assert.equal(
     parsed.activeServerId,
     deriveEnvServerId('http://localhost:3014'),
-    `expected HAPPIER_ACTIVE_SERVER_ID to be derived from --server-url\nstdout:\n${res.stdout}`,
+    `expected HAPPIEST_ACTIVE_SERVER_ID to be derived from --server-url\nstdout:\n${res.stdout}`,
   );
 });

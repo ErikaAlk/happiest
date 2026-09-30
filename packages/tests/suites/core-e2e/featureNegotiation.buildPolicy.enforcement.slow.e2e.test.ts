@@ -40,9 +40,9 @@ describe('core e2e: build-policy enforcement', () => {
         ...process.env,
         CI: '1',
         HAPPIER_VARIANT: 'dev',
-        HAPPIER_HOME_DIR: cliHome,
-        HAPPIER_SERVER_URL: server.baseUrl,
-        HAPPIER_WEBAPP_URL: server.baseUrl,
+        HAPPIEST_HOME_DIR: cliHome,
+        HAPPIEST_SERVER_URL: server.baseUrl,
+        HAPPIEST_WEBAPP_URL: server.baseUrl,
         // Ensure local policy is not the blocking axis.
         HAPPIER_FEATURE_AUTOMATIONS__ENABLED: '1',
         // The behavior under test.

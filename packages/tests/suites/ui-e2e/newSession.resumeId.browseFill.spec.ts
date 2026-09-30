@@ -141,9 +141,9 @@ test.describe('ui e2e: /new resume id browse fills from direct sessions', () => 
       env: {
         ...process.env,
         CI: '1',
-        HAPPIER_HOME_DIR: cliHomeDir,
-        HAPPIER_SERVER_URL: server.baseUrl,
-        HAPPIER_WEBAPP_URL: uiBaseUrl,
+        HAPPIEST_HOME_DIR: cliHomeDir,
+        HAPPIEST_SERVER_URL: server.baseUrl,
+        HAPPIEST_WEBAPP_URL: uiBaseUrl,
         HAPPIER_DISABLE_CAFFEINATE: '1',
         HAPPIER_VARIANT: 'dev',
         CODEX_HOME: codexHomeDir,

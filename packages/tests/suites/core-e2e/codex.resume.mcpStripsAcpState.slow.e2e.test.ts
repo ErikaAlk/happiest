@@ -112,9 +112,9 @@ describe('core e2e: Codex MCP attach strips stale ACP session state metadata', (
       ...process.env,
       CI: '1',
       HAPPIER_VARIANT: 'dev',
-      HAPPIER_HOME_DIR: cliHome,
-      HAPPIER_SERVER_URL: server.baseUrl,
-      HAPPIER_WEBAPP_URL: server.baseUrl,
+      HAPPIEST_HOME_DIR: cliHome,
+      HAPPIEST_SERVER_URL: server.baseUrl,
+      HAPPIEST_WEBAPP_URL: server.baseUrl,
       HAPPIER_SESSION_ATTACH_FILE: attachFile,
       // Ensure MCP engine (no ACP).
       HAPPIER_EXPERIMENTAL_CODEX_ACP: '0',

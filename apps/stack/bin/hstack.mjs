@@ -181,7 +181,8 @@ function applySandboxDirIfRequested(argv) {
   }
   const scrubbed = scrubHappierStackEnv(process.env, {
     keepHappierStackKeys: Array.from(preserved.keys()),
-    clearUnprefixedKeys: ['HAPPIER_HOME_DIR', 'HAPPIER_SERVER_URL', 'HAPPIER_WEBAPP_URL'],
+    // HAPPIER_WEBAPP_URL is the name the relay server process reads.
+    clearUnprefixedKeys: ['HAPPIEST_HOME_DIR', 'HAPPIEST_SERVER_URL', 'HAPPIEST_WEBAPP_URL', 'HAPPIER_WEBAPP_URL'],
   });
   for (const k of Object.keys(process.env)) {
     if (!(k in scrubbed)) delete process.env[k];

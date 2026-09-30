@@ -282,9 +282,9 @@ async function spawnConnectedCodexGroupSession(params: Readonly<{
       terminal: { mode: 'plain' },
       experimentalCodexAcp: true,
       environmentVariables: {
-        HAPPIER_HOME_DIR: params.fixture.daemonHomeDir,
-        HAPPIER_SERVER_URL: params.fixture.daemonServerBaseUrl,
-        HAPPIER_WEBAPP_URL: params.fixture.daemonServerBaseUrl,
+        HAPPIEST_HOME_DIR: params.fixture.daemonHomeDir,
+        HAPPIEST_SERVER_URL: params.fixture.daemonServerBaseUrl,
+        HAPPIEST_WEBAPP_URL: params.fixture.daemonServerBaseUrl,
         HAPPIER_VARIANT: 'dev',
         HAPPIER_EXPERIMENTAL_CODEX_ACP: '1',
         HAPPIER_CODEX_ACP_BIN: params.fixture.acpStubProvider,

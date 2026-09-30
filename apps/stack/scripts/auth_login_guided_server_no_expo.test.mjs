@@ -122,7 +122,7 @@ async function buildGuidedNoExpoFixture({
   const authEnv = {
     ...process.env,
     HAPPIER_STACK_STACK: stackName,
-    HAPPIER_ACTIVE_SERVER_ID: `stack_${stackName}__id_default`,
+    HAPPIEST_ACTIVE_SERVER_ID: `stack_${stackName}__id_default`,
   };
   const credentialPaths = resolveStackCredentialPaths({
     cliHomeDir,
@@ -421,7 +421,7 @@ test('hstack auth login --force fails closed when guided login exits without usa
     const env = {
       ...fixture.env,
       HAPPIER_STACK_RUNTIME_MODE: 'prefer',
-      HAPPIER_ACTIVE_SERVER_ID: `stack_${fixture.stackName}__id_default`,
+      HAPPIEST_ACTIVE_SERVER_ID: `stack_${fixture.stackName}__id_default`,
     };
     const credentialPaths = resolveStackCredentialPaths({
       cliHomeDir,
@@ -1025,7 +1025,7 @@ test('hstack auth login --method=mobile succeeds even when Expo web UI is not ru
       env: {
         ...fixture.env,
         // Guard against shell-env leakage from other stack sessions.
-        HAPPIER_HOME_DIR: leakedCliHomeDir,
+        HAPPIEST_HOME_DIR: leakedCliHomeDir,
       },
       input: '\n\n',
     });

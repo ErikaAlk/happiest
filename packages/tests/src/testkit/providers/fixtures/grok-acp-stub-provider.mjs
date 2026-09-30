@@ -23,7 +23,7 @@ function ok(id, result) {
 function recordPath() {
   const configured = process.env.HAPPIER_GROK_STUB_RECORD_PATH?.trim();
   if (configured) return configured;
-  const home = process.env.HAPPIER_HOME_DIR || process.env.HOME || process.cwd();
+  const home = process.env.HAPPIEST_HOME_DIR || process.env.HOME || process.cwd();
   return join(home, 'grok-acp-stub', 'requests.jsonl');
 }
 

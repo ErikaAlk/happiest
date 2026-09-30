@@ -42,8 +42,8 @@ async function writeHoldingDaemonScript(scriptPath: string, opts: { writesState:
   const contents = [
     "import { writeFileSync } from 'node:fs';",
     "import { resolve } from 'node:path';",
-    "const homeDir = process.env.HAPPIER_HOME_DIR;",
-    "if (!homeDir) throw new Error('Missing HAPPIER_HOME_DIR');",
+    "const homeDir = process.env.HAPPIEST_HOME_DIR;",
+    "if (!homeDir) throw new Error('Missing HAPPIEST_HOME_DIR');",
     opts.writesState
       ? `writeFileSync(resolve(homeDir, 'daemon.state.json'), JSON.stringify({ pid: process.pid, httpPort: ${opts.httpPort ?? 32_222}, controlToken: 'fresh-control-token' }), 'utf8');`
       : '',
@@ -101,8 +101,8 @@ async function writeExitAfterStateDaemonScript(scriptPath: string, opts: { homeD
   const contents = [
     "import { mkdirSync, writeFileSync } from 'node:fs';",
     "import { resolve } from 'node:path';",
-    "const homeDir = process.env.HAPPIER_HOME_DIR;",
-    "if (!homeDir) throw new Error('Missing HAPPIER_HOME_DIR');",
+    "const homeDir = process.env.HAPPIEST_HOME_DIR;",
+    "if (!homeDir) throw new Error('Missing HAPPIEST_HOME_DIR');",
     `const stateDir = resolve(homeDir, 'servers', ${JSON.stringify(opts.serverId)});`,
     "mkdirSync(stateDir, { recursive: true });",
     `writeFileSync(resolve(stateDir, 'daemon.state.json'), JSON.stringify({ pid: process.pid, httpPort: ${opts.httpPort}, controlToken: 'fresh-control-token' }), 'utf8');`,
@@ -116,8 +116,8 @@ async function writeReplacementDaemonScript(scriptPath: string, opts: { serverId
   const contents = [
     "import { mkdirSync, writeFileSync } from 'node:fs';",
     "import { resolve } from 'node:path';",
-    "const homeDir = process.env.HAPPIER_HOME_DIR;",
-    "if (!homeDir) throw new Error('Missing HAPPIER_HOME_DIR');",
+    "const homeDir = process.env.HAPPIEST_HOME_DIR;",
+    "if (!homeDir) throw new Error('Missing HAPPIEST_HOME_DIR');",
     "const args = process.argv.slice(2).join(' ');",
     "if (args !== 'daemon start-sync --takeover') process.exit(7);",
     opts.stateWriteDelayMs ? `await new Promise((resolve) => setTimeout(resolve, ${opts.stateWriteDelayMs}));` : '',
@@ -553,7 +553,7 @@ describe('startTestDaemon', () => {
         stdio: 'ignore',
         env: {
           ...process.env,
-          HAPPIER_HOME_DIR: homeDir,
+          HAPPIEST_HOME_DIR: homeDir,
         },
       });
       stalePid = staleProc.pid ?? null;
@@ -685,7 +685,7 @@ describe('startTestDaemon', () => {
         stdio: 'ignore',
         env: {
           ...process.env,
-          HAPPIER_HOME_DIR: homeDir,
+          HAPPIEST_HOME_DIR: homeDir,
         },
       });
       originalPid = original.pid ?? null;

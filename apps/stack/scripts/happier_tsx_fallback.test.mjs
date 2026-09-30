@@ -40,7 +40,7 @@ test('hstack happier falls back to tsx when CLI dist is missing', async (t) => {
     HAPPIER_STACK_STACK: 'main',
     HAPPIER_STACK_ENV_FILE: join(rootDir, 'scripts', 'nonexistent-env'),
     HAPPIER_STACK_REPO_DIR: fixture.dir,
-    HAPPIER_HOME_DIR: join(fixture.dir, '.happy-home'),
+    HAPPIEST_HOME_DIR: join(fixture.dir, '.happy-home'),
   };
 
   const res = await runNodeCapture([hstackBinPath(rootDir), 'happier', '--help'], { cwd: rootDir, env });
@@ -66,7 +66,7 @@ test('hstack happier falls back to tsx when dist entrypoint exists but is incomp
     HAPPIER_STACK_STACK: 'main',
     HAPPIER_STACK_ENV_FILE: join(rootDir, 'scripts', 'nonexistent-env'),
     HAPPIER_STACK_REPO_DIR: fixture.dir,
-    HAPPIER_HOME_DIR: join(fixture.dir, '.happy-home'),
+    HAPPIEST_HOME_DIR: join(fixture.dir, '.happy-home'),
   };
 
   const res = await runNodeCapture([hstackBinPath(rootDir), 'happier', '--help'], { cwd: rootDir, env });

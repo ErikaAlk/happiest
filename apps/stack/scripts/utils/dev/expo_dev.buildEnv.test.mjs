@@ -7,8 +7,8 @@ test('buildExpoDevEnv does not inject auth auto-restore env vars', () => {
   const baseEnv = {
     ...process.env,
     HAPPIER_STACK_CLI_HOME_DIR: '/tmp/fake-cli-home',
-    HAPPIER_HOME_DIR: '/tmp/fake-cli-home-legacy',
-    HAPPIER_SERVER_URL: 'http://localhost:3010',
+    HAPPIEST_HOME_DIR: '/tmp/fake-cli-home-legacy',
+    HAPPIEST_SERVER_URL: 'http://localhost:3010',
   };
 
   const env = buildExpoDevEnv({

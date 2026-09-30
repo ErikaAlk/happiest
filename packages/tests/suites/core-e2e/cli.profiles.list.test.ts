@@ -90,7 +90,7 @@ describe('core e2e: cli profiles list', () => {
         ...process.env,
         CI: '1',
         HAPPIER_VARIANT: 'dev',
-        HAPPIER_ACTIVE_SERVER_ID: serverId,
+        HAPPIEST_ACTIVE_SERVER_ID: serverId,
         HAPPIER_E2E_CLI_SNAPSHOT_NODE_MODULES_MODE: 'symlink',
       },
       label: 'profiles.list',

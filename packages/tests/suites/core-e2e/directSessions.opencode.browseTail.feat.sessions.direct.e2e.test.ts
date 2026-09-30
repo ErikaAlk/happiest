@@ -162,8 +162,8 @@ describe('core e2e: direct OpenCode sessions browse/link/tail', () => {
       env: {
         ...process.env,
         CI: '1',
-        HAPPIER_HOME_DIR: daemonHomeDir,
-        HAPPIER_SERVER_URL: appServer.baseUrl,
+        HAPPIEST_HOME_DIR: daemonHomeDir,
+        HAPPIEST_SERVER_URL: appServer.baseUrl,
         HAPPIER_OPENCODE_SERVER_URL: fakeOpenCodeBaseUrl,
         HAPPIER_OPENCODE_SERVER_URL_EXPLICIT: '1',
         HAPPIER_DIRECT_SESSIONS_PAGE_MAX_ITEMS: '2',

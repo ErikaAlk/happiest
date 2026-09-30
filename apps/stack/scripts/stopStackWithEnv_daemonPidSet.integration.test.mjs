@@ -65,7 +65,7 @@ async function createStopFixture(t, { stackName = 'test-stack' } = {}) {
         HAPPIER_STACK_STACK: stackName,
         HAPPIER_STACK_ENV_FILE: envPath,
         HAPPIER_STACK_CLI_HOME_DIR: cliHomeDir,
-        HAPPIER_HOME_DIR: cliHomeDir,
+        HAPPIEST_HOME_DIR: cliHomeDir,
         HAPPIER_STACK_PROCESS_KIND: 'infra',
         HAPPIER_TEST_LABEL: label,
       },
@@ -85,7 +85,7 @@ async function createStopFixture(t, { stackName = 'test-stack' } = {}) {
         HAPPIER_STACK_STACK: stackName,
         HAPPIER_STACK_ENV_FILE: envPath,
         HAPPIER_STACK_CLI_HOME_DIR: cliHomeDir,
-        HAPPIER_HOME_DIR: cliHomeDir,
+        HAPPIEST_HOME_DIR: cliHomeDir,
         HAPPIER_STACK_PROCESS_KIND: 'infra',
         HAPPIER_TEST_LABEL: label,
       } : { PATH: process.env.PATH, HAPPIER_TEST_LABEL: label },
@@ -953,7 +953,7 @@ test('stopStackWithEnv stops the exact named-stack daemon lifecycle scope', asyn
     distIndexScript: `
 import { writeFileSync } from 'node:fs';
 writeFileSync(process.env.DAEMON_STOP_ENV_MARKER, JSON.stringify({
-  lifecycleScopeId: process.env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID ?? null,
+  lifecycleScopeId: process.env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID ?? null,
   stackName: process.env.HAPPIER_STACK_STACK ?? null,
   cliIdentity: process.env.HAPPIER_STACK_CLI_IDENTITY ?? null,
 }), 'utf8');
@@ -963,13 +963,13 @@ process.exit(0);
   });
 
   const previousAmbientStack = process.env.HAPPIER_STACK_STACK;
-  const previousAmbientActiveServerId = process.env.HAPPIER_ACTIVE_SERVER_ID;
-  const previousAmbientLifecycleScopeId = process.env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID;
+  const previousAmbientActiveServerId = process.env.HAPPIEST_ACTIVE_SERVER_ID;
+  const previousAmbientLifecycleScopeId = process.env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID;
   const previousAmbientMarker = process.env.DAEMON_STOP_ENV_MARKER;
   try {
     delete process.env.HAPPIER_STACK_STACK;
-    process.env.HAPPIER_ACTIVE_SERVER_ID = 'ambient-endpoint-profile';
-    delete process.env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID;
+    process.env.HAPPIEST_ACTIVE_SERVER_ID = 'ambient-endpoint-profile';
+    delete process.env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID;
     process.env.DAEMON_STOP_ENV_MARKER = markerPath;
 
     const result = await stopStackWithEnv({
@@ -998,10 +998,10 @@ process.exit(0);
   } finally {
     if (previousAmbientStack === undefined) delete process.env.HAPPIER_STACK_STACK;
     else process.env.HAPPIER_STACK_STACK = previousAmbientStack;
-    if (previousAmbientActiveServerId === undefined) delete process.env.HAPPIER_ACTIVE_SERVER_ID;
-    else process.env.HAPPIER_ACTIVE_SERVER_ID = previousAmbientActiveServerId;
-    if (previousAmbientLifecycleScopeId === undefined) delete process.env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID;
-    else process.env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID = previousAmbientLifecycleScopeId;
+    if (previousAmbientActiveServerId === undefined) delete process.env.HAPPIEST_ACTIVE_SERVER_ID;
+    else process.env.HAPPIEST_ACTIVE_SERVER_ID = previousAmbientActiveServerId;
+    if (previousAmbientLifecycleScopeId === undefined) delete process.env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID;
+    else process.env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID = previousAmbientLifecycleScopeId;
     if (previousAmbientMarker === undefined) delete process.env.DAEMON_STOP_ENV_MARKER;
     else process.env.DAEMON_STOP_ENV_MARKER = previousAmbientMarker;
   }

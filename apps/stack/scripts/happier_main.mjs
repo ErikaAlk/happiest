@@ -38,7 +38,7 @@ function isNodeRuntimeEntrypoint(entrypoint) {
 
 function runCliProfileReconciliation({ resolvedCli, env, cliHomeDir, internalServerUrl, publicServerUrl }) {
   if (!existsSync(join(cliHomeDir, 'settings.json'))) return;
-  const serverId = String(env.HAPPIER_ACTIVE_SERVER_ID ?? '').trim();
+  const serverId = String(env.HAPPIEST_ACTIVE_SERVER_ID ?? '').trim();
   if (!serverId) return;
   const args = buildStackServerProfileSetArgs({ serverId, internalServerUrl, publicServerUrl });
   const verifyPersistedProfile = shouldVerifyStackServerProfileReconciliation(cliHomeDir);
@@ -74,7 +74,7 @@ function printHstackHappierHelp({ json }) {
       '',
       'notes:',
       '  - This runs the monorepo CLI component (apps/cli) with stack env defaults.',
-      '  - It auto-fills HAPPIER_HOME_DIR / HAPPIER_SERVER_URL / HAPPIER_WEBAPP_URL when missing.',
+      '  - It auto-fills HAPPIEST_HOME_DIR / HAPPIEST_SERVER_URL / HAPPIEST_WEBAPP_URL when missing.',
       '',
       'stack wrapper options:',
       '  --stack-help  Show this wrapper help (use -h/--help for CLI help)',
@@ -317,7 +317,7 @@ async function main() {
   const isStackScopedInvocation =
     Boolean(String(env.HAPPIER_STACK_CLI_HOME_DIR ?? '').trim()) ||
     Boolean(stackEnvFilePath && existsSync(stackEnvFilePath));
-  const explicitHomeDir = String(env.HAPPIER_HOME_DIR ?? '').trim();
+  const explicitHomeDir = String(env.HAPPIEST_HOME_DIR ?? '').trim();
   const stackScopedCliHomeDir =
     (isIdentityScopedCliHomeDir(explicitHomeDir)
       ? explicitHomeDir
@@ -334,37 +334,37 @@ async function main() {
     : resolveCliHomeDir(process.env);
 
   if (isStackScopedInvocation) {
-    env.HAPPIER_HOME_DIR = cliHomeDir;
+    env.HAPPIEST_HOME_DIR = cliHomeDir;
   } else {
-    env.HAPPIER_HOME_DIR = env.HAPPIER_HOME_DIR || cliHomeDir;
+    env.HAPPIEST_HOME_DIR = env.HAPPIEST_HOME_DIR || cliHomeDir;
   }
 
   const settingsDefaults =
     !isStackScopedInvocation && !prefixServerSelection.hasExplicitSelection
-      ? readActiveServerUrlsFromCliSettings(env.HAPPIER_HOME_DIR)
+      ? readActiveServerUrlsFromCliSettings(env.HAPPIEST_HOME_DIR)
       : null;
   if (settingsDefaults) {
     if (settingsDefaults.localServerUrl && settingsDefaults.localServerUrl !== settingsDefaults.serverUrl) {
-      env.HAPPIER_PUBLIC_SERVER_URL = settingsDefaults.serverUrl;
-      env.HAPPIER_LOCAL_SERVER_URL = settingsDefaults.localServerUrl;
-      env.HAPPIER_SERVER_URL = settingsDefaults.localServerUrl;
+      env.HAPPIEST_PUBLIC_SERVER_URL = settingsDefaults.serverUrl;
+      env.HAPPIEST_LOCAL_SERVER_URL = settingsDefaults.localServerUrl;
+      env.HAPPIEST_SERVER_URL = settingsDefaults.localServerUrl;
     } else {
-      delete env.HAPPIER_PUBLIC_SERVER_URL;
-      delete env.HAPPIER_LOCAL_SERVER_URL;
-      env.HAPPIER_SERVER_URL = settingsDefaults.serverUrl;
+      delete env.HAPPIEST_PUBLIC_SERVER_URL;
+      delete env.HAPPIEST_LOCAL_SERVER_URL;
+      env.HAPPIEST_SERVER_URL = settingsDefaults.serverUrl;
     }
-    env.HAPPIER_WEBAPP_URL = settingsDefaults.webappUrl;
-    delete env.HAPPIER_ACTIVE_SERVER_ID;
-    delete env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID;
+    env.HAPPIEST_WEBAPP_URL = settingsDefaults.webappUrl;
+    delete env.HAPPIEST_ACTIVE_SERVER_ID;
+    delete env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID;
   }
   // Only set default env vars when no explicit server selection flags are present
   if (!prefixServerSelection.hasExplicitSelection && !settingsDefaults) {
     if (isStackScopedInvocation) {
-      env.HAPPIER_SERVER_URL = internalServerUrl;
-      env.HAPPIER_WEBAPP_URL = publicServerUrl;
+      env.HAPPIEST_SERVER_URL = internalServerUrl;
+      env.HAPPIEST_WEBAPP_URL = publicServerUrl;
     } else {
-      env.HAPPIER_SERVER_URL = env.HAPPIER_SERVER_URL || internalServerUrl;
-      env.HAPPIER_WEBAPP_URL = env.HAPPIER_WEBAPP_URL || publicServerUrl;
+      env.HAPPIEST_SERVER_URL = env.HAPPIEST_SERVER_URL || internalServerUrl;
+      env.HAPPIEST_WEBAPP_URL = env.HAPPIEST_WEBAPP_URL || publicServerUrl;
     }
   }
   if (resolvedCli.kind === 'tsx') {
@@ -380,11 +380,11 @@ async function main() {
       ? deriveEnvServerIdFromUrl(prefixServerSelection.explicitServerUrl)
       : null;
     if (derived) {
-      env.HAPPIER_ACTIVE_SERVER_ID = derived;
+      env.HAPPIEST_ACTIVE_SERVER_ID = derived;
     } else {
-      delete env.HAPPIER_ACTIVE_SERVER_ID;
+      delete env.HAPPIEST_ACTIVE_SERVER_ID;
     }
-    delete env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID;
+    delete env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID;
   } else if (!settingsDefaults) {
     env = applyStackDaemonLifecycleScopeEnv({
       env: applyStackActiveServerScopeEnv({
@@ -404,8 +404,8 @@ async function main() {
       currentExecPath: cliLaunchSpec.command || '',
     });
     if (runtimeCommand) {
-      env.HAPPIER_DAEMON_SERVICE_NODE_PATH = runtimeCommand;
-      env.HAPPIER_DAEMON_SERVICE_ENTRY_PATH = cliLaunchSpec.nodeEntrypoint;
+      env.HAPPIEST_DAEMON_SERVICE_NODE_PATH = runtimeCommand;
+      env.HAPPIEST_DAEMON_SERVICE_ENTRY_PATH = cliLaunchSpec.nodeEntrypoint;
     }
   }
 

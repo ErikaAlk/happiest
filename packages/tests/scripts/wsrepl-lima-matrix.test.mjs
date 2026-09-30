@@ -2266,7 +2266,7 @@ test('macos wsrepl lima matrix watchdog probes daemon status using stack-scoped 
 	      '  printf "1" > "$stopped_marker"',
 	      '  exit 0',
 	      'fi',
-	      // When the daemon is managed under a stack-scoped HAPPIER_HOME_DIR, status probes must
+	      // When the daemon is managed under a stack-scoped HAPPIEST_HOME_DIR, status probes must
 	      // use that same home and active server id. Otherwise the watchdog will see "not running"
 	      // and restart the daemon continuously, corrupting matrix results.
 	      'if [[ "${1:-}" == "daemon" && "${2:-}" == "status" ]]; then',
@@ -2276,7 +2276,7 @@ test('macos wsrepl lima matrix watchdog probes daemon status using stack-scoped 
 	      '  fi',
 	      `  expected_home=${JSON.stringify(stackCliRoot)}`,
 	      `  expected_id=${JSON.stringify(stackServerId)}`,
-	      '  if [[ "${HAPPIER_HOME_DIR:-}" == "$expected_home" && "${HAPPIER_ACTIVE_SERVER_ID:-}" == "$expected_id" ]]; then',
+	      '  if [[ "${HAPPIEST_HOME_DIR:-}" == "$expected_home" && "${HAPPIEST_ACTIVE_SERVER_ID:-}" == "$expected_id" ]]; then',
 	      '    echo "Daemon is running"',
 	      '    exit 0',
       '  fi',
@@ -4019,7 +4019,7 @@ test('macos wsrepl lima matrix wrapper prefers the stack runtime CLI inferred fr
   assert.equal(await fileExists(yarnLog), false, 'did not expect yarn to be invoked');
 });
 
-test('macos wsrepl lima matrix wrapper restarts the guest daemon with HAPPIER_SERVER_URL rewritten for Lima (host.lima.internal)', async () => {
+test('macos wsrepl lima matrix wrapper restarts the guest daemon with HAPPIEST_SERVER_URL rewritten for Lima (host.lima.internal)', async () => {
   const root = await mkdtemp(join(tmpdir(), 'hstack-macos-lima-wsrepl-matrix-guest-server-url-'));
   const binDir = join(root, 'bin');
   const homeDir = join(root, 'home');
@@ -4049,7 +4049,7 @@ test('macos wsrepl lima matrix wrapper restarts the guest daemon with HAPPIER_SE
 	      'sub="${2:-}"',
 	      'if [[ "$cmd" == "daemon" && "$sub" == "start" ]]; then',
 	      '  rm -f "$stopped_marker" >/dev/null 2>&1 || true',
-	      '  echo "HAPPIER_SERVER_URL=${HAPPIER_SERVER_URL-}" >> ' + JSON.stringify(guestEnvLog),
+	      '  echo "HAPPIEST_SERVER_URL=${HAPPIEST_SERVER_URL-}" >> ' + JSON.stringify(guestEnvLog),
 	      '  exit 0',
 	      'fi',
 	      'if [[ "$cmd" == "daemon" && "$sub" == "stop" ]]; then',
@@ -4209,7 +4209,7 @@ test('macos wsrepl lima matrix wrapper restarts the guest daemon with HAPPIER_SE
 
   const logged = await readFile(guestEnvLog, 'utf8').catch(() => '');
   assert.ok(
-    logged.includes('HAPPIER_SERVER_URL=http://host.lima.internal:53288'),
+    logged.includes('HAPPIEST_SERVER_URL=http://host.lima.internal:53288'),
     `expected guest daemon to be restarted with host.lima.internal server url; got:\n${logged}`,
   );
 });
@@ -4254,8 +4254,8 @@ test('macos wsrepl lima matrix wrapper uses stack CLI home dir + active server i
     buildStopAwareDaemonScript({
       stoppedMarker: join(homeDir, '.host-daemon-stopped'),
       startExtraLines: [
-        'echo "HAPPIER_HOME_DIR=${HAPPIER_HOME_DIR-}" >> ' + JSON.stringify(hostEnvLog),
-        'echo "HAPPIER_ACTIVE_SERVER_ID=${HAPPIER_ACTIVE_SERVER_ID-}" >> ' + JSON.stringify(hostEnvLog),
+        'echo "HAPPIEST_HOME_DIR=${HAPPIEST_HOME_DIR-}" >> ' + JSON.stringify(hostEnvLog),
+        'echo "HAPPIEST_ACTIVE_SERVER_ID=${HAPPIEST_ACTIVE_SERVER_ID-}" >> ' + JSON.stringify(hostEnvLog),
       ],
       startSuccessLines: [],
     }),
@@ -4358,11 +4358,11 @@ test('macos wsrepl lima matrix wrapper uses stack CLI home dir + active server i
 
   const logged = await readFile(hostEnvLog, 'utf8').catch(() => '');
   assert.ok(
-    logged.includes(`HAPPIER_HOME_DIR=${join(stackRoot, 'cli')}`),
+    logged.includes(`HAPPIEST_HOME_DIR=${join(stackRoot, 'cli')}`),
     `expected wrapper to run host daemon with stack cli home dir; got:\n${logged}`,
   );
   assert.ok(
-    logged.includes(`HAPPIER_ACTIVE_SERVER_ID=${stackServerId}`),
+    logged.includes(`HAPPIEST_ACTIVE_SERVER_ID=${stackServerId}`),
     `expected wrapper to run host daemon with stack active server id; got:\n${logged}`,
   );
 });
@@ -4412,8 +4412,8 @@ test('macos wsrepl lima matrix wrapper prefers server-scoped stack credentials o
     buildStopAwareDaemonScript({
       stoppedMarker: join(homeDir, '.host-daemon-stopped'),
       startExtraLines: [
-        'echo "HAPPIER_HOME_DIR=${HAPPIER_HOME_DIR-}" >> ' + JSON.stringify(hostEnvLog),
-        'echo "HAPPIER_ACTIVE_SERVER_ID=${HAPPIER_ACTIVE_SERVER_ID-}" >> ' + JSON.stringify(hostEnvLog),
+        'echo "HAPPIEST_HOME_DIR=${HAPPIEST_HOME_DIR-}" >> ' + JSON.stringify(hostEnvLog),
+        'echo "HAPPIEST_ACTIVE_SERVER_ID=${HAPPIEST_ACTIVE_SERVER_ID-}" >> ' + JSON.stringify(hostEnvLog),
       ],
       startSuccessLines: [],
     }),
@@ -4516,11 +4516,11 @@ test('macos wsrepl lima matrix wrapper prefers server-scoped stack credentials o
 
   const logged = await readFile(hostEnvLog, 'utf8').catch(() => '');
   assert.ok(
-    logged.includes(`HAPPIER_HOME_DIR=${join(stackRoot, 'cli')}`),
+    logged.includes(`HAPPIEST_HOME_DIR=${join(stackRoot, 'cli')}`),
     `expected wrapper to keep using stack cli home dir even when legacy cli/access.key is newer; got:\n${logged}`,
   );
   assert.ok(
-    logged.includes(`HAPPIER_ACTIVE_SERVER_ID=${stackServerId}`),
+    logged.includes(`HAPPIEST_ACTIVE_SERVER_ID=${stackServerId}`),
     `expected wrapper to keep using the server-scoped active server id even when legacy cli/access.key is newer; got:\n${logged}`,
   );
 });
@@ -4562,8 +4562,8 @@ test('macos wsrepl lima matrix wrapper still uses stack CLI home dir + active se
     buildStopAwareDaemonScript({
       stoppedMarker: join(homeDir, '.host-daemon-stopped'),
       startExtraLines: [
-        'echo "HAPPIER_HOME_DIR=${HAPPIER_HOME_DIR-}" >> ' + JSON.stringify(hostEnvLog),
-        'echo "HAPPIER_ACTIVE_SERVER_ID=${HAPPIER_ACTIVE_SERVER_ID-}" >> ' + JSON.stringify(hostEnvLog),
+        'echo "HAPPIEST_HOME_DIR=${HAPPIEST_HOME_DIR-}" >> ' + JSON.stringify(hostEnvLog),
+        'echo "HAPPIEST_ACTIVE_SERVER_ID=${HAPPIEST_ACTIVE_SERVER_ID-}" >> ' + JSON.stringify(hostEnvLog),
       ],
       startSuccessLines: [],
     }),
@@ -4667,11 +4667,11 @@ test('macos wsrepl lima matrix wrapper still uses stack CLI home dir + active se
 
   const logged = await readFile(hostEnvLog, 'utf8').catch(() => '');
   assert.ok(
-    logged.includes(`HAPPIER_HOME_DIR=${join(stackRoot, 'cli')}`),
+    logged.includes(`HAPPIEST_HOME_DIR=${join(stackRoot, 'cli')}`),
     `expected wrapper to keep using stack cli home dir when only the active server dir is known; got:\n${logged}`,
   );
   assert.ok(
-    logged.includes(`HAPPIER_ACTIVE_SERVER_ID=${stackServerId}`),
+    logged.includes(`HAPPIEST_ACTIVE_SERVER_ID=${stackServerId}`),
     `expected wrapper to keep using stack active server id when only the active server dir is known; got:\n${logged}`,
   );
 });
@@ -4868,16 +4868,16 @@ test('macos wsrepl lima matrix wrapper preserves the canonical host machine id w
     buildStopAwareDaemonScript({
       startExtraLines: [
         'echo "daemon started"',
-        `echo "HAPPIER_HOME_DIR=${'${HAPPIER_HOME_DIR:-}'}" >> ${JSON.stringify(hostEnvLog)}`,
-        `echo "HAPPIER_ACTIVE_SERVER_ID=${'${HAPPIER_ACTIVE_SERVER_ID:-}'}" >> ${JSON.stringify(hostEnvLog)}`,
+        `echo "HAPPIEST_HOME_DIR=${'${HAPPIEST_HOME_DIR:-}'}" >> ${JSON.stringify(hostEnvLog)}`,
+        `echo "HAPPIEST_ACTIVE_SERVER_ID=${'${HAPPIEST_ACTIVE_SERVER_ID:-}'}" >> ${JSON.stringify(hostEnvLog)}`,
       ],
       statusRunningLines: [
         'echo "🤖 Daemon Status"',
         'echo "✓ Daemon is running"',
         'echo "📄 Daemon State:"',
-        'settings_path="${HAPPIER_HOME_DIR:-$HOME}/settings.json"',
+        'settings_path="${HAPPIEST_HOME_DIR:-$HOME}/settings.json"',
         'if [[ -f "$settings_path" ]]; then',
-        '  machine_id="$(python3 - "$settings_path" "${HAPPIER_ACTIVE_SERVER_ID:-}" <<\'PY\'',
+        '  machine_id="$(python3 - "$settings_path" "${HAPPIEST_ACTIVE_SERVER_ID:-}" <<\'PY\'',
         'import json',
         'import sys',
         'from pathlib import Path',
@@ -5025,7 +5025,7 @@ test('macos wsrepl lima matrix wrapper preserves the canonical host machine id w
 
   const hostEnv = await readFile(hostEnvLog, 'utf8').catch(() => '');
   assert.ok(
-    hostEnv.includes(`HAPPIER_HOME_DIR=${join(homeDir, hostHomeRel)}`),
+    hostEnv.includes(`HAPPIEST_HOME_DIR=${join(homeDir, hostHomeRel)}`),
     `expected wrapper to run host daemon in the isolated home; got:\n${hostEnv}`,
   );
 });
@@ -6593,9 +6593,9 @@ test('macos wsrepl lima matrix wrapper derives host server url from the most-rec
 	      '        ;;',
 	      '      start|start-sync)',
 	      '        rm -f "$stopped_marker" >/dev/null 2>&1 || true',
-	      '        echo "HAPPIER_SERVER_URL=${HAPPIER_SERVER_URL-}" >> ' + JSON.stringify(envLog),
-	      '        echo "HAPPIER_HOME_DIR=${HAPPIER_HOME_DIR-}" >> ' + JSON.stringify(envLog),
-	      '        echo "HAPPIER_ACTIVE_SERVER_ID=${HAPPIER_ACTIVE_SERVER_ID-}" >> ' + JSON.stringify(envLog),
+	      '        echo "HAPPIEST_SERVER_URL=${HAPPIEST_SERVER_URL-}" >> ' + JSON.stringify(envLog),
+	      '        echo "HAPPIEST_HOME_DIR=${HAPPIEST_HOME_DIR-}" >> ' + JSON.stringify(envLog),
+	      '        echo "HAPPIEST_ACTIVE_SERVER_ID=${HAPPIEST_ACTIVE_SERVER_ID-}" >> ' + JSON.stringify(envLog),
       '        echo "daemon started"',
 	      '        exit 0',
 	      '        ;;',
@@ -6708,7 +6708,7 @@ test('macos wsrepl lima matrix wrapper derives host server url from the most-rec
     WSREPL_QA_HOST_MACHINE_ID: 'machine_host_1',
     WSREPL_QA_VM_MACHINE_ID: 'machine_vm_1',
     WSREPL_QA_HOST_HAPPIER_SOURCE: `explicit:${happierPath}`,
-    // Intentionally omit HAPPIER_UI_URL and HAPPIER_SERVER_URL.
+    // Intentionally omit HAPPIER_UI_URL and HAPPIEST_SERVER_URL.
     HAPPIER_QA_HEADLESS: '1',
     WSREPL_QA_VM_HAPPIER_MODE: 'skip',
   };
@@ -6722,12 +6722,12 @@ test('macos wsrepl lima matrix wrapper derives host server url from the most-rec
   assert.equal(res.status, 0, `expected exit 0\nstdout:\n${res.stdout}\nstderr:\n${res.stderr}`);
   const logged = await readFile(envLog, 'utf8');
   assert.ok(
-    logged.includes(`HAPPIER_SERVER_URL=http://127.0.0.1:${serverPort}`),
-    `expected host HAPPIER_SERVER_URL derived from stack.runtime.json\nlogged:\n${logged}`,
+    logged.includes(`HAPPIEST_SERVER_URL=http://127.0.0.1:${serverPort}`),
+    `expected host HAPPIEST_SERVER_URL derived from stack.runtime.json\nlogged:\n${logged}`,
   );
 });
 
-test('macos wsrepl lima matrix wrapper resolves stack cli home from explicit HAPPIER_SERVER_URL even when the newest stack is unrelated', async () => {
+test('macos wsrepl lima matrix wrapper resolves stack cli home from explicit HAPPIEST_SERVER_URL even when the newest stack is unrelated', async () => {
   const root = await mkdtemp(join(tmpdir(), 'hstack-macos-lima-wsrepl-matrix-server-url-stack-home-'));
   const binDir = join(root, 'bin');
   const homeDir = join(root, 'home');
@@ -6796,9 +6796,9 @@ test('macos wsrepl lima matrix wrapper resolves stack cli home from explicit HAP
       '        ;;',
       '      start|start-sync)',
       '        rm -f "$stopped_marker" >/dev/null 2>&1 || true',
-      '        echo "HAPPIER_SERVER_URL=${HAPPIER_SERVER_URL-}" >> ' + JSON.stringify(envLog),
-      '        echo "HAPPIER_HOME_DIR=${HAPPIER_HOME_DIR-}" >> ' + JSON.stringify(envLog),
-      '        echo "HAPPIER_ACTIVE_SERVER_ID=${HAPPIER_ACTIVE_SERVER_ID-}" >> ' + JSON.stringify(envLog),
+      '        echo "HAPPIEST_SERVER_URL=${HAPPIEST_SERVER_URL-}" >> ' + JSON.stringify(envLog),
+      '        echo "HAPPIEST_HOME_DIR=${HAPPIEST_HOME_DIR-}" >> ' + JSON.stringify(envLog),
+      '        echo "HAPPIEST_ACTIVE_SERVER_ID=${HAPPIEST_ACTIVE_SERVER_ID-}" >> ' + JSON.stringify(envLog),
       '        echo "daemon started"',
       '        exit 0',
       '        ;;',
@@ -6905,7 +6905,7 @@ test('macos wsrepl lima matrix wrapper resolves stack cli home from explicit HAP
     PATH: `${binDir}:${testEnv.PATH}`,
     WSREPL_QA_OUTPUT_DIR: reportDir,
     WSREPL_QA_HOST_HAPPIER_SOURCE: `explicit:${happierPath}`,
-    HAPPIER_SERVER_URL: `http://127.0.0.1:${desiredServerPort}`,
+    HAPPIEST_SERVER_URL: `http://127.0.0.1:${desiredServerPort}`,
     HAPPIER_QA_SESSION_ID: 'sess_test_1',
     HAPPIER_QA_STEPS_JSON: JSON.stringify([{ targetMachineId: 'machine_target_1', strategy: 'transfer_snapshot' }]),
     WSREPL_QA_HOST_MACHINE_ID: 'machine_host_1',
@@ -6923,16 +6923,16 @@ test('macos wsrepl lima matrix wrapper resolves stack cli home from explicit HAP
   assert.equal(res.status, 0, `expected exit 0\nstdout:\n${res.stdout}\nstderr:\n${res.stderr}`);
   const logged = await readFile(envLog, 'utf8');
   assert.ok(
-    logged.includes(`HAPPIER_SERVER_URL=http://127.0.0.1:${desiredServerPort}`),
-    `expected wrapper to preserve explicit HAPPIER_SERVER_URL\nlogged:\n${logged}`,
+    logged.includes(`HAPPIEST_SERVER_URL=http://127.0.0.1:${desiredServerPort}`),
+    `expected wrapper to preserve explicit HAPPIEST_SERVER_URL\nlogged:\n${logged}`,
   );
   assert.ok(
-    logged.includes(`HAPPIER_HOME_DIR=${join(desiredStackRoot, 'cli')}`),
-    `expected wrapper to resolve the desired stack cli home from HAPPIER_SERVER_URL\nlogged:\n${logged}`,
+    logged.includes(`HAPPIEST_HOME_DIR=${join(desiredStackRoot, 'cli')}`),
+    `expected wrapper to resolve the desired stack cli home from HAPPIEST_SERVER_URL\nlogged:\n${logged}`,
   );
   assert.ok(
-    logged.includes(`HAPPIER_ACTIVE_SERVER_ID=${desiredServerId}`),
-    `expected wrapper to resolve the desired active server id from HAPPIER_SERVER_URL\nlogged:\n${logged}`,
+    logged.includes(`HAPPIEST_ACTIVE_SERVER_ID=${desiredServerId}`),
+    `expected wrapper to resolve the desired active server id from HAPPIEST_SERVER_URL\nlogged:\n${logged}`,
   );
 });
 

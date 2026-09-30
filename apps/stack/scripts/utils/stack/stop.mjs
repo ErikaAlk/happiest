@@ -536,7 +536,7 @@ async function stopStackWithEnvInternal({
     }
 
     // Back-compat for earlier "stackless" runs:
-    // Some repo-local runs started infra without HAPPIER_STACK_ENV_FILE/HAPPIER_HOME_DIR markers.
+    // Some repo-local runs started infra without HAPPIER_STACK_ENV_FILE/HAPPIEST_HOME_DIR markers.
     // For ephemeral stacks, allow stopping runtime-recorded PIDs when the process environment still
     // proves the stack name, to avoid leaving orphaned servers/expo after quitting the TUI.
     if (runtimeState?.ephemeral && res.reason === 'not_owned') {

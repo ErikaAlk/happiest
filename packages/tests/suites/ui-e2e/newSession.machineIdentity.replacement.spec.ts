@@ -107,7 +107,7 @@ test.describe('ui e2e: machine identity and replacement surfaces', () => {
       testDir: suiteDir,
       env: {
         ...process.env,
-        HAPPIER_SERVER_URL: server.baseUrl,
+        HAPPIEST_SERVER_URL: server.baseUrl,
         EXPO_PUBLIC_HAPPIER_SERVER_URL: server.baseUrl,
       },
     });
@@ -183,9 +183,9 @@ test.describe('ui e2e: machine identity and replacement surfaces', () => {
       env: {
         ...process.env,
         CI: '1',
-        HAPPIER_HOME_DIR: secondHomeDir,
-        HAPPIER_SERVER_URL: serverUrl,
-        HAPPIER_WEBAPP_URL: webUrl,
+        HAPPIEST_HOME_DIR: secondHomeDir,
+        HAPPIEST_SERVER_URL: serverUrl,
+        HAPPIEST_WEBAPP_URL: webUrl,
         HAPPIER_DISABLE_CAFFEINATE: '1',
         HAPPIER_VARIANT: 'dev',
         HAPPIER_E2E_PROVIDER_USE_CLI_SOURCE_ENTRYPOINT: '1',

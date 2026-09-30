@@ -23,7 +23,9 @@ async function runAuthLoginPrintJson({ rootDir, prefix, stackEnvLines, extraEnv 
         cwd: rootDir,
         env: fixture.buildEnv({
           HAPPIER_STACK_RUNTIME_MODE: 'source',
-          HAPPIER_SERVER_URL: '',
+          HAPPIEST_SERVER_URL: '',
+          HAPPIEST_PUBLIC_SERVER_URL: '',
+          HAPPIEST_WEBAPP_URL: '',
           HAPPIER_PUBLIC_SERVER_URL: '',
           HAPPIER_WEBAPP_URL: '',
           ...extraEnv,
@@ -48,7 +50,7 @@ test('hstack auth login --print --json includes configure-server links and publi
   assert.equal(parsed.internalServerUrl, 'http://127.0.0.1:4102');
   assert.equal(parsed.publicServerUrl, 'http://localhost:4102');
   assert.equal(parsed.webappUrl, 'http://localhost:4102');
-  assert.match(parsed.cmd, /HAPPIER_PUBLIC_SERVER_URL="http:\/\/localhost:4102"/);
+  assert.match(parsed.cmd, /HAPPIEST_PUBLIC_SERVER_URL="http:\/\/localhost:4102"/);
 
   assert.ok(parsed.configureServer, 'expected configureServer field');
   const configureUrl = new URL(parsed.configureServer.webUrl);
@@ -110,8 +112,8 @@ test('hstack stack auth login --print --json keeps the stable stack scope when a
     assert.equal(res.code, 0, `expected exit 0, got ${res.code}\nstderr:\n${res.stderr}\nstdout:\n${res.stdout}`);
 
     const parsed = JSON.parse(res.stdout.trim());
-    assert.match(parsed.cmd, /HAPPIER_ACTIVE_SERVER_ID="stack_qa-external-mcp-qa-20260327__id_default"/);
-    assert.doesNotMatch(parsed.cmd, /HAPPIER_ACTIVE_SERVER_ID="stack-qa-external-mcp"/);
+    assert.match(parsed.cmd, /HAPPIEST_ACTIVE_SERVER_ID="stack_qa-external-mcp-qa-20260327__id_default"/);
+    assert.doesNotMatch(parsed.cmd, /HAPPIEST_ACTIVE_SERVER_ID="stack-qa-external-mcp"/);
   } finally {
     await fixture.cleanup();
   }
@@ -127,7 +129,7 @@ test('hstack auth login --print --json webapp precedence variants', async (t) =>
       args: ['--webapp-url=http://example.test:1234'],
       assertParsed(parsed) {
         assert.equal(parsed.webappUrl, 'http://example.test:1234');
-        assert.match(parsed.cmd, /HAPPIER_WEBAPP_URL="http:\/\/example\.test:1234"/);
+        assert.match(parsed.cmd, /HAPPIEST_WEBAPP_URL="http:\/\/example\.test:1234"/);
       },
     },
     {

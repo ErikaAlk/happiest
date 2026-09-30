@@ -41,10 +41,12 @@ async function withTempStackEnvFixture(fn) {
 
 test('withStackEnv clears leaked unprefixed server/home env vars from caller scope', async () => {
   await withTempStackEnvFixture(async ({ stackName }) => {
-    const previousServerUrl = process.env.HAPPIER_SERVER_URL;
-    const previousPublicServerUrl = process.env.HAPPIER_PUBLIC_SERVER_URL;
-    const previousWebappUrl = process.env.HAPPIER_WEBAPP_URL;
-    const previousHomeDir = process.env.HAPPIER_HOME_DIR;
+    const previousServerUrl = process.env.HAPPIEST_SERVER_URL;
+    const previousPublicServerUrl = process.env.HAPPIEST_PUBLIC_SERVER_URL;
+    const previousWebappUrl = process.env.HAPPIEST_WEBAPP_URL;
+    const previousHomeDir = process.env.HAPPIEST_HOME_DIR;
+    const previousRelayPublicServerUrl = process.env.HAPPIER_PUBLIC_SERVER_URL;
+    const previousRelayWebappUrl = process.env.HAPPIER_WEBAPP_URL;
     const previousAppEnv = process.env.APP_ENV;
     const previousExpoUpdatesChannel = process.env.EXPO_UPDATES_CHANNEL;
     const previousExpoPublicFeaturePolicy = process.env.EXPO_PUBLIC_HAPPIER_FEATURE_POLICY_ENV;
@@ -55,10 +57,12 @@ test('withStackEnv clears leaked unprefixed server/home env vars from caller sco
     const previousBuildFeaturesAllow = process.env.HAPPIER_BUILD_FEATURES_ALLOW;
     const previousBuildFeaturesDeny = process.env.HAPPIER_BUILD_FEATURES_DENY;
 
-    process.env.HAPPIER_SERVER_URL = 'http://stale.localhost:9999';
+    process.env.HAPPIEST_SERVER_URL = 'http://stale.localhost:9999';
+    process.env.HAPPIEST_PUBLIC_SERVER_URL = 'http://stale.localhost:9999';
+    process.env.HAPPIEST_WEBAPP_URL = 'http://stale.localhost:9999';
+    process.env.HAPPIEST_HOME_DIR = '/tmp/stale-home';
     process.env.HAPPIER_PUBLIC_SERVER_URL = 'http://stale.localhost:9999';
     process.env.HAPPIER_WEBAPP_URL = 'http://stale.localhost:9999';
-    process.env.HAPPIER_HOME_DIR = '/tmp/stale-home';
     process.env.APP_ENV = 'preview';
     process.env.EXPO_UPDATES_CHANNEL = 'preview';
     process.env.EXPO_PUBLIC_HAPPIER_FEATURE_POLICY_ENV = 'preview';
@@ -73,10 +77,12 @@ test('withStackEnv clears leaked unprefixed server/home env vars from caller sco
       await withStackEnv({
         stackName,
         fn: async ({ env }) => {
-          assert.equal(env.HAPPIER_SERVER_URL, undefined);
+          assert.equal(env.HAPPIEST_SERVER_URL, undefined);
+          assert.equal(env.HAPPIEST_PUBLIC_SERVER_URL, undefined);
+          assert.equal(env.HAPPIEST_WEBAPP_URL, undefined);
+          assert.equal(env.HAPPIEST_HOME_DIR, undefined);
           assert.equal(env.HAPPIER_PUBLIC_SERVER_URL, undefined);
           assert.equal(env.HAPPIER_WEBAPP_URL, undefined);
-          assert.equal(env.HAPPIER_HOME_DIR, undefined);
           assert.equal(env.APP_ENV, undefined);
           assert.equal(env.EXPO_UPDATES_CHANNEL, undefined);
           assert.equal(env.EXPO_PUBLIC_HAPPIER_FEATURE_POLICY_ENV, undefined);
@@ -89,14 +95,18 @@ test('withStackEnv clears leaked unprefixed server/home env vars from caller sco
         },
       });
     } finally {
-      if (typeof previousServerUrl === 'undefined') delete process.env.HAPPIER_SERVER_URL;
-      else process.env.HAPPIER_SERVER_URL = previousServerUrl;
-      if (typeof previousPublicServerUrl === 'undefined') delete process.env.HAPPIER_PUBLIC_SERVER_URL;
-      else process.env.HAPPIER_PUBLIC_SERVER_URL = previousPublicServerUrl;
-      if (typeof previousWebappUrl === 'undefined') delete process.env.HAPPIER_WEBAPP_URL;
-      else process.env.HAPPIER_WEBAPP_URL = previousWebappUrl;
-      if (typeof previousHomeDir === 'undefined') delete process.env.HAPPIER_HOME_DIR;
-      else process.env.HAPPIER_HOME_DIR = previousHomeDir;
+      if (typeof previousServerUrl === 'undefined') delete process.env.HAPPIEST_SERVER_URL;
+      else process.env.HAPPIEST_SERVER_URL = previousServerUrl;
+      if (typeof previousPublicServerUrl === 'undefined') delete process.env.HAPPIEST_PUBLIC_SERVER_URL;
+      else process.env.HAPPIEST_PUBLIC_SERVER_URL = previousPublicServerUrl;
+      if (typeof previousWebappUrl === 'undefined') delete process.env.HAPPIEST_WEBAPP_URL;
+      else process.env.HAPPIEST_WEBAPP_URL = previousWebappUrl;
+      if (typeof previousHomeDir === 'undefined') delete process.env.HAPPIEST_HOME_DIR;
+      else process.env.HAPPIEST_HOME_DIR = previousHomeDir;
+      if (typeof previousRelayPublicServerUrl === 'undefined') delete process.env.HAPPIER_PUBLIC_SERVER_URL;
+      else process.env.HAPPIER_PUBLIC_SERVER_URL = previousRelayPublicServerUrl;
+      if (typeof previousRelayWebappUrl === 'undefined') delete process.env.HAPPIER_WEBAPP_URL;
+      else process.env.HAPPIER_WEBAPP_URL = previousRelayWebappUrl;
       if (typeof previousAppEnv === 'undefined') delete process.env.APP_ENV;
       else process.env.APP_ENV = previousAppEnv;
       if (typeof previousExpoUpdatesChannel === 'undefined') delete process.env.EXPO_UPDATES_CHANNEL;
@@ -151,25 +161,25 @@ test('withStackEnv preserves explicit local stack runtime override env vars from
 
 test('withStackEnv replaces a foreign daemon lifecycle scope with the selected stack scope', async () => {
   await withTempStackEnvFixture(async ({ stackName }) => {
-    const previousActiveServerId = process.env.HAPPIER_ACTIVE_SERVER_ID;
-    const previousLifecycleScopeId = process.env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID;
-    process.env.HAPPIER_ACTIVE_SERVER_ID = 'stack_other__id_default';
-    process.env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID = 'stack_other__id_default';
+    const previousActiveServerId = process.env.HAPPIEST_ACTIVE_SERVER_ID;
+    const previousLifecycleScopeId = process.env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID;
+    process.env.HAPPIEST_ACTIVE_SERVER_ID = 'stack_other__id_default';
+    process.env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID = 'stack_other__id_default';
 
     try {
       await withStackEnv({
         stackName,
         reconcileDaemonRuntimeState: false,
         fn: async ({ env }) => {
-          assert.equal(env.HAPPIER_ACTIVE_SERVER_ID, 'stack_sanitize__id_default');
-          assert.equal(env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID, 'stack_sanitize__id_default');
+          assert.equal(env.HAPPIEST_ACTIVE_SERVER_ID, 'stack_sanitize__id_default');
+          assert.equal(env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID, 'stack_sanitize__id_default');
         },
       });
     } finally {
-      if (typeof previousActiveServerId === 'undefined') delete process.env.HAPPIER_ACTIVE_SERVER_ID;
-      else process.env.HAPPIER_ACTIVE_SERVER_ID = previousActiveServerId;
-      if (typeof previousLifecycleScopeId === 'undefined') delete process.env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID;
-      else process.env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID = previousLifecycleScopeId;
+      if (typeof previousActiveServerId === 'undefined') delete process.env.HAPPIEST_ACTIVE_SERVER_ID;
+      else process.env.HAPPIEST_ACTIVE_SERVER_ID = previousActiveServerId;
+      if (typeof previousLifecycleScopeId === 'undefined') delete process.env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID;
+      else process.env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID = previousLifecycleScopeId;
     }
   });
 });

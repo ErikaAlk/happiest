@@ -385,7 +385,7 @@ export async function resolvePidStackOwnership(
 
   // Fallback: CLI home dir binding (useful for daemon-related processes).
   if (ch) {
-    if (textContainsNeedle(line, `HAPPIER_HOME_DIR=${ch}`) || textContainsNeedle(line, `HAPPIER_STACK_CLI_HOME_DIR=${ch}`)) {
+    if (textContainsNeedle(line, `HAPPIEST_HOME_DIR=${ch}`) || textContainsNeedle(line, `HAPPIER_STACK_CLI_HOME_DIR=${ch}`)) {
       return { status: 'owned', owned: true, reason: 'cli_home' };
     }
   }

@@ -190,9 +190,9 @@ test.describe('ui e2e: direct OpenCode sessions browse/open/tail', () => {
       env: {
         ...process.env,
         CI: '1',
-        HAPPIER_HOME_DIR: cliHomeDir,
-        HAPPIER_SERVER_URL: appServer.baseUrl,
-        HAPPIER_WEBAPP_URL: uiBaseUrl,
+        HAPPIEST_HOME_DIR: cliHomeDir,
+        HAPPIEST_SERVER_URL: appServer.baseUrl,
+        HAPPIEST_WEBAPP_URL: uiBaseUrl,
         HAPPIER_DISABLE_CAFFEINATE: '1',
         HAPPIER_VARIANT: 'dev',
         HAPPIER_DIRECT_SESSIONS_PAGE_MAX_ITEMS: '2',

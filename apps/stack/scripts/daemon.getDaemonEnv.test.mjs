@@ -48,8 +48,8 @@ test('getDaemonEnv keeps machine identity and lifecycle state on the stable stac
     cliIdentity: 'default',
   });
 
-  assert.equal(env.HAPPIER_ACTIVE_SERVER_ID, stableScopeId);
-  assert.equal(env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID, stableScopeId);
+  assert.equal(env.HAPPIEST_ACTIVE_SERVER_ID, stableScopeId);
+  assert.equal(env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID, stableScopeId);
   assert.equal(env.HAPPIER_DAEMON_STARTUP_SOURCE, 'manual');
 });
 
@@ -113,13 +113,13 @@ test('getDaemonEnv preserves a matching explicit active server id when settings 
   );
 
   const env = getDaemonEnv({
-    baseEnv: { HAPPIER_ACTIVE_SERVER_ID: explicitServerId },
+    baseEnv: { HAPPIEST_ACTIVE_SERVER_ID: explicitServerId },
     cliHomeDir: dir,
     internalServerUrl: serverUrl,
     publicServerUrl: 'http://localhost:52753',
   });
 
-  assert.equal(env.HAPPIER_ACTIVE_SERVER_ID, explicitServerId);
+  assert.equal(env.HAPPIEST_ACTIVE_SERVER_ID, explicitServerId);
 });
 
 test('getDaemonEnv marks service-mode starts as background-service', async () => {
@@ -144,7 +144,7 @@ test('getDaemonEnv preserves an explicit daemon service label', async () => {
 
   const env = getDaemonEnv({
     baseEnv: {
-      HAPPIER_DAEMON_SERVICE_LABEL: 'happier-daemon.preview.example.service',
+      HAPPIEST_DAEMON_SERVICE_LABEL: 'happier-daemon.preview.example.service',
     },
     cliHomeDir: dir,
     internalServerUrl: 'http://127.0.0.1:3009',
@@ -153,5 +153,5 @@ test('getDaemonEnv preserves an explicit daemon service label', async () => {
     cliIdentity: 'default',
   });
 
-  assert.equal(env.HAPPIER_DAEMON_SERVICE_LABEL, 'happier-daemon.preview.example.service');
+  assert.equal(env.HAPPIEST_DAEMON_SERVICE_LABEL, 'happier-daemon.preview.example.service');
 });

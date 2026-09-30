@@ -140,7 +140,7 @@ test('hstack stack auth copy-from prefers source server-scoped credential over u
   const sourceCred = resolveStackCredentialPaths({
     cliHomeDir: sourceCliHome,
     serverUrl,
-    env: { ...process.env, HAPPIER_ACTIVE_SERVER_ID: '' },
+    env: { ...process.env, HAPPIEST_ACTIVE_SERVER_ID: '' },
   });
   await mkdir(dirname(sourceCred.serverScopedPath), { recursive: true });
   await writeFile(join(sourceCliHome, 'access.key'), 'legacy-wrong\n', 'utf-8');

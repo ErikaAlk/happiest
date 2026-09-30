@@ -228,7 +228,7 @@ test('readDaemonControlState resolves the exact named-stack lifecycle scope inst
   const serverUrl = 'http://127.0.0.1:3009';
   const stackName = 'target-stack';
   const env = {
-    HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_ambient__id_default',
+    HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_ambient__id_default',
     HAPPIER_STACK_CLI_IDENTITY: 'account-b',
   };
   const targetEnv = applyStackDaemonLifecycleScopeEnv({

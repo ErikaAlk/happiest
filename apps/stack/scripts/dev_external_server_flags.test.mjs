@@ -30,7 +30,7 @@ test('dev --json reports local server mode by default', async () => {
       cwd: repoRoot,
       env: {
         ...process.env,
-        HAPPIER_SERVER_URL: '',
+        HAPPIEST_SERVER_URL: '',
         HAPPIER_STACK_STACK: 'repo-local-default',
         HAPPIER_STACK_HOME_DIR: join(storageDir, 'home'),
         HAPPIER_STACK_STORAGE_DIR: storageDir,
@@ -57,7 +57,7 @@ test('dev --no-server --json fails without an external server URL', async () => 
 
   const res = await runNode([devScript, '--no-server', '--json'], {
     cwd: repoRoot,
-    env: { ...process.env, HAPPIER_SERVER_URL: '' },
+    env: { ...process.env, HAPPIEST_SERVER_URL: '' },
   });
   assert.equal(res.code, 1);
   assert.match(res.stderr, /--no-server requires an external server URL/);

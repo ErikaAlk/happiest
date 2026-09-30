@@ -819,9 +819,9 @@ test('non-main stack skips occupied stable port and picks the next free port', a
   }
 });
 
-test('main stack preserves legacy port selection via HAPPIER_SERVER_URL', async () => {
+test('main stack preserves legacy port selection via HAPPIEST_SERVER_URL', async () => {
   const out = await resolveLocalServerPortForStack({
-    env: { HAPPIER_SERVER_URL: 'http://127.0.0.1:3999' },
+    env: { HAPPIEST_SERVER_URL: 'http://127.0.0.1:3999' },
     stackMode: true,
     stackName: 'main',
     runtimeStatePath: null,

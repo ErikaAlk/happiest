@@ -103,9 +103,9 @@ test.describe('ui e2e: connected-services auth chip state', () => {
       env: {
         ...process.env,
         CI: '1',
-        HAPPIER_HOME_DIR: cliHomeDir,
-        HAPPIER_SERVER_URL: server.baseUrl,
-        HAPPIER_WEBAPP_URL: uiBaseUrl,
+        HAPPIEST_HOME_DIR: cliHomeDir,
+        HAPPIEST_SERVER_URL: server.baseUrl,
+        HAPPIEST_WEBAPP_URL: uiBaseUrl,
         HAPPIER_DISABLE_CAFFEINATE: '1',
         HAPPIER_VARIANT: 'dev',
         HAPPIER_E2E_PROVIDER_USE_CLI_SOURCE_ENTRYPOINT: '1',

@@ -16,10 +16,13 @@ import { checkDaemonStatePingAware } from '../daemon.mjs';
 const readExistingEnv = readTextOrEmpty;
 
 const STACK_WRAPPER_CLEAR_UNPREFIXED_KEYS = [
-  'HAPPIER_SERVER_URL',
+  'HAPPIEST_SERVER_URL',
+  'HAPPIEST_PUBLIC_SERVER_URL',
+  'HAPPIEST_WEBAPP_URL',
+  'HAPPIEST_HOME_DIR',
+  // The relay server process reads these two names from the stack env.
   'HAPPIER_PUBLIC_SERVER_URL',
   'HAPPIER_WEBAPP_URL',
-  'HAPPIER_HOME_DIR',
   'APP_ENV',
   'EXPO_UPDATES_CHANNEL',
   'EXPO_PUBLIC_HAPPIER_FEATURE_POLICY_ENV',

@@ -28,7 +28,7 @@ test('guided stack auth login invokes core happier auth login directly', async (
   const webappUrl = 'http://localhost:1234';
   const inv = await buildStackAuthLoginInvocation({ rootDir, stackName: 'main', webappUrl });
   assertCoreAuthLoginInvocation(inv);
-  assert.equal(inv?.env?.HAPPIER_WEBAPP_URL, webappUrl);
+  assert.equal(inv?.env?.HAPPIEST_WEBAPP_URL, webappUrl);
   assert.notEqual(inv?.env?.HAPPIER_STACK_AUTH_INNER, '1');
 });
 
@@ -37,7 +37,7 @@ test('guided stack auth login defaults stack name to main and preserves invocati
   const webappUrl = 'http://localhost:4321';
   const inv = await buildStackAuthLoginInvocation({ rootDir, stackName: '   ', webappUrl });
   assertCoreAuthLoginInvocation(inv);
-  assert.equal(inv.env.HAPPIER_WEBAPP_URL, webappUrl);
+  assert.equal(inv.env.HAPPIEST_WEBAPP_URL, webappUrl);
 });
 
 test('guided stack auth login invocation merges caller env', async () => {

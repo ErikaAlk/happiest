@@ -87,7 +87,7 @@ function spawnOtherServerDaemon(cliHomeDir, env) {
         stdio: ['ignore', 'ignore', 'ignore'],
         env: {
             ...env,
-            HAPPIER_HOME_DIR: cliHomeDir,
+            HAPPIEST_HOME_DIR: cliHomeDir,
         },
     });
 }

@@ -860,10 +860,10 @@ start_host_daemon_watchdog_background() {
     while true; do
       # `happier daemon status` can exit 0 even when unhealthy; treat explicit "not running" as unhealthy.
       if [[ -n "${watchdog_cli_root}" && -n "${watchdog_active_server_id}" ]]; then
-        status_out="$(HAPPIER_SERVER_URL="${host_server_url:-}" HAPPIER_HOME_DIR="${watchdog_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${watchdog_active_server_id}" run_host_happier daemon status 2>&1)"
+        status_out="$(HAPPIEST_SERVER_URL="${host_server_url:-}" HAPPIEST_HOME_DIR="${watchdog_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${watchdog_active_server_id}" run_host_happier daemon status 2>&1)"
         status_code=$?
       else
-        status_out="$(HAPPIER_SERVER_URL="${host_server_url:-}" run_host_happier daemon status 2>&1)"
+        status_out="$(HAPPIEST_SERVER_URL="${host_server_url:-}" run_host_happier daemon status 2>&1)"
         status_code=$?
       fi
       if [[ "${status_code}" != "0" ]]; then
@@ -940,13 +940,13 @@ refresh_host_daemon_status_best_effort() {
   fi
   if [[ -n "${stack_cli_root}" && -n "${stack_active_server_id}" ]]; then
     if [[ -n "${server_url}" ]]; then
-      HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+      HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
     else
-      HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+      HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon status >"${status_file}" 2>&1 || true
     fi
   else
     if [[ -n "${server_url}" ]]; then
-      HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+      HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
     else
       run_host_happier daemon status >"${status_file}" 2>&1 || true
     fi
@@ -1032,15 +1032,15 @@ capture_host_daemon_status_out_and_code() {
   set +e
   if [[ -n "${stack_cli_root}" && -n "${stack_active_server_id}" ]]; then
     if [[ -n "${server_url}" ]]; then
-      out="$(HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon status 2>&1)"
+      out="$(HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon status 2>&1)"
       code=$?
     else
-      out="$(HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon status 2>&1)"
+      out="$(HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon status 2>&1)"
       code=$?
     fi
   else
     if [[ -n "${server_url}" ]]; then
-      out="$(HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon status 2>&1)"
+      out="$(HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon status 2>&1)"
       code=$?
     else
       out="$(run_host_happier daemon status 2>&1)"
@@ -1355,7 +1355,7 @@ const homeDir = String(process.env.HOME ?? '').trim() || os.homedir();
 const explicitStackName = String(process.env.HAPPIER_QA_STACK_NAME ?? '').trim();
 const explicitAccessKeyPath = String(process.env.HAPPIER_QA_ACCESS_KEY_PATH ?? '').trim();
 const uiUrl = String(process.env.HAPPIER_UI_URL ?? '').trim();
-const envServerUrl = String(process.env.HAPPIER_SERVER_URL ?? '').trim();
+const envServerUrl = String(process.env.HAPPIEST_SERVER_URL ?? '').trim();
 
 function resolvePort(rawUrl) {
   const raw = String(rawUrl ?? '').trim();
@@ -1472,8 +1472,8 @@ print(srv.port or "")
 PY
     )"
   fi
-  if [[ -z "${server_port}" && -n "${HAPPIER_SERVER_URL:-}" ]]; then
-    server_port="$(python3 - <<'PY' "${HAPPIER_SERVER_URL}" 2>/dev/null || true
+  if [[ -z "${server_port}" && -n "${HAPPIEST_SERVER_URL:-}" ]]; then
+    server_port="$(python3 - <<'PY' "${HAPPIEST_SERVER_URL}" 2>/dev/null || true
 import sys
 from urllib.parse import urlparse
 
@@ -1948,17 +1948,17 @@ restart_host_daemon_and_capture_logs() {
     if [[ -n "${stack_cli_root}" && -n "${stack_active_server_id}" ]]; then
       if [[ -n "${server_url}" ]]; then
         HAPPIER_CLAUDE_PATH="${HAPPIER_CLAUDE_PATH:-}" \
-        HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIER_SERVER_URL="${server_url}" \
+        HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIEST_SERVER_URL="${server_url}" \
           run_host_happier install provider "${host_provider_install_id}" >"${provider_install_file}" 2>&1
       else
         HAPPIER_CLAUDE_PATH="${HAPPIER_CLAUDE_PATH:-}" \
-        HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" \
+        HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" \
           run_host_happier install provider "${host_provider_install_id}" >"${provider_install_file}" 2>&1
       fi
     else
       if [[ -n "${server_url}" ]]; then
         HAPPIER_CLAUDE_PATH="${HAPPIER_CLAUDE_PATH:-}" \
-        HAPPIER_SERVER_URL="${server_url}" \
+        HAPPIEST_SERVER_URL="${server_url}" \
           run_host_happier install provider "${host_provider_install_id}" >"${provider_install_file}" 2>&1
       else
         HAPPIER_CLAUDE_PATH="${HAPPIER_CLAUDE_PATH:-}" \
@@ -2036,17 +2036,17 @@ PY
       fi
 
       if [[ -n "${run_server_url}" ]]; then
-        export HAPPIER_SERVER_URL="${run_server_url}"
+        export HAPPIEST_SERVER_URL="${run_server_url}"
       else
-        unset HAPPIER_SERVER_URL
+        unset HAPPIEST_SERVER_URL
       fi
 
       if [[ -n "${run_stack_cli_root}" && -n "${run_stack_active_server_id}" ]]; then
-        export HAPPIER_HOME_DIR="${run_stack_cli_root}"
-        export HAPPIER_ACTIVE_SERVER_ID="${run_stack_active_server_id}"
+        export HAPPIEST_HOME_DIR="${run_stack_cli_root}"
+        export HAPPIEST_ACTIVE_SERVER_ID="${run_stack_active_server_id}"
       else
-        unset HAPPIER_HOME_DIR
-        unset HAPPIER_ACTIVE_SERVER_ID
+        unset HAPPIEST_HOME_DIR
+        unset HAPPIEST_ACTIVE_SERVER_ID
       fi
 
       run_host_happier daemon start >"${output_file}" 2>&1
@@ -2057,9 +2057,9 @@ PY
 	  if [[ -n "${server_url}" ]]; then
 	    if [[ "${should_stop}" == "1" ]]; then
 	      if [[ -n "${stack_cli_root}" && -n "${stack_active_server_id}" ]]; then
-	        HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon stop >/dev/null 2>&1 || true
+	        HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon stop >/dev/null 2>&1 || true
 	      else
-	        HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon stop >/dev/null 2>&1 || true
+	        HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon stop >/dev/null 2>&1 || true
 	      fi
 	      if ! wait_for_host_daemon_stopped_after_stop "${server_url}" "${stack_cli_root}" "${stack_active_server_id}"; then
 	        FAILURE_STAGE="host_daemon"
@@ -2073,16 +2073,16 @@ PY
       start_status=$?
       set -e
       if [[ -n "${stack_cli_root}" && -n "${stack_active_server_id}" ]]; then
-        HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
-        HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
+        HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+        HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
       else
-        HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
-        HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
+        HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+        HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
       fi
   else
 	    if [[ "${should_stop}" == "1" ]]; then
 	      if [[ -n "${stack_cli_root}" && -n "${stack_active_server_id}" ]]; then
-	        HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon stop >/dev/null 2>&1 || true
+	        HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon stop >/dev/null 2>&1 || true
 	      else
 	        run_host_happier daemon stop >/dev/null 2>&1 || true
 	      fi
@@ -2098,8 +2098,8 @@ PY
       start_status=$?
       set -e
       if [[ -n "${stack_cli_root}" && -n "${stack_active_server_id}" ]]; then
-        HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon status >"${status_file}" 2>&1 || true
-        HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
+        HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+        HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
       else
         run_host_happier daemon status >"${status_file}" 2>&1 || true
         run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
@@ -2132,16 +2132,16 @@ PY
 
     if [[ -n "${stack_cli_root}" && -n "${stack_active_server_id}" ]]; then
       if [[ -n "${server_url}" ]]; then
-        HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
-        HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
+        HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+        HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
       else
-        HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon status >"${status_file}" 2>&1 || true
-        HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
+        HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+        HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
       fi
     else
       if [[ -n "${server_url}" ]]; then
-        HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
-        HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
+        HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+        HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
       else
         run_host_happier daemon status >"${status_file}" 2>&1 || true
         run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
@@ -2159,13 +2159,13 @@ PY
   refresh_host_daemon_status_only_best_effort() {
     if [[ -n "${stack_cli_root}" && -n "${stack_active_server_id}" ]]; then
       if [[ -n "${server_url}" ]]; then
-        HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+        HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
       else
-        HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+        HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon status >"${status_file}" 2>&1 || true
       fi
     else
       if [[ -n "${server_url}" ]]; then
-        HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+        HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
       else
         run_host_happier daemon status >"${status_file}" 2>&1 || true
       fi
@@ -2253,12 +2253,12 @@ PY
       set -e
 
       if [[ -n "${stack_cli_root}" && -n "${stack_active_server_id}" ]]; then
-        HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
-        HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
+        HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+        HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
       else
         if [[ -n "${server_url}" ]]; then
-          HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
-          HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
+          HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+          HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
         else
           run_host_happier daemon status >"${status_file}" 2>&1 || true
           run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
@@ -2288,16 +2288,16 @@ PY
         start_status=$?
         if [[ -n "${stack_cli_root}" && -n "${stack_active_server_id}" ]]; then
           if [[ -n "${server_url}" ]]; then
-            HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
-            HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
+            HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+            HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
           else
-            HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon status >"${status_file}" 2>&1 || true
-            HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
+            HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+            HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
           fi
         else
           if [[ -n "${server_url}" ]]; then
-            HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
-            HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
+            HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+            HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
           else
             run_host_happier daemon status >"${status_file}" 2>&1 || true
             run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
@@ -2324,13 +2324,13 @@ PY
         if [[ "${should_stop}" == "1" ]]; then
           if [[ -n "${server_url}" ]]; then
             if [[ -n "${stack_cli_root}" && -n "${stack_active_server_id}" ]]; then
-              HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon stop >/dev/null 2>&1 || true
+              HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon stop >/dev/null 2>&1 || true
             else
-              HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon stop >/dev/null 2>&1 || true
+              HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon stop >/dev/null 2>&1 || true
             fi
           else
             if [[ -n "${stack_cli_root}" && -n "${stack_active_server_id}" ]]; then
-              HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon stop >/dev/null 2>&1 || true
+              HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon stop >/dev/null 2>&1 || true
             else
               run_host_happier daemon stop >/dev/null 2>&1 || true
             fi
@@ -2346,16 +2346,16 @@ PY
 
         if [[ -n "${stack_cli_root}" && -n "${stack_active_server_id}" ]]; then
           if [[ -n "${server_url}" ]]; then
-            HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
-            HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
+            HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+            HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
           else
-            HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon status >"${status_file}" 2>&1 || true
-            HAPPIER_HOME_DIR="${stack_cli_root}" HAPPIER_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
+            HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+            HAPPIEST_HOME_DIR="${stack_cli_root}" HAPPIEST_ACTIVE_SERVER_ID="${stack_active_server_id}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
           fi
         else
           if [[ -n "${server_url}" ]]; then
-            HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
-            HAPPIER_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
+            HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon status >"${status_file}" 2>&1 || true
+            HAPPIEST_SERVER_URL="${server_url}" run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
           else
             run_host_happier daemon status >"${status_file}" 2>&1 || true
             run_host_happier daemon logs >"${log_path_file}" 2>&1 || true
@@ -2473,9 +2473,9 @@ PY
 
   set +e
   limactl shell "${VM_NAME}" -- env \
-    HAPPIER_SERVER_URL="${server_url}" \
+    HAPPIEST_SERVER_URL="${server_url}" \
     ${guest_happier_home_rel:+WSREPL_QA_GUEST_HOME_REL="${guest_happier_home_rel}"} \
-    ${guest_active_server_id:+HAPPIER_ACTIVE_SERVER_ID="${guest_active_server_id}"} \
+    ${guest_active_server_id:+HAPPIEST_ACTIVE_SERVER_ID="${guest_active_server_id}"} \
     ${guest_server_routed_max_bytes:+HAPPIER_FEATURE_MACHINES_TRANSFER_SERVER_ROUTED__MAX_BYTES="${guest_server_routed_max_bytes}"} \
     ${guest_direct_peer_bind_port:+HAPPIER_MACHINE_TRANSFER_DIRECT_PEER_BIND_PORT="${guest_direct_peer_bind_port}"} \
     ${guest_direct_peer_advertised_hosts:+HAPPIER_MACHINE_TRANSFER_DIRECT_PEER_ADVERTISED_HOSTS="${guest_direct_peer_advertised_hosts}"} \
@@ -2484,7 +2484,7 @@ PY
     bash -lc '
     set -euo pipefail
     if [[ -n "${WSREPL_QA_GUEST_HOME_REL:-}" ]]; then
-      export HAPPIER_HOME_DIR="$HOME/${WSREPL_QA_GUEST_HOME_REL}"
+      export HAPPIEST_HOME_DIR="$HOME/${WSREPL_QA_GUEST_HOME_REL}"
     fi
     if [[ -z "${HAPPIER_CLAUDE_PATH:-}" && -f "$HOME/.happier/wsrepl-qa/fixtures/fake-claude-code-cli.js" ]]; then
       export HAPPIER_CLAUDE_PATH="$HOME/.happier/wsrepl-qa/fixtures/fake-claude-code-cli.js"
@@ -2512,13 +2512,13 @@ PY
 	  set -e
 
 	  limactl shell "${VM_NAME}" -- env \
-      HAPPIER_SERVER_URL="${server_url}" \
+      HAPPIEST_SERVER_URL="${server_url}" \
       ${guest_happier_home_rel:+WSREPL_QA_GUEST_HOME_REL="${guest_happier_home_rel}"} \
-      ${guest_active_server_id:+HAPPIER_ACTIVE_SERVER_ID="${guest_active_server_id}"} \
+      ${guest_active_server_id:+HAPPIEST_ACTIVE_SERVER_ID="${guest_active_server_id}"} \
       bash -lc '
 	    set -euo pipefail
       if [[ -n "${WSREPL_QA_GUEST_HOME_REL:-}" ]]; then
-        export HAPPIER_HOME_DIR="$HOME/${WSREPL_QA_GUEST_HOME_REL}"
+        export HAPPIEST_HOME_DIR="$HOME/${WSREPL_QA_GUEST_HOME_REL}"
       fi
       if [[ -z "${HAPPIER_CLAUDE_PATH:-}" && -f "$HOME/.happier/wsrepl-qa/fixtures/fake-claude-code-cli.js" ]]; then
         export HAPPIER_CLAUDE_PATH="$HOME/.happier/wsrepl-qa/fixtures/fake-claude-code-cli.js"
@@ -2534,13 +2534,13 @@ PY
   ' >"${status_file}" 2>&1 || true
 
   limactl shell "${VM_NAME}" -- env \
-    HAPPIER_SERVER_URL="${server_url}" \
+    HAPPIEST_SERVER_URL="${server_url}" \
     ${guest_happier_home_rel:+WSREPL_QA_GUEST_HOME_REL="${guest_happier_home_rel}"} \
-    ${guest_active_server_id:+HAPPIER_ACTIVE_SERVER_ID="${guest_active_server_id}"} \
+    ${guest_active_server_id:+HAPPIEST_ACTIVE_SERVER_ID="${guest_active_server_id}"} \
     bash -lc '
     set -euo pipefail
     if [[ -n "${WSREPL_QA_GUEST_HOME_REL:-}" ]]; then
-      export HAPPIER_HOME_DIR="$HOME/${WSREPL_QA_GUEST_HOME_REL}"
+      export HAPPIEST_HOME_DIR="$HOME/${WSREPL_QA_GUEST_HOME_REL}"
     fi
     if [[ -z "${HAPPIER_CLAUDE_PATH:-}" && -f "$HOME/.happier/wsrepl-qa/fixtures/fake-claude-code-cli.js" ]]; then
       export HAPPIER_CLAUDE_PATH="$HOME/.happier/wsrepl-qa/fixtures/fake-claude-code-cli.js"
@@ -2584,13 +2584,13 @@ PY
 	      attempt=$((attempt + 1))
 	      sleep "${delay_s}"
 	      limactl shell "${VM_NAME}" -- env \
-	        HAPPIER_SERVER_URL="${server_url}" \
+	        HAPPIEST_SERVER_URL="${server_url}" \
 	        ${guest_happier_home_rel:+WSREPL_QA_GUEST_HOME_REL="${guest_happier_home_rel}"} \
-	        ${guest_active_server_id:+HAPPIER_ACTIVE_SERVER_ID="${guest_active_server_id}"} \
+	        ${guest_active_server_id:+HAPPIEST_ACTIVE_SERVER_ID="${guest_active_server_id}"} \
 	        bash -lc '
 	        set -euo pipefail
 	        if [[ -n "${WSREPL_QA_GUEST_HOME_REL:-}" ]]; then
-	          export HAPPIER_HOME_DIR="$HOME/${WSREPL_QA_GUEST_HOME_REL}"
+	          export HAPPIEST_HOME_DIR="$HOME/${WSREPL_QA_GUEST_HOME_REL}"
 	        fi
 	        HAPPY=""
 	        if [[ -x "$HOME/.happier/bin/happier" ]]; then
@@ -2629,7 +2629,7 @@ PY
         fi
 
         # Retry once after seeding, and require status to be healthy so the matrix does not hang.
-        limactl shell "${VM_NAME}" -- env HAPPIER_SERVER_URL="${server_url}" bash -lc '
+        limactl shell "${VM_NAME}" -- env HAPPIEST_SERVER_URL="${server_url}" bash -lc '
           set -euo pipefail
           HAPPY=""
           if [[ -x "$HOME/.happier/bin/happier" ]]; then
@@ -3749,7 +3749,7 @@ if [[ -n "${HAPPIER_UI_URL:-}" ]]; then
   echo "[wsrepl-qa] ui url: ${HAPPIER_UI_URL}"
 fi
 
-host_server_url="${HAPPIER_SERVER_URL:-}"
+host_server_url="${HAPPIEST_SERVER_URL:-}"
 if [[ -z "${host_server_url}" && -n "${HAPPIER_UI_URL:-}" ]]; then
   host_server_url="$(python3 - <<'PY' "${HAPPIER_UI_URL}" 2>/dev/null || true
 import sys

@@ -100,13 +100,13 @@ test('remote daemon command reuses the Stack dev owner and adopts a last-green d
   );
   assert.doesNotMatch(command, /--restart/);
   assert.match(command, /stack-state\/repo-local-dev\/env/);
-  assert.match(command, /HAPPIER_HOME_DIR/);
+  assert.match(command, /HAPPIEST_HOME_DIR/);
   assert.match(command, /HAPPIER_STACK_CLI_HOME_DIR/);
   assert.match(command, /HAPPIER_STACK_STORAGE_DIR/);
   assert.match(command, /export HAPPIER_STACK_CLI_ROOT_DISABLE=1;.*corepack yarn workspace/s);
   assert.match(command, /HAPPIER_STACK_PM_CACHE_BASE_DIR=.*HOME.*\/\.cache/);
   assert.match(command, /HAPPIER_STACK_STACK/);
-  assert.match(command, /HAPPIER_ACTIVE_SERVER_ID/);
+  assert.match(command, /HAPPIEST_ACTIVE_SERVER_ID/);
   assert.match(command, /HAPPIER_CLI_PKGROLL_TIMEOUT_MS=1800000/);
   assert.match(command, /http:\/\/127\.0\.0\.1:43005/);
   assert.doesNotMatch(command, /stack stop/);

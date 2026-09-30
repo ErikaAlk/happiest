@@ -215,9 +215,9 @@ describe('core e2e: scm git machine RPC', () => {
         CI: '1',
         HAPPIER_VARIANT: 'dev',
         HAPPIER_DISABLE_CAFFEINATE: '1',
-        HAPPIER_HOME_DIR: daemonHomeDir,
-        HAPPIER_SERVER_URL: serverBaseUrl,
-        HAPPIER_WEBAPP_URL: serverBaseUrl,
+        HAPPIEST_HOME_DIR: daemonHomeDir,
+        HAPPIEST_SERVER_URL: serverBaseUrl,
+        HAPPIEST_WEBAPP_URL: serverBaseUrl,
         PATH: [shimDir, process.env.PATH].filter(Boolean).join(process.platform === 'win32' ? ';' : ':'),
       },
     });

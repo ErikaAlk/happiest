@@ -137,13 +137,13 @@ export function resolvePreferredStackServerIdFromCliSettings(params = {}) {
 }
 
 function resolveActiveServerIdOverride(env = process.env) {
-  const raw = String(env?.HAPPIER_ACTIVE_SERVER_ID ?? '').trim();
+  const raw = String(env?.HAPPIEST_ACTIVE_SERVER_ID ?? '').trim();
   if (!raw) return '';
   return sanitizeServerIdForFilesystem(raw, '');
 }
 
 function resolveDaemonLifecycleScopeIdOverride(env = process.env) {
-  const raw = String(env?.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID ?? '').trim();
+  const raw = String(env?.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID ?? '').trim();
   if (!raw) return '';
   const sanitized = sanitizeServerIdForFilesystem(raw, '');
   return sanitized === raw ? sanitized : '';
@@ -260,7 +260,7 @@ export function resolveStackDaemonStatePaths({ cliHomeDir, serverUrl = '', env =
   const stableScopeServerId = resolveActiveServerIdOverride(env);
   const daemonLifecycleScopeId = resolveDaemonLifecycleScopeIdOverride(env);
   // Daemon state is lifecycle state, not a credential-profile artifact. Settings profiles may
-  // select HAPPIER_ACTIVE_SERVER_ID for credentials, but never select or alias daemon state.
+  // select HAPPIEST_ACTIVE_SERVER_ID for credentials, but never select or alias daemon state.
   const activeServerId = daemonLifecycleScopeId || stableScopeServerId || urlHashServerId;
 
   const legacyStatePath = join(home, 'daemon.state.json');

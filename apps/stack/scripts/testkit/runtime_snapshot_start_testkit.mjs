@@ -49,14 +49,14 @@ import { killDetachedProcessGroup, spawnDaemonLikeProcess } from ${JSON.stringif
 import { resolveStackDaemonStatePaths } from ${JSON.stringify(DAEMON_STATE_PATHS_HELPER_PATH)};
 
 const args = process.argv.slice(2);
-const home = String(process.env.HAPPIER_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR || '').trim();
+const home = String(process.env.HAPPIEST_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR || '').trim();
 if (!home) {
-  console.error('missing HAPPIER_HOME_DIR');
+  console.error('missing HAPPIEST_HOME_DIR');
   process.exit(2);
 }
 const resolvedStatePaths = resolveStackDaemonStatePaths({
   cliHomeDir: home,
-  serverUrl: String(process.env.HAPPIER_SERVER_URL || ''),
+  serverUrl: String(process.env.HAPPIEST_SERVER_URL || ''),
   env: process.env,
 });
 const statePaths = [...new Set(resolvedStatePaths.pairs.map((pair) => pair.statePath).filter(Boolean))];
@@ -73,7 +73,7 @@ if (args[0] !== 'daemon') process.exit(0);
 const sub = args[1] || '';
 if (sub === 'start') {
   ${includeServerUrlInStartLog
-    ? "append('start:' + String(process.env.HAPPIER_SERVER_URL || ''));"
+    ? "append('start:' + String(process.env.HAPPIEST_SERVER_URL || ''));"
     : `append(${JSON.stringify(startLogLine)});`}
   append('direct_peer_bind_port=' + String(process.env.HAPPIER_MACHINE_TRANSFER_DIRECT_PEER_BIND_PORT || ''));
   append('direct_peer_advertised_hosts=' + String(process.env.HAPPIER_MACHINE_TRANSFER_DIRECT_PEER_ADVERTISED_HOSTS || ''));
@@ -82,8 +82,8 @@ if (sub === 'start') {
   spawnDaemonLikeProcess({
     cliHomeDir: home,
     statePaths,
-    internalServerUrl: String(process.env.HAPPIER_SERVER_URL || ''),
-    publicServerUrl: String(process.env.HAPPIER_WEBAPP_URL || ''),
+    internalServerUrl: String(process.env.HAPPIEST_SERVER_URL || ''),
+    publicServerUrl: String(process.env.HAPPIEST_WEBAPP_URL || ''),
     distClosureFingerprint: process.env.HAPPIER_CLI_SUBPROCESS_DAEMON_DIST_CLOSURE_FINGERPRINT,
   });
   const readyDeadline = Date.now() + 5_000;
@@ -308,7 +308,7 @@ appendFileSync(${JSON.stringify(runtimeServerEventLogPath)}, 'migration:' + proc
   const credentialPaths = resolveStackCredentialPaths({
     cliHomeDir,
     serverUrl: `http://127.0.0.1:${resolvedServerPort}`,
-    env: { HAPPIER_ACTIVE_SERVER_ID: activeServerId },
+    env: { HAPPIEST_ACTIVE_SERVER_ID: activeServerId },
   });
   await mkdir(dirname(credentialPaths.serverScopedPath), { recursive: true });
   await writeFile(credentialPaths.serverScopedPath, 'dummy\n', 'utf8');

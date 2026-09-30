@@ -60,7 +60,7 @@ export function isStableScopeDisabled(env = process.env) {
 
 export function resolveStackActiveServerId({ env = process.env, stackName = null, cliIdentity = null } = {}) {
   if (isStableScopeDisabled(env)) return '';
-  const explicit = String(env?.HAPPIER_ACTIVE_SERVER_ID ?? '').trim();
+  const explicit = String(env?.HAPPIEST_ACTIVE_SERVER_ID ?? '').trim();
   const inStackContext =
     Boolean((stackName ?? '').toString().trim()) ||
     Boolean((cliIdentity ?? '').toString().trim()) ||
@@ -83,10 +83,10 @@ export function applyStackActiveServerScopeEnv({ env = process.env, stackName = 
   const base = { ...(env ?? {}) };
   const activeServerId = resolveStackActiveServerId({ env: base, stackName, cliIdentity });
   if (!activeServerId) {
-    delete base.HAPPIER_ACTIVE_SERVER_ID;
+    delete base.HAPPIEST_ACTIVE_SERVER_ID;
     return base;
   }
-  base.HAPPIER_ACTIVE_SERVER_ID = activeServerId;
+  base.HAPPIEST_ACTIVE_SERVER_ID = activeServerId;
   return base;
 }
 
@@ -94,9 +94,9 @@ export function applyStackDaemonLifecycleScopeEnv({ env = process.env, stackName
   const base = { ...(env ?? {}) };
   const lifecycleScopeId = resolveStackActiveServerId({ env: base, stackName, cliIdentity });
   if (!lifecycleScopeId) {
-    delete base.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID;
+    delete base.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID;
     return base;
   }
-  base.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID = lifecycleScopeId;
+  base.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID = lifecycleScopeId;
   return base;
 }

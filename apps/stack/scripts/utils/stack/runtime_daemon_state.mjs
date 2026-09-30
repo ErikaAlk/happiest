@@ -82,7 +82,7 @@ function resolveStackIdentityForDaemonPidOwnership({ runtimeStatePath, runtimeSt
   const resolvedCliHomeDir =
     String(cliHomeDir ?? '').trim() ||
     String(env?.HAPPIER_STACK_CLI_HOME_DIR ?? '').trim() ||
-    String(env?.HAPPIER_HOME_DIR ?? '').trim();
+    String(env?.HAPPIEST_HOME_DIR ?? '').trim();
 
   return { stackName, envPath, cliHomeDir: resolvedCliHomeDir };
 }

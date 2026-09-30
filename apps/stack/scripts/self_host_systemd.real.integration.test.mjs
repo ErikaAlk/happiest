@@ -144,10 +144,10 @@ test(
     const serverPort = await reserveLocalhostPort();
     const commonEnv = {
       PATH: process.env.PATH ?? '',
-      HAPPIER_SELF_HOST_INSTALL_ROOT: installRoot,
-      HAPPIER_SELF_HOST_BIN_DIR: binDir,
-      HAPPIER_SELF_HOST_SERVICE_NAME: serviceName,
-      HAPPIER_SELF_HOST_SERVER_BINARY: extractedServer.binaryPath,
+      HAPPIEST_SELF_HOST_INSTALL_ROOT: installRoot,
+      HAPPIEST_SELF_HOST_BIN_DIR: binDir,
+      HAPPIEST_SELF_HOST_SERVICE_NAME: serviceName,
+      HAPPIEST_SELF_HOST_SERVER_BINARY: extractedServer.binaryPath,
       HAPPIER_SELF_HOST_AUTO_UPDATE: '0',
       HAPPIER_SELF_HOST_HEALTH_TIMEOUT_MS: '240000',
       HAPPIER_NONINTERACTIVE: '1',
@@ -155,8 +155,8 @@ test(
       HAPPIER_SERVER_PORT: String(serverPort),
       HAPPIER_SERVER_HOST: '127.0.0.1',
     };
-    const configDir = String(commonEnv.HAPPIER_SELF_HOST_CONFIG_DIR ?? '/etc/happier');
-    const logDir = String(commonEnv.HAPPIER_SELF_HOST_LOG_DIR ?? '/var/log/happier');
+    const configDir = String(commonEnv.HAPPIEST_SELF_HOST_CONFIG_DIR ?? '/etc/happier');
+    const logDir = String(commonEnv.HAPPIEST_SELF_HOST_LOG_DIR ?? '/var/log/happier');
     const serverEnvPath = join(configDir, 'server.env');
     const serverLogPath = join(logDir, 'server.log');
 

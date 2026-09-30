@@ -874,7 +874,7 @@ const args = process.argv.slice(2);
 if (args[0] === 'server' && args[1] === 'set' && process.env.HAPPIER_TEST_FAIL_SERVER_SET === '1') process.exit(73);
 if (args[0] !== 'daemon') process.exit(0);
 if (args[1] === '--help') process.exit(0);
-const home = process.env.HAPPIER_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
+const home = process.env.HAPPIEST_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
 if (!home) process.exit(2);
 const state = join(home, 'daemon.state.json');
 
@@ -935,7 +935,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 
 const args = process.argv.slice(2);
 if (args[0] === 'daemon' && args[1] === '--help') process.exit(0);
-const home = process.env.HAPPIER_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
+const home = process.env.HAPPIEST_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
 const eventsPath = process.env.HAPPIER_TEST_DAEMON_EVENTS_PATH;
 if (!home) process.exit(2);
 const state = join(home, 'daemon.state.json');
@@ -991,10 +991,10 @@ import { setTimeout as delay } from 'node:timers/promises';
 
 const args = process.argv.slice(2);
 if (args[0] === 'daemon' && args[1] === '--help') process.exit(0);
-const home = process.env.HAPPIER_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
+const home = process.env.HAPPIEST_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
 const eventsPath = process.env.HAPPIER_TEST_DAEMON_EVENTS_PATH;
 if (!home) process.exit(2);
-const lifecycleScopeId = String(process.env.HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID || '').trim();
+const lifecycleScopeId = String(process.env.HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID || '').trim();
 const state = lifecycleScopeId
   ? join(home, 'servers', lifecycleScopeId, 'daemon.state.json')
   : join(home, 'daemon.state.json');
@@ -1062,7 +1062,7 @@ import { join } from 'node:path';
 
 const args = process.argv.slice(2);
 if (args[0] === 'daemon' && args[1] === '--help') process.exit(0);
-const home = process.env.HAPPIER_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
+const home = process.env.HAPPIEST_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
 if (!home) process.exit(2);
 const state = join(home, 'daemon.state.json');
 
@@ -1111,7 +1111,7 @@ test('pid-only false-ready fixture publishes daemon command identity and cleans 
     await mkdir(cliHomeDir, { recursive: true });
     const env = {
       ...process.env,
-      HAPPIER_HOME_DIR: cliHomeDir,
+      HAPPIEST_HOME_DIR: cliHomeDir,
       HAPPIER_STACK_STACK: 'dev',
       HAPPIER_STACK_PROCESS_KIND: 'daemon',
     };
@@ -1145,7 +1145,7 @@ import { join } from 'node:path';
 
 const args = process.argv.slice(2);
 if (args[0] === 'daemon' && args[1] === '--help') process.exit(0);
-const home = process.env.HAPPIER_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
+const home = process.env.HAPPIEST_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
 if (!home) process.exit(2);
 const state = join(home, 'daemon.state.json');
 
@@ -1207,7 +1207,7 @@ import { join } from 'node:path';
 
 const args = process.argv.slice(2);
 if (args[0] === 'daemon' && args[1] === '--help') process.exit(0);
-const home = process.env.HAPPIER_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
+const home = process.env.HAPPIEST_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
 if (!home) process.exit(2);
 const state = join(home, 'daemon.state.json');
 
@@ -1273,7 +1273,7 @@ import { join } from 'node:path';
 
 const args = process.argv.slice(2);
 if (args[0] === 'daemon' && args[1] === '--help') process.exit(0);
-const home = process.env.HAPPIER_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
+const home = process.env.HAPPIEST_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
 if (!home) process.exit(2);
 const state = join(home, 'daemon.state.json');
 
@@ -1347,7 +1347,7 @@ fs.writeFileSync(
 `)} ${shellQuote(preStartStatePath)} ${shellQuote(preStartLockPath)} ${shellQuote(preStartObservationPath)} || exit $?`
     : '';
   const script = `#!/bin/sh
-HOME_DIR="${'$'}{HAPPIER_HOME_DIR:-${'$'}{HAPPIER_STACK_CLI_HOME_DIR:-}}"
+HOME_DIR="${'$'}{HAPPIEST_HOME_DIR:-${'$'}{HAPPIER_STACK_CLI_HOME_DIR:-}}"
 if [ -z "$HOME_DIR" ]; then
   exit 2
 fi
@@ -2003,7 +2003,7 @@ import { join } from 'node:path';
 
 const args = process.argv.slice(2);
 if (args[0] === 'daemon' && args[1] === '--help') process.exit(0);
-const home = process.env.HAPPIER_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
+const home = process.env.HAPPIEST_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
 if (!home) process.exit(2);
 
 ${fakePingAwareDaemonSpawnerSource()}
@@ -2084,7 +2084,7 @@ import { join } from 'node:path';
 const args = process.argv.slice(2);
 if (args[0] !== 'daemon') process.exit(0);
 if (args[1] === '--help') process.exit(0);
-const home = process.env.HAPPIER_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
+const home = process.env.HAPPIEST_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
 if (!home) process.exit(2);
 const state = join(home, 'daemon.state.json');
 

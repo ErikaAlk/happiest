@@ -156,9 +156,9 @@ describe('core e2e: machine RPC session.continueWithReplay hydrates transcript i
         CI: '1',
         HAPPIER_VARIANT: 'dev',
         HAPPIER_DISABLE_CAFFEINATE: '1',
-        HAPPIER_HOME_DIR: daemonHomeDir,
-        HAPPIER_SERVER_URL: server.baseUrl,
-        HAPPIER_WEBAPP_URL: server.baseUrl,
+        HAPPIEST_HOME_DIR: daemonHomeDir,
+        HAPPIEST_SERVER_URL: server.baseUrl,
+        HAPPIEST_WEBAPP_URL: server.baseUrl,
         HAPPIER_CLAUDE_PATH: fakeClaudePath,
       },
     });

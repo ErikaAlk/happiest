@@ -569,9 +569,9 @@ async function runOneScenario(params: {
   const baseCliEnvNoIsolation: NodeJS.ProcessEnv = {
     ...process.env,
     CI: '1',
-    HAPPIER_HOME_DIR: cliHome,
-    HAPPIER_SERVER_URL: server.baseUrl,
-    HAPPIER_WEBAPP_URL: server.baseUrl,
+    HAPPIEST_HOME_DIR: cliHome,
+    HAPPIEST_SERVER_URL: server.baseUrl,
+    HAPPIEST_WEBAPP_URL: server.baseUrl,
     HAPPIER_STACK_TOOL_TRACE: '1',
     ...Object.fromEntries(
       Object.entries(provider.cli.envFrom ?? {}).flatMap(([dest, src]) => {

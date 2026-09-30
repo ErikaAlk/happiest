@@ -59,7 +59,7 @@ test('hstack auth login prints stable active server scope env by default', async
     const parsed = await runLoginPrintJson({ rootDir, fixture });
     assert.match(
       parsed.cmd,
-      /HAPPIER_ACTIVE_SERVER_ID="stack_main__id_default"/,
+      /HAPPIEST_ACTIVE_SERVER_ID="stack_main__id_default"/,
       `expected printed command to include stable scope env\n${parsed.cmd}`
     );
   } finally {
@@ -90,7 +90,7 @@ test('hstack auth login --force keeps credentials when guided startup is decline
       {
         cwd: rootDir,
         env: fixture.buildEnv({
-          HAPPIER_HOME_DIR: cliHomeDir,
+          HAPPIEST_HOME_DIR: cliHomeDir,
           HAPPIER_STACK_TEST_TTY: '1',
         }),
         input: 'n\n',

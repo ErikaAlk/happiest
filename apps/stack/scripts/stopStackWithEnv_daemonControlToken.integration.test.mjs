@@ -103,7 +103,7 @@ async function spawnOwnedDaemonMarker(t, { env, stackName, cliHomeDir }) {
       ...env,
       HAPPIER_STACK_STACK: stackName,
       HAPPIER_STACK_CLI_HOME_DIR: cliHomeDir,
-      HAPPIER_HOME_DIR: cliHomeDir,
+      HAPPIEST_HOME_DIR: cliHomeDir,
       HAPPIER_STACK_PROCESS_KIND: 'daemon',
     },
   });

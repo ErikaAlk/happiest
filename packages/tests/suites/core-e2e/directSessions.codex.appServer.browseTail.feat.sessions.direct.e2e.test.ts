@@ -115,8 +115,8 @@ describe('core e2e: direct Codex app-server sessions browse/link/tail', () => {
       env: {
         ...process.env,
         CI: '1',
-        HAPPIER_HOME_DIR: daemonHomeDir,
-        HAPPIER_SERVER_URL: server.baseUrl,
+        HAPPIEST_HOME_DIR: daemonHomeDir,
+        HAPPIEST_SERVER_URL: server.baseUrl,
         CODEX_HOME: codexHomeDir,
         HAPPIER_CODEX_APP_SERVER_BIN: fakeAppServer,
         HAPPIER_DIRECT_SESSIONS_PAGE_MAX_ITEMS: '2',

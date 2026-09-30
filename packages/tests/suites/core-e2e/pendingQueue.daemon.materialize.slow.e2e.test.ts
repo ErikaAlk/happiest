@@ -55,9 +55,9 @@ describe('core e2e: pending queue v2 daemon materializes into transcript', () =>
       sessionIds: [],
       env: {
         CI: process.env.CI,
-        HAPPIER_HOME_DIR: daemonHomeDir,
-        HAPPIER_SERVER_URL: serverBaseUrl,
-        HAPPIER_WEBAPP_URL: serverBaseUrl,
+        HAPPIEST_HOME_DIR: daemonHomeDir,
+        HAPPIEST_SERVER_URL: serverBaseUrl,
+        HAPPIEST_WEBAPP_URL: serverBaseUrl,
       },
     });
 
@@ -89,9 +89,9 @@ describe('core e2e: pending queue v2 daemon materializes into transcript', () =>
         CI: '1',
         HAPPIER_VARIANT: 'dev',
         HAPPIER_DISABLE_CAFFEINATE: '1',
-        HAPPIER_HOME_DIR: daemonHomeDir,
-        HAPPIER_SERVER_URL: serverBaseUrl,
-        HAPPIER_WEBAPP_URL: serverBaseUrl,
+        HAPPIEST_HOME_DIR: daemonHomeDir,
+        HAPPIEST_SERVER_URL: serverBaseUrl,
+        HAPPIEST_WEBAPP_URL: serverBaseUrl,
         HAPPIER_CLAUDE_PATH: fakeClaudePath,
       },
     });
@@ -105,9 +105,9 @@ describe('core e2e: pending queue v2 daemon materializes into transcript', () =>
       directory: workspaceDir,
       terminal: { mode: 'plain' },
       environmentVariables: {
-        HAPPIER_HOME_DIR: daemonHomeDir,
-        HAPPIER_SERVER_URL: serverBaseUrl,
-        HAPPIER_WEBAPP_URL: serverBaseUrl,
+        HAPPIEST_HOME_DIR: daemonHomeDir,
+        HAPPIEST_SERVER_URL: serverBaseUrl,
+        HAPPIEST_WEBAPP_URL: serverBaseUrl,
         HAPPIER_VARIANT: 'dev',
         HAPPIER_DISABLE_CAFFEINATE: '1',
         HAPPIER_CLAUDE_PATH: fakeClaudePath,

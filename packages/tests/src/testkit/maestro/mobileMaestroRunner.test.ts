@@ -948,8 +948,8 @@ describe('mobileMaestroRunner', () => {
     expect(startTestDaemon).toHaveBeenCalledWith(
       expect.objectContaining({
         env: expect.objectContaining({
-          HAPPIER_SERVER_URL: 'http://127.0.0.1:43210',
-          HAPPIER_WEBAPP_URL: 'http://127.0.0.1:43210',
+          HAPPIEST_SERVER_URL: 'http://127.0.0.1:43210',
+          HAPPIEST_WEBAPP_URL: 'http://127.0.0.1:43210',
         }),
       }),
     );

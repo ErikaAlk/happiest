@@ -206,9 +206,9 @@ describe('core e2e: pets local daemon import', () => {
         CODEX_HOME: codexHomeDir,
         HAPPIER_VARIANT: 'dev',
         HAPPIER_DISABLE_CAFFEINATE: '1',
-        HAPPIER_HOME_DIR: daemonHomeDir,
-        HAPPIER_SERVER_URL: serverBaseUrl,
-        HAPPIER_WEBAPP_URL: serverBaseUrl,
+        HAPPIEST_HOME_DIR: daemonHomeDir,
+        HAPPIEST_SERVER_URL: serverBaseUrl,
+        HAPPIEST_WEBAPP_URL: serverBaseUrl,
         HAPPIER_FEATURE_PETS_SYNC__ENABLED: '0',
       },
     });

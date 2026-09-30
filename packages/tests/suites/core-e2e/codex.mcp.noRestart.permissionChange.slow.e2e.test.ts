@@ -212,9 +212,9 @@ try {
       HAPPIER_SESSION_AUTOSTART_DAEMON: '0',
       HAPPIER_VARIANT: 'dev',
       HAPPIER_CODEX_BACKEND_MODE: 'mcp',
-      HAPPIER_HOME_DIR: cliHome,
-      HAPPIER_SERVER_URL: serverBaseUrl,
-      HAPPIER_WEBAPP_URL: serverBaseUrl,
+      HAPPIEST_HOME_DIR: cliHome,
+      HAPPIEST_SERVER_URL: serverBaseUrl,
+      HAPPIEST_WEBAPP_URL: serverBaseUrl,
       HAPPIER_SESSION_ATTACH_FILE: attachFile,
       HAPPIER_E2E_FAKE_CODEX_MCP_LOG: fakeCodexLog,
       // Ensure our fake codex binary is found.

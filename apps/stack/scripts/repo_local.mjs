@@ -256,10 +256,13 @@ async function main() {
   const cleaned = scrubHappierStackEnv(process.env, {
     keepHappierStackKeys: STACK_WRAPPER_PRESERVE_KEYS,
     clearUnprefixedKeys: [
-      'HAPPIER_SERVER_URL',
+      'HAPPIEST_SERVER_URL',
+      'HAPPIEST_PUBLIC_SERVER_URL',
+      'HAPPIEST_WEBAPP_URL',
+      'HAPPIEST_HOME_DIR',
+      // The relay server process reads these two names from the stack env.
       'HAPPIER_PUBLIC_SERVER_URL',
       'HAPPIER_WEBAPP_URL',
-      'HAPPIER_HOME_DIR',
       'APP_ENV',
       'EXPO_UPDATES_CHANNEL',
       'EXPO_PUBLIC_HAPPIER_FEATURE_POLICY_ENV',
@@ -270,7 +273,7 @@ async function main() {
       'HAPPIER_BUILD_FEATURES_ALLOW',
       'HAPPIER_BUILD_FEATURES_DENY',
       // Prevent accidental credential scoping to the user's "main" stack config.
-      'HAPPIER_ACTIVE_SERVER_ID',
+      'HAPPIEST_ACTIVE_SERVER_ID',
     ],
   });
 
@@ -423,7 +426,7 @@ async function main() {
 	      HAPPIER_STACK_EXPO_DEV_PORT_RANGE: effectiveEnv.HAPPIER_STACK_EXPO_DEV_PORT_RANGE,
 	      HAPPIER_STACK_EXPO_DEV_PORT_STRATEGY: effectiveEnv.HAPPIER_STACK_EXPO_DEV_PORT_STRATEGY,
 	      // Keep the stable active server id explicit so daemons/CLI always scope state/credentials per stack.
-	      ...(effectiveEnv.HAPPIER_ACTIVE_SERVER_ID ? { HAPPIER_ACTIVE_SERVER_ID: effectiveEnv.HAPPIER_ACTIVE_SERVER_ID } : {}),
+	      ...(effectiveEnv.HAPPIEST_ACTIVE_SERVER_ID ? { HAPPIEST_ACTIVE_SERVER_ID: effectiveEnv.HAPPIEST_ACTIVE_SERVER_ID } : {}),
 	      ...(persistedServerPort &&
 	      !existingPinnedServerPort &&
 	      isPortWithinRange(persistedServerPort, serverBase, serverRange)
@@ -460,7 +463,7 @@ async function main() {
             HAPPIER_STACK_CLI_HOME_DIR: effectiveEnv.HAPPIER_STACK_CLI_HOME_DIR,
             HAPPIER_STACK_CLI_BUILD_MODE: effectiveEnv.HAPPIER_STACK_CLI_BUILD_MODE,
             HAPPIER_STACK_LOG_TEE_DIR: effectiveEnv.HAPPIER_STACK_LOG_TEE_DIR,
-            HAPPIER_ACTIVE_SERVER_ID: effectiveEnv.HAPPIER_ACTIVE_SERVER_ID,
+            HAPPIEST_ACTIVE_SERVER_ID: effectiveEnv.HAPPIEST_ACTIVE_SERVER_ID,
             HAPPIER_STACK_INVOKED_CWD: effectiveEnv.HAPPIER_STACK_INVOKED_CWD,
           },
         },

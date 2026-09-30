@@ -699,7 +699,7 @@ test.describe('ui e2e: desktop local setup through the real hsetup (hermetic com
                 context,
                 computer,
                 uiBaseUrl,
-                launchEnv: { HAPPIER_ACTIVE_SERVER_ID: otherServerId, HAPPIER_SERVER_URL: otherRelayUrl },
+                launchEnv: { HAPPIEST_ACTIVE_SERVER_ID: otherServerId, HAPPIEST_SERVER_URL: otherRelayUrl },
             });
             try {
                 await ensureAccountReadyForConnect({ page: app.page, timeoutMs: 180_000 });

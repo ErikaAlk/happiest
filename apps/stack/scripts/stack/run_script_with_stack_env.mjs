@@ -665,7 +665,7 @@ export async function runStackScriptWithStackEnv({ rootDir, stackName, scriptPat
             try {
               const stackBaseDir = resolveStackEnvPath(stackName).baseDir;
               const cliHomeDir = getCliHomeDirFromEnvOrDefault({ stackBaseDir, env });
-              const serverUrl = (childEnv.HAPPIER_SERVER_URL ?? env.HAPPIER_SERVER_URL ?? '').toString().trim();
+              const serverUrl = (childEnv.HAPPIEST_SERVER_URL ?? env.HAPPIEST_SERVER_URL ?? '').toString().trim();
               const hasCreds = Boolean(findExistingStackCredentialPath({ cliHomeDir, serverUrl, env: childEnv }));
               if (!hasCreds) {
                 childEnv.HAPPIER_STACK_AUTH_FLOW = '1';

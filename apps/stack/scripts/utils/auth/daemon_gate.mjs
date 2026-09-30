@@ -37,7 +37,7 @@ export function isAuthFlowEnabled(env) {
  * - fail closed in non-interactive contexts.
  */
 export function daemonStartGate({ env, cliHomeDir, serverUrl = '' }) {
-  const resolvedServerUrl = String(serverUrl ?? '').trim() || String(env?.HAPPIER_SERVER_URL ?? '').trim();
+  const resolvedServerUrl = String(serverUrl ?? '').trim() || String(env?.HAPPIEST_SERVER_URL ?? '').trim();
   if (hasStackCredentials({ cliHomeDir, serverUrl: resolvedServerUrl, env })) {
     return { ok: true, reason: 'credentials_present' };
   }

@@ -100,8 +100,8 @@ describe('core e2e: direct Claude sessions browse/link/tail', () => {
         // This path is already covered by cliDist coverage; using the source entrypoint
         // keeps the direct-session flow stable under lane load.
         HAPPIER_E2E_PROVIDER_USE_CLI_SOURCE_ENTRYPOINT: '1',
-        HAPPIER_HOME_DIR: daemonHomeDir,
-        HAPPIER_SERVER_URL: server.baseUrl,
+        HAPPIEST_HOME_DIR: daemonHomeDir,
+        HAPPIEST_SERVER_URL: server.baseUrl,
         HAPPIER_CLAUDE_CONFIG_DIR: claudeConfigDir,
         HAPPIER_DIRECT_SESSIONS_PAGE_MAX_ITEMS: '2',
       },
@@ -315,8 +315,8 @@ describe('core e2e: direct Claude sessions browse/link/tail', () => {
       env: {
         ...process.env,
         CI: '1',
-        HAPPIER_HOME_DIR: daemonHomeDir,
-        HAPPIER_SERVER_URL: server.baseUrl,
+        HAPPIEST_HOME_DIR: daemonHomeDir,
+        HAPPIEST_SERVER_URL: server.baseUrl,
         HAPPIER_CLAUDE_CONFIG_DIR: claudeConfigDir,
         HAPPIER_DIRECT_SESSIONS_PAGE_MAX_ITEMS: '2',
         HAPPIER_FEATURE_ENCRYPTION__STORAGE_POLICY: 'plaintext_only',

@@ -58,7 +58,7 @@ test('stopStackWithEnv kills runtime-tracked pids for ephemeral stacks even when
   child = spawnOwnedSleep({
     env: {
       ...process.env,
-      HAPPIER_HOME_DIR: undefined,
+      HAPPIEST_HOME_DIR: undefined,
       HAPPIER_STACK_CLI_HOME_DIR: undefined,
       HAPPIER_STACK_ENV_FILE: undefined,
       HAPPIER_STACK_STACK: stackName,
@@ -68,7 +68,7 @@ test('stopStackWithEnv kills runtime-tracked pids for ephemeral stacks even when
   drainingChild = spawnOwnedSleep({
     env: {
       ...process.env,
-      HAPPIER_HOME_DIR: undefined,
+      HAPPIEST_HOME_DIR: undefined,
       HAPPIER_STACK_CLI_HOME_DIR: undefined,
       HAPPIER_STACK_ENV_FILE: undefined,
       HAPPIER_STACK_STACK: stackName,
@@ -200,7 +200,7 @@ test('stopStackWithEnv preserves runtime-tracked session pids after canonical ow
   child = spawnOwnedSleep({
     env: {
       ...process.env,
-      HAPPIER_HOME_DIR: undefined,
+      HAPPIEST_HOME_DIR: undefined,
       HAPPIER_STACK_CLI_HOME_DIR: undefined,
       HAPPIER_STACK_ENV_FILE: undefined,
       HAPPIER_STACK_STACK: stackName,
@@ -292,7 +292,7 @@ test('stopStackWithEnv preserves marker-light runtime pids without an infra/serv
   child = spawnOwnedSleep({
     env: {
       ...process.env,
-      HAPPIER_HOME_DIR: undefined,
+      HAPPIEST_HOME_DIR: undefined,
       HAPPIER_STACK_CLI_HOME_DIR: undefined,
       HAPPIER_STACK_ENV_FILE: undefined,
       HAPPIER_STACK_STACK: stackName,
@@ -384,7 +384,7 @@ test('stopStackWithEnv rejects stack-name prefix matches in ephemeral runtime fa
   child = spawnOwnedSleep({
     env: {
       ...process.env,
-      HAPPIER_HOME_DIR: undefined,
+      HAPPIEST_HOME_DIR: undefined,
       HAPPIER_STACK_CLI_HOME_DIR: undefined,
       HAPPIER_STACK_ENV_FILE: undefined,
       HAPPIER_STACK_STACK: `${stackName}-other`,

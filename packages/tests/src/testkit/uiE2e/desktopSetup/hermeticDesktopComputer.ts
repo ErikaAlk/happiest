@@ -244,7 +244,7 @@ export async function createHermeticDesktopComputer(params: Readonly<{
         ].join(':'),
         // The CLI resolves the service user's home from the passwd entry, not HOME; this is its
         // documented override, and without it the unit file would land in the real home.
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
         // The CLI's daily update check calls the public release API; this computer is offline.
         HAPPIER_CLI_UPDATE_CHECK: '0',
     };
@@ -255,7 +255,7 @@ export async function createHermeticDesktopComputer(params: Readonly<{
         LANG: env.LANG,
         SHELL: env.SHELL,
         TMPDIR: env.TMPDIR,
-        HAPPIER_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+        HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
         HAPPIER_CLI_UPDATE_CHECK: '0',
     }, null, 2));
 

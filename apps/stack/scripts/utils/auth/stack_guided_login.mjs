@@ -399,7 +399,7 @@ export async function resolveStackWebappTargetForAuth({ rootDir, stackName, env 
     );
     const parsed = JSON.parse(String(raw ?? '').trim());
     const cmd = typeof parsed?.cmd === 'string' ? parsed.cmd : '';
-    const url = extractEnvVar(cmd, 'HAPPIER_WEBAPP_URL');
+    const url = extractEnvVar(cmd, 'HAPPIEST_WEBAPP_URL');
     return { webappUrl: url ? await preferStackLocalhostUrl(url, { stackName }) : '', kind: 'server' };
   } catch {
     return { webappUrl: '', kind: 'server' };
@@ -428,7 +428,7 @@ async function resolveServerPortForCoreAuth({ stackName, env = process.env }) {
   const direct = Number((env.HAPPIER_STACK_SERVER_PORT ?? '').toString().trim());
   if (Number.isFinite(direct) && direct > 0) return direct;
 
-  const fromInternal = resolvePortFromUrl(env.HAPPIER_SERVER_URL);
+  const fromInternal = resolvePortFromUrl(env.HAPPIEST_SERVER_URL);
   if (fromInternal) return fromInternal;
 
   const fromPublic = resolvePortFromUrl(env.HAPPIER_PUBLIC_SERVER_URL);
@@ -456,7 +456,7 @@ async function prepareCoreAuthEnv({ stackName, webappUrl, env = process.env } = 
     throw new Error('[auth] cannot run stack login: unable to resolve stack server port');
   }
 
-  const internalServerUrl = String(merged.HAPPIER_SERVER_URL ?? '').trim() || `http://127.0.0.1:${serverPort}`;
+  const internalServerUrl = String(merged.HAPPIEST_SERVER_URL ?? '').trim() || `http://127.0.0.1:${serverPort}`;
   const resolvedPublic = await resolveServerUrls({
     env: merged,
     serverPort,
@@ -469,7 +469,7 @@ async function prepareCoreAuthEnv({ stackName, webappUrl, env = process.env } = 
   }
 
   const cliHomeDir =
-    String(merged.HAPPIER_HOME_DIR ?? '').trim() ||
+    String(merged.HAPPIEST_HOME_DIR ?? '').trim() ||
     String(merged.HAPPIER_STACK_CLI_HOME_DIR ?? '').trim() ||
     join(baseDir, 'cli');
   const credentialPaths = resolveStackCredentialPaths({
@@ -480,11 +480,11 @@ async function prepareCoreAuthEnv({ stackName, webappUrl, env = process.env } = 
 
   return {
     ...merged,
-    HAPPIER_HOME_DIR: cliHomeDir,
-    HAPPIER_SERVER_URL: internalServerUrl,
-    HAPPIER_PUBLIC_SERVER_URL: publicServerUrl,
-    HAPPIER_WEBAPP_URL: webappUrl,
-    ...(credentialPaths.activeServerId ? { HAPPIER_ACTIVE_SERVER_ID: credentialPaths.activeServerId } : {}),
+    HAPPIEST_HOME_DIR: cliHomeDir,
+    HAPPIEST_SERVER_URL: internalServerUrl,
+    HAPPIEST_PUBLIC_SERVER_URL: publicServerUrl,
+    HAPPIEST_WEBAPP_URL: webappUrl,
+    ...(credentialPaths.activeServerId ? { HAPPIEST_ACTIVE_SERVER_ID: credentialPaths.activeServerId } : {}),
   };
 }
 
@@ -527,7 +527,7 @@ export async function buildStackAuthLoginInvocation({ rootDir, stackName, webapp
     throw new Error('[auth] buildStackAuthLoginInvocation requires a webappUrl');
   }
   const cliExecutable = await resolveStackAuthCliExecutable({ rootDir: root, env });
-  const merged = { ...(env ?? process.env), HAPPIER_WEBAPP_URL: url };
+  const merged = { ...(env ?? process.env), HAPPIEST_WEBAPP_URL: url };
   const method = String(merged.HAPPIER_AUTH_METHOD ?? '').trim().toLowerCase();
   if (method && method !== 'web' && method !== 'browser' && method !== 'mobile') {
     throw new Error(`[auth] invalid HAPPIER_AUTH_METHOD=${method} (expected: web|browser|mobile)`);

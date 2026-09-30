@@ -105,7 +105,7 @@ test('hstack stack auth login --force clears stale stack credential aliases whil
     const cliHomeDir = join(fixture.storageDir, stackName, 'cli');
     const env = fixture.buildEnv({
       HAPPIER_STACK_RUNTIME_MODE: 'prefer',
-      HAPPIER_ACTIVE_SERVER_ID: `stack_${stackName}__id_default`,
+      HAPPIEST_ACTIVE_SERVER_ID: `stack_${stackName}__id_default`,
     });
     const canonicalServerId = 'stack-dev-profile';
     const historicalServerId = `127.0.0.1-${serverPort}`;

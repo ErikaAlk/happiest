@@ -19,7 +19,7 @@ export function resolveCliHomeDir(env = process.env, options = {}) {
   if (preferStackCliHomeDir && fromStacks) {
     return expandHome(fromStacks, env);
   }
-  const fromExplicit = (env.HAPPIER_HOME_DIR ?? '').trim();
+  const fromExplicit = (env.HAPPIEST_HOME_DIR ?? '').trim();
   if (fromExplicit) {
     return expandHome(fromExplicit, env);
   }

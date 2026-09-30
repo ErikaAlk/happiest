@@ -28,12 +28,12 @@ async function createMonorepoFixture(t, { prefix }) {
       "  }",
       "}",
       "console.log(JSON.stringify({",
-      "  serverUrl: serverUrlFromArg ?? process.env.HAPPIER_SERVER_URL ?? null,",
-      "  publicServerUrl: process.env.HAPPIER_PUBLIC_SERVER_URL ?? null,",
-      "  localServerUrl: process.env.HAPPIER_LOCAL_SERVER_URL ?? null,",
-      "  webappUrl: process.env.HAPPIER_WEBAPP_URL ?? null,",
-      "  activeServerId: process.env.HAPPIER_ACTIVE_SERVER_ID ?? null,",
-      "  homeDir: process.env.HAPPIER_HOME_DIR ?? null,",
+      "  serverUrl: serverUrlFromArg ?? process.env.HAPPIEST_SERVER_URL ?? null,",
+      "  publicServerUrl: process.env.HAPPIEST_PUBLIC_SERVER_URL ?? null,",
+      "  localServerUrl: process.env.HAPPIEST_LOCAL_SERVER_URL ?? null,",
+      "  webappUrl: process.env.HAPPIEST_WEBAPP_URL ?? null,",
+      "  activeServerId: process.env.HAPPIEST_ACTIVE_SERVER_ID ?? null,",
+      "  homeDir: process.env.HAPPIEST_HOME_DIR ?? null,",
       "}));",
       '',
     ].join('\n'),
@@ -77,11 +77,11 @@ function buildHappierFixtureEnv({ rootDir, fixtureDir, homeDir, extra = {} }) {
     // model the now-invalid contract of a configured path that does not exist.
     HAPPIER_STACK_ENV_FILE: '',
     HAPPIER_STACK_SYNC_BUNDLED_WORKSPACES: '0',
-    HAPPIER_HOME_DIR: homeDir,
+    HAPPIEST_HOME_DIR: homeDir,
     ...extra,
   };
-  delete env.HAPPIER_PUBLIC_SERVER_URL;
-  delete env.HAPPIER_LOCAL_SERVER_URL;
+  delete env.HAPPIEST_PUBLIC_SERVER_URL;
+  delete env.HAPPIEST_LOCAL_SERVER_URL;
   return env;
 }
 

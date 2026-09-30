@@ -11,8 +11,8 @@ test('Lima fixtures exclude ambient stack, provider, shell, and executable selec
   const env = createLimaTestEnv({
     PATH: '/real/user/bin',
     HOME: '/real/user',
-    HAPPIER_HOME_DIR: '/real/stack/cli',
-    HAPPIER_ACTIVE_SERVER_ID: 'live-server',
+    HAPPIEST_HOME_DIR: '/real/stack/cli',
+    HAPPIEST_ACTIVE_SERVER_ID: 'live-server',
     HAPPIER_QA_STACK_NAME: 'live-stack',
     WSREPL_QA_VM_HAPPIER_MODE: 'autoupdate',
     CLAUDE_CONFIG_DIR: '/real/claude',
@@ -22,8 +22,8 @@ test('Lima fixtures exclude ambient stack, provider, shell, and executable selec
     TMPDIR: '/tmp/fixture-parent',
     LANG: 'en_US.UTF-8',
   });
-  assert.equal(env.HAPPIER_HOME_DIR, undefined);
-  assert.equal(env.HAPPIER_ACTIVE_SERVER_ID, undefined);
+  assert.equal(env.HAPPIEST_HOME_DIR, undefined);
+  assert.equal(env.HAPPIEST_ACTIVE_SERVER_ID, undefined);
   assert.equal(env.HAPPIER_QA_STACK_NAME, undefined);
   assert.equal(env.HOME, undefined);
   assert.equal(env.CLAUDE_CONFIG_DIR, undefined);

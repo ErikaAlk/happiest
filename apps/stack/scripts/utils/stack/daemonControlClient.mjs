@@ -80,7 +80,7 @@ function resolveDaemonControlOwnershipContext({ cliHomeDir, stackName, env } = {
   return {
     stackName: resolvedStackName,
     envPath: String(env?.HAPPIER_STACK_ENV_FILE ?? '').trim(),
-    cliHomeDir: String(cliHomeDir ?? env?.HAPPIER_STACK_CLI_HOME_DIR ?? env?.HAPPIER_HOME_DIR ?? '').trim(),
+    cliHomeDir: String(cliHomeDir ?? env?.HAPPIER_STACK_CLI_HOME_DIR ?? env?.HAPPIEST_HOME_DIR ?? '').trim(),
   };
 }
 

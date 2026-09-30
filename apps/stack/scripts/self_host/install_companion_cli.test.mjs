@@ -101,7 +101,7 @@ test('installCompanionCliFromBundle promotes the publicdev CLI payload with shar
     channel: 'publicdev',
     processEnv: {
       ...process.env,
-      HAPPIER_HOME_DIR: homeDir,
+      HAPPIEST_HOME_DIR: homeDir,
     },
     pubkeyFile,
   });

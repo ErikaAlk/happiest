@@ -29,7 +29,7 @@ test('hstack auth login --print --json uses stack.runtime.json server port when 
       {
         cwd: rootDir,
         env: fixture.buildEnv({
-          HAPPIER_SERVER_URL: '',
+          HAPPIEST_SERVER_URL: '',
           HAPPIER_STACK_SERVER_PORT: '',
         }),
       }

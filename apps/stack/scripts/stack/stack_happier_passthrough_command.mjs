@@ -54,7 +54,7 @@ export async function runStackHappierPassthroughCommand({ rootDir, stackName, pa
         ? {
             ...env,
             HAPPIER_STACK_CLI_IDENTITY: identity,
-            HAPPIER_HOME_DIR: cliHomeDirForIdentity,
+            HAPPIEST_HOME_DIR: cliHomeDirForIdentity,
             HAPPIER_STACK_CLI_HOME_DIR: cliHomeDirForIdentity,
           }
         : env;

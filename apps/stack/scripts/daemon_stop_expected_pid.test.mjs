@@ -55,8 +55,8 @@ async function spawnDaemonLikeProcess({ cliHomeDir, internalServerUrl, stackName
       env: {
         ...process.env,
         DAEMON_OWNED_LOG_PATH: ownedLogPath,
-        HAPPIER_HOME_DIR: cliHomeDir,
-        HAPPIER_SERVER_URL: internalServerUrl,
+        HAPPIEST_HOME_DIR: cliHomeDir,
+        HAPPIEST_SERVER_URL: internalServerUrl,
         HAPPIER_STACK_STACK: stackName,
         HAPPIER_STACK_PROCESS_KIND: 'daemon',
       },

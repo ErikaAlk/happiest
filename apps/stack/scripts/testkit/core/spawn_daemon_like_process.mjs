@@ -68,10 +68,10 @@ export async function startDaemonLikeProcess({
         let body = {};
         try { body = rawBody ? JSON.parse(rawBody) : {}; } catch {}
         spawnDaemonLikeProcess({
-          cliHomeDir: process.env.HAPPIER_HOME_DIR,
+          cliHomeDir: process.env.HAPPIEST_HOME_DIR,
           statePaths: paths,
-          internalServerUrl: process.env.HAPPIER_SERVER_URL,
-          publicServerUrl: process.env.HAPPIER_WEBAPP_URL,
+          internalServerUrl: process.env.HAPPIEST_SERVER_URL,
+          publicServerUrl: process.env.HAPPIEST_WEBAPP_URL,
           startedWithCliVersion,
           distClosureFingerprint: body.successorDistClosureFingerprint ?? admittedFingerprint,
         });
@@ -132,14 +132,14 @@ export function spawnDaemonLikeProcess({
       env: {
         ...process.env,
         ...env,
-        HAPPIER_HOME_DIR: cliHomeDir,
+        HAPPIEST_HOME_DIR: cliHomeDir,
         [STATE_PATHS_ENV]: JSON.stringify(paths),
         [START_DELAY_ENV]: String(normalizeNonNegativeNumber(startDelayMs)),
         [HTTP_PORT_ENV]: String(normalizeNonNegativeNumber(httpPort)),
         [CLI_VERSION_ENV]: String(startedWithCliVersion ?? 'test'),
         [DIST_CLOSURE_FINGERPRINT_ENV]: String(distClosureFingerprint ?? ''),
-        ...(internalServerUrl ? { HAPPIER_SERVER_URL: internalServerUrl } : {}),
-        ...(publicServerUrl ? { HAPPIER_WEBAPP_URL: publicServerUrl } : {}),
+        ...(internalServerUrl ? { HAPPIEST_SERVER_URL: internalServerUrl } : {}),
+        ...(publicServerUrl ? { HAPPIEST_WEBAPP_URL: publicServerUrl } : {}),
       },
     },
   );

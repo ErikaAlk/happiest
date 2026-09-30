@@ -142,7 +142,7 @@ test('parsePsPidCommandOutputForNeedles deduplicates matches and ignores invalid
 test('parsePsPidCommandOutputForNeedles matches environment bindings exactly', () => {
   const output = [
     '301 cmd HAPPIER_STACK_ENV_FILE=/tmp/stack/env-old HAPPIER_STACK_PROCESS_KIND=infra',
-    '302 cmd HAPPIER_HOME_DIR=/tmp/stack/cli-other HAPPIER_STACK_PROCESS_KIND=daemon',
+    '302 cmd HAPPIEST_HOME_DIR=/tmp/stack/cli-other HAPPIER_STACK_PROCESS_KIND=daemon',
     '303 cmd HAPPIER_STACK_ENV_FILE=/tmp/stack/env HAPPIER_STACK_PROCESS_KIND=infra',
   ].join('\n');
 
@@ -151,7 +151,7 @@ test('parsePsPidCommandOutputForNeedles matches environment bindings exactly', (
     'HAPPIER_STACK_PROCESS_KIND=infra',
   ]), [303]);
   assert.deepEqual(parsePsPidCommandOutputForNeedles(output, [
-    'HAPPIER_HOME_DIR=/tmp/stack/cli',
+    'HAPPIEST_HOME_DIR=/tmp/stack/cli',
     'HAPPIER_STACK_PROCESS_KIND=daemon',
   ]), []);
 });
@@ -160,11 +160,11 @@ test('textContainsNeedle matches exact environment bindings in nul-delimited pro
   const envText = [
     'HAPPIER_STACK_ENV_FILE=/tmp/stack/env',
     'HAPPIER_STACK_PROCESS_KIND=infra',
-    'HAPPIER_HOME_DIR=/tmp/stack/cli',
+    'HAPPIEST_HOME_DIR=/tmp/stack/cli',
   ].join('\0');
 
   assert.equal(textContainsNeedle(envText, 'HAPPIER_STACK_ENV_FILE=/tmp/stack/env'), true);
-  assert.equal(textContainsNeedle(envText, 'HAPPIER_HOME_DIR=/tmp/stack/cli'), true);
+  assert.equal(textContainsNeedle(envText, 'HAPPIEST_HOME_DIR=/tmp/stack/cli'), true);
   assert.equal(textContainsNeedle(envText, 'HAPPIER_STACK_ENV_FILE=/tmp/stack/env-old'), false);
 });
 

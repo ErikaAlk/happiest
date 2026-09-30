@@ -120,9 +120,9 @@ describe('core e2e: daemon tmux spawn respawn supervision', () => {
 	        sessionIds: [],
 	        env: {
 	          CI: process.env.CI,
-	          HAPPIER_HOME_DIR: daemonHomeDir,
-	          HAPPIER_SERVER_URL: serverBaseUrl,
-	          HAPPIER_WEBAPP_URL: serverBaseUrl,
+	          HAPPIEST_HOME_DIR: daemonHomeDir,
+	          HAPPIEST_SERVER_URL: serverBaseUrl,
+	          HAPPIEST_WEBAPP_URL: serverBaseUrl,
 	        },
 	      });
 
@@ -135,9 +135,9 @@ describe('core e2e: daemon tmux spawn respawn supervision', () => {
 	            CI: '1',
 	            HAPPIER_VARIANT: 'dev',
 	            HAPPIER_DISABLE_CAFFEINATE: '1',
-	            HAPPIER_HOME_DIR: daemonHomeDir,
-	            HAPPIER_SERVER_URL: server.baseUrl,
-	            HAPPIER_WEBAPP_URL: server.baseUrl,
+	            HAPPIEST_HOME_DIR: daemonHomeDir,
+	            HAPPIEST_SERVER_URL: server.baseUrl,
+	            HAPPIEST_WEBAPP_URL: server.baseUrl,
 	            HAPPIER_CLAUDE_PATH: fakeClaudePath,
 	            HAPPIER_DAEMON_HEARTBEAT_INTERVAL: '5000',
 	            HAPPIER_DAEMON_SESSION_RESPAWN_ENABLED: '1',
@@ -169,9 +169,9 @@ describe('core e2e: daemon tmux spawn respawn supervision', () => {
               tmux: { sessionName: tmuxSessionName, isolated: true, tmpDir: tmuxTmpDir },
             },
             environmentVariables: {
-              HAPPIER_HOME_DIR: daemonHomeDir,
-              HAPPIER_SERVER_URL: server.baseUrl,
-              HAPPIER_WEBAPP_URL: server.baseUrl,
+              HAPPIEST_HOME_DIR: daemonHomeDir,
+              HAPPIEST_SERVER_URL: server.baseUrl,
+              HAPPIEST_WEBAPP_URL: server.baseUrl,
               HAPPIER_VARIANT: 'dev',
               HAPPIER_DISABLE_CAFFEINATE: '1',
             },

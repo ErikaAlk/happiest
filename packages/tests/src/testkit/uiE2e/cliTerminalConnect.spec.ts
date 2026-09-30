@@ -102,9 +102,9 @@ describe('sanitizeCliTestEnv', () => {
     it('strips ambient server-selection overrides while preserving unrelated harness env', () => {
         const sanitized = sanitizeCliTestEnv({
             PATH: '/usr/bin',
-            HAPPIER_ACTIVE_SERVER_ID: 'ambient-server',
-            HAPPIER_DAEMON_SERVICE_INSTANCE_ID: 'ambient-instance',
-            HAPPIER_DAEMON_SERVICE_SERVER_URL: 'https://ambient.invalid',
+            HAPPIEST_ACTIVE_SERVER_ID: 'ambient-server',
+            HAPPIEST_DAEMON_SERVICE_INSTANCE_ID: 'ambient-instance',
+            HAPPIEST_DAEMON_SERVICE_SERVER_URL: 'https://ambient.invalid',
         });
 
         expect(sanitized).toEqual({ PATH: '/usr/bin' });

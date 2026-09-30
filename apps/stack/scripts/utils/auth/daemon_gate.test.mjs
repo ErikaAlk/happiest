@@ -68,7 +68,7 @@ test('daemonStartGate allows daemon start when credentials exist', async (t) => 
 test('daemonStartGate resolves server-scoped credentials from env server url', async (t) => {
   const dir = await withTempRoot(t);
   const serverUrl = 'http://127.0.0.1:4010';
-  const env = { HAPPIER_SERVER_URL: serverUrl };
+  const env = { HAPPIEST_SERVER_URL: serverUrl };
   const paths = resolveStackCredentialPaths({ cliHomeDir: dir, serverUrl, env });
   await mkdir(join(dir, 'servers', paths.activeServerId), { recursive: true });
   await writeFile(paths.serverScopedPath, 'dummy', 'utf-8');
@@ -81,10 +81,10 @@ test('daemonStartGate resolves server-scoped credentials from env server url', a
   assert.equal(gate.reason, 'credentials_present');
 });
 
-test('daemonStartGate resolves stable-scope credentials from HAPPIER_ACTIVE_SERVER_ID', async (t) => {
+test('daemonStartGate resolves stable-scope credentials from HAPPIEST_ACTIVE_SERVER_ID', async (t) => {
   const dir = await withTempRoot(t);
   const serverUrl = 'http://127.0.0.1:4010';
-  const env = { HAPPIER_SERVER_URL: serverUrl, HAPPIER_ACTIVE_SERVER_ID: 'stack_main__id_default' };
+  const env = { HAPPIEST_SERVER_URL: serverUrl, HAPPIEST_ACTIVE_SERVER_ID: 'stack_main__id_default' };
   const paths = resolveStackCredentialPaths({ cliHomeDir: dir, serverUrl, env });
   await mkdir(join(dir, 'servers', paths.activeServerId), { recursive: true });
   await writeFile(paths.serverScopedPath, 'dummy', 'utf-8');

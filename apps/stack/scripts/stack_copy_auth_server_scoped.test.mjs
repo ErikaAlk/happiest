@@ -61,7 +61,7 @@ test('hstack stack new copies server-scoped credentials from source stack', asyn
   const sourceCred = resolveStackCredentialPaths({
     cliHomeDir: sourceCliHome,
     serverUrl,
-    env: { ...process.env, HAPPIER_ACTIVE_SERVER_ID: '' },
+    env: { ...process.env, HAPPIEST_ACTIVE_SERVER_ID: '' },
   });
   await mkdir(dirname(sourceCred.serverScopedPath), { recursive: true });
   await writeFile(sourceCred.serverScopedPath, 'seed-credential\n', 'utf-8');
@@ -100,7 +100,7 @@ test('hstack stack new copies server-scoped credentials from source stack', asyn
   assert.equal(res.code, 0, `expected exit 0, got ${res.code}\nstdout:\n${res.stdout}\nstderr:\n${res.stderr}`);
 
   const targetCliHome = join(storageDir, targetStack, 'cli');
-  const targetStableEnv = { HAPPIER_ACTIVE_SERVER_ID: `stack_${targetStack}__id_default` };
+  const targetStableEnv = { HAPPIEST_ACTIVE_SERVER_ID: `stack_${targetStack}__id_default` };
   const targetCred = resolveStackCredentialPaths({ cliHomeDir: targetCliHome, serverUrl, env: targetStableEnv });
   const targetCredRaw = await readFile(targetCred.serverScopedPath, 'utf-8');
   assert.equal(targetCredRaw.trim(), 'seed-credential');
@@ -140,7 +140,7 @@ test('hstack stack new copy-auth prefers source server-scoped credentials over u
   const sourceCred = resolveStackCredentialPaths({
     cliHomeDir: sourceCliHome,
     serverUrl,
-    env: { ...process.env, HAPPIER_ACTIVE_SERVER_ID: '' },
+    env: { ...process.env, HAPPIEST_ACTIVE_SERVER_ID: '' },
   });
   await mkdir(dirname(sourceCred.serverScopedPath), { recursive: true });
   await writeFile(join(sourceCliHome, 'access.key'), 'legacy-wrong\n', 'utf-8');
@@ -180,7 +180,7 @@ test('hstack stack new copy-auth prefers source server-scoped credentials over u
   assert.equal(res.code, 0, `expected exit 0, got ${res.code}\nstdout:\n${res.stdout}\nstderr:\n${res.stderr}`);
 
   const targetCliHome = join(storageDir, targetStack, 'cli');
-  const targetStableEnv = { HAPPIER_ACTIVE_SERVER_ID: `stack_${targetStack}__id_default` };
+  const targetStableEnv = { HAPPIEST_ACTIVE_SERVER_ID: `stack_${targetStack}__id_default` };
   const targetCred = resolveStackCredentialPaths({ cliHomeDir: targetCliHome, serverUrl, env: targetStableEnv });
   const targetCredRaw = await readFile(targetCred.serverScopedPath, 'utf-8');
   assert.equal(targetCredRaw.trim(), 'server-scoped-correct');
@@ -213,7 +213,7 @@ test('hstack stack new copy-auth copies stable-scope credentials from source sta
   await writeFile(join(monoRoot, 'apps', 'server', 'prisma', 'sqlite', 'schema.prisma'), 'datasource db { provider = \"sqlite\" }\n', 'utf-8');
 
   const sourceCliHome = join(storageDir, sourceStack, 'cli');
-  const sourceStableEnv = { HAPPIER_ACTIVE_SERVER_ID: `stack_${sourceStack}__id_default` };
+  const sourceStableEnv = { HAPPIEST_ACTIVE_SERVER_ID: `stack_${sourceStack}__id_default` };
   const sourceCredStable = resolveStackCredentialPaths({ cliHomeDir: sourceCliHome, serverUrl, env: sourceStableEnv });
   await mkdir(dirname(sourceCredStable.serverScopedPath), { recursive: true });
   await writeFile(join(sourceCliHome, 'access.key'), 'legacy-wrong\n', 'utf-8');
@@ -253,7 +253,7 @@ test('hstack stack new copy-auth copies stable-scope credentials from source sta
   assert.equal(res.code, 0, `expected exit 0, got ${res.code}\nstdout:\n${res.stdout}\nstderr:\n${res.stderr}`);
 
   const targetCliHome = join(storageDir, targetStack, 'cli');
-  const targetStableEnv = { HAPPIER_ACTIVE_SERVER_ID: `stack_${targetStack}__id_default` };
+  const targetStableEnv = { HAPPIEST_ACTIVE_SERVER_ID: `stack_${targetStack}__id_default` };
   const targetCredStable = resolveStackCredentialPaths({ cliHomeDir: targetCliHome, serverUrl, env: targetStableEnv });
   const targetCredRaw = await readFile(targetCredStable.serverScopedPath, 'utf-8');
   assert.equal(targetCredRaw.trim(), 'stable-correct');

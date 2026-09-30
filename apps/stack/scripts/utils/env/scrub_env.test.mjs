@@ -12,20 +12,20 @@ test('scrubHappierStackEnv removes non-preserved HAPPIER_STACK_* vars and clears
     PATH: '/bin',
     HAPPIER_STACK_VERBOSE: '1',
     HAPPIER_STACK_FOO: 'bar',
-    HAPPIER_HOME_DIR: '/tmp/happier-home',
-    HAPPIER_SERVER_URL: 'http://example.com',
+    HAPPIEST_HOME_DIR: '/tmp/happier-home',
+    HAPPIEST_SERVER_URL: 'http://example.com',
   };
 
   const scrubbed = scrubHappierStackEnv(env, {
     keepHappierStackKeys: SANDBOX_PRESERVE_KEYS,
-    clearUnprefixedKeys: ['HAPPIER_HOME_DIR', 'HAPPIER_SERVER_URL'],
+    clearUnprefixedKeys: ['HAPPIEST_HOME_DIR', 'HAPPIEST_SERVER_URL'],
   });
 
   assert.equal(scrubbed.PATH, '/bin');
   assert.equal(scrubbed.HAPPIER_STACK_VERBOSE, '1');
   assert.equal(scrubbed.HAPPIER_STACK_FOO, undefined);
-  assert.equal(scrubbed.HAPPIER_HOME_DIR, undefined);
-  assert.equal(scrubbed.HAPPIER_SERVER_URL, undefined);
+  assert.equal(scrubbed.HAPPIEST_HOME_DIR, undefined);
+  assert.equal(scrubbed.HAPPIEST_SERVER_URL, undefined);
 });
 
 test('scrubHappierStackEnv keeps runtime-critical non-HAPPIER env keys', () => {
@@ -68,18 +68,18 @@ test('scrubHappierStackEnv preserves only explicitly kept HAPPIER_STACK keys', (
 test('scrubHappierStackEnv trims and de-duplicates clearUnprefixedKeys', () => {
   const env = {
     PATH: '/bin',
-    HAPPIER_HOME_DIR: '/tmp/home',
-    HAPPIER_SERVER_URL: 'http://localhost:3000',
+    HAPPIEST_HOME_DIR: '/tmp/home',
+    HAPPIEST_SERVER_URL: 'http://localhost:3000',
     HAPPIER_STACK_KEEP: 'keep',
   };
   const scrubbed = scrubHappierStackEnv(env, {
     keepHappierStackKeys: ['HAPPIER_STACK_KEEP'],
-    clearUnprefixedKeys: [' HAPPIER_HOME_DIR ', 'HAPPIER_SERVER_URL', 'HAPPIER_SERVER_URL'],
+    clearUnprefixedKeys: [' HAPPIEST_HOME_DIR ', 'HAPPIEST_SERVER_URL', 'HAPPIEST_SERVER_URL'],
   });
 
   assert.equal(scrubbed.PATH, '/bin');
-  assert.equal(scrubbed.HAPPIER_HOME_DIR, undefined);
-  assert.equal(scrubbed.HAPPIER_SERVER_URL, undefined);
+  assert.equal(scrubbed.HAPPIEST_HOME_DIR, undefined);
+  assert.equal(scrubbed.HAPPIEST_SERVER_URL, undefined);
   assert.equal(scrubbed.HAPPIER_STACK_KEEP, 'keep');
 });
 

@@ -172,11 +172,11 @@ test.describe('ui e2e: mTLS login + terminal connect', () => {
         env: {
           ...process.env,
           CI: '1',
-          HAPPIER_HOME_DIR: cliHomeDir,
+          HAPPIEST_HOME_DIR: cliHomeDir,
           // Use the same server URL the CLI authenticated against so the daemon can find credentials.
           // This is the forwarded-header proxy; it forwards to the real server.
-          HAPPIER_SERVER_URL: proxyBaseUrl,
-          HAPPIER_WEBAPP_URL: uiBaseUrl,
+          HAPPIEST_SERVER_URL: proxyBaseUrl,
+          HAPPIEST_WEBAPP_URL: uiBaseUrl,
           HAPPIER_DISABLE_CAFFEINATE: '1',
           HAPPIER_E2E_PROVIDER_USE_CLI_SOURCE_ENTRYPOINT: '1',
           HAPPIER_VARIANT: 'dev',

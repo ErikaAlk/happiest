@@ -1087,8 +1087,8 @@ export async function runMobileMaestro(
           happyHomeDir: cliHomeDir,
           env: {
             ...orchestrationEnv,
-            HAPPIER_SERVER_URL: server.baseUrl,
-            HAPPIER_WEBAPP_URL: server.baseUrl,
+            HAPPIEST_SERVER_URL: server.baseUrl,
+            HAPPIEST_WEBAPP_URL: server.baseUrl,
           },
         });
         const result = await runMaestroFlow(

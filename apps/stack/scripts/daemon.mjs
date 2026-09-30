@@ -209,7 +209,7 @@ export function resolveStackDaemonStartVerifyTimeoutMs(env = process.env) {
 }
 
 function hasExplicitServerContext({ serverUrl = '', env = process.env }) {
-  return String(serverUrl ?? '').trim() !== '' || String(env?.HAPPIER_ACTIVE_SERVER_ID ?? '').trim() !== '';
+  return String(serverUrl ?? '').trim() !== '' || String(env?.HAPPIEST_ACTIVE_SERVER_ID ?? '').trim() !== '';
 }
 
 async function persistStackDaemonMachineTransferEnv({ stackName, env = process.env } = {}) {
@@ -406,16 +406,16 @@ export function matchDaemonEnvLine({ line, cliHomeDir, internalServerUrl, public
   const web = String(publicServerUrl ?? '').trim();
 
   // Must be for the same stack home dir.
-  if (home && !raw.includes(`HAPPIER_HOME_DIR=${home}`)) {
-    return { matches: false, reason: 'home', key: 'HAPPIER_HOME_DIR', expected: home };
+  if (home && !raw.includes(`HAPPIEST_HOME_DIR=${home}`)) {
+    return { matches: false, reason: 'home', key: 'HAPPIEST_HOME_DIR', expected: home };
   }
   // If we have a desired server URL, require it (prevents ephemeral port mismatches).
-  if (server && !raw.includes(`HAPPIER_SERVER_URL=${server}`)) {
-    return { matches: false, reason: 'server', key: 'HAPPIER_SERVER_URL', expected: server };
+  if (server && !raw.includes(`HAPPIEST_SERVER_URL=${server}`)) {
+    return { matches: false, reason: 'server', key: 'HAPPIEST_SERVER_URL', expected: server };
   }
   // Public URL mismatch is less fatal, but prefer it stable too when provided.
-  if (web && !raw.includes(`HAPPIER_WEBAPP_URL=${web}`)) {
-    return { matches: false, reason: 'webapp', key: 'HAPPIER_WEBAPP_URL', expected: web };
+  if (web && !raw.includes(`HAPPIEST_WEBAPP_URL=${web}`)) {
+    return { matches: false, reason: 'webapp', key: 'HAPPIEST_WEBAPP_URL', expected: web };
   }
   return { matches: true };
 }
@@ -1445,7 +1445,7 @@ export function getDaemonEnv({
     cliIdentity,
   });
   const explicitStartupSource = String(baseEnv?.HAPPIER_DAEMON_STARTUP_SOURCE ?? '').trim();
-  const explicitServiceLabel = String(baseEnv?.HAPPIER_DAEMON_SERVICE_LABEL ?? '').trim();
+  const explicitServiceLabel = String(baseEnv?.HAPPIEST_DAEMON_SERVICE_LABEL ?? '').trim();
   const startupSource =
     explicitStartupSource ||
     (String(baseEnv?.HAPPIER_STACK_SERVICE_MODE ?? '').trim() === '1' ? 'background-service' : 'manual');
@@ -1466,11 +1466,11 @@ export function getDaemonEnv({
   }
   return {
     ...scopedEnv,
-    HAPPIER_SERVER_URL: internalServerUrl,
-    HAPPIER_WEBAPP_URL: publicServerUrl,
-    HAPPIER_HOME_DIR: cliHomeDir,
+    HAPPIEST_SERVER_URL: internalServerUrl,
+    HAPPIEST_WEBAPP_URL: publicServerUrl,
+    HAPPIEST_HOME_DIR: cliHomeDir,
     HAPPIER_DAEMON_STARTUP_SOURCE: startupSource,
-    HAPPIER_DAEMON_SERVICE_LABEL: explicitServiceLabel,
+    HAPPIEST_DAEMON_SERVICE_LABEL: explicitServiceLabel,
   };
 }
 
@@ -1788,7 +1788,7 @@ export async function startLocalDaemonWithAuth({
   const canReconcileProfileWithAdmittedCli =
     !distCheck.generationAdmissionRequired || distCheck.current === true;
   if (canReconcileProfileWithAdmittedCli && existsSync(join(cliHomeDir, 'settings.json'))) {
-    const serverId = String(daemonEnv.HAPPIER_ACTIVE_SERVER_ID ?? '').trim();
+    const serverId = String(daemonEnv.HAPPIEST_ACTIVE_SERVER_ID ?? '').trim();
     if (serverId) {
       const verifyPersistedProfile = shouldVerifyStackServerProfileReconciliation(cliHomeDir);
       const profileCommand = resolveDaemonCommandSpec({
@@ -1919,7 +1919,7 @@ export async function startLocalDaemonWithAuth({
         : null;
     console.log(
       formatDaemonAuthScopeDiagnostic({
-        activeServerId: daemonEnv.HAPPIER_ACTIVE_SERVER_ID,
+        activeServerId: daemonEnv.HAPPIEST_ACTIVE_SERVER_ID,
         activeCredentialPath: credentialPaths.serverScopedPath,
         tokenSub: tokenSub ? String(tokenSub) : null,
         tokenSubBeforeRepair: tokenSubBeforeRepair ? String(tokenSubBeforeRepair) : null,

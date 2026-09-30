@@ -325,7 +325,7 @@ test('outer dev restart preflight delegates local/external selection to the cano
     mod.shouldPreflightLocalDevServerRestart({
       scriptPath: 'dev.mjs',
       args: ['--restart', '--no-server'],
-      env: { HAPPIER_SERVER_URL: 'https://api.example.com' },
+      env: { HAPPIEST_SERVER_URL: 'https://api.example.com' },
     }),
     false,
   );

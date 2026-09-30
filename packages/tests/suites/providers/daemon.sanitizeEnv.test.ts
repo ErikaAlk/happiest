@@ -10,14 +10,14 @@ describe('sanitizeDaemonEnvForSpawn', () => {
       TMUX: '/tmp/tmux-1000/default,123,0',
       TMUX_PANE: '%42',
       TMUX_TMPDIR: '/tmp/custom-tmux',
-      HAPPIER_HOME_DIR: '/tmp/happier',
+      HAPPIEST_HOME_DIR: '/tmp/happier',
       HAPPIER_SESSION_ATTACH_FILE: '/tmp/happier/attach.json',
       HAPPIER_STACK_TOOL_TRACE_FILE: '/tmp/trace.jsonl',
     });
 
     expect(out.PATH).toBe('/usr/bin');
     expect(out.HOME).toBe('/tmp/home');
-    expect(out.HAPPIER_HOME_DIR).toBe('/tmp/happier');
+    expect(out.HAPPIEST_HOME_DIR).toBe('/tmp/happier');
 
     expect(Object.prototype.hasOwnProperty.call(out, 'TMUX')).toBe(false);
     expect(Object.prototype.hasOwnProperty.call(out, 'TMUX_PANE')).toBe(false);

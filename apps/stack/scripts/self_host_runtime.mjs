@@ -372,10 +372,10 @@ export function resolveConfig({ channel, mode = 'user', platform = process.platf
   const configDir = configuredPaths.configDir;
   const dataDir = configuredPaths.dataDir;
   const logDir = configuredPaths.logDir;
-  const serviceName = String(process.env.HAPPIER_SELF_HOST_SERVICE_NAME ?? defaults.serviceName).trim() || defaults.serviceName;
+  const serviceName = String(process.env.HAPPIEST_SELF_HOST_SERVICE_NAME ?? defaults.serviceName).trim() || defaults.serviceName;
   const serverHost = String(process.env.HAPPIER_SERVER_HOST ?? DEFAULTS.serverHost).trim();
   const serverPort = parsePort(process.env.HAPPIER_SERVER_PORT, DEFAULTS.serverPort);
-  const githubRepo = String(process.env.HAPPIER_GITHUB_REPO ?? DEFAULTS.githubRepo).trim();
+  const githubRepo = String(process.env.HAPPIEST_GITHUB_REPO ?? DEFAULTS.githubRepo).trim();
   const autoUpdate = resolveSelfHostAutoUpdateDefault(process.env);
   const autoUpdateIntervalMinutes = resolveSelfHostAutoUpdateIntervalMinutes(process.env);
   const autoUpdateAt = resolveSelfHostAutoUpdateAt(process.env);
@@ -1166,7 +1166,7 @@ async function checkHealth({ port }) {
 }
 
 export function resolveMinisignPublicKeyText(env = process.env) {
-  const inline = String(env?.HAPPIER_MINISIGN_PUBKEY ?? '').trim();
+  const inline = String(env?.HAPPIEST_MINISIGN_PUBKEY ?? '').trim();
   return inline || DEFAULT_MINISIGN_PUBLIC_KEY;
 }
 

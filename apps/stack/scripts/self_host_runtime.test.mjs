@@ -1399,7 +1399,7 @@ test('resolveSelfHostServerInstallFromReleaseParams carries the local server bin
     binaryName: 'happier-server',
     config,
     env: {
-      HAPPIER_SELF_HOST_SERVER_BINARY: '/tmp/local/happier-server',
+      HAPPIEST_SELF_HOST_SERVER_BINARY: '/tmp/local/happier-server',
     },
     beforeRuntimePromote,
   });
@@ -1555,15 +1555,15 @@ test('resolveSelfHostDefaults isolates publicdev into a side-by-side self-host r
 
 test('resolveConfig defaults serviceName to the channel-suffixed self-host defaults', () => {
   const previous = {
-    HAPPIER_SELF_HOST_SERVICE_NAME: process.env.HAPPIER_SELF_HOST_SERVICE_NAME,
+    HAPPIEST_SELF_HOST_SERVICE_NAME: process.env.HAPPIEST_SELF_HOST_SERVICE_NAME,
   };
 
-  process.env.HAPPIER_SELF_HOST_SERVICE_NAME = '';
+  process.env.HAPPIEST_SELF_HOST_SERVICE_NAME = '';
   try {
     const cfg = selfHostRuntimeModule.resolveConfig({ platform: 'linux', mode: 'user', channel: 'publicdev' });
     assert.equal(cfg.serviceName, 'happier-server-dev');
   } finally {
-    process.env.HAPPIER_SELF_HOST_SERVICE_NAME = previous.HAPPIER_SELF_HOST_SERVICE_NAME;
+    process.env.HAPPIEST_SELF_HOST_SERVICE_NAME = previous.HAPPIEST_SELF_HOST_SERVICE_NAME;
   }
 });
 
@@ -1574,20 +1574,20 @@ test('resolveConfig expands ~/ self-host path overrides against HOME', async () 
   const previous = {
     HOME: process.env.HOME,
     USERPROFILE: process.env.USERPROFILE,
-    HAPPIER_SELF_HOST_INSTALL_ROOT: process.env.HAPPIER_SELF_HOST_INSTALL_ROOT,
-    HAPPIER_SELF_HOST_BIN_DIR: process.env.HAPPIER_SELF_HOST_BIN_DIR,
-    HAPPIER_SELF_HOST_CONFIG_DIR: process.env.HAPPIER_SELF_HOST_CONFIG_DIR,
-    HAPPIER_SELF_HOST_DATA_DIR: process.env.HAPPIER_SELF_HOST_DATA_DIR,
-    HAPPIER_SELF_HOST_LOG_DIR: process.env.HAPPIER_SELF_HOST_LOG_DIR,
+    HAPPIEST_SELF_HOST_INSTALL_ROOT: process.env.HAPPIEST_SELF_HOST_INSTALL_ROOT,
+    HAPPIEST_SELF_HOST_BIN_DIR: process.env.HAPPIEST_SELF_HOST_BIN_DIR,
+    HAPPIEST_SELF_HOST_CONFIG_DIR: process.env.HAPPIEST_SELF_HOST_CONFIG_DIR,
+    HAPPIEST_SELF_HOST_DATA_DIR: process.env.HAPPIEST_SELF_HOST_DATA_DIR,
+    HAPPIEST_SELF_HOST_LOG_DIR: process.env.HAPPIEST_SELF_HOST_LOG_DIR,
   };
 
   process.env.HOME = '/scoped/home';
   process.env.USERPROFILE = '/scoped/home';
-  process.env.HAPPIER_SELF_HOST_INSTALL_ROOT = '~/relay/install';
-  process.env.HAPPIER_SELF_HOST_BIN_DIR = '~/relay/bin';
-  process.env.HAPPIER_SELF_HOST_CONFIG_DIR = '~/relay/config';
-  process.env.HAPPIER_SELF_HOST_DATA_DIR = '~/relay/data';
-  process.env.HAPPIER_SELF_HOST_LOG_DIR = '~/relay/logs';
+  process.env.HAPPIEST_SELF_HOST_INSTALL_ROOT = '~/relay/install';
+  process.env.HAPPIEST_SELF_HOST_BIN_DIR = '~/relay/bin';
+  process.env.HAPPIEST_SELF_HOST_CONFIG_DIR = '~/relay/config';
+  process.env.HAPPIEST_SELF_HOST_DATA_DIR = '~/relay/data';
+  process.env.HAPPIEST_SELF_HOST_LOG_DIR = '~/relay/logs';
 
   try {
     const config = mod.resolveConfig({ platform: 'linux', mode: 'user', channel: 'stable' });
@@ -1601,23 +1601,23 @@ test('resolveConfig expands ~/ self-host path overrides against HOME', async () 
     else process.env.HOME = previous.HOME;
     if (previous.USERPROFILE === undefined) delete process.env.USERPROFILE;
     else process.env.USERPROFILE = previous.USERPROFILE;
-    if (previous.HAPPIER_SELF_HOST_INSTALL_ROOT === undefined) delete process.env.HAPPIER_SELF_HOST_INSTALL_ROOT;
-    else process.env.HAPPIER_SELF_HOST_INSTALL_ROOT = previous.HAPPIER_SELF_HOST_INSTALL_ROOT;
-    if (previous.HAPPIER_SELF_HOST_BIN_DIR === undefined) delete process.env.HAPPIER_SELF_HOST_BIN_DIR;
-    else process.env.HAPPIER_SELF_HOST_BIN_DIR = previous.HAPPIER_SELF_HOST_BIN_DIR;
-    if (previous.HAPPIER_SELF_HOST_CONFIG_DIR === undefined) delete process.env.HAPPIER_SELF_HOST_CONFIG_DIR;
-    else process.env.HAPPIER_SELF_HOST_CONFIG_DIR = previous.HAPPIER_SELF_HOST_CONFIG_DIR;
-    if (previous.HAPPIER_SELF_HOST_DATA_DIR === undefined) delete process.env.HAPPIER_SELF_HOST_DATA_DIR;
-    else process.env.HAPPIER_SELF_HOST_DATA_DIR = previous.HAPPIER_SELF_HOST_DATA_DIR;
-    if (previous.HAPPIER_SELF_HOST_LOG_DIR === undefined) delete process.env.HAPPIER_SELF_HOST_LOG_DIR;
-    else process.env.HAPPIER_SELF_HOST_LOG_DIR = previous.HAPPIER_SELF_HOST_LOG_DIR;
+    if (previous.HAPPIEST_SELF_HOST_INSTALL_ROOT === undefined) delete process.env.HAPPIEST_SELF_HOST_INSTALL_ROOT;
+    else process.env.HAPPIEST_SELF_HOST_INSTALL_ROOT = previous.HAPPIEST_SELF_HOST_INSTALL_ROOT;
+    if (previous.HAPPIEST_SELF_HOST_BIN_DIR === undefined) delete process.env.HAPPIEST_SELF_HOST_BIN_DIR;
+    else process.env.HAPPIEST_SELF_HOST_BIN_DIR = previous.HAPPIEST_SELF_HOST_BIN_DIR;
+    if (previous.HAPPIEST_SELF_HOST_CONFIG_DIR === undefined) delete process.env.HAPPIEST_SELF_HOST_CONFIG_DIR;
+    else process.env.HAPPIEST_SELF_HOST_CONFIG_DIR = previous.HAPPIEST_SELF_HOST_CONFIG_DIR;
+    if (previous.HAPPIEST_SELF_HOST_DATA_DIR === undefined) delete process.env.HAPPIEST_SELF_HOST_DATA_DIR;
+    else process.env.HAPPIEST_SELF_HOST_DATA_DIR = previous.HAPPIEST_SELF_HOST_DATA_DIR;
+    if (previous.HAPPIEST_SELF_HOST_LOG_DIR === undefined) delete process.env.HAPPIEST_SELF_HOST_LOG_DIR;
+    else process.env.HAPPIEST_SELF_HOST_LOG_DIR = previous.HAPPIEST_SELF_HOST_LOG_DIR;
   }
 });
 
 test('resolveMinisignPublicKeyText prefers inline override and otherwise returns bundled key', () => {
   const bundled = resolveMinisignPublicKeyText({});
   assert.match(bundled, /minisign public key/i);
-  assert.equal(resolveMinisignPublicKeyText({ HAPPIER_MINISIGN_PUBKEY: 'hello' }), 'hello');
+  assert.equal(resolveMinisignPublicKeyText({ HAPPIEST_MINISIGN_PUBKEY: 'hello' }), 'hello');
 });
 
 test('renderServerEnvFile emits sqlite/local defaults for self-host mode', () => {

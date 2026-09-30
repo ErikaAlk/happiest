@@ -95,9 +95,9 @@ import { existsSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 
 const args = process.argv.slice(2);
-const home = process.env.HAPPIER_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
+const home = process.env.HAPPIEST_HOME_DIR || process.env.HAPPIER_STACK_CLI_HOME_DIR;
 if (!home) {
-  console.error('missing HAPPIER_HOME_DIR');
+  console.error('missing HAPPIEST_HOME_DIR');
   process.exit(2);
 }
 const log = join(home, 'stub-daemon.log');
@@ -130,8 +130,8 @@ if (sub === 'stop') {
 if (sub === 'start') {
   append('start');
   // Capture resolved target server so integration tests can assert correct stack port selection.
-  append('server_url=' + String(process.env.HAPPIER_SERVER_URL || ''));
-  append('webapp_url=' + String(process.env.HAPPIER_WEBAPP_URL || ''));
+  append('server_url=' + String(process.env.HAPPIEST_SERVER_URL || ''));
+  append('webapp_url=' + String(process.env.HAPPIEST_WEBAPP_URL || ''));
   append('direct_peer_bind_port=' + String(process.env.HAPPIER_MACHINE_TRANSFER_DIRECT_PEER_BIND_PORT || ''));
   append('direct_peer_advertised_hosts=' + String(process.env.HAPPIER_MACHINE_TRANSFER_DIRECT_PEER_ADVERTISED_HOSTS || ''));
   append('direct_peer_feature_enabled=' + String(process.env.HAPPIER_FEATURE_MACHINES_TRANSFER_DIRECT_PEER__ENABLED || ''));
@@ -390,7 +390,7 @@ test('hstack stack daemon <name> start with --identity accepts stack-stable serv
   const identityHome = join(fixture.storageDir, fixture.stackName, 'cli-identities', identity);
   const scopedEnv = {
     ...fixture.baseEnv,
-    HAPPIER_ACTIVE_SERVER_ID: buildStackStableScopeId({ stackName: fixture.stackName, cliIdentity: identity }),
+    HAPPIEST_ACTIVE_SERVER_ID: buildStackStableScopeId({ stackName: fixture.stackName, cliIdentity: identity }),
   };
   await writeServerScopedAuth({
     cliHomeDir: identityHome,
@@ -580,7 +580,7 @@ test('hstack stack daemon <name> start uses runtime server port when env port is
   );
 });
 
-test('hstack stack daemon <name> start uses explicit HAPPIER_SERVER_URL when env port and runtime port are missing', async (t) => {
+test('hstack stack daemon <name> start uses explicit HAPPIEST_SERVER_URL when env port and runtime port are missing', async (t) => {
   const fixture = await createDaemonFixture(t, {
     prefix: 'happy-stacks-stack-daemon-explicit-server-url-',
     stackName: 'exp-test',
@@ -597,7 +597,7 @@ test('hstack stack daemon <name> start uses explicit HAPPIER_SERVER_URL when env
     [
       `HAPPIER_STACK_REPO_DIR=${fixture.baseEnv.HAPPIER_STACK_WORKSPACE_DIR}/happier`,
       `HAPPIER_STACK_CLI_HOME_DIR=${fixture.stackCliHome}`,
-      `HAPPIER_SERVER_URL=http://127.0.0.1:${explicitPort}`,
+      `HAPPIEST_SERVER_URL=http://127.0.0.1:${explicitPort}`,
       `HAPPIER_WEBAPP_URL=http://happier-exp-test.localhost:${explicitPort}`,
       '',
     ].join('\n'),
@@ -607,13 +607,13 @@ test('hstack stack daemon <name> start uses explicit HAPPIER_SERVER_URL when env
   registerDaemonCleanup(t, { env: fixture.baseEnv, stackName: fixture.stackName });
 
   const startRes = await runHstack(['stack', 'daemon', fixture.stackName, 'start', '--json'], { env: fixture.baseEnv });
-  assertExitOk(startRes, 'stack daemon start uses explicit HAPPIER_SERVER_URL');
+  assertExitOk(startRes, 'stack daemon start uses explicit HAPPIEST_SERVER_URL');
 
   const logPath = join(fixture.stackCliHome, 'stub-daemon.log');
   const logText = await readLogText(logPath);
   assert.ok(
     logText.includes(`server_url=http://127.0.0.1:${explicitPort}`),
-    `expected daemon env to target explicit HAPPIER_SERVER_URL port ${explicitPort}\n${logText}`
+    `expected daemon env to target explicit HAPPIEST_SERVER_URL port ${explicitPort}\n${logText}`
   );
 });
 
@@ -664,7 +664,7 @@ test('hstack stack daemon <name> restart reuses persisted direct-peer topology e
   assert.match(appendedLog, /direct_peer_server_enabled=true/);
 });
 
-test('hstack stack auth <name> login --identity=<name> --print prints identity-scoped HAPPIER_HOME_DIR', async (t) => {
+test('hstack stack auth <name> login --identity=<name> --print prints identity-scoped HAPPIEST_HOME_DIR', async (t) => {
   const fixture = await createDaemonFixture(t, {
     prefix: 'happier-stack-auth-identity-',
     stackName: 'exp-test',
@@ -693,7 +693,7 @@ test('hstack stack auth <name> login --identity=<name> --print prints identity-s
   const parsed = JSON.parse(res.stdout.trim());
   assert.equal(parsed?.cliIdentity, identity);
   assert.ok(
-    parsed?.cmd?.includes(`HAPPIER_HOME_DIR="${join(fixture.storageDir, fixture.stackName, 'cli-identities', identity)}"`),
+    parsed?.cmd?.includes(`HAPPIEST_HOME_DIR="${join(fixture.storageDir, fixture.stackName, 'cli-identities', identity)}"`),
     `expected printed cmd to include identity home dir\n${parsed?.cmd}`
   );
   assert.ok(parsed?.cmd?.includes('--no-open'), `expected printed cmd to include --no-open\n${parsed?.cmd}`);

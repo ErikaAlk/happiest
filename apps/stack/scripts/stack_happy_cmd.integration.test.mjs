@@ -23,10 +23,10 @@ function buildStubHappyCliScript({ message, ignoreServerSet = false }) {
       `  args,`,
       `  stack: process.env.HAPPIER_STACK_STACK || null,`,
       `  envFile: process.env.HAPPIER_STACK_ENV_FILE || null,`,
-      `  homeDir: process.env.HAPPIER_HOME_DIR || null,`,
-      `  serverUrl: process.env.HAPPIER_SERVER_URL || null,`,
-      `  webappUrl: process.env.HAPPIER_WEBAPP_URL || null,`,
-      `  activeServerId: process.env.HAPPIER_ACTIVE_SERVER_ID || null,`,
+      `  homeDir: process.env.HAPPIEST_HOME_DIR || null,`,
+      `  serverUrl: process.env.HAPPIEST_SERVER_URL || null,`,
+      `  webappUrl: process.env.HAPPIEST_WEBAPP_URL || null,`,
+      `  activeServerId: process.env.HAPPIEST_ACTIVE_SERVER_ID || null,`,
       `}));`,
     ].join('\n');
 }
@@ -135,9 +135,9 @@ test('hstack stack happier <name> overrides pre-set HAPPIER_* env vars with stac
     cwd: rootDir,
     env: {
       ...fixture.baseEnv,
-      HAPPIER_HOME_DIR: join(fixture.storageDir, 'wrong', 'cli'),
-      HAPPIER_SERVER_URL: 'http://127.0.0.1:3005',
-      HAPPIER_WEBAPP_URL: 'http://wrong-webapp.example.test',
+      HAPPIEST_HOME_DIR: join(fixture.storageDir, 'wrong', 'cli'),
+      HAPPIEST_SERVER_URL: 'http://127.0.0.1:3005',
+      HAPPIEST_WEBAPP_URL: 'http://wrong-webapp.example.test',
     },
   });
   assert.equal(res.code, 0, `expected exit 0, got ${res.code}\nstdout:\n${res.stdout}\nstderr:\n${res.stderr}`);
@@ -218,7 +218,7 @@ test('hstack stack happier <name> delegates stack profile reconciliation to the 
 
   const out = JSON.parse(res.stdout.trim());
   assert.equal(out.message, 'seed-settings');
-  assert.ok(out.activeServerId, 'expected wrapper to export HAPPIER_ACTIVE_SERVER_ID');
+  assert.ok(out.activeServerId, 'expected wrapper to export HAPPIEST_ACTIVE_SERVER_ID');
 
   const serverSetCalls = (await readFile(serverSetCallsPath, 'utf-8')).trim().split('\n').map((line) => JSON.parse(line));
   assert.deepEqual(serverSetCalls, [[
@@ -403,7 +403,7 @@ test('hstack happier keeps the stable scope when another settings profile matche
   );
 });
 
-test('hstack stack happier <name> --identity=<name> uses identity-scoped HAPPIER_HOME_DIR', async (t) => {
+test('hstack stack happier <name> --identity=<name> uses identity-scoped HAPPIEST_HOME_DIR', async (t) => {
   const fixture = await createHappyStackFixture(t, {
     prefix: 'happier-stack-stack-happy-identity-',
     message: 'identity',

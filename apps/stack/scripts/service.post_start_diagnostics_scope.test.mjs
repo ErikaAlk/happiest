@@ -57,8 +57,8 @@ test('postStartDiagnostics reads the exact named-stack daemon lifecycle scope', 
     HAPPIER_STACK_CLI_IDENTITY: cliIdentity,
     HAPPIER_STACK_CLI_HOME_DIR: cliHomeDir,
     HAPPIER_STACK_SERVER_PORT: '43127',
-    HAPPIER_ACTIVE_SERVER_ID: 'named-endpoint-profile',
-    HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_ambient__id_default',
+    HAPPIEST_ACTIVE_SERVER_ID: 'named-endpoint-profile',
+    HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: 'stack_ambient__id_default',
   };
   await mkdir(stackHomeDir, { recursive: true });
   await writeFile(envPath, [
@@ -67,8 +67,8 @@ test('postStartDiagnostics reads the exact named-stack daemon lifecycle scope', 
     `HAPPIER_STACK_CLI_IDENTITY=${cliIdentity}`,
     `HAPPIER_STACK_CLI_HOME_DIR=${cliHomeDir}`,
     'HAPPIER_STACK_SERVER_PORT=43127',
-    'HAPPIER_ACTIVE_SERVER_ID=named-endpoint-profile',
-    'HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID=stack_ambient__id_default',
+    'HAPPIEST_ACTIVE_SERVER_ID=named-endpoint-profile',
+    'HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID=stack_ambient__id_default',
     '',
   ].join('\n'));
   const exactEnv = applyStackDaemonLifecycleScopeEnv({

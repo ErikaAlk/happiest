@@ -81,7 +81,7 @@ test('repo-local wrapper dry-run prints hstack invocation with repo-local env', 
   assert.ok(String(data.env.HAPPIER_STACK_STACK ?? '').trim() !== '', 'expected stackless wrapper to scope to a non-main stack name');
   assert.ok(String(data.env.HAPPIER_STACK_ENV_FILE ?? '').trim() !== '', 'expected wrapper to set a stack env file path for stack-scoped commands');
   assert.ok(String(data.env.HAPPIER_STACK_CLI_HOME_DIR ?? '').trim() !== '', 'expected wrapper to set a stack-scoped CLI home dir');
-  assert.ok(String(data.env.HAPPIER_ACTIVE_SERVER_ID ?? '').trim() !== '', 'expected wrapper to set a stack-scoped active server id');
+  assert.ok(String(data.env.HAPPIEST_ACTIVE_SERVER_ID ?? '').trim() !== '', 'expected wrapper to set a stack-scoped active server id');
   assert.ok(String(data.env.HAPPIER_STACK_LOG_TEE_DIR ?? '').trim() !== '', 'expected wrapper to set a stack-scoped log tee dir');
   assert.ok(String(data.env.HAPPIER_STACK_INVOKED_CWD ?? '').trim() !== '');
 });

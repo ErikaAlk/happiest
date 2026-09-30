@@ -1100,7 +1100,7 @@ async function cmdCopyFrom({ argv, json }) {
   };
 
   // IMPORTANT:
-  // Stack auth now uses stable server IDs (`HAPPIER_ACTIVE_SERVER_ID`) which are not persisted in stack env files.
+  // Stack auth now uses stable server IDs (`HAPPIEST_ACTIVE_SERVER_ID`) which are not persisted in stack env files.
   // Reconstruct the stable scope ID here so copy-from reads the same source credential path that login wrote.
   // copy-from must use stack-stable credential scope even if the caller shell leaked
   // rollback flags like HAPPIER_STACK_DISABLE_STABLE_SCOPE=1.
@@ -1637,10 +1637,10 @@ async function cmdLogin({ argv, json }) {
 
   let env = {
     ...process.env,
-    HAPPIER_HOME_DIR: cliHomeDir,
-    HAPPIER_SERVER_URL: internalServerUrl,
-    HAPPIER_PUBLIC_SERVER_URL: publicServerUrl,
-    ...(webappUrl ? { HAPPIER_WEBAPP_URL: webappUrl } : {}),
+    HAPPIEST_HOME_DIR: cliHomeDir,
+    HAPPIEST_SERVER_URL: internalServerUrl,
+    HAPPIEST_PUBLIC_SERVER_URL: publicServerUrl,
+    ...(webappUrl ? { HAPPIEST_WEBAPP_URL: webappUrl } : {}),
     ...(noOpen ? { HAPPIER_NO_BROWSER_OPEN: '1' } : {}),
     ...(method ? { HAPPIER_AUTH_METHOD: method } : {}),
     ...(force ? { HAPPIER_AUTH_FORCE: '1' } : {}),
@@ -1648,8 +1648,8 @@ async function cmdLogin({ argv, json }) {
   env = applyStackActiveServerScopeEnv({ env, stackName, cliIdentity: identity });
   const credentialPaths = resolveStackCredentialPaths({ cliHomeDir, serverUrl: internalServerUrl, env });
   const loginEnv =
-    credentialPaths.activeServerId && credentialPaths.activeServerId !== env.HAPPIER_ACTIVE_SERVER_ID
-      ? { ...env, HAPPIER_ACTIVE_SERVER_ID: credentialPaths.activeServerId }
+    credentialPaths.activeServerId && credentialPaths.activeServerId !== env.HAPPIEST_ACTIVE_SERVER_ID
+      ? { ...env, HAPPIEST_ACTIVE_SERVER_ID: credentialPaths.activeServerId }
       : env;
 
   const cliExecutable = await resolveStackAuthCliExecutable({ rootDir, env: loginEnv });
@@ -1669,11 +1669,11 @@ async function cmdLogin({ argv, json }) {
 
   if (wantPrint) {
     const cmd =
-      `HAPPIER_HOME_DIR="${cliHomeDir}" ` +
-      `HAPPIER_SERVER_URL="${internalServerUrl}" ` +
-      `HAPPIER_PUBLIC_SERVER_URL="${publicServerUrl}" ` +
-      (loginEnv.HAPPIER_ACTIVE_SERVER_ID ? `HAPPIER_ACTIVE_SERVER_ID="${loginEnv.HAPPIER_ACTIVE_SERVER_ID}" ` : '') +
-      (webappUrl ? `HAPPIER_WEBAPP_URL="${webappUrl}" ` : '') +
+      `HAPPIEST_HOME_DIR="${cliHomeDir}" ` +
+      `HAPPIEST_SERVER_URL="${internalServerUrl}" ` +
+      `HAPPIEST_PUBLIC_SERVER_URL="${publicServerUrl}" ` +
+      (loginEnv.HAPPIEST_ACTIVE_SERVER_ID ? `HAPPIEST_ACTIVE_SERVER_ID="${loginEnv.HAPPIEST_ACTIVE_SERVER_ID}" ` : '') +
+      (webappUrl ? `HAPPIEST_WEBAPP_URL="${webappUrl}" ` : '') +
       (noOpen ? `HAPPIER_NO_BROWSER_OPEN="1" ` : '') +
       (method ? `HAPPIER_AUTH_METHOD="${method}" ` : '') +
       `"${loginCommand}" ${loginArgs.map((arg) => `"${arg}"`).join(' ')}`;
@@ -1909,7 +1909,7 @@ async function cmdLogin({ argv, json }) {
             `[auth] ${stackName}: Expo web UI is not ready yet.\n` +
               `[auth] Falling back to hosted web app (${HOSTED_WEBAPP_URL}) for the approval UI (targets: ${publicServerUrl}).`
           );
-          const hostedEnv = { ...scopedEnv, HAPPIER_WEBAPP_URL: HOSTED_WEBAPP_URL };
+          const hostedEnv = { ...scopedEnv, HAPPIEST_WEBAPP_URL: HOSTED_WEBAPP_URL };
           await runLogin(hostedEnv);
           webappUrlForDaemon = HOSTED_WEBAPP_URL;
           break;
@@ -1942,7 +1942,7 @@ async function cmdLogin({ argv, json }) {
           console.error(
             `[auth] ${stackName}: falling back to hosted web app (${HOSTED_WEBAPP_URL}) for the approval UI (targets: ${publicServerUrl}).`
           );
-          const hostedEnv = { ...scopedEnv, HAPPIER_WEBAPP_URL: HOSTED_WEBAPP_URL };
+          const hostedEnv = { ...scopedEnv, HAPPIEST_WEBAPP_URL: HOSTED_WEBAPP_URL };
           await runLogin(hostedEnv);
           webappUrlForDaemon = HOSTED_WEBAPP_URL;
           break;
