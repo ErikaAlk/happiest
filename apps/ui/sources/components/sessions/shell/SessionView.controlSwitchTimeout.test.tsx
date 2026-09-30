@@ -136,11 +136,6 @@ installSessionShellCommonModuleMocks({
   },
 });
 
-vi.mock('@react-navigation/native', () => ({
-  useFocusEffect: () => {},
-  useIsFocused: () => true,
-}));
-
 vi.mock('@/auth/context/AuthContext', () => ({
   useAuth: () => ({ credentials: { token: 't', secret: 's' } }),
 }));

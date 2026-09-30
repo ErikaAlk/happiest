@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View, Platform, StatusBar, Pressable, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import type { NativeStackHeaderProps } from '@react-navigation/native-stack';
+import type { NativeStackHeaderProps } from 'expo-router';
 import { useLayoutMaxWidth } from '../ui/layout/layout';
 import { useHeaderHeight } from '@/utils/platform/responsive';
 import { Typography } from '@/constants/Typography';
@@ -132,6 +132,10 @@ const NavigationHeaderComponent: React.FC<NativeStackHeaderProps> = React.memo((
     const extendedOptions = options as ExtendedNavigationOptions;
     const { theme } = useUnistyles();
     const headerTintColor = options.headerTintColor ?? theme.colors.chrome.header.foreground;
+    // Screen options pass theme color strings; the back glyph renders through Icon's string color.
+    if (typeof headerTintColor !== 'string') {
+        throw new Error(`Header tint color must be a color string, got ${typeof headerTintColor}`);
+    }
 
     // Extract title - handle both string and function types
     let title: React.ReactNode | null = null;

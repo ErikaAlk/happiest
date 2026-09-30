@@ -49,7 +49,7 @@ async function deleteNativeFileSafe(): Promise<void> {
 async function writeNativeFileSafe(payload: string): Promise<void> {
   const file = getNativeFile();
   if (!file) return;
-  file.write(payload);
+  await file.write(payload);
 }
 
 function getNativeFile(): File | null {

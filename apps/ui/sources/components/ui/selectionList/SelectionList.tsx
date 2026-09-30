@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
     Platform,
     type LayoutChangeEvent,
-    TextInput as RNTextInput,
+    type TextInputInstance,
     View,
     type StyleProp,
     type ViewStyle,
@@ -141,7 +141,7 @@ export function SelectionList(props: SelectionListProps): React.ReactElement {
     // stay in the SelectionList-level mode. Falls back to the prop, then 'search'.
     const inputMode = currentStep.inputMode ?? props.inputMode ?? 'search';
     const inputBehavior = props.inputBehavior;
-    const searchInputRef = React.useRef<RNTextInput | null>(null);
+    const searchInputRef = React.useRef<TextInputInstance | null>(null);
 
     // Input-attention signal: a `requiresInputValue` row (e.g. the worktree
     // "type a name" row while empty) asks to focus + shake the input rather than

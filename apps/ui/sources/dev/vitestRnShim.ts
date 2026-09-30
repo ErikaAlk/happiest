@@ -10,8 +10,12 @@ type NodeModuleWithLoader = {
     _extensions?: Record<string, (mod: { exports: unknown }, filename: string) => void>;
 };
 
+type NodeRequire = ((id: string) => unknown) & Readonly<{
+    resolve: (id: string) => string;
+}>;
+
 type NodeBuiltinModule = Readonly<{
-    createRequire: (filename: string | URL) => (id: string) => unknown;
+    createRequire: (filename: string | URL) => NodeRequire;
 }>;
 
 type NodeBuiltinPath = Readonly<{
@@ -44,6 +48,10 @@ function hasAssetExtension(path: string): boolean {
 function isAllowedAliasRequire(aliasPath: string): boolean {
     if (hasAssetExtension(aliasPath)) return true;
     return ALIAS_REQUIRE_ALLOWLIST.some((prefix) => aliasPath.startsWith(prefix));
+}
+
+function isReactRuntimePeerRequest(request: string): boolean {
+    return /^(?:react|react-dom)(?:\/|$)/.test(request);
 }
 
 function isExpoModulesCoreSourcePath(request: string): boolean {
@@ -113,6 +121,12 @@ export function installVitestRnShim(options: VitestRnShimOptions = {}): void {
                     if (recentLoads.length > 250) recentLoads.shift();
                 }
 
+                // Mirrors metro.config.js: the root `nohoist` leaves hoisted dependencies with nested
+                // copies of the app's React peers, and a second React instance breaks every hook
+                // rendered through it. Resolve them from the app, as Metro does.
+                if (isReactRuntimePeerRequest(request)) {
+                    return originalLoad.call(this, nodeRequire.resolve(request), ...args.slice(1));
+                }
                 if (request === 'react-native') return reactNativeRootStub;
                 if (request.startsWith('react-native/')) return reactNativeInternalProxy;
                 if (

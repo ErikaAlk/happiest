@@ -10,6 +10,7 @@ import {
 } from './mcpServersTestHelpers';
 import { createPartialStorageModuleMock } from '@/dev/testkit/createPartialStorageModuleMock';
 import { findTestInstanceByTypeContainingText, renderScreen } from '@/dev/testkit/render/renderScreen';
+import type { PreventRemoveCallback } from '@/dev/testkit/mocks/router';
 import type { SavedSecret } from '@/sync/domains/settings/savedSecretTypes';
 import type { promptUnsavedChangesAlert } from '@/utils/ui/promptUnsavedChangesAlert';
 
@@ -29,7 +30,10 @@ const routerBackSpy = vi.fn();
 const routerReplaceSpy = vi.fn();
 const navigationDispatchSpy = vi.fn();
 const navigationSetOptionsSpy = vi.fn();
-const navigationBeforeRemoveHandlers: Array<(event: any) => void | Promise<void>> = [];
+const preventRemoveRegistrations: Array<Readonly<{
+    preventRemove: boolean;
+    callback: PreventRemoveCallback | undefined;
+}>> = [];
 const promptUnsavedChangesAlertSpy = vi.hoisted(
     () => vi.fn<typeof promptUnsavedChangesAlert>(),
 );
@@ -96,7 +100,7 @@ function resetLiveSettings() {
     modalConfirmSpy.mockReset();
     navigationDispatchSpy.mockReset();
     navigationSetOptionsSpy.mockReset();
-    navigationBeforeRemoveHandlers.length = 0;
+    preventRemoveRegistrations.length = 0;
     promptUnsavedChangesAlertSpy.mockReset();
     promptUnsavedChangesAlertSpy.mockResolvedValue('discard');
 }
@@ -136,12 +140,9 @@ const mcpServersCommonModuleMockOptions = {
                 canGoBack: () => navigationCanGoBack,
                 dispatch: navigationDispatchSpy,
                 setOptions: navigationSetOptionsSpy,
-                addListener: (event: string, handler: (evt: any) => void | Promise<void>) => {
-                    if (event === 'beforeRemove') {
-                        navigationBeforeRemoveHandlers.push(handler);
-                    }
-                    return () => {};
-                },
+            },
+            onPreventRemove: (preventRemove, callback) => {
+                preventRemoveRegistrations.push({ preventRemove, callback });
             },
         });
 
@@ -288,11 +289,14 @@ describe('McpServerEditorScreen', () => {
             .find((options) => options && typeof options === 'object' && 'headerRight' in options) as any;
         expect(initialHeaderRightCall).toBeTruthy();
 
+        expect(preventRemoveRegistrations.at(-1)?.preventRemove).toBe(false);
+
         await act(async () => {
             screen.changeTextByTestId('mcp.server.editor.name', 'server_edited');
         });
 
-        expect(navigationBeforeRemoveHandlers.length).toBeGreaterThan(0);
+        const registration = preventRemoveRegistrations.at(-1);
+        expect(registration?.preventRemove).toBe(true);
 
         const lastHeaderRightCall = navigationSetOptionsSpy.mock.calls
             .map((call) => call[0])
@@ -304,22 +308,14 @@ describe('McpServerEditorScreen', () => {
         expect(React.isValidElement(headerRightNode)).toBe(true);
         expect((headerRightNode as any).props.disabled).toBe(false);
 
-        const preventDefaultSpy = vi.fn();
-        const action = { type: 'GO_BACK' };
-
-        const beforeRemove = navigationBeforeRemoveHandlers[navigationBeforeRemoveHandlers.length - 1];
-
+        const repeat = vi.fn();
         await act(async () => {
-            await beforeRemove?.({
-                preventDefault: preventDefaultSpy,
-                data: { action },
-            });
+            registration?.callback?.({ data: { action: { type: 'GO_BACK' } }, repeat });
             await flushHookEffects({ cycles: 1, turns: 3 });
         });
 
-        expect(preventDefaultSpy).toHaveBeenCalled();
         expect(promptUnsavedChangesAlertSpy).toHaveBeenCalled();
-        expect(navigationDispatchSpy).toHaveBeenCalledWith(action);
+        expect(repeat).toHaveBeenCalledTimes(1);
     });
 
     it('saves the draft before completing navigation when the user chooses save in the unsaved-changes prompt', async () => {
@@ -331,22 +327,38 @@ describe('McpServerEditorScreen', () => {
             screen.changeTextByTestId('mcp.server.editor.name', 'server_edited');
         });
 
-        const preventDefaultSpy = vi.fn();
-        const action = { type: 'GO_BACK' };
-        const beforeRemove = navigationBeforeRemoveHandlers[navigationBeforeRemoveHandlers.length - 1];
+        const registration = preventRemoveRegistrations.at(-1);
+        expect(registration?.preventRemove).toBe(true);
 
+        const repeat = vi.fn();
         await act(async () => {
-            await beforeRemove?.({
-                preventDefault: preventDefaultSpy,
-                data: { action },
-            });
+            registration?.callback?.({ data: { action: { type: 'GO_BACK' } }, repeat });
             await flushHookEffects({ cycles: 1, turns: 3 });
         });
 
-        expect(preventDefaultSpy).toHaveBeenCalled();
         expect(promptUnsavedChangesAlertSpy).toHaveBeenCalled();
         expect(setMcpSettingsSpy).toHaveBeenCalled();
-        expect(navigationDispatchSpy).toHaveBeenCalledWith(action);
+        expect(repeat).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps the screen when the user keeps editing from the unsaved-changes prompt', async () => {
+        promptUnsavedChangesAlertSpy.mockResolvedValueOnce('keepEditing');
+
+        const screen = await renderEditorScreen();
+
+        await act(async () => {
+            screen.changeTextByTestId('mcp.server.editor.name', 'server_edited');
+        });
+
+        const repeat = vi.fn();
+        await act(async () => {
+            preventRemoveRegistrations.at(-1)?.callback?.({ data: { action: { type: 'GO_BACK' } }, repeat });
+            await flushHookEffects({ cycles: 1, turns: 3 });
+        });
+
+        expect(promptUnsavedChangesAlertSpy).toHaveBeenCalled();
+        expect(setMcpSettingsSpy).not.toHaveBeenCalled();
+        expect(repeat).not.toHaveBeenCalled();
     });
 
     it('falls back to the MCP settings screen after delete when there is no back stack entry', async () => {

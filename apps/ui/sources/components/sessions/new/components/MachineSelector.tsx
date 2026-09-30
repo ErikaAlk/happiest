@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, type View as RNView } from 'react-native';
+import { Pressable, type ViewInstance } from 'react-native';
 import { useUnistyles } from 'react-native-unistyles';
 import { SearchableListSelector } from '@/components/ui/forms/SearchableListSelector';
 import { DropdownMenu, type DropdownMenuItem } from '@/components/ui/forms/dropdown/DropdownMenu';
@@ -51,7 +51,7 @@ export interface MachineSelectorProps {
     dropdownTitle?: string;
     dropdownSubtitle?: string | null;
     dropdownTestID?: string;
-    popoverBoundaryRef?: React.RefObject<RNView> | null;
+    popoverBoundaryRef?: React.RefObject<ViewInstance | null> | null;
 }
 
 export function MachineSelector({

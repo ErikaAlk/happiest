@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 import { describe, expect, it, vi } from 'vitest';
 
 import { renderScreen } from '@/dev/testkit';
@@ -191,7 +191,7 @@ describe('AgentInputOverlayLayer presentation routing', () => {
         resetCaptures();
 
         const { AgentInputOverlayLayer } = await import('./AgentInputOverlayLayer');
-        const explicitBoundaryRef = React.createRef<View>();
+        const explicitBoundaryRef = React.createRef<ViewInstance>();
 
         await renderScreen(
             <AgentInputOverlayLayer

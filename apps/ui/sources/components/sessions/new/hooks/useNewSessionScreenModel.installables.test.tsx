@@ -259,9 +259,6 @@ installNewSessionScreenModelCommonModuleMocks({
             Dimensions: {
                 get: () => ({ width: 900, height: 800 }),
             },
-            InteractionManager: {
-                runAfterInteractions: () => ({ cancel: () => {} }),
-            },
             useWindowDimensions: () => ({ width: 900, height: 800 }),
         });
     },
@@ -353,11 +350,6 @@ vi.mock('@/utils/platform/responsive', () => ({
 
 vi.mock('@expo/vector-icons', () => ({
     Ionicons: 'Ionicons',
-}));
-
-vi.mock('@react-navigation/native', () => ({
-    useIsFocused: () => true,
-    useFocusEffect: (_fn: any) => {},
 }));
 
 vi.mock('@/sync/sync', () => ({

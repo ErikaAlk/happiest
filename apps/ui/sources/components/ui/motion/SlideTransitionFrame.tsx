@@ -37,7 +37,7 @@ const stylesheet = StyleSheet.create({
         minHeight: 0,
     },
     overlayLayer: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
     },
 });
 

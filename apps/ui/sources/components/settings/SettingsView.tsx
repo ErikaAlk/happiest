@@ -2,8 +2,7 @@ import { View, Pressable, Platform, Linking, useWindowDimensions } from 'react-n
 import { Image } from 'expo-image';
 import * as React from 'react';
 import { Text } from '@/components/ui/text/Text';
-import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useRouter } from 'expo-router';
 import Constants from 'expo-constants';
 import { Typography } from "@/constants/Typography";
 import { Item } from '@/components/ui/lists/Item';

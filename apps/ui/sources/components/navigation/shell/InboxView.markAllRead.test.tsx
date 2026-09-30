@@ -220,11 +220,6 @@ vi.mock('@/sync/ops', async (importOriginal) => {
 });
 
 vi.mock('expo-image', () => ({ Image: 'Image' }));
-vi.mock('react-native-gesture-handler', () => ({
-    Swipeable: React.forwardRef(({ children, ...props }: any, _ref) => (
-        React.createElement('Swipeable', props, children)
-    )),
-}));
 vi.mock('@expo/vector-icons', () => ({ Ionicons: 'Ionicons', Octicons: 'Octicons' }));
 vi.mock('@/track', () => ({ trackFriendsProfileView: vi.fn() }));
 vi.mock('@/components/ui/text/Text', () => ({ Text: 'Text' }));

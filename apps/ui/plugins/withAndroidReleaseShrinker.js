@@ -36,12 +36,10 @@ function applyAndroidReleaseShrinkerSettingsToGradleProperties(
     );
   }
 
-  if (minifyEnabled) {
-    upsertGradleProperty(props, 'android.enableMinifyInReleaseBuilds', 'true');
-  }
-  if (shrinkEnabled) {
-    upsertGradleProperty(props, 'android.enableShrinkResourcesInReleaseBuilds', 'true');
-  }
+  // The prebuild template ships `android.enableMinifyInReleaseBuilds=true`, so both values are
+  // always written to keep this plugin the single owner of the release shrinker decision.
+  upsertGradleProperty(props, 'android.enableMinifyInReleaseBuilds', String(minifyEnabled));
+  upsertGradleProperty(props, 'android.enableShrinkResourcesInReleaseBuilds', String(shrinkEnabled));
   if (typeof gradleJvmArgs === 'string' && gradleJvmArgs.trim()) {
     // R8 can be memory hungry; allow release build profiles to raise the heap.
     upsertGradleProperty(props, 'org.gradle.jvmargs', gradleJvmArgs.trim());

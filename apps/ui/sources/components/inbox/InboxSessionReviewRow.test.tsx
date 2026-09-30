@@ -21,12 +21,6 @@ vi.mock('react-native', async () => {
     };
 });
 
-vi.mock('react-native-gesture-handler', () => ({
-    Swipeable: React.forwardRef(({ children, ...props }: any, _ref) => (
-        React.createElement('Swipeable', props, children)
-    )),
-}));
-
 vi.mock('react-native-unistyles', async () => {
     const { createUnistylesMock } = await import('@/dev/testkit/mocks/unistyles');
     return createUnistylesMock();

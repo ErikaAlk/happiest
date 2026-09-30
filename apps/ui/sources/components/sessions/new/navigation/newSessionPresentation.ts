@@ -11,7 +11,7 @@
  *
  * Both are "Over" presentation styles (`UIModalPresentationOverFullScreen` and
  * `UIModalPresentationOverCurrentContext`), and both are the ONLY two presentations for which
- * `@react-navigation/native-stack` omits the opaque `contentStyle` background — which is what lets
+ * the native stack omits the opaque `contentStyle` background — which is what lets
  * the screen paint its own frosted backdrop at all.
  *
  * The contained one is nevertheless the wrong choice here. `resolvePortalRelativeAnchorRect` exists

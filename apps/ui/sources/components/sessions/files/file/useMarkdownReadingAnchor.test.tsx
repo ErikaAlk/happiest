@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { NativeScrollEvent, NativeSyntheticEvent, ScrollView } from 'react-native';
+import type { NativeScrollEvent, NativeSyntheticEvent, ScrollViewInstance } from 'react-native';
 import { renderHook } from '@/dev/testkit';
 import { splitMarkdownRenderSegments } from '@/components/markdown/rendering/splitMarkdownRenderSegments';
 import { useMarkdownReadingAnchor } from './useMarkdownReadingAnchor';
@@ -13,7 +13,7 @@ describe('Markdown file reading continuity', () => {
         const anchor = hook.getCurrent();
         const scrollTo = vi.fn();
         // The ScrollView imperative handle is the native/web platform boundary.
-        anchor.scrollRef.current = { scrollTo } as unknown as ScrollView;
+        anchor.scrollRef.current = { scrollTo } as unknown as ScrollViewInstance;
         const original = ranges('# Heading\n\nReading paragraph.\n\nNext paragraph.');
         anchor.observer.onRanges(original);
         original.forEach((range, index) => anchor.observer.onLayout(range, { y: index * 100, height: 100 }));
@@ -43,7 +43,7 @@ describe('Markdown file reading continuity', () => {
     it('resets the passage on file identity changes', async () => {
         const hook = await renderHook((identity: string) => useMarkdownReadingAnchor(identity, 16), { initialProps: 'session:first' });
         const scrollTo = vi.fn();
-        hook.getCurrent().scrollRef.current = { scrollTo } as unknown as ScrollView;
+        hook.getCurrent().scrollRef.current = { scrollTo } as unknown as ScrollViewInstance;
         const original = ranges('# Heading\n\nReading paragraph.');
         hook.getCurrent().observer.onRanges(original);
         original.forEach((range, index) => hook.getCurrent().observer.onLayout(range, { y: index * 100, height: 100 }));

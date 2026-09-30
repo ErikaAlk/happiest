@@ -61,9 +61,10 @@ const draftRepositoryHarness = vi.hoisted(() => {
   };
 });
 
-vi.mock('@react-navigation/native', () => ({
-  useIsFocused: () => isFocused,
-}));
+vi.mock('expo-router', async () => {
+  const { createExpoRouterMock } = await import('@/dev/testkit/mocks/router');
+  return createExpoRouterMock({ isFocused: () => isFocused }).module;
+});
 
 vi.mock('react-native', async () => {
     const { createReactNativeWebMock } = await import('@/dev/testkit/mocks/reactNative');

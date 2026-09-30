@@ -1,4 +1,6 @@
-import { InteractionManager, Platform } from 'react-native';
+import { Platform } from 'react-native';
+
+import { runAfterInteractionsWithFallback } from '@/utils/timing/runAfterInteractionsWithFallback';
 
 type PendingFlushTimer = ReturnType<typeof setTimeout>;
 
@@ -37,7 +39,7 @@ export function scheduleDebouncedPendingSettingsFlush({
             if (Platform.OS === 'web') {
                 flush();
             } else {
-                InteractionManager.runAfterInteractions(flush);
+                runAfterInteractionsWithFallback(flush);
             }
         }, delayMs),
     );

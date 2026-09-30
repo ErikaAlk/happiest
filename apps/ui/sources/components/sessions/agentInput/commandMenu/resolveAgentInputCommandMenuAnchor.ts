@@ -1,5 +1,5 @@
 import type * as React from 'react';
-import type { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 
 import type { CommandMenuAnchor } from '@/components/ui/commandMenu';
 import type { CaretRect } from '@/hooks/ui/textInputCaretRect';
@@ -22,7 +22,7 @@ import type { CaretRect } from '@/hooks/ui/textInputCaretRect';
  */
 export function resolveAgentInputCommandMenuAnchor(
     caretRect: CaretRect | null,
-    composerAnchorRef: React.RefObject<View | null>,
+    composerAnchorRef: React.RefObject<ViewInstance | null>,
 ): CommandMenuAnchor {
     if (caretRect !== null) {
         return {

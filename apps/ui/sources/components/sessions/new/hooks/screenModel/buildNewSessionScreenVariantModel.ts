@@ -1,4 +1,4 @@
-import type { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 
 import type { NewSessionSimplePanelProps } from '@/components/sessions/new/components/NewSessionSimplePanel';
 import type { NewSessionWizardProfilesProps } from '@/components/sessions/new/components/NewSessionWizard';
@@ -10,7 +10,7 @@ import type {
 } from '@/components/sessions/new/hooks/newSessionScreenModelTypes';
 export function buildNewSessionScreenVariantModel(params: Readonly<{
     useEnhancedSessionWizard: boolean;
-    popoverBoundaryRef: React.RefObject<View>;
+    popoverBoundaryRef: React.RefObject<ViewInstance | null>;
     simplePanelProps: NewSessionSimplePanelProps;
     checkoutCreationDraft: NewSessionCheckoutCreationDraft | null;
     setCheckoutCreationDraft: React.Dispatch<React.SetStateAction<NewSessionCheckoutCreationDraft | null>>;

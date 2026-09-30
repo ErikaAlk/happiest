@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pressable, View, type View as ViewInstance } from 'react-native';
+import { Pressable, View, type ViewInstance } from 'react-native';
 
 import type { AgentId } from '@/agents/catalog/catalog';
 import { AgentIcon } from '@/agents/registry/AgentIcon';

@@ -243,15 +243,6 @@ vi.mock('@/auth/context/AuthContext', () => {
     };
 });
 
-vi.mock('@react-navigation/native', () => {
-    const React = require('react');
-    return {
-        ThemeProvider: ({ children }: { children: React.ReactNode }) => React.createElement('ThemeProvider', null, children),
-        DarkTheme: { colors: {} },
-        DefaultTheme: { colors: {} },
-    };
-});
-
 vi.mock('react-native-keyboard-controller', () => {
     const React = require('react');
     return {

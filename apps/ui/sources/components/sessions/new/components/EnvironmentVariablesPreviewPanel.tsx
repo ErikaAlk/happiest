@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, Pressable, Platform, useWindowDimensions } from 'react-native';
+import { View, ScrollView, Pressable, Platform, useWindowDimensions, type ScrollViewInstance } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { Typography } from '@/constants/Typography';
@@ -105,7 +105,7 @@ export function EnvironmentVariablesPreviewPanel(props: EnvironmentVariablesPrev
     const { theme } = useUnistyles();
     const styles = stylesheet;
     const { height: windowHeight } = useWindowDimensions();
-    const scrollRef = React.useRef<ScrollView>(null);
+    const scrollRef = React.useRef<ScrollViewInstance>(null);
     const surfaceVariant = props.surfaceVariant ?? 'modal';
 
     const wheelScrollHandlers = useScrollViewWheelScrollTo(scrollRef, {

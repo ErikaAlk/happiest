@@ -44,7 +44,6 @@ installSettingsViewCommonModuleMocks({
 });
 
 vi.mock('expo-image', () => ({ Image: 'Image' }));
-vi.mock('@react-navigation/native', () => ({ useFocusEffect: (_callback: () => void) => {} }));
 vi.mock('expo-constants', () => ({ default: { expoConfig: { version: '0.0.0-test' } } }));
 vi.mock('@/constants/Typography', () => ({ Typography: { default: () => ({}), mono: () => ({}) } }));
 vi.mock('@/components/ui/lists/ItemList', () => ({

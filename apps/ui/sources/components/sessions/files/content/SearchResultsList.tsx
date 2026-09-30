@@ -84,7 +84,7 @@ export const SearchResultsList = React.memo(({
                     {isSearching ? ` · ${t('files.searching')}` : null}
                 </Text>
             </View>
-        ) : null
+        ) : undefined
     ), [
         showsPreviousResults,
         isSearching,

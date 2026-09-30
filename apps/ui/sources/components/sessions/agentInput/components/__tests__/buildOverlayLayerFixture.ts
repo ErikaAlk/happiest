@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 
 import type { AgentInputOverlayLayer } from '../AgentInputOverlayLayer';
 import type { PermissionModePickerStyles } from '../permissionModePickerStyles';
@@ -15,8 +15,8 @@ import type { PermissionModePickerStyles } from '../permissionModePickerStyles';
  */
 export type AgentInputOverlayLayerProps = React.ComponentProps<typeof AgentInputOverlayLayer>;
 
-function noopRef(): React.RefObject<View | null> {
-    return { current: null } as React.RefObject<View | null>;
+function noopRef(): React.RefObject<ViewInstance | null> {
+    return { current: null } as React.RefObject<ViewInstance | null>;
 }
 
 function buildDefaultOverlayLayerFixture(): AgentInputOverlayLayerProps {

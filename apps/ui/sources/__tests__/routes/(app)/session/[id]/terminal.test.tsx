@@ -46,10 +46,6 @@ let scopeState: any = {
     details: null,
 };
 
-vi.mock('@react-navigation/native', () => ({
-    useIsFocused: () => isFocused,
-}));
-
 installSessionRouteCommonModuleMocks({
     safeAreaInsets: () => safeAreaInsets,
     reactNative: async () => {
@@ -62,6 +58,7 @@ installSessionRouteCommonModuleMocks({
     router: async () => {
         const { createExpoRouterMock } = await import('@/dev/testkit/mocks/router');
         const routerMock = createExpoRouterMock({
+            isFocused: () => isFocused,
             router: {
                 back: routerBackSpy,
                 push: routerPushSpy,

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, View, ViewStyle, StyleProp, TextStyle } from 'react-native';
+import { Platform, View, ViewStyle, StyleProp, TextStyle, type ViewInstance } from 'react-native';
 import { useUnistyles } from 'react-native-unistyles';
 
 import { Popover, type PopoverAnchor, type PopoverPlacement } from '@/components/ui/popover';
@@ -208,7 +208,7 @@ export type DropdownMenuProps = Readonly<{
 
 export function DropdownMenu(props: DropdownMenuProps) {
     const { theme } = useUnistyles();
-    const anchorRef = React.useRef<View>(null);
+    const anchorRef = React.useRef<ViewInstance>(null);
     const resolvedAnchorRef = props.popoverAnchorRef ?? anchorRef;
     const [activeSubmenu, setActiveSubmenu] = React.useState<{
         itemId: string;

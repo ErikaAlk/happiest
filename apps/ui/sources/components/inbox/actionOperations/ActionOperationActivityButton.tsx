@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, Pressable, View } from 'react-native';
+import { Platform, Pressable, View, type ViewInstance } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import type { ActionOperationSnapshotV1 } from '@happier-dev/protocol';
 
@@ -36,7 +36,7 @@ export type ActionOperationActivityButtonViewProps = Readonly<{
 }>;
 
 type ActionOperationActivityPopoverPlacement = Readonly<{
-    anchorRef: React.RefObject<View | null>;
+    anchorRef: React.RefObject<ViewInstance | null>;
     anchor: Readonly<{
         kind: 'rect';
         rect: Readonly<{ left: number; top: number; width: number; height: number }>;
@@ -59,7 +59,7 @@ const ActionOperationActivityButtonChrome = React.memo(function ActionOperationA
     props: ActionOperationActivityButtonChromeProps,
 ) {
     const { theme } = useUnistyles();
-    const anchorRef = React.useRef<View>(null);
+    const anchorRef = React.useRef<ViewInstance>(null);
     const [open, setOpen] = React.useState(false);
     const [webAnchorRect, setWebAnchorRect] = React.useState<Readonly<{
         left: number;

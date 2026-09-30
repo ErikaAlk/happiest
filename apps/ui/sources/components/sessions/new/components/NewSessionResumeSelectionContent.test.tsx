@@ -23,12 +23,6 @@ installNewSessionComponentsCommonModuleMocks({
                 OS: 'ios',
                 select: <T,>(values: { ios?: T; default?: T }) => values.ios ?? values.default,
             },
-            InteractionManager: {
-                runAfterInteractions: (cb: () => void) => {
-                    cb();
-                    return { cancel: () => undefined };
-                },
-            },
         });
     },
     text: () => createTextModuleMock({ translate: (key) => key }),
@@ -56,10 +50,6 @@ installNewSessionComponentsCommonModuleMocks({
         },
     }),
 });
-
-vi.mock('@react-navigation/native', () => ({
-    useFocusEffect: () => undefined,
-}));
 
 vi.mock('@/components/ui/lists/ItemGroup', () => createPassThroughModule(['ItemGroup']));
 vi.mock('@/components/ui/lists/ItemList', () => createPassThroughModule(['ItemList']));

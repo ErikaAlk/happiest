@@ -33,7 +33,7 @@ export const ShimmerView = React.memo<ShimmerViewProps>(({
 }) => {
     const { theme } = useUnistyles();
     const shimmerTranslate = useSharedValue(0);
-    const containerRef = useAnimatedRef<View>();
+    const containerRef = useAnimatedRef();
 
     const resolvedShimmerColors = React.useMemo<readonly [string, string, ...string[]]>(() => {
         if (shimmerColors && shimmerColors.length >= 2) return shimmerColors as readonly [string, string, ...string[]];

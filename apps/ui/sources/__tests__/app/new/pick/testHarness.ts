@@ -58,7 +58,6 @@ type PickerCommonModuleMocksOptions = Readonly<{
     expoRouter?: PickerModuleFactory;
     itemList?: PickerModuleFactory;
     modal?: PickerModuleFactory;
-    reactNavigationNative?: PickerModuleFactory;
     reactNative?: PickerModuleFactory;
     vectorIcons?: PickerModuleFactory;
     storage?: PickerStorageModuleFactory;
@@ -98,15 +97,6 @@ export function installPickerCommonModuleMocks(options: PickerCommonModuleMocksO
         }
         const { createExpoRouterMock } = await import('@/dev/testkit/mocks/router');
         return createExpoRouterMock().module;
-    });
-
-    vi.mock('@react-navigation/native', async () => {
-        const activeOptions = pickerCommonModuleMocksState.options;
-        if (activeOptions.reactNavigationNative) {
-            return await activeOptions.reactNavigationNative();
-        }
-        const { createReactNavigationNativeMock } = await import('@/dev/testkit/mocks/reactNavigation');
-        return createReactNavigationNativeMock();
     });
 
     vi.mock('@expo/vector-icons', async () => {

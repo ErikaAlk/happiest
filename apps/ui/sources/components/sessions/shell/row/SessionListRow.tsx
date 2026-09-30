@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, View } from 'react-native';
+import { Platform, View, type ViewInstance } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { GestureDetector } from 'react-native-gesture-handler';
 
@@ -66,7 +66,7 @@ export const SessionListRow = React.memo(function SessionListRow(props: SessionL
         ...itemProps
     } = props;
 
-    const wrapperRef = React.useRef<View>(null);
+    const wrapperRef = React.useRef<ViewInstance>(null);
 
     const getCellWrapper = React.useCallback((): HTMLElement | null => {
         if (Platform.OS !== 'web') return null;

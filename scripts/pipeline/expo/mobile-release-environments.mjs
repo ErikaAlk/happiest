@@ -220,6 +220,17 @@ export function resolveMobileBuildNodeEnvironment(environment) {
 }
 
 /**
+ * Expo CLI 58 forces NODE_ENV=production for every export, so non-production bundles keep
+ * their console output through the explicit Babel flag instead of an inherited NODE_ENV.
+ *
+ * @param {MobileReleaseEnvironment} environment
+ * @returns {{ HAPPIER_UI_KEEP_CONSOLE_IN_RELEASE?: '1' }}
+ */
+export function resolveMobileBundleConsoleEnv(environment) {
+  return environment === 'production' ? {} : { HAPPIER_UI_KEEP_CONSOLE_IN_RELEASE: '1' };
+}
+
+/**
  * @param {MobileReleaseEnvironment} environment
  */
 export function resolveMobileAppEnvironmentConfig(environment) {

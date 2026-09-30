@@ -12,7 +12,7 @@ import { layout } from '@/components/ui/layout/layout';
 import { useNavigateToSession } from '@/hooks/session/useNavigateToSession';
 import { Pressable } from 'react-native';
 import { t } from '@/text';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from 'expo-router';
 import { useSessionListPaneSourceScopeKey } from '@/components/sessions/shell/surface/sessionListPaneRetention';
 import { useSessionNavigationCursorPublisher } from '@/sync/domains/session/navigation/useSessionNavigationCursorPublisher';
 import type { SessionListLikeItem } from '@/sync/domains/session/navigation/sessionNavigationOrder';

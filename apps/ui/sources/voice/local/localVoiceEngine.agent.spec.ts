@@ -30,16 +30,10 @@ type MockWithCalls = {
     };
 };
 
-async function waitForCondition(check: () => boolean, timeoutMessage: string) {
-    for (let i = 0; i < 4000; i++) {
-        if (check()) return;
-        await Promise.resolve();
-    }
-    throw new Error(`Timed out waiting for ${timeoutMessage}`);
-}
-
 async function waitForMockCalls(mock: MockWithCalls, expectedCount: number) {
-    await waitForCondition(() => mock.mock.calls.length >= expectedCount, `mock call count ${expectedCount}`);
+    await vi.waitFor(() => {
+        expect(mock.mock.calls.length).toBeGreaterThanOrEqual(expectedCount);
+    });
 }
 
 async function flushMicrotasks(iterations: number) {
@@ -49,11 +43,15 @@ async function flushMicrotasks(iterations: number) {
 }
 
 async function waitForCreatedAudioPlayerListener(eventName: string) {
-    await waitForCondition(() => createdAudioPlayers[0]?.__hasListener?.(eventName) === true, `audio player listener: ${eventName}`);
+    await vi.waitFor(() => {
+        expect(createdAudioPlayers[0]?.__hasListener?.(eventName)).toBe(true);
+    });
 }
 
 async function waitForCreatedAudioPlayer() {
-    await waitForCondition(() => createdAudioPlayers.length > 0, 'created audio player');
+    await vi.waitFor(() => {
+        expect(createdAudioPlayers.length).toBeGreaterThan(0);
+    });
 }
 
 let localVoiceEngine: typeof import('./localVoiceEngine');

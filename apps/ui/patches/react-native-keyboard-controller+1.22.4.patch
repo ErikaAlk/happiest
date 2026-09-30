@@ -1,0 +1,55 @@
+diff --git a/node_modules/react-native-keyboard-controller/lib/typescript/components/KeyboardAvoidingView/index.d.ts b/node_modules/react-native-keyboard-controller/lib/typescript/components/KeyboardAvoidingView/index.d.ts
+index ff2a9d2..21c9b62 100644
+--- a/node_modules/react-native-keyboard-controller/lib/typescript/components/KeyboardAvoidingView/index.d.ts
++++ b/node_modules/react-native-keyboard-controller/lib/typescript/components/KeyboardAvoidingView/index.d.ts
+@@ -1,6 +1,5 @@
+ import React from "react";
+-import { View } from "react-native";
+-import type { ViewProps } from "react-native";
++import type { ViewInstance, ViewProps } from "react-native";
+ export type KeyboardAvoidingViewBaseProps = {
+     /**
+      * Controls whether this `KeyboardAvoidingView` instance should take effect.
+@@ -76,5 +75,5 @@ declare const KeyboardAvoidingView: React.ForwardRefExoticComponent<{
+     contentContainerStyle?: ViewProps["style"];
+ } & {
+     children?: React.ReactNode | undefined;
+-} & React.RefAttributes<View>>;
++} & React.RefAttributes<ViewInstance>>;
+ export default KeyboardAvoidingView;
+diff --git a/node_modules/react-native-keyboard-controller/lib/typescript/components/KeyboardEffects/index.d.ts b/node_modules/react-native-keyboard-controller/lib/typescript/components/KeyboardEffects/index.d.ts
+index 0bd3458..bce7823 100644
+--- a/node_modules/react-native-keyboard-controller/lib/typescript/components/KeyboardEffects/index.d.ts
++++ b/node_modules/react-native-keyboard-controller/lib/typescript/components/KeyboardEffects/index.d.ts
+@@ -1,5 +1,5 @@
+ import React from "react";
+-import { View } from "react-native";
++import type { ViewInstance } from "react-native";
+ import type { KeyboardStickyViewProps } from "../KeyboardStickyView";
+ export type KeyboardEffectsProps = {
+     /**
+@@ -56,5 +56,5 @@ declare const KeyboardEffects: React.ForwardRefExoticComponent<{
+     enabled?: boolean;
+ } & import("react-native").ViewProps & {
+     children?: React.ReactNode | undefined;
+-} & React.RefAttributes<View>>;
++} & React.RefAttributes<ViewInstance>>;
+ export default KeyboardEffects;
+diff --git a/node_modules/react-native-keyboard-controller/lib/typescript/components/KeyboardStickyView/index.d.ts b/node_modules/react-native-keyboard-controller/lib/typescript/components/KeyboardStickyView/index.d.ts
+index b4a94bb..89b33d1 100644
+--- a/node_modules/react-native-keyboard-controller/lib/typescript/components/KeyboardStickyView/index.d.ts
++++ b/node_modules/react-native-keyboard-controller/lib/typescript/components/KeyboardStickyView/index.d.ts
+@@ -1,5 +1,5 @@
+ import React from "react";
+-import type { View, ViewProps } from "react-native";
++import type { ViewInstance, ViewProps } from "react-native";
+ export type KeyboardStickyViewProps = {
+     /**
+      * Specify additional offset to the view for given keyboard state.
+@@ -48,5 +48,5 @@ declare const KeyboardStickyView: React.ForwardRefExoticComponent<{
+     enabled?: boolean;
+ } & ViewProps & {
+     children?: React.ReactNode | undefined;
+-} & React.RefAttributes<View>>;
++} & React.RefAttributes<ViewInstance>>;
+ export default KeyboardStickyView;

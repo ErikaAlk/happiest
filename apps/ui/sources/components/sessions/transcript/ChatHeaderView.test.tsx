@@ -64,9 +64,10 @@ vi.mock('react-native-safe-area-context', () => ({
     useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 
-vi.mock('@react-navigation/native', () => ({
-    useNavigation: () => ({ goBack: vi.fn() }),
-}));
+vi.mock('expo-router', async () => {
+    const { createExpoRouterMock } = await import('@/dev/testkit/mocks/router');
+    return createExpoRouterMock({ navigation: { goBack: vi.fn() } }).module;
+});
 
 vi.mock('@/utils/platform/responsive', () => ({
     useHeaderHeight: () => 44,

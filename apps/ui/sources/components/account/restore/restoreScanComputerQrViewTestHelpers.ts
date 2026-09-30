@@ -5,7 +5,8 @@ type RestoreScanComputerQrViewModuleFactory = () => unknown | Promise<unknown>;
 type InstallRestoreScanComputerQrViewCommonModuleMocksOptions = Readonly<{
     modal?: RestoreScanComputerQrViewModuleFactory;
     reactNative?: RestoreScanComputerQrViewModuleFactory;
-    reactNavigation?: RestoreScanComputerQrViewModuleFactory;
+    /** Route focus reported by the default expo-router mock. */
+    isFocused?: () => boolean;
     router?: RestoreScanComputerQrViewModuleFactory;
     text?: RestoreScanComputerQrViewModuleFactory;
     unistyles?: RestoreScanComputerQrViewModuleFactory;
@@ -18,7 +19,7 @@ const restoreScanComputerQrViewModuleState = vi.hoisted(() => ({
     options: {
         modal: undefined as RestoreScanComputerQrViewModuleFactory | undefined,
         reactNative: undefined as RestoreScanComputerQrViewModuleFactory | undefined,
-        reactNavigation: undefined as RestoreScanComputerQrViewModuleFactory | undefined,
+        isFocused: undefined as (() => boolean) | undefined,
         router: undefined as RestoreScanComputerQrViewModuleFactory | undefined,
         text: undefined as RestoreScanComputerQrViewModuleFactory | undefined,
         unistyles: undefined as RestoreScanComputerQrViewModuleFactory | undefined,
@@ -37,7 +38,7 @@ export function installRestoreScanComputerQrViewCommonModuleMocks(
     restoreScanComputerQrViewModuleState.options = {
         modal: options.modal,
         reactNative: options.reactNative,
-        reactNavigation: options.reactNavigation,
+        isFocused: options.isFocused,
         router: options.router,
         text: options.text,
         unistyles: options.unistyles,
@@ -63,6 +64,7 @@ export function installRestoreScanComputerQrViewCommonModuleMocks(
 
         const { createExpoRouterMock } = await import('@/dev/testkit/mocks/router');
         const routerMock = createExpoRouterMock({
+            isFocused: () => restoreScanComputerQrViewModuleState.options.isFocused?.() ?? true,
             router: {
                 back: restoreScanComputerQrViewModuleState.routerBackSpy,
                 push: restoreScanComputerQrViewModuleState.routerPushSpy,
@@ -70,16 +72,6 @@ export function installRestoreScanComputerQrViewCommonModuleMocks(
             },
         });
         return routerMock.module;
-    });
-
-    vi.mock('@react-navigation/native', async () => {
-        const activeOptions = restoreScanComputerQrViewModuleState.options;
-        if (activeOptions.reactNavigation) {
-            return await activeOptions.reactNavigation();
-        }
-
-        const { createReactNavigationNativeMock } = await import('@/dev/testkit/mocks/reactNavigation');
-        return createReactNavigationNativeMock();
     });
 
     vi.mock('@/modal', async () => {

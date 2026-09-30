@@ -57,6 +57,7 @@ vi.mock('expo-router', async () => {
     const { createExpoRouterMock } = await import('@/dev/testkit/mocks/router');
     return createExpoRouterMock({
         pathname: () => pathnameState.pathname,
+        isFocused: () => navigationFocusState.isFocused,
         navigation: {
             addListener: navigationEventsState.addListener,
         },
@@ -65,10 +66,6 @@ vi.mock('expo-router', async () => {
         },
     }).module;
 });
-
-vi.mock('@react-navigation/native', () => ({
-    useIsFocused: () => navigationFocusState.isFocused,
-}));
 
 vi.mock('react-native-safe-area-context', () => ({
     useSafeAreaInsets: () => safeAreaInsetsMock,
@@ -162,7 +159,7 @@ function CockpitSurfaceHarness(props: SessionCockpitSurfaceScreenProps) {
     }, [surface]);
 
     return (
-        <SessionCockpitSurfaceNavigationProvider value={{ switchSurface, returnToPreviousSurface: () => switchSurface(previousSurface.current) }}>
+        <SessionCockpitSurfaceNavigationProvider value={{ isActive: true, switchSurface, returnToPreviousSurface: () => switchSurface(previousSurface.current) }}>
             <SessionCockpitSurfaceScreen {...props} surface={surface} />
         </SessionCockpitSurfaceNavigationProvider>
     );

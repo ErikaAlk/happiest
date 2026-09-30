@@ -1,5 +1,5 @@
 import type * as React from 'react';
-import type { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 export type ResolvedPopoverPlacement = 'top' | 'bottom' | 'left' | 'right';
@@ -24,7 +24,7 @@ export type PopoverWindowRect = WindowRect;
  * - Outside-click dismissal works unchanged (based on portal layering, not anchor identity).
  */
 export type PopoverAnchor =
-    | { readonly kind: 'view'; readonly ref: React.RefObject<View | null> }
+    | { readonly kind: 'view'; readonly ref: React.RefObject<ViewInstance | null> }
     | {
         readonly kind: 'rect';
         readonly rect: Readonly<{

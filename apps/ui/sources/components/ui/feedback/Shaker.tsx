@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Animated, View, ViewProps, useAnimatedValue } from 'react-native';
+import { Animated, View, ViewProps, useAnimatedValue, type ViewInstance } from 'react-native';
 
 export type ShakeInstance = {
     shake: () => void;
@@ -7,7 +7,7 @@ export type ShakeInstance = {
 
 export const Shaker = React.memo(React.forwardRef<ShakeInstance, ViewProps>((props, ref) => {
     const { style, ...rest } = props;
-    const baseRef = React.useRef<View>(null);
+    const baseRef = React.useRef<ViewInstance>(null);
     const shakeValue = useAnimatedValue(0, { useNativeDriver: true });
     React.useImperativeHandle(ref, () => ({
         shake: () => {

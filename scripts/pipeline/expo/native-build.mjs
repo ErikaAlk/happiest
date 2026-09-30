@@ -17,7 +17,6 @@ import { resolveEasBuildProfileEnv } from './resolve-eas-build-profile-env.mjs';
 import { createCanonicalFingerprintFromExpoFingerprint } from './canonical-fingerprint.mjs';
 import { normalizeInteractiveOverride, resolveExpoInteractivity } from './resolve-expo-interactivity.mjs';
 import { parseEasJsonCommandOutput } from './parse-eas-json-command-output.mjs';
-import { applyExpoWebModalEnv } from './expoWebModalEnv.mjs';
 import {
   createNativeBuildLogRedactor,
   formatNativeBuildCommand,
@@ -738,10 +737,10 @@ async function main() {
     console.log(`[pipeline] expo native build: profile APP_ENV=${profileAppEnv}`);
   }
   const artifactOut = String(values['artifact-out'] ?? '').trim();
-  const easCommandEnv = withEasGitCaseSensitiveEnv(applyExpoWebModalEnv({
+  const easCommandEnv = withEasGitCaseSensitiveEnv({
     ...process.env,
     ...easProfileEnv,
-  }));
+  });
 
   if (buildMode === 'local') {
     if (platform === 'all') {
@@ -785,7 +784,7 @@ async function main() {
 
           // Dagger secret args use `env://NAME` indirections. Ensure the dagger CLI process
           // environment contains the referenced vars so they don't resolve as Missing.
-          const daggerEnv = applyExpoWebModalEnv({ ...process.env, EXPO_TOKEN: expoToken });
+          const daggerEnv = { ...process.env, EXPO_TOKEN: expoToken };
           if (sentryAuthToken) daggerEnv.SENTRY_AUTH_TOKEN = sentryAuthToken;
 
 	        run(
@@ -862,7 +861,7 @@ async function main() {
     const absOut = path.resolve(repoRoot, artifactOut);
     if (!dryRun) fs.mkdirSync(path.dirname(absOut), { recursive: true });
 
-    const baseEnv = applyExpoWebModalEnv(/** @type {Record<string, string>} */ ({ ...process.env, ...easProfileEnv }));
+    const baseEnv = /** @type {Record<string, string>} */ ({ ...process.env, ...easProfileEnv });
     const buildEnvBase = withUtf8LocaleDefaults(baseEnv);
     const buildEnv = createEasLocalBuildEnv({ baseEnv: buildEnvBase, platform });
     const canonicalFingerprintHash = await generateCurrentProjectFingerprintHash({

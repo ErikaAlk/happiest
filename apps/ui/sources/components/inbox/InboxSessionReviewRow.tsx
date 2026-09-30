@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Platform, Pressable, View, type AccessibilityActionEvent } from 'react-native';
-import { Swipeable } from 'react-native-gesture-handler';
+import Swipeable, { type SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { Item } from '@/components/ui/lists/Item';
@@ -32,7 +32,7 @@ export const InboxSessionReviewRow = React.memo(function InboxSessionReviewRow(p
     onMarkRead?: () => Promise<void> | void;
 }>) {
     const { theme } = useUnistyles();
-    const swipeableRef = React.useRef<Swipeable | null>(null);
+    const swipeableRef = React.useRef<SwipeableMethods | null>(null);
     const testIdPrefix = `inbox.review_session.${props.serverId ?? 'local'}.${props.sessionId}`;
 
     const markRead = React.useCallback(() => {

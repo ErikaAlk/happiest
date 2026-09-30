@@ -135,10 +135,6 @@ vi.mock('@expo/vector-icons', () => ({
 vi.mock('@expo/vector-icons/Ionicons', () => ({
     default: (props: Record<string, unknown>) => React.createElement('Ionicons', props),
 }));
-vi.mock('@react-navigation/native', () => ({
-    useIsFocused: () => true,
-}));
-
 vi.mock('@/assets/onboarding/planet-dark.jpg', () => ({ default: 'planet-dark.jpg' }));
 vi.mock('@/assets/onboarding/planet-light.jpg', () => ({ default: 'planet-light.jpg' }));
 vi.mock('@/assets/images/logotype-light.png', () => ({ default: 'logotype-light.png' }));

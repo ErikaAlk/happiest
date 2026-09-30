@@ -108,33 +108,33 @@ const androidUsesCleartextTraffic = readBoolEnv('HAPPIER_ANDROID_USES_CLEARTEXT_
 // are then silently discarded at compile time — which is exactly how they went dead for a
 // week in July 2026 after a prebuild regenerated ios/ without the property.
 // Enforced by the verify-native-patch-compilation postinstall task.
+//
+// Android SDK levels and the Kotlin version follow the ColorOS UI kit build
+// (~/Workspace/code/coloros-ui-kit/android): compileSdk 37, minSdk 26, Kotlin 2.4.20.
 const expoBuildPropertiesPlugin = [
     "expo-build-properties",
     {
         android: {
             usesCleartextTraffic: androidUsesCleartextTraffic === true,
+            minSdkVersion: 26,
+            compileSdkVersion: 37,
+            kotlinVersion: "2.4.20",
         },
         ios: {
             buildReactNativeFromSource: true,
-            deploymentTarget: "16.0",
+            deploymentTarget: "16.4",
         },
     },
 ];
-const shouldUseAndroidReleaseShrinkerPlugin =
-    androidEnableMinifyInReleaseBuilds ||
-    androidEnableShrinkResourcesInReleaseBuilds ||
-    Boolean(androidGradleJvmArgsOverride);
-
-const androidReleaseShrinkerPlugin = shouldUseAndroidReleaseShrinkerPlugin
-    ? [
-        require("./plugins/withAndroidReleaseShrinker.js"),
-        {
-            enableMinifyInReleaseBuilds: androidEnableMinifyInReleaseBuilds === true,
-            enableShrinkResourcesInReleaseBuilds: androidEnableShrinkResourcesInReleaseBuilds === true,
-            ...(androidGradleJvmArgsOverride ? { gradleJvmArgs: androidGradleJvmArgsOverride } : {}),
-        },
-    ]
-    : null;
+// Always applied: the prebuild template enables R8 by default, and this plugin owns the decision.
+const androidReleaseShrinkerPlugin = [
+    require("./plugins/withAndroidReleaseShrinker.js"),
+    {
+        enableMinifyInReleaseBuilds: androidEnableMinifyInReleaseBuilds === true,
+        enableShrinkResourcesInReleaseBuilds: androidEnableShrinkResourcesInReleaseBuilds === true,
+        ...(androidGradleJvmArgsOverride ? { gradleJvmArgs: androidGradleJvmArgsOverride } : {}),
+    },
+];
 const appVariant = appEnvironmentConfig.logicalVariant;
 const appIdentityVariant = appEnvironmentConfig.id;
 
@@ -289,11 +289,6 @@ const baseExpoConfig = {
         icon: "./sources/assets/images/icon.png",
         scheme: resolvedScheme,
         userInterfaceStyle: "automatic",
-        newArchEnabled: true,
-        notification: {
-            icon: "./sources/assets/images/icon-notification.png",
-            iosDisplayInForeground: true
-        },
         ios: {
             supportsTablet: true,
             bundleIdentifier: iosBundleId,
@@ -340,7 +335,6 @@ const baseExpoConfig = {
             blockedPermissions: [
                 "android.permission.ACTIVITY_RECOGNITION"
             ],
-            edgeToEdgeEnabled: true,
             package: androidPackage,
             googleServicesFile: "./google-services.json",
             intentFilters: appEnvironmentConfig.enableAssociatedDomains ? [
@@ -366,7 +360,7 @@ const baseExpoConfig = {
             require("./plugins/withEinkCompatibility.js"),
             require("./plugins/withAndroidReactNativeArchitectures.js"),
             require("./modules/happier-hardware-keyboard-shortcuts/app.plugin.js"),
-            ...(androidReleaseShrinkerPlugin ? [androidReleaseShrinkerPlugin] : []),
+            androidReleaseShrinkerPlugin,
             [
                 "@sentry/react-native/expo",
                 {
@@ -393,7 +387,6 @@ const baseExpoConfig = {
             "expo-mail-composer",
             "expo-secure-store",
             "expo-web-browser",
-            "react-native-vision-camera",
             "@more-tech/react-native-libsodium",
             [
                 "react-native-enriched-markdown",
@@ -427,6 +420,7 @@ const baseExpoConfig = {
             [
                 "expo-notifications",
                 {
+                    "icon": "./sources/assets/images/icon-notification.png",
                     "enableBackgroundRemoteNotifications": true
                 }
             ],

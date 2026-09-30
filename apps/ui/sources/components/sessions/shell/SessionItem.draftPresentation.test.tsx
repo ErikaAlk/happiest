@@ -60,7 +60,6 @@ installSessionShellCommonModuleMocks({
 vi.mock('@/components/ui/forms/dropdown/DropdownMenu', () => ({
     DropdownMenu: (props: Record<string, unknown>) => React.createElement('DropdownMenu', props),
 }));
-vi.mock('react-native-gesture-handler', () => ({ Swipeable: 'Swipeable' }));
 vi.mock('@/utils/sessions/sessionUtils', () => ({
     getSessionName: () => 'Session',
     getSessionSubtitle: () => '/workspace/project',

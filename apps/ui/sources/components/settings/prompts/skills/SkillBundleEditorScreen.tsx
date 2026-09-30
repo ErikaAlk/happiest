@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
-import { useNavigation, useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 
 import { t } from '@/text';
 import { layout } from '@/components/ui/layout/layout';

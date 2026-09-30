@@ -91,7 +91,7 @@ test('Android release profiles materialize a Gradle daemon heap above the Expo t
   assert.match(eas?.build?.base?.env?.HAPPIER_ANDROID_GRADLE_JVMARGS ?? '', /-Xmx(?:4\d{3}|[4-9]g)/i);
   assert.match(
     appConfig,
-    /shouldUseAndroidReleaseShrinkerPlugin\s*=\s*[^;]*androidGradleJvmArgsOverride/,
+    /androidReleaseShrinkerPlugin\s*=\s*\[\s*require\("\.\/plugins\/withAndroidReleaseShrinker\.js"\)[^;]*gradleJvmArgs:\s*androidGradleJvmArgsOverride/,
     'the app config must materialize the heap override into generated android/gradle.properties',
   );
 });

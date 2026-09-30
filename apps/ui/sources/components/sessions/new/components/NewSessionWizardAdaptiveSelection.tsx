@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, type View as RNView } from 'react-native';
+import { View, type ViewInstance } from 'react-native';
 
 import { AgentInputContentPopover, type AgentInputContentPopoverConfig } from '@/components/sessions/agentInput/components/AgentInputContentPopover';
 import { DropdownMenu, type DropdownMenuItem } from '@/components/ui/forms/dropdown/DropdownMenu';
@@ -23,10 +23,10 @@ export function NewSessionWizardPopoverItem(props: Readonly<{
     subtitle?: string | null;
     icon: React.ReactNode;
     popover?: AgentInputContentPopoverConfig;
-    boundaryRef: React.RefObject<RNView>;
+    boundaryRef: React.RefObject<ViewInstance | null>;
 }>) {
     const [open, setOpen] = React.useState(false);
-    const anchorRef = React.useRef<RNView>(null);
+    const anchorRef = React.useRef<ViewInstance>(null);
     return (
         <ItemGroup title="">
             <View ref={anchorRef} collapsable={false}>
@@ -72,7 +72,7 @@ export function NewSessionWizardDropdownSelectionItem(props: Readonly<{
     selectedId?: string | null;
     search?: boolean;
     searchPlaceholder?: string;
-    boundaryRef: React.RefObject<RNView>;
+    boundaryRef: React.RefObject<ViewInstance | null>;
     onSelect: (id: string) => void;
 }>) {
     const [open, setOpen] = React.useState(false);

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FlatList, Platform, Pressable, View, useWindowDimensions, type GestureResponderEvent } from 'react-native';
+import { FlatList, Platform, Pressable, View, useWindowDimensions, type GestureResponderEvent, type ViewInstance } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { Modal, type CustomModalInjectedProps } from '@/modal';
@@ -367,7 +367,7 @@ export function MachinePathBrowserView(props: MachinePathBrowserViewProps): Reac
     const [expandedPaths, setExpandedPaths] = React.useState<string[]>(() => initialExpandedPaths);
     const shouldAutoSelectInitialPathRef = React.useRef(true);
     const [isCreatingFolder, setIsCreatingFolder] = React.useState(false);
-    const contextMenuAnchorRef = React.useRef<View | null>(null);
+    const contextMenuAnchorRef = React.useRef<ViewInstance | null>(null);
     const [contextMenuDirectoryPath, setContextMenuDirectoryPath] = React.useState<string | null>(null);
     const modalLayoutStyle = React.useMemo(() => {
         if (variant !== 'modal') {
@@ -847,7 +847,7 @@ export function MachinePathBrowserView(props: MachinePathBrowserViewProps): Reac
         contextMenuAnchorRef.current = null;
     }, []);
 
-    const openContextMenu = React.useCallback((directoryPath: string, anchorNode: View | null) => {
+    const openContextMenu = React.useCallback((directoryPath: string, anchorNode: ViewInstance | null) => {
         if (!directoryPath) return;
         if (selectionMode !== 'file') {
             setSelectedPath(directoryPath);
@@ -1136,7 +1136,7 @@ export function MachinePathBrowserView(props: MachinePathBrowserViewProps): Reac
                         const selected = selectedPath === node.path && (
                             selectionMode === 'file' ? node.type === 'file' : node.type === 'directory'
                         );
-                        const contextMenuRowAnchorRef = React.createRef<View>();
+                        const contextMenuRowAnchorRef = React.createRef<ViewInstance>();
                         const handleTogglePress = (event?: GestureResponderEvent) => {
                             stopToggleEventPropagation(event);
                             void toggleDirectory(node.path);

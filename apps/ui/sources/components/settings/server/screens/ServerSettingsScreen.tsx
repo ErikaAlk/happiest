@@ -1,10 +1,8 @@
 import * as React from 'react';
-import type { ScrollView, ScrollViewProps } from 'react-native';
 import { Platform } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { ItemList } from '@/components/ui/lists/ItemList';
-import { KeyboardAwareScrollView } from '@/components/ui/keyboardAvoidance';
 import { SavedServersSection } from '@/components/settings/server/sections/SavedServersSection';
 import { AddTargetsSection } from '@/components/settings/server/sections/AddTargetsSection';
 import { ServerGroupsSection } from '@/components/settings/server/sections/ServerGroupsSection';
@@ -17,29 +15,15 @@ const stylesheet = StyleSheet.create((_theme) => ({
     },
 }));
 
-type KeyboardAwareItemListProps = ScrollViewProps & Readonly<{
-    children?: React.ReactNode;
-}>;
-
-const ServerSettingsKeyboardAwareItemList = React.forwardRef<ScrollView, KeyboardAwareItemListProps>(
-    function ServerSettingsKeyboardAwareItemList({ children, ...props }, ref) {
-        return (
-            <ItemList ref={ref} {...props}>
-                {children}
-            </ItemList>
-        );
-    },
-);
-
 export function ServerSettingsScreen() {
     useUnistyles();
     const styles = stylesheet;
     const controller = useServerSettingsScreenController();
 
     return (
-        <KeyboardAwareScrollView
+        <ItemList
+            keyboardAware
             style={styles.itemListContainer}
-            ScrollViewComponent={ServerSettingsKeyboardAwareItemList}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
             {...(Platform.OS === 'ios' ? { automaticallyAdjustKeyboardInsets: true } : {})}
@@ -90,6 +74,6 @@ export function ServerSettingsScreen() {
                     onToggleGroupServer={controller.onToggleGroupServer}
                 />
             ) : null}
-        </KeyboardAwareScrollView>
+        </ItemList>
     );
 }

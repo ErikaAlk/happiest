@@ -156,6 +156,19 @@ export function resolveNewSessionPickerReturnRouteKey(state: NavigationStateLike
     return null;
 }
 
+/** Writes picker result params onto the new-session route identified by `targetRouteKey`. */
+export function dispatchNewSessionPickerReturnParams(params: Readonly<{
+    navigation: Pick<NavigationLike, 'dispatch'>;
+    targetRouteKey: string;
+    routeParams: RouteParams;
+}>): void {
+    params.navigation.dispatch({
+        type: 'SET_PARAMS',
+        payload: { params: params.routeParams },
+        source: params.targetRouteKey,
+    });
+}
+
 export function setNewSessionPickerReturnParams(params: Readonly<{
     navigation: NavigationLike;
     router: RouterLike;
@@ -166,10 +179,10 @@ export function setNewSessionPickerReturnParams(params: Readonly<{
     const navigationState = params.navigation.getState();
     const targetRouteKey = resolveNewSessionPickerReturnRouteKey(navigationState);
     if (targetRouteKey) {
-        params.navigation.dispatch({
-            type: 'SET_PARAMS',
-            payload: { params: params.routeParams },
-            source: targetRouteKey,
+        dispatchNewSessionPickerReturnParams({
+            navigation: params.navigation,
+            targetRouteKey,
+            routeParams: params.routeParams,
         });
         return 'dispatch';
     }

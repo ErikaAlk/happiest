@@ -58,7 +58,6 @@ async function writeExpoStubCaptureNodeOptions({ expoPath }) {
       'set -euo pipefail',
       '',
       'echo "NODE_OPTIONS=${NODE_OPTIONS:-}" >> "${OUTPUT_PATH:?}"',
-      'echo "EXPO_UNSTABLE_WEB_MODAL=${EXPO_UNSTABLE_WEB_MODAL:-}" >> "${OUTPUT_PATH:?}"',
       '',
       'expected="${EXPECT_MAX_OLD_SPACE_SIZE:-}"',
       'if [[ -n "$expected" ]]; then',
@@ -78,7 +77,6 @@ async function writeExpoStubCaptureNodeOptions({ expoPath }) {
     [
       '@echo off',
       'echo NODE_OPTIONS=%NODE_OPTIONS%>>"%OUTPUT_PATH%"',
-      'echo EXPO_UNSTABLE_WEB_MODAL=%EXPO_UNSTABLE_WEB_MODAL%>>"%OUTPUT_PATH%"',
       'if not "%EXPECT_MAX_OLD_SPACE_SIZE%"=="" (',
       '  echo %NODE_OPTIONS% | findstr /C:"--max-old-space-size=%EXPECT_MAX_OLD_SPACE_SIZE%" >nul',
       '  if errorlevel 1 exit /b 11',
@@ -137,7 +135,6 @@ test('expoExec defaults Expo heap limit to 8192MB (unless overridden)', async (t
 
   const logged = await readFile(outputPath, 'utf-8');
   assert.match(logged, /--max-old-space-size=8192/);
-  assert.match(logged, /^EXPO_UNSTABLE_WEB_MODAL=1$/m);
 });
 
 test('expoExec honors HAPPIER_STACK_EXPO_MAX_OLD_SPACE_SIZE_MB override', async (t) => {
@@ -259,7 +256,6 @@ test('expoSpawn applies the same heap limit behavior', async (t) => {
 
   const logged = await readFile(outputPath, 'utf-8');
   assert.match(logged, /--max-old-space-size=8192/);
-  assert.match(logged, /^EXPO_UNSTABLE_WEB_MODAL=1$/m);
 });
 
 test('expoExec prefers the Windows cmd shim when both Expo shims exist', async (t) => {

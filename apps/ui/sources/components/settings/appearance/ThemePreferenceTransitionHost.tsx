@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Platform, View } from 'react-native';
+import { Image, Platform, View, type ViewInstance } from 'react-native';
 import Animated, {
     Easing,
     runOnJS,
@@ -36,7 +36,7 @@ function recordNativeThemeTransitionBreadcrumb(data: Readonly<{ phase: string }>
 }
 
 export function ThemePreferenceTransitionHost(props: Readonly<{ children: React.ReactNode }>) {
-    const surfaceRef = React.useRef<View>(null);
+    const surfaceRef = React.useRef<ViewInstance>(null);
     const [overlayUri, setOverlayUri] = React.useState<string | null>(null);
     const [surfaceHeight, setSurfaceHeight] = React.useState(0);
     const revealProgress = useSharedValue(0);

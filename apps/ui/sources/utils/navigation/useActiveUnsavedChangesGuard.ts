@@ -29,9 +29,6 @@ function unsubscribeListener(subscription: unknown): void {
 /**
  * Registers the currently focused screen as the "active unsaved-changes guard" so global navigation
  * surfaces (e.g. the sidebar) can prompt before navigating away.
- *
- * NOTE: Avoid importing `@react-navigation/native` hooks here. Some of its ESM builds include Flow
- * syntax (e.g. `import typeof`) which Node-based unit tests cannot parse without Metro transforms.
  */
 export function useActiveUnsavedChangesGuard(params: Readonly<{
     navigation: unknown;

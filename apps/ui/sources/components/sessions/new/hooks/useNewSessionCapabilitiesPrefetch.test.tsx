@@ -8,14 +8,7 @@ import { installNewSessionComponentsCommonModuleMocks } from '../components/newS
 installNewSessionComponentsCommonModuleMocks({
     reactNative: async () => {
         const { createReactNativeWebMock } = await import('@/dev/testkit/mocks/reactNative');
-        return createReactNativeWebMock({
-            InteractionManager: {
-                runAfterInteractions: (fn: () => void) => {
-                    fn();
-                    return { cancel: () => {} };
-                },
-            },
-        });
+        return createReactNativeWebMock();
     },
 });
 

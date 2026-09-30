@@ -151,7 +151,7 @@ describe('KeyboardShortcutProvider', () => {
             const [activeSurface, setSurface] = React.useState<Surface>('tabs');
             surface = activeSurface;
             return <KeyboardShortcutProvider handlers={{ 'composer.focus': () => { focusedSurface = activeSurface; }, 'composer.sendImmediate': () => { sent += 1; } }}>
-                <SessionCockpitSurfaceNavigationProvider value={{ switchSurface: setSurface, returnToPreviousSurface: () => {} }}>
+                <SessionCockpitSurfaceNavigationProvider value={{ isActive: true, switchSurface: setSurface, returnToPreviousSurface: () => {} }}>
                     <AppPaneProvider><Probe /></AppPaneProvider>
                 </SessionCockpitSurfaceNavigationProvider>
             </KeyboardShortcutProvider>;

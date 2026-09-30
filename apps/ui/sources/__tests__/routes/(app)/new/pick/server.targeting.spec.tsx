@@ -164,15 +164,6 @@ vi.mock('@expo/vector-icons', async () => {
     return createExpoVectorIconsMock();
 });
 
-vi.mock('@react-navigation/native', () => ({
-    CommonActions: {
-        setParams: (params: Record<string, unknown>) => ({
-            type: 'SET_PARAMS',
-            payload: { params },
-        }),
-    },
-}));
-
 vi.mock('@/sync/domains/server/serverProfiles', async (importOriginal) => {
     const { createServerProfilesModuleMock } = await import('@/dev/testkit/mocks/serverProfiles');
     return createServerProfilesModuleMock({

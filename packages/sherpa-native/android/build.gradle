@@ -41,17 +41,17 @@ def downloadBinary(String url, File outFile) {
   }
 }
 
+// Gradle 9 removed Project#exec; external processes go through the ProviderFactory.
+def execProviders = providers
+
 def resolveSherpaChecksum = { File checksumFile, String archive ->
   if (!sherpaChecksumResolver.exists()) {
     throw new GradleException("[HappierSherpaNative] Missing checksum resolver at ${sherpaChecksumResolver.absolutePath}")
   }
 
-  def output = new ByteArrayOutputStream()
-  exec {
+  return execProviders.exec {
     commandLine "node", sherpaChecksumResolver.absolutePath, checksumFile.absolutePath, archive
-    standardOutput = output
-  }
-  return output.toString("UTF-8").trim()
+  }.standardOutput.asText.get().trim()
 }
 
 tasks.register("prepareSherpaOnnxAndroid") {
@@ -82,10 +82,10 @@ tasks.register("prepareSherpaOnnxAndroid") {
     def marker = new File(sherpaExtractDir, ".extracted")
     if (!marker.exists()) {
       logger.lifecycle("[HappierSherpaNative] Extracting ${sherpaArchive}")
-      exec {
+      execProviders.exec {
         workingDir sherpaExtractDir
         commandLine "tar", "-xf", sherpaArchiveFile.absolutePath
-      }
+      }.result.get()
       marker.text = "ok"
     }
   }

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, ScrollView, View } from 'react-native';
+import { Platform, ScrollView, View, type ScrollViewInstance } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import {
@@ -49,7 +49,7 @@ export type TranscriptNavigationRailProps = Readonly<{
     transcriptMaxWidthPx?: number;
 }>;
 
-type WebRovingViewProps = React.ComponentPropsWithRef<typeof View> & {
+type WebRovingViewProps = Omit<React.ComponentPropsWithRef<typeof View>, 'onKeyDown'> & {
     'aria-activedescendant'?: string;
     onKeyDown?: (event: {
         key?: string;
@@ -168,7 +168,7 @@ export function TranscriptNavigationRail(props: TranscriptNavigationRailProps) {
     const railHoveredRef = React.useRef(railHovered);
     railHoveredRef.current = railHovered;
     const [railFocusWithin, setRailFocusWithin] = React.useState(false);
-    const railScrollRef = React.useRef<ScrollView | null>(null);
+    const railScrollRef = React.useRef<ScrollViewInstance | null>(null);
     const lastUserScrollAtMsRef = React.useRef(0);
     // The one owner of "is this scroll event mine?": the move this component
     // last commanded, tracked as a fact rather than inferred from a clock. See

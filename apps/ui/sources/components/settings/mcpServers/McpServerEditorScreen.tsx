@@ -37,7 +37,6 @@ import { Icon } from '@/components/ui/icons/Icon';
 
 type NavigationLike = Readonly<{
     setOptions?: (options: Readonly<Record<string, unknown>>) => void;
-    dispatch?: (action: unknown) => void;
 }>;
 
 function createDefaultServerName(existingNames: ReadonlySet<string>): string {
@@ -372,21 +371,11 @@ export const McpServerEditorScreen = React.memo(function McpServerEditorScreen()
         );
     }, []);
 
-    const continueNavigation = React.useCallback((action: unknown) => {
-        if (action && typeof nav.dispatch === 'function') {
-            nav.dispatch(action);
-            return;
-        }
-        closeToMcpServersSettings();
-    }, [closeToMcpServersSettings, nav.dispatch]);
-
     useUnsavedChangesBeforeRemoveGuard({
-        navigation,
+        isDirty,
         ignoreRef: ignoreBeforeRemoveRef,
-        isDirtyRef,
         requestDecision: requestUnsavedChangesDecision,
         onSave: commitDraft,
-        onContinue: continueNavigation,
         tag: 'McpServerEditorScreen.beforeRemove',
     });
 

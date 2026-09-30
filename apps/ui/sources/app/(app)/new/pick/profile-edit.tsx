@@ -3,8 +3,8 @@ import { Platform, View, useWindowDimensions, Pressable } from 'react-native';
 import { Stack, useRouter, useLocalSearchParams, useNavigation } from 'expo-router';
 import { StyleSheet } from 'react-native-unistyles';
 import { useUnistyles } from 'react-native-unistyles';
-import { useHeaderHeight } from '@react-navigation/elements';
 import Constants from 'expo-constants';
+import { useHeaderHeight } from '@/utils/platform/responsive';
 import { t } from '@/text';
 import { ProfileEditForm } from '@/components/profiles/edit';
 import { type AIBackendProfile } from '@/sync/domains/profiles/profileCompatibility';
@@ -55,7 +55,7 @@ export default React.memo(function ProfileEditScreen() {
     }, [isDirty]);
 
     React.useEffect(() => {
-        // On iOS native-stack modals, swipe-down dismissal can bypass `beforeRemove` in practice.
+        // On iOS native-stack modals, swipe-down dismissal can bypass removal prevention in practice.
         // The only reliable way to ensure unsaved edits aren't lost is to disable the gesture
         // while the form is dirty, and rely on the header back/cancel flow (which we guard).
         const setOptions = (navigation as any)?.setOptions;
@@ -124,16 +124,11 @@ export default React.memo(function ProfileEditScreen() {
         );
     }, [profile.isBuiltIn]);
 
-    useUnsavedChangesBeforeRemoveGuard({
-        navigation,
-        isDirtyRef,
+    const allowRemoval = useUnsavedChangesBeforeRemoveGuard({
+        isDirty,
         requestDecision: confirmDiscard,
         onSave: () => saveRef.current?.() ?? false,
         continueOnSave: false,
-        onContinue: (action) => {
-            if (!action) return;
-            (navigation as any)?.dispatch?.(action);
-        },
         tag: 'ProfileEditScreen.beforeRemove',
     });
 
@@ -193,6 +188,7 @@ export default React.memo(function ProfileEditScreen() {
             // selection to /new and close itself. This avoids stacking /new on top of /new (wizard case).
             isDirtyRef.current = false;
             setIsDirty(false);
+            allowRemoval();
             const returnMode = setNewSessionPickerReturnParams({
                 navigation: navigation as any,
                 router,
@@ -205,6 +201,10 @@ export default React.memo(function ProfileEditScreen() {
             return true;
         }
 
+        // Prevent the unsaved-changes guard from triggering on successful save.
+        isDirtyRef.current = false;
+        setIsDirty(false);
+        allowRemoval();
         // Pass selection back to the /new screen via navigation params (unmount-safe).
         const returnMode = setNewSessionPickerReturnParams({
             navigation: navigation as any,
@@ -215,9 +215,6 @@ export default React.memo(function ProfileEditScreen() {
         if (returnMode === 'dispatch') {
             safeRouterBack({ router, navigation, fallbackHref: pickerFallbackHref });
         }
-        // Prevent the unsaved-changes guard from triggering on successful save.
-        isDirtyRef.current = false;
-        setIsDirty(false);
         return true;
     };
 
@@ -230,12 +227,13 @@ export default React.memo(function ProfileEditScreen() {
             const decision = await confirmDiscard();
             if (decision === 'discard') {
                 isDirtyRef.current = false;
+                allowRemoval();
                 safeRouterBack({ router, navigation, fallbackHref: pickerFallbackHref });
             } else if (decision === 'save') {
                 saveRef.current?.();
             }
         })(), { tag: 'ProfileEditScreen.cancel' });
-    }, [confirmDiscard, navigation, pickerFallbackHref, router]);
+    }, [allowRemoval, confirmDiscard, navigation, pickerFallbackHref, router]);
 
     const headerTitle = profile.name ? t('profiles.editProfile') : t('profiles.addProfile');
     const headerBackTitle = t('common.back');

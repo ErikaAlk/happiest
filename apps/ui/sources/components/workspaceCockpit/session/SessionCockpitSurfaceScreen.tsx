@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { View } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUnistyles } from 'react-native-unistyles';
 import { ActivitySpinner } from '@/components/ui/feedback/ActivitySpinner';
@@ -30,6 +29,7 @@ import {
     type SessionPaneUrlState,
 } from '@/components/sessions/panes/url/sessionPaneUrlState';
 import { SessionView } from '@/components/sessions/shell/SessionView';
+import { useSessionScreenIsFocused } from '@/components/sessions/shell/useSessionScreenIsFocused';
 import type { SessionRouteHydrationState } from '@/sync/domains/session/sessionRouteHydrationState';
 import { deferOnWeb } from '@/utils/platform/deferOnWeb';
 
@@ -54,7 +54,7 @@ export type SessionCockpitSurfaceScreenProps = Readonly<{
 
 export const SessionCockpitSurfaceScreen = React.memo((props: SessionCockpitSurfaceScreenProps) => {
     const { theme } = useUnistyles();
-    const isFocused = useIsFocused();
+    const isFocused = useSessionScreenIsFocused();
     const pane = useAppPaneScope(props.scopeId);
     const surfaceNavigation = useSessionCockpitSurfaceNavigation();
     const registerCockpitChrome = useSessionCockpitChromeRegister();

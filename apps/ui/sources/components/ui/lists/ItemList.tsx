@@ -7,6 +7,7 @@ import {
     Platform,
     ScrollViewProps
 } from 'react-native';
+import type { ScrollViewInstance } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useIsInsideModalBoundary } from '@/modal/context/ModalBoundaryContext';
 import { useScrollViewWheelScrollTo } from '@/components/ui/scroll/useScrollViewWheelScrollTo';
@@ -52,10 +53,10 @@ function isRefObject<T>(ref: React.ForwardedRef<T>): ref is React.MutableRefObje
     return Boolean(ref && typeof ref === 'object' && 'current' in ref);
 }
 
-export const ItemList = React.memo(React.forwardRef<ScrollView, ItemListProps>((props, ref) => {
+export const ItemList = React.memo(React.forwardRef<ScrollViewInstance, ItemListProps>((props, ref) => {
     const { theme } = useUnistyles();
     const styles = stylesheet;
-    const internalRef = React.useRef<ScrollView>(null);
+    const internalRef = React.useRef<ScrollViewInstance>(null);
     const isInsideModalBoundary = useIsInsideModalBoundary();
     // When the floating tab bar overlays this screen, extend the bottom padding so
     // the last rows clear it. 0 when no bar is present, so non-tab screens are unchanged.
@@ -87,7 +88,7 @@ export const ItemList = React.memo(React.forwardRef<ScrollView, ItemListProps>((
         onWheel: rawOnWheel ?? undefined,
     });
 
-    const setRefs = React.useCallback((node: ScrollView | null) => {
+    const setRefs = React.useCallback((node: ScrollViewInstance | null) => {
         internalRef.current = node;
         setForwardedRef(ref, node);
     }, [ref]);

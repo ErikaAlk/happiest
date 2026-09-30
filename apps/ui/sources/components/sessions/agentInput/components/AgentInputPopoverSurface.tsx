@@ -18,7 +18,7 @@ export type AgentInputPopoverSurfaceProps = Readonly<{
    */
   scrollEnabled?: boolean;
   showScrollIndicator?: boolean;
-  keyboardShouldPersistTaps?: boolean | "always" | "never" | "handled";
+  keyboardShouldPersistTaps?: "always" | "never" | "handled";
   edgeFades?: FloatingOverlayEdgeFades;
   edgeIndicators?: boolean | Readonly<{ size?: number; opacity?: number }>;
   arrow?: FloatingOverlayArrow;

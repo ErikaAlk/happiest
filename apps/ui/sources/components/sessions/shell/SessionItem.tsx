@@ -1,6 +1,7 @@
 import React from 'react';
-import { Animated, Platform, Pressable, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
-import { GestureDetector, Swipeable, type ComposedGesture, type GestureType } from 'react-native-gesture-handler';
+import { Animated, Platform, Pressable, View, type GestureResponderEvent, type LayoutChangeEvent, type ViewInstance } from 'react-native';
+import { GestureDetector, type GestureType, type LegacyComposedGesture } from 'react-native-gesture-handler';
+import Swipeable, { type SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { useRouter } from 'expo-router';
 
@@ -150,7 +151,7 @@ type SessionItemBaseProps = Readonly<{
     activityTimeMode?: SessionItemActivityTimeMode;
     compact?: boolean;
     compactMinimal?: boolean;
-    reorderHandleGesture?: GestureType | ComposedGesture;
+    reorderHandleGesture?: GestureType | LegacyComposedGesture;
     isBeingDragged?: boolean;
     nativeInlineDragEnabled?: boolean;
     nativeContextMenuOpen?: boolean;
@@ -768,7 +769,7 @@ const SessionItemContent = React.memo(
             };
         }, [isSessionIdentityLoading, identitySkeletonOpacity]);
         const navigateToSession = useNavigateToSession();
-        const swipeableRef = React.useRef<Swipeable | null>(null);
+        const swipeableRef = React.useRef<SwipeableMethods | null>(null);
         const sessionActionTarget = React.useMemo(
             () => createSessionActionTarget({
                 session: resolvedSession,
@@ -946,7 +947,7 @@ const SessionItemContent = React.memo(
         const activeTags = tags ?? [];
         const knownTags = allKnownTags ?? [];
         const showReorderHandle = Boolean(reorderHandleGesture);
-        const contextMenuAnchorRef = React.useRef<View>(null);
+        const contextMenuAnchorRef = React.useRef<ViewInstance>(null);
         const [uncontrolledContextMenuOpen, setUncontrolledContextMenuOpen] = React.useState(false);
         const contextMenuOpen = nativeContextMenuOpen ?? uncontrolledContextMenuOpen;
         const setContextMenuOpen = onNativeContextMenuOpenChange ?? setUncontrolledContextMenuOpen;

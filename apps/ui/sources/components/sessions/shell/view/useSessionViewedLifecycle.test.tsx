@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { renderHook, standardCleanup } from '@/dev/testkit';
 import {
@@ -14,17 +13,6 @@ import { useSessionViewedLifecycle } from './useSessionViewedLifecycle';
 type ScopedViewedLifecycleInput = Parameters<typeof useSessionViewedLifecycle>[0] & Readonly<{
     serverId?: string | null;
 }>;
-
-vi.mock('@react-navigation/native', () => ({
-    useFocusEffect: (effect: () => void | (() => void)) => {
-        React.useEffect(() => {
-            const cleanup = effect();
-            return () => {
-                cleanup?.();
-            };
-        }, [effect]);
-    },
-}));
 
 describe('useSessionViewedLifecycle', () => {
     beforeEach(() => {

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { NativeScrollEvent, NativeSyntheticEvent, ScrollView } from 'react-native';
+import type { NativeScrollEvent, NativeSyntheticEvent, ScrollViewInstance } from 'react-native';
 import type { MarkdownSourceRangeAction, MarkdownSourceRangeLayoutObserver } from '@/components/markdown/MarkdownView';
 import { mapCodeReadingAnchor, mapCodeReadingAnchors } from '@/components/ui/code/model/mapCodeReadingAnchor';
 
@@ -8,7 +8,7 @@ type Anchor = Readonly<{ index: number; offset: number }>;
 
 /** The Markdown renderer measures its own blocks; the file preview remains the only scroll owner. */
 export function useMarkdownReadingAnchor(identity: string, paddingTop: number) {
-    const scrollRef = React.useRef<ScrollView>(null);
+    const scrollRef = React.useRef<ScrollViewInstance>(null);
     const state = React.useMemo(() => ({
         ranges: [] as readonly MarkdownSourceRangeAction[],
         indices: new Map<number, number>(),

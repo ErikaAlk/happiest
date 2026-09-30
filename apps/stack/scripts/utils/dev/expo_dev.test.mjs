@@ -72,17 +72,6 @@ test('resolveExpoDevHost defaults to lan and normalizes values', () => {
   assert.equal(resolveExpoDevHost({ env: { HAPPIER_STACK_EXPO_HOST: 'nope' } }), 'lan');
 });
 
-test('buildExpoDevEnv enables Expo Router web modal support', () => {
-  const env = buildExpoDevEnv({
-    baseEnv: { EXPO_UNSTABLE_WEB_MODAL: '0' },
-    apiServerUrl: 'http://127.0.0.1:4000',
-    wantDevClient: false,
-    wantWeb: true,
-  });
-
-  assert.equal(env.EXPO_UNSTABLE_WEB_MODAL, '1');
-});
-
 test('buildExpoStartArgs builds dev-client args (preferred when mobile enabled)', () => {
   const args = buildExpoStartArgs({
     port: 8081,

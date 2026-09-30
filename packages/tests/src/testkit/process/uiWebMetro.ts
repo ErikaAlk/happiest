@@ -288,7 +288,6 @@ export async function startUiWebMetro(params: {
       ...params.env,
       CI: '1',
       EXPO_NO_TELEMETRY: '1',
-      EXPO_UNSTABLE_WEB_MODAL: '1',
       BROWSER: 'none',
       TMPDIR: tmpDir,
       TMP: tmpDir,

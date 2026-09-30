@@ -208,7 +208,7 @@ async function main() {
   await ensureDepsInstalled(happyRepoDir, 'happier-ui');
 
   const { cmd: npxCmd, prefixArgs: npxPrefixArgs } = getNpxRunner();
-  const easEnv = { ...process.env, EXPO_UNSTABLE_WEB_MODAL: '1' };
+  const easEnv = { ...process.env };
 
   async function easCapture(args, { cwd } = {}) {
     return await runCaptureResult(

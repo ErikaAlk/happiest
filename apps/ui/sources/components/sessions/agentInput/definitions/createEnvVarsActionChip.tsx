@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pressable, type View } from 'react-native';
+import { Pressable, type ViewInstance } from 'react-native';
 
 import { AgentInputChipLabel } from '@/components/sessions/agentInput/components/AgentInputChipLabel';
 import { t } from '@/text';
@@ -7,7 +7,7 @@ import { Icon } from '@/components/ui/icons/Icon';
 import { AGENT_INPUT_CHIP_ICON_SIZE_PX, AGENT_INPUT_CHIP_ICON_STYLE } from './agentInputChipIconMetrics';
 
 export function createEnvVarsActionChip(params: Readonly<{
-    anchorRef: React.RefObject<View | null>;
+    anchorRef: React.RefObject<ViewInstance | null>;
     tint: string;
     showLabel: boolean;
     count?: number;

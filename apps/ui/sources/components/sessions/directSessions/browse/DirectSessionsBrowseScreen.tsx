@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { ScrollView } from 'react-native';
+import type { ScrollViewInstance } from 'react-native';
 import type { DirectSessionsProviderId, DirectSessionsSource } from '@happier-dev/protocol';
 
 import { useNavigateToSession } from '@/hooks/session/useNavigateToSession';
@@ -126,7 +126,7 @@ export const DirectSessionsBrowseScreen = React.memo((props: Readonly<{
     const [machineMenuOpen, setMachineMenuOpen] = React.useState(false);
     const [providerMenuOpen, setProviderMenuOpen] = React.useState(false);
     const [sourceMenuOpen, setSourceMenuOpen] = React.useState(false);
-    const popoverBoundaryRef = React.useRef<ScrollView>(null);
+    const popoverBoundaryRef = React.useRef<ScrollViewInstance>(null);
     const effectiveSelectedMachineId = React.useMemo(() => {
         if (lockScope) return lockScope.machineId;
         return getPreferredMachineId(machines, selectedMachineId);

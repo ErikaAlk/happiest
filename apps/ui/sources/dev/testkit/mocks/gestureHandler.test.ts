@@ -146,4 +146,9 @@ describe('reactNativeGestureHandlerStub', () => {
         expect(gestureHandlerStub.GestureDetector).toBe('GestureDetector');
         expect(gestureHandlerStub.ScrollView).toBe('GestureHandlerScrollView');
     });
+
+    it('resolves the ReanimatedSwipeable subpath to its own host-element stub', async () => {
+        const { default: Swipeable } = await import('react-native-gesture-handler/ReanimatedSwipeable');
+        expect(Swipeable).toBe('Swipeable');
+    });
 });

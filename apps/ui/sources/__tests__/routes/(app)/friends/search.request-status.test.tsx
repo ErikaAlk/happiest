@@ -104,7 +104,6 @@ describe('SearchFriendsScreen', () => {
         const screen = await renderScreen(<SearchFriendsScreen />);
 
         const keyboardAwareList = screen.findByType(KeyboardAwareScrollView);
-        expect(keyboardAwareList.props.ScrollViewComponent).toBeTruthy();
         expect(keyboardAwareList.props.keyboardShouldPersistTaps).toBe('handled');
         expect(screen.findAllByType('KeyboardAvoidingView' as any)).toHaveLength(0);
     });

@@ -7,7 +7,8 @@ import {
     type NativeScrollEvent,
     type NativeSyntheticEvent,
     type LayoutChangeEvent,
-    type ViewToken,
+    type ListViewToken,
+    type ViewInstance,
 } from 'react-native';
 import { SessionListVirtualizedList } from '@/components/ui/lists/flashListCompat/SessionListVirtualizedList';
 import { usePathname, useRouter } from 'expo-router';
@@ -793,7 +794,7 @@ export const SessionsListContent = React.memo(function SessionsListContent(props
     const virtualizedListRef = React.useRef<{
         scrollToOffset?: (params: { offset: number; animated?: boolean }) => void;
     } | null>(null);
-    const listViewportRef = React.useRef<View>(null);
+    const listViewportRef = React.useRef<ViewInstance>(null);
     const nativeListScrollInteractionActiveRef = React.useRef(false);
     const scrollToTreeOffset = React.useCallback((offsetY: number) => {
         virtualizedListRef.current?.scrollToOffset?.({ offset: offsetY, animated: false });
@@ -985,7 +986,7 @@ export const SessionsListContent = React.memo(function SessionsListContent(props
     );
     const [viewableSessionRowKeys, setViewableSessionRowKeys] = React.useState<ReadonlySet<string> | null>(null);
     const viewabilityConfigRef = React.useRef({ itemVisiblePercentThreshold: 1 });
-    const handleViewableItemsChangedRef = React.useRef((info: { viewableItems: ViewToken[] }) => {
+    const handleViewableItemsChangedRef = React.useRef((info: { viewableItems: ListViewToken[] }) => {
         const nextKeys = new Set<string>();
         for (const token of info.viewableItems) {
             if (token.isViewable === false) continue;

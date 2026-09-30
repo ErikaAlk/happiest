@@ -55,7 +55,7 @@ async function downloadThemeJson(fileName: string, json: string): Promise<void> 
     }
 
     const file = new File(Paths.cache, fileName);
-    file.write(json);
+    await file.write(json);
     await Sharing.shareAsync(file.uri, {
         mimeType: 'application/json',
         dialogTitle: t('settingsAppearance.themeProfiles.exportProfile'),

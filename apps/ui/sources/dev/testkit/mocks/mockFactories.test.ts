@@ -197,19 +197,52 @@ describe('UI testkit mock factories', () => {
         expect(moduleMock.getPreferredLanguage()).toBe('en');
     });
 
-    it('creates a react-navigation native mock with focus hooks and CommonActions', async () => {
-        const { createReactNavigationNativeMock } = await import('./reactNavigation');
+    it('runs expo-router focus effects only while a focus store reports the route as focused', async () => {
+        const { createExpoRouterMock, createRouteFocusStore } = await import('./router');
+        const focus = createRouteFocusStore(false);
+        const routerMock = createExpoRouterMock({ isFocused: focus });
+        const events: string[] = [];
 
-        const moduleMock = createReactNavigationNativeMock({
-            isFocused: false,
+        function Probe() {
+            const focused = routerMock.module.useIsFocused();
+            routerMock.module.useFocusEffect(React.useCallback(() => {
+                events.push('focus');
+                return () => {
+                    events.push('blur');
+                };
+            }, []));
+            return React.createElement('Probe', { focused });
+        }
+
+        let screen: ReturnType<typeof renderer.create> | undefined;
+        await act(async () => {
+            screen = renderer.create(React.createElement(Probe));
+        });
+        expect(screen!.root.findByType('Probe' as never).props.focused).toBe(false);
+        expect(events).toEqual([]);
+
+        await act(async () => focus.setFocused(true));
+        expect(screen!.root.findByType('Probe' as never).props.focused).toBe(true);
+        await act(async () => focus.setFocused(false));
+        await act(async () => focus.setFocused(true));
+
+        expect(events).toEqual(['focus', 'blur', 'focus']);
+    });
+
+    it('forwards expo-router removal prevention and returns its disable function', async () => {
+        const { createExpoRouterMock } = await import('./router');
+        const registrations: Array<Readonly<{ preventRemove: boolean; hasCallback: boolean }>> = [];
+        const routerMock = createExpoRouterMock({
+            onPreventRemove: (preventRemove, callback) => {
+                registrations.push({ preventRemove, hasCallback: typeof callback === 'function' });
+            },
         });
 
-        expect(moduleMock.useIsFocused()).toBe(false);
-        expect(moduleMock.CommonActions.setParams({ id: 'abc' })).toEqual({
-            type: 'SET_PARAMS',
-            payload: { params: { id: 'abc' } },
-        });
-        expect(typeof moduleMock.useFocusEffect).toBe('function');
+        const disablePrevention = routerMock.module.usePreventRemove(true, () => {});
+        disablePrevention();
+
+        expect(registrations).toEqual([{ preventRemove: true, hasCallback: true }]);
+        expect(routerMock.spies.disablePreventRemove).toHaveBeenCalledTimes(1);
     });
 
     it('creates a text module mock with distinct tLoose and language overrides', async () => {

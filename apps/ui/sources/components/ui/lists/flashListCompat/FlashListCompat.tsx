@@ -42,16 +42,13 @@ function resolveFlatListMaintainVisibleContentPosition<T>(
   if (typeof value.minIndexForVisible !== 'number' || !Number.isFinite(value.minIndexForVisible)) {
     return undefined;
   }
-  const result: NonNullable<FlatListProps<T>['maintainVisibleContentPosition']> = {
-    minIndexForVisible: value.minIndexForVisible,
-  };
-  if (
-    'autoscrollToTopThreshold' in value &&
-    (typeof value.autoscrollToTopThreshold === 'number' || value.autoscrollToTopThreshold == null)
-  ) {
-    result.autoscrollToTopThreshold = value.autoscrollToTopThreshold;
+  if ('autoscrollToTopThreshold' in value && typeof value.autoscrollToTopThreshold === 'number') {
+    return {
+      minIndexForVisible: value.minIndexForVisible,
+      autoscrollToTopThreshold: value.autoscrollToTopThreshold,
+    };
   }
-  return result;
+  return { minIndexForVisible: value.minIndexForVisible };
 }
 
 export type FlashListMappingKey = string | number | bigint;

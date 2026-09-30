@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 import { describe, expect, it, vi } from 'vitest';
 
 import { renderHook } from '@/dev/testkit';
@@ -11,7 +11,7 @@ import { createNewSessionPromptStore } from '@/components/sessions/new/hooks/scr
 function createPanelProps(
     overrides: Partial<NewSessionSimplePanelProps> = {},
 ): NewSessionSimplePanelProps {
-    const popoverBoundaryRef = React.createRef<View>() as React.RefObject<View>;
+    const popoverBoundaryRef = React.createRef<ViewInstance>();
     return {
         popoverBoundaryRef,
         headerHeight: 0,

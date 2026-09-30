@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback, useMemo, useSyncExternalStore, useLayoutEffect } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { storage, useActiveServerAccountScope } from '@/sync/domains/state/storage';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from 'expo-router';
 import { sync } from '@/sync/sync';
 import { fireAndForget } from '@/utils/system/fireAndForget';
 import { clearForkInitialPromptV1, readForkInitialPromptV1 } from '@/sync/domains/sessionFork/forkInitialPromptV1';

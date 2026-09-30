@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, View } from 'react-native';
+import { Platform, View, type ViewInstance } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 import { Typography } from '@/constants/Typography';
 import { SelectableRow, type SelectableRowVariant } from '@/components/ui/lists/SelectableRow';
@@ -112,21 +112,21 @@ export function SelectableMenuResults(props: {
 }) {
     const styles = stylesheet;
     const mouseDownActivatedItemIdRef = React.useRef<string | null>(null);
-    const rowAnchorRefs = React.useRef(new Map<string, React.RefObject<View | null>>());
-    const submenuAnchorRefs = React.useRef(new Map<string, React.RefObject<View | null>>());
+    const rowAnchorRefs = React.useRef(new Map<string, React.RefObject<ViewInstance | null>>());
+    const submenuAnchorRefs = React.useRef(new Map<string, React.RefObject<ViewInstance | null>>());
 
     const allItems = React.useMemo(() => props.categories.flatMap((c) => c.items), [props.categories]);
-    const getRowAnchorRef = React.useCallback((itemId: string): React.RefObject<View | null> => {
+    const getRowAnchorRef = React.useCallback((itemId: string): React.RefObject<ViewInstance | null> => {
         const existing = rowAnchorRefs.current.get(itemId);
         if (existing) return existing;
-        const created = React.createRef<View>();
+        const created = React.createRef<ViewInstance>();
         rowAnchorRefs.current.set(itemId, created);
         return created;
     }, []);
-    const getSubmenuAnchorRef = React.useCallback((itemId: string): React.RefObject<View | null> => {
+    const getSubmenuAnchorRef = React.useCallback((itemId: string): React.RefObject<ViewInstance | null> => {
         const existing = submenuAnchorRefs.current.get(itemId);
         if (existing) return existing;
-        const created = React.createRef<View>();
+        const created = React.createRef<ViewInstance>();
         submenuAnchorRefs.current.set(itemId, created);
         return created;
     }, []);

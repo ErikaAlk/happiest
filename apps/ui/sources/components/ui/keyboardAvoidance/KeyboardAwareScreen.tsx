@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { StyleProp, ViewProps, ViewStyle } from 'react-native';
+import type { StyleProp, ViewInstance, ViewProps, ViewStyle } from 'react-native';
 import { Platform, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
@@ -25,7 +25,7 @@ function renderContent(children: React.ReactNode, contentContainerStyle: StylePr
     return <View style={contentContainerStyle}>{children}</View>;
 }
 
-export const KeyboardAwareScreen = React.forwardRef<View, KeyboardAwareScreenProps>(
+export const KeyboardAwareScreen = React.forwardRef<ViewInstance, KeyboardAwareScreenProps>(
     function KeyboardAwareScreen(
         {
             children,

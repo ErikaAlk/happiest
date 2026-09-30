@@ -2,7 +2,7 @@ import * as React from 'react';
 import type { ItemProps } from '@/components/ui/lists/Item';
 
 export type FilesystemTreeKeyboardNode = Readonly<{ path: string; depth: number; type: string; isExpanded: boolean }>;
-type FocusTarget = { focus?: () => void; ownerDocument?: { activeElement: unknown } };
+type FocusTarget = { focus?: () => void; ownerDocument?: object | null };
 
 /** One keyboard/focus owner for filesystem trees and their changed-file projection. */
 export function useFilesystemTreeKeyboard(nodes: readonly FilesystemTreeKeyboardNode[], onFocusIndex?: (index: number) => void) {
@@ -36,7 +36,9 @@ export function useFilesystemTreeKeyboard(nodes: readonly FilesystemTreeKeyboard
         focusRef: target => {
             if (!target) {
                 const previous = targets.current.get(node.path);
-                if (previous && previous.ownerDocument?.activeElement === previous) pendingFocus.current = node.path;
+                // Only web documents track the focused element.
+                const ownerDocument = previous?.ownerDocument;
+                if (ownerDocument && 'activeElement' in ownerDocument && ownerDocument.activeElement === previous) pendingFocus.current = node.path;
                 targets.current.delete(node.path);
                 return;
             }

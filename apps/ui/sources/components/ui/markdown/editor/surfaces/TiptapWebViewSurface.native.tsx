@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linking, PixelRatio, View } from 'react-native';
+import { Linking, PixelRatio, View, type ViewInstance } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useUnistyles } from 'react-native-unistyles';
 
@@ -349,7 +349,7 @@ export const TiptapWebViewSurface = React.forwardRef<MarkdownEditorSurfaceRef, M
         const viewportLayoutSubscribersRef = React.useRef(new Set<(rect: EditorViewportWindowRect | null) => void>());
         const lastViewportLayoutRef = React.useRef<EditorViewportWindowRect | null>(null);
         // Ref to the outer View for measuring the WebView viewport in window coords.
-        const outerViewRef = React.useRef<View>(null);
+        const outerViewRef = React.useRef<ViewInstance>(null);
 
         // Keep the latest prop callbacks in refs so the message handler stays stable.
         const onChangeRef = React.useRef(props.onChange);

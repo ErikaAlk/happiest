@@ -2,7 +2,7 @@ import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { renderScreen } from '@/dev/testkit';
 
-import { InteractionManager, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import type { ActionListItem } from '@/components/ui/lists/ActionListSection';
 
 vi.mock('@/text', async () => {
@@ -36,20 +36,12 @@ describe('createAttachmentActionChip', () => {
             const [entry] = queuedTimeoutCallbacks.splice(index, 1);
             entry!.handler();
         };
-        type RunAfterInteractionsTask = Parameters<typeof InteractionManager.runAfterInteractions>[0];
-        const createRunAfterInteractionsResult = (): ReturnType<typeof InteractionManager.runAfterInteractions> => ({
-            then: (onfulfilled, onrejected) => Promise.resolve().then(() => onfulfilled?.(), onrejected),
-            done: () => undefined,
-            cancel: () => undefined,
+        // The native platform timer boundary behind runAfterInteractionsWithFallback.
+        const runAfterInteractionsSpy = vi.fn((task: () => void) => {
+            queuedInteractionCallbacks.push(task);
+            return queuedInteractionCallbacks.length;
         });
-        const runAfterInteractionsSpy = vi
-            .spyOn(InteractionManager, 'runAfterInteractions')
-            .mockImplementation((task?: RunAfterInteractionsTask) => {
-                if (typeof task === 'function') {
-                    queuedInteractionCallbacks.push(task);
-                }
-                return createRunAfterInteractionsResult();
-            });
+        vi.stubGlobal('setImmediate', runAfterInteractionsSpy);
         const setTimeoutSpy = vi
             .spyOn(globalThis, 'setTimeout')
             .mockImplementation((handler: TimerHandler, timeout?: number) => {
@@ -136,16 +128,10 @@ describe('createAttachmentActionChip', () => {
             expect(onPasteImage).toHaveBeenCalledTimes(1);
         } finally {
             setTimeoutSpy.mockRestore();
-            runAfterInteractionsSpy.mockRestore();
+            vi.unstubAllGlobals();
             (Platform as any).OS = originalOs;
         }
     });
-
-    // NOTE: a "JS-thread starvation fallback" case used to live here. It mocked
-    // `InteractionManager.runAfterInteractions` to never invoke its task, which RN 0.81's
-    // `InteractionManagerStub` cannot do (it always resolves on a microtask), and it asserted a
-    // timeout fallback that could therefore never fire. Both the fallback and the test were removed;
-    // the iOS case above covers the real contract (interaction task -> 250ms popover-dismiss delay).
 
     it('on web it keeps the attach chip as a direct action (no chooser popover)', async () => {
         const { createAttachmentActionChip } = await import('./createAttachmentActionChip');

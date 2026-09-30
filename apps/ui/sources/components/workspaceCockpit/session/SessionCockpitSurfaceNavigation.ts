@@ -3,6 +3,8 @@ import * as React from 'react';
 import type { SessionMobileSurface } from './sessionCockpitState';
 
 type SessionCockpitSurfaceNavigation = Readonly<{
+    /** Whether this surface is the one currently shown by the cockpit. */
+    isActive: boolean;
     switchSurface: (surface: SessionMobileSurface) => void;
     returnToPreviousSurface: () => void;
 }>;

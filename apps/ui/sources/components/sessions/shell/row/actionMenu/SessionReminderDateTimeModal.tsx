@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, View, type ViewInstance } from 'react-native';
 import { useUnistyles } from 'react-native-unistyles';
 
 import { RoundButton } from '@/components/ui/buttons/RoundButton';
@@ -69,8 +69,8 @@ export function SessionReminderDateTimeModal(props: Readonly<{
     const [timeValue, setTimeValue] = React.useState(() => formatTimeInput(initial));
     const [savePreset, setSavePreset] = React.useState(false);
     const [pickerMode, setPickerMode] = React.useState<'date' | 'time' | null>(null);
-    const dateAnchorRef = React.useRef<View | null>(null);
-    const timeAnchorRef = React.useRef<View | null>(null);
+    const dateAnchorRef = React.useRef<ViewInstance | null>(null);
+    const timeAnchorRef = React.useRef<ViewInstance | null>(null);
     const parsed = parseLocalDateTime(dateValue, timeValue);
     const validTimestamp = parsed !== null && parsed > props.nowMs ? parsed : null;
     const rule = validTimestamp === null ? null : inferSessionReminderPresetRule(validTimestamp, props.nowMs);

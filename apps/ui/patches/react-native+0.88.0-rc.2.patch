@@ -1,24 +1,30 @@
 diff --git a/node_modules/react-native/React/Fabric/Mounting/ComponentViews/ScrollView/RCTScrollViewComponentView.mm b/node_modules/react-native/React/Fabric/Mounting/ComponentViews/ScrollView/RCTScrollViewComponentView.mm
-index 1494fd2..5be9070 100644
+index 14a08b4..e98c4b3 100644
 --- a/node_modules/react-native/React/Fabric/Mounting/ComponentViews/ScrollView/RCTScrollViewComponentView.mm
 +++ b/node_modules/react-native/React/Fabric/Mounting/ComponentViews/ScrollView/RCTScrollViewComponentView.mm
-@@ -976,6 +976,11 @@ - (void)_prepareForMaintainVisibleScrollPosition
+@@ -1060,7 +1060,16 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
+ - (void)_prepareForMaintainVisibleScrollPosition
  {
    const auto &props = static_cast<const ScrollViewProps &>(*_props);
-   if (!props.maintainVisibleContentPosition) {
+-  if (!props.maintainVisibleContentPosition || _avoidAdjustmentForMaintainVisibleContentPosition) {
++  if (!props.maintainVisibleContentPosition) {
 +    // HAPPIER PATCH(react-native-mvcp-null-prop-clear): RN Fabric prepares with old props and
 +    // adjusts with new props in the same mounting transaction. Clear stale anchor state while
-+    // MVCP is disabled so a later re-enable cannot adjust against a recycled ScrollAnchor view.
++    // MVCP is disabled so a later re-enable cannot adjust against an anchor captured before it.
 +    _prevFirstVisibleFrame = CGRectZero;
 +    _firstVisibleView = nil;
++    _firstVisibleViewTag = 0;
++    return;
++  }
++  if (_avoidAdjustmentForMaintainVisibleContentPosition) {
      return;
    }
  
 diff --git a/node_modules/react-native/React/Fabric/Mounting/ComponentViews/TextInput/RCTTextInputComponentView.mm b/node_modules/react-native/React/Fabric/Mounting/ComponentViews/TextInput/RCTTextInputComponentView.mm
-index 577bebe..2cf6d02 100644
+index 8f55121..a669192 100644
 --- a/node_modules/react-native/React/Fabric/Mounting/ComponentViews/TextInput/RCTTextInputComponentView.mm
 +++ b/node_modules/react-native/React/Fabric/Mounting/ComponentViews/TextInput/RCTTextInputComponentView.mm
-@@ -488,6 +488,36 @@ - (void)textInputDidChange
+@@ -506,6 +506,36 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
  
    [self _updateState];
  
@@ -55,7 +61,7 @@ index 577bebe..2cf6d02 100644
    if (_eventEmitter) {
      const auto &textInputEventEmitter = static_cast<const TextInputEventEmitter &>(*_eventEmitter);
      textInputEventEmitter.onChange([self _textInputMetrics]);
-@@ -762,6 +792,20 @@ - (void)_setAttributedString:(NSAttributedString *)attributedString
+@@ -795,6 +825,20 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
    }
    UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
    NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
@@ -76,7 +82,7 @@ index 577bebe..2cf6d02 100644
    _backedTextInputView.attributedText = attributedString;
    // Updating the UITextView attributedText, for example changing the lineHeight, the color or adding
    // a new paragraph with \n, causes the cursor to move to the end of the Text and scroll.
-@@ -775,7 +819,17 @@ - (void)_setAttributedString:(NSAttributedString *)attributedString
+@@ -808,7 +852,17 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
                                                                   offset:newOffset];
    [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                                notifyDelegate:YES];
@@ -95,46 +101,3 @@ index 577bebe..2cf6d02 100644
  
    // A zero-length selection range can cause the caret position to change on iOS,
    // and we have already updated the caret position, so we can safely ignore caret changing in this place.
-diff --git a/node_modules/react-native/third-party-podspecs/RCT-Folly.podspec b/node_modules/react-native/third-party-podspecs/RCT-Folly.podspec
-index 8852179..8464945 100644
---- a/node_modules/react-native/third-party-podspecs/RCT-Folly.podspec
-+++ b/node_modules/react-native/third-party-podspecs/RCT-Folly.podspec
-@@ -25,7 +25,9 @@ Pod::Spec.new do |spec|
-   spec.dependency "DoubleConversion"
-   spec.dependency "glog"
-   spec.dependency "fast_float", "8.0.0"
--  spec.dependency "fmt", "11.0.2"
-+  # HAPPIER PATCH(fmt-clang21-consteval): kept in lockstep with third-party-podspecs/fmt.podspec,
-+  # which is bumped to 11.2.0 so fmt compiles under Apple clang 21 (Xcode 26.6).
-+  spec.dependency "fmt", "11.2.0"
-   spec.compiler_flags = '-Wno-documentation -faligned-new'
-   spec.source_files = 'folly/String.cpp',
-                       'folly/Conv.cpp',
-diff --git a/node_modules/react-native/third-party-podspecs/fmt.podspec b/node_modules/react-native/third-party-podspecs/fmt.podspec
-index 2f38990..4a91ec4 100644
---- a/node_modules/react-native/third-party-podspecs/fmt.podspec
-+++ b/node_modules/react-native/third-party-podspecs/fmt.podspec
-@@ -8,14 +8,21 @@ fmt_git_url = fmt_config[:git]
- 
- Pod::Spec.new do |spec|
-   spec.name = "fmt"
--  spec.version = "11.0.2"
-+  # HAPPIER PATCH(fmt-clang21-consteval): React Native 0.81 pins fmt 11.0.2, whose FMT_STRING
-+  # compile-time format strings in format-inl.h fail to compile under Apple clang 21 (Xcode 26.6)
-+  # with "call to consteval function ... is not a constant expression": the two string-literal
-+  # evaluations behind a compile string no longer share object identity during constant evaluation,
-+  # so the `it - begin()` pointer subtraction in basic_format_parse_context::advance_to is not a
-+  # constant expression. Upstream fixed this in the 11.1/11.2 line; 11.2.0 compiles clean.
-+  # Revert once React Native ships fmt >= 11.2.0 itself.
-+  spec.version = "11.2.0"
-   spec.license = { :type => "MIT" }
-   spec.homepage = "https://github.com/fmtlib/fmt"
-   spec.summary = "{fmt} is an open-source formatting library for C++. It can be used as a safe and fast alternative to (s)printf and iostreams."
-   spec.authors = "The fmt contributors"
-   spec.source = {
-     :git => fmt_git_url,
--    :tag => "11.0.2"
-+    :tag => "11.2.0"
-   }
-   spec.pod_target_xcconfig = {
-     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),

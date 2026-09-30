@@ -1,8 +1,8 @@
 diff --git a/node_modules/@expo/metro-config/build/transform-worker/getAssets.js b/node_modules/@expo/metro-config/build/transform-worker/getAssets.js
-index d7433e4..1882aea 100644
+index 70db7bd..d76647f 100644
 --- a/node_modules/@expo/metro-config/build/transform-worker/getAssets.js
 +++ b/node_modules/@expo/metro-config/build/transform-worker/getAssets.js
-@@ -66,7 +66,7 @@ async function ensureOtaAssetHashesAsync(asset) {
+@@ -120,7 +120,7 @@ async function ensureOtaAssetHashesAsync(asset) {
      if (assetPathQueryParameter && assetPathQueryParameter[2]) {
          const assetPath = assetPathQueryParameter[2];
          // @ts-expect-error: marked as read-only

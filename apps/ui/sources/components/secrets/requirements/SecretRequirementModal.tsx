@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pressable, Platform, ScrollView, View } from 'react-native';
+import { Pressable, Platform, ScrollView, View, type ScrollViewInstance } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import type { AIBackendProfile } from '@/sync/domains/profiles/profileCompatibility';
@@ -118,7 +118,7 @@ export function SecretRequirementModal(props: SecretRequirementModalProps) {
         edgeThreshold: 1,
     });
 
-    const scrollRef = React.useRef<ScrollView>(null);
+    const scrollRef = React.useRef<ScrollViewInstance>(null);
     const wheelScrollHandlers = useScrollViewWheelScrollTo(scrollRef, {
         onScroll: fades.onScroll,
     });

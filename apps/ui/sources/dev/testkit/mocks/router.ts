@@ -16,11 +16,30 @@ export type StackOptionsCapture = Readonly<{
     getResolved: () => StackScreenOptions | null;
 }>;
 
+/** Route focus that re-renders `useIsFocused` subscribers when a test moves it. */
+export type RouteFocusStore = Readonly<{
+    isFocused: () => boolean;
+    setFocused: (focused: boolean) => void;
+    subscribe: (listener: () => void) => () => void;
+}>;
+
+export type PreventRemoveCallback = (event: Readonly<{
+    data: Readonly<{ action: unknown }>;
+    repeat: () => void;
+}>) => void;
+
 export type ExpoRouterMockOptions = Readonly<{
     pathname?: ExpoRouterPathnameInput;
     params?: ExpoRouterParamsInput;
     segments?: ExpoRouterSegmentsInput;
     navigation?: unknown;
+    /**
+     * Route focus reported by `useIsFocused`. A function is read on every render; a
+     * {@link RouteFocusStore} also re-renders subscribers when it changes.
+     */
+    isFocused?: boolean | (() => boolean) | RouteFocusStore;
+    /** Receives every `usePreventRemove(preventRemove, callback)` registration. */
+    onPreventRemove?: (preventRemove: boolean, callback: PreventRemoveCallback | undefined) => void;
     router?: Partial<{
         push: (value: unknown) => unknown;
         navigate: (value: unknown, options?: unknown) => unknown;
@@ -99,6 +118,39 @@ function resolvePathnameInput(pathname: ExpoRouterPathnameInput | undefined): st
     return resolved ?? '/';
 }
 
+function resolveIsFocusedInput(isFocused: ExpoRouterMockOptions['isFocused']): boolean {
+    if (typeof isFocused === 'object') {
+        return isFocused.isFocused();
+    }
+    const resolved = typeof isFocused === 'function' ? isFocused() : isFocused;
+    return resolved ?? true;
+}
+
+function subscribeToNothing(): () => void {
+    return () => {};
+}
+
+export function createRouteFocusStore(initialFocused = true): RouteFocusStore {
+    let focused = initialFocused;
+    const listeners = new Set<() => void>();
+
+    return {
+        isFocused: () => focused,
+        setFocused: (nextFocused) => {
+            focused = nextFocused;
+            for (const listener of [...listeners]) {
+                listener();
+            }
+        },
+        subscribe: (listener) => {
+            listeners.add(listener);
+            return () => {
+                listeners.delete(listener);
+            };
+        },
+    };
+}
+
 function resolveStackScreenOptions(options: StackScreenOptionsInput | null): StackScreenOptions | null {
     if (!options) {
         return null;
@@ -133,6 +185,10 @@ export function createExpoRouterMock(options: ExpoRouterMockOptions = {}) {
     const trackedDismissTo = createTrackedRouterMethod<[unknown], unknown>(options.router?.dismissTo);
     const trackedDismissAll = createTrackedRouterMethod<[], unknown>(options.router?.dismissAll);
     const trackedSetParams = createTrackedRouterMethod<[ExpoRouterParams], unknown>(options.router?.setParams);
+    const disablePreventRemove = vi.fn<() => void>();
+    const subscribeToFocus = typeof options.isFocused === 'object' ? options.isFocused.subscribe : subscribeToNothing;
+    const readFocus = () => resolveIsFocusedInput(options.isFocused);
+    const useIsFocused = () => React.useSyncExternalStore(subscribeToFocus, readFocus, readFocus);
     const router = Object.assign(options.router ?? {}, {
         push: trackedPush.method,
         navigate: trackedNavigate.method,
@@ -151,6 +207,7 @@ export function createExpoRouterMock(options: ExpoRouterMockOptions = {}) {
         dismissTo: trackedDismissTo.spy,
         dismissAll: trackedDismissAll.spy,
         setParams: trackedSetParams.spy,
+        disablePreventRemove,
     };
 
     let paramsOverrides: ExpoRouterParams = {};
@@ -189,6 +246,7 @@ export function createExpoRouterMock(options: ExpoRouterMockOptions = {}) {
     spies.dismissTo.mockName('router.dismissTo');
     spies.dismissAll.mockName('router.dismissAll');
     spies.setParams.mockName('router.setParams');
+    spies.disablePreventRemove.mockName('usePreventRemove.disablePrevention');
 
     return {
         state,
@@ -196,6 +254,11 @@ export function createExpoRouterMock(options: ExpoRouterMockOptions = {}) {
         module: {
             Redirect: (props: Record<string, unknown>) => React.createElement('Redirect', props),
             Link: 'Link' as any,
+            Slot: (props: Record<string, unknown>) => React.createElement('Slot', props),
+            ThemeProvider: (props: { value?: unknown; children?: React.ReactNode }) =>
+                React.createElement('ThemeProvider', { value: props.value }, props.children ?? null),
+            DefaultTheme: { dark: false, colors: {}, fonts: {} },
+            DarkTheme: { dark: true, colors: {}, fonts: {} },
             Stack: Object.assign(
                 function Stack(props: { children?: React.ReactNode }) {
                     return React.createElement(React.Fragment, null, props.children ?? null);
@@ -215,6 +278,16 @@ export function createExpoRouterMock(options: ExpoRouterMockOptions = {}) {
             usePathname: () => resolvePathnameInput(options.pathname),
             useLocalSearchParams: () => syncParams(),
             useGlobalSearchParams: () => syncParams(),
+            useIsFocused,
+            // Like the real hook: runs while the route is focused and cleans up on blur.
+            useFocusEffect: (effect: () => void | (() => void)) => {
+                const focused = useIsFocused();
+                React.useEffect(() => (focused ? effect() : undefined), [effect, focused]);
+            },
+            usePreventRemove: (preventRemove: boolean, callback?: PreventRemoveCallback) => {
+                options.onPreventRemove?.(preventRemove, callback);
+                return disablePreventRemove;
+            },
             router: state.router,
         },
     };

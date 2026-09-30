@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pressable, View, type View as RNView } from 'react-native';
+import { Pressable, View, type ViewInstance } from 'react-native';
 import { ResumeChip } from './ResumeChip';
 import { normalizeNodeForView } from '@/components/ui/rendering/normalizeNodeForView';
 import { Text } from '@/components/ui/text/Text';
@@ -23,11 +23,11 @@ export type PathAndResumeRowProps = {
     showChipLabels: boolean;
     iconColor: string;
     currentPath?: string | null;
-    pathChipAnchorRef?: React.RefObject<RNView | null>;
+    pathChipAnchorRef?: React.RefObject<ViewInstance | null>;
     onPathClick?: () => void;
     emptyPathLabel: string;
     resumeSessionId?: string | null;
-    resumeChipAnchorRef?: React.RefObject<RNView | null>;
+    resumeChipAnchorRef?: React.RefObject<ViewInstance | null>;
     onResumeClick?: () => void;
     resumeLabelTitle: string;
     resumeLabelOptional: string;

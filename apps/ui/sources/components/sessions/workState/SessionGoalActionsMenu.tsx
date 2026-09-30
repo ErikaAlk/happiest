@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, Pressable, View } from 'react-native';
+import { Platform, Pressable, View, type ViewInstance } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { ActionListSection, type ActionListItem } from '@/components/ui/lists/ActionListSection';
@@ -34,7 +34,7 @@ export function SessionGoalActionsMenu(props: Readonly<{
 }>) {
     const { theme } = useUnistyles();
     const [open, setOpen] = React.useState(false);
-    const anchorRef = React.useRef<View>(null);
+    const anchorRef = React.useRef<ViewInstance>(null);
 
     if (props.actions.length === 0) return null;
 

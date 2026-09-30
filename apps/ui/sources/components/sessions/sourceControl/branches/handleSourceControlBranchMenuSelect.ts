@@ -1,4 +1,4 @@
-import type { Router } from 'expo-router';
+import type { ImperativeRouter } from 'expo-router';
 
 import { resolveNewSessionDraftRouteIdentity } from '@/components/sessions/new/navigation/newSessionDraftRouteIdentity';
 import { buildNewSessionLaunchRouteParams } from '@/components/sessions/new/navigation/newSessionRouteParams';
@@ -19,7 +19,7 @@ export async function handleSourceControlBranchMenuSelect(input: Readonly<{
     openNewSessionForDirectory: (directory: string) => void;
     pruneWorktrees: () => Promise<void>;
     removeWorktree: (worktreePath: string) => Promise<void>;
-    router: Router;
+    router: ImperativeRouter;
     setIncludeRemotes: (value: boolean) => void;
     setOpen: (value: boolean) => void;
     switchBranch: (branchName: string) => Promise<void>;

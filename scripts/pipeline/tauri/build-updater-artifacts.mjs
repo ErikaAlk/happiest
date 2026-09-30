@@ -11,7 +11,6 @@ import { resolveTauriSigningPrivateKeyPassword } from './resolve-signing-key-pas
 import { resolveYarnInvocation } from './resolve-yarn-invocation.mjs';
 import { formatPublicReleaseChannelChoices, normalizePublicReleaseChannel } from '../release/lib/public-release-rings.mjs';
 import { execFileSyncPortable } from '../lib/exec-file-sync-portable.mjs';
-import { applyExpoWebModalEnv } from '../expo/expoWebModalEnv.mjs';
 import { createTauriActoolEnvironment } from '../../../apps/ui/scripts/tauriActoolEnvironment.mjs';
 
 function fail(message) {
@@ -513,13 +512,13 @@ function main() {
     configs.push('--config', codesignOverride);
   }
 
-  const baseTauriEnv = applyExpoWebModalEnv({
+  const baseTauriEnv = {
     CI: 'true',
     APP_ENV: environment,
     ...(process.platform === 'linux' ? resolveLinuxTauriBundlerEnvOverrides(process.env) : {}),
     ...(signingKeyPath ? { TAURI_SIGNING_PRIVATE_KEY: signingKeyPath } : {}),
     ...(signingKeyPassword ? { TAURI_SIGNING_PRIVATE_KEY_PASSWORD: signingKeyPassword } : {}),
-  });
+  };
 
   // Build the frontend assets once, outside of Tauri's internal beforeBuild hook.
   if (!bundleOnly && platform === 'win32') {

@@ -3,10 +3,9 @@ import {
     Animated,
     View,
     Platform,
-    TextInput as RNTextInput,
-    type NativeSyntheticEvent,
     type StyleProp,
-    type TextInputKeyPressEventData,
+    type TextInputInstance,
+    type TextInputKeyPressEvent,
     type TextStyle,
     type ViewStyle,
 } from 'react-native';
@@ -57,13 +56,13 @@ function isWebKeyDownTarget(value: unknown): value is WebKeyDownTarget {
     );
 }
 
-function assignInputRef(ref: React.Ref<RNTextInput> | undefined, value: RNTextInput | null): void {
+function assignInputRef(ref: React.Ref<TextInputInstance> | undefined, value: TextInputInstance | null): void {
     if (!ref) return;
     if (typeof ref === 'function') {
         ref(value);
         return;
     }
-    (ref as React.MutableRefObject<RNTextInput | null>).current = value;
+    (ref as React.MutableRefObject<TextInputInstance | null>).current = value;
 }
 
 const stylesheet = StyleSheet.create((theme) => ({
@@ -190,14 +189,14 @@ export type SelectionListSearchHeaderProps = Readonly<{
     testID?: string;
     style?: StyleProp<ViewStyle>;
     /** Hook the underlying TextInput ref so the parent can imperatively focus. */
-    inputRef?: React.Ref<RNTextInput>;
+    inputRef?: React.Ref<TextInputInstance>;
     /**
      * Key event handler. Web sends `KeyboardEvent`-like objects via rn-web's
-     * `onKeyPress`; native sends `NativeSyntheticEvent<TextInputKeyPressEventData>`.
+     * `onKeyPress`; native sends `TextInputKeyPressEvent`.
      * Modeled here as the union so consumers don't need to cast.
      */
     onKeyPress?: (
-        event: NativeSyntheticEvent<TextInputKeyPressEventData> | {
+        event: TextInputKeyPressEvent | {
             key?: string;
             isComposing?: boolean;
             metaKey?: boolean;
@@ -205,7 +204,7 @@ export type SelectionListSearchHeaderProps = Readonly<{
             shiftKey?: boolean;
             preventDefault?: () => void;
             stopPropagation?: () => void;
-            nativeEvent?: TextInputKeyPressEventData & {
+            nativeEvent?: TextInputKeyPressEvent['nativeEvent'] & {
                 isComposing?: boolean;
                 metaKey?: boolean;
                 ctrlKey?: boolean;
@@ -294,8 +293,8 @@ export function SelectionListSearchHeader(props: SelectionListSearchHeaderProps)
         outputRange: [-6, 6],
     });
 
-    const inputNodeRef = React.useRef<RNTextInput | null>(null);
-    const setInputNodeRef = React.useCallback((node: RNTextInput | null) => {
+    const inputNodeRef = React.useRef<TextInputInstance | null>(null);
+    const setInputNodeRef = React.useCallback((node: TextInputInstance | null) => {
         inputNodeRef.current = node;
         assignInputRef(props.inputRef, node);
     }, [props.inputRef]);
@@ -381,7 +380,7 @@ export function SelectionListSearchHeader(props: SelectionListSearchHeaderProps)
                     metaKey: event.metaKey,
                     ctrlKey: event.ctrlKey,
                     shiftKey: event.shiftKey,
-                } as TextInputKeyPressEventData & {
+                } as TextInputKeyPressEvent['nativeEvent'] & {
                     isComposing?: boolean;
                     metaKey?: boolean;
                     ctrlKey?: boolean;

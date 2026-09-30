@@ -5,7 +5,7 @@ import {
     useConnectedServiceQuotaSnapshot,
     type UseConnectedServiceQuotaSnapshotResult,
 } from '@/hooks/server/connectedServices/useConnectedServiceQuotaSnapshot';
-import type { ComposedGesture, GestureType } from 'react-native-gesture-handler';
+import type { GestureType, LegacyComposedGesture } from 'react-native-gesture-handler';
 
 import { buildQuotaResetRows } from '@/sync/domains/connectedServices/buildQuotaResetRows';
 import {
@@ -76,7 +76,7 @@ export interface AccountBlockProps {
     /** poolMember: select this member as the active account (leading radio). */
     onSetActive?: () => void;
     /** poolMember: inline drag-reorder pan gesture (rendered INLINE in the view). */
-    reorderGesture?: GestureType | ComposedGesture;
+    reorderGesture?: GestureType | LegacyComposedGesture;
     showDivider?: boolean;
     testID?: string;
     /** Pool-owned allowance policy. Omitted on direct account surfaces. */

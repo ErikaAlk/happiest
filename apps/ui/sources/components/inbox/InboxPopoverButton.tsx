@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, Pressable, View } from 'react-native';
+import { Platform, Pressable, View, type ViewInstance } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { Icon } from '@/components/ui/icons/Icon';
@@ -47,7 +47,7 @@ export const InboxPopoverButton = React.memo(function InboxPopoverButton(props: 
     testID?: string;
 }>) {
     const { theme } = useUnistyles();
-    const anchorRef = React.useRef<View>(null);
+    const anchorRef = React.useRef<ViewInstance>(null);
     const [open, setOpen] = React.useState(false);
     const [webAnchorRect, setWebAnchorRect] = React.useState<Readonly<{
         left: number;

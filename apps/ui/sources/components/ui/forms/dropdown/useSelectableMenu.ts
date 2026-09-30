@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { TextInput } from 'react-native';
+import type { TextInputInstance } from 'react-native';
 import type { SelectableMenuCategory, SelectableMenuItem } from './selectableMenuTypes';
 import { t } from '@/text';
 
@@ -40,7 +40,7 @@ export function useSelectableMenu(params: {
     const [searchQuery, setSearchQuery] = useState('');
     const allowEmptySelection = params.allowEmptySelection === true;
     const [selectedIndex, setSelectedIndex] = useState<number>(() => (allowEmptySelection ? -1 : 0));
-    const inputRef = useRef<TextInput>(null);
+    const inputRef = useRef<TextInputInstance>(null);
 
     const allItemsRaw = useMemo(() => params.items, [params.items]);
     const defaultCategoryTitle = t('dropdown.category.general');

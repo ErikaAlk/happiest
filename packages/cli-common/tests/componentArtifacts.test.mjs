@@ -1598,7 +1598,6 @@ test('buildServerBinaryArtifactPayload builds ui-web dist when it is missing', a
 
     const artifacts = await import('../dist/componentArtifacts/index.js');
     const runCalls = [];
-    let uiWebExportEnv = null;
     await artifacts.buildServerBinaryArtifactPayload({
       repoRoot,
       payloadDir,
@@ -1610,14 +1609,13 @@ test('buildServerBinaryArtifactPayload builds ui-web dist when it is missing', a
         arch: 'x64',
       }),
       commandProbe: () => true,
-      runCommand: (cmd, args, options) => {
+      runCommand: (cmd, args) => {
         runCalls.push({ cmd, args });
         const argsText = Array.isArray(args) ? args.join(' ') : '';
         if (cmd === process.execPath && argsText.includes('apps/ui/scripts/ensureWorkspacePackagesBuilt.mjs')) {
           return;
         }
         if (argsText.includes('--cwd apps/ui') && argsText.includes('expo export --platform web --output-dir dist')) {
-          uiWebExportEnv = options?.env ?? null;
           const uiDistDir = join(repoRoot, 'apps', 'ui', 'dist');
           mkdirSync(uiDistDir, { recursive: true });
           writeFileSync(join(uiDistDir, 'index.html'), '<html>ui built</html>\n', 'utf8');
@@ -1653,7 +1651,6 @@ test('buildServerBinaryArtifactPayload builds ui-web dist when it is missing', a
       { cmd: 'yarn', args: ['--cwd', 'apps/ui', '-s', 'expo', 'export', '--platform', 'web', '--output-dir', 'dist'] },
       { cmd: process.execPath, args: ['scripts/pipeline/release/precompress-ui-web-assets.mjs', '--dir', 'apps/ui/dist'] },
     ]);
-    assert.equal(uiWebExportEnv?.EXPO_UNSTABLE_WEB_MODAL, '1');
     assert.equal(readFileSync(join(payloadDir, 'ui-web', 'current', 'index.html'), 'utf8'), '<html>ui built</html>\n');
     assert.equal(readFileSync(join(payloadDir, 'ui-web', 'current', 'main.js.br'), 'utf8'), 'br-sidecar\n');
     assert.equal(readFileSync(join(payloadDir, 'ui-web', 'current', 'main.js.gz'), 'utf8'), 'gz-sidecar\n');

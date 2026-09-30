@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pressable, type View } from 'react-native';
+import { Pressable, type ViewInstance } from 'react-native';
 import { ActivitySpinner } from '@/components/ui/feedback/ActivitySpinner';
 import { t } from '@/text';
 import { normalizeNodeForView } from '@/components/ui/rendering/normalizeNodeForView';
@@ -26,7 +26,7 @@ export function formatResumeChipLabel(params: {
 }
 
 export type ResumeChipProps = {
-    anchorRef?: React.RefObject<View | null>;
+    anchorRef?: React.RefObject<ViewInstance | null>;
     onPress: () => void;
     showLabel: boolean;
     resumeSessionId: string | null | undefined;

@@ -1,5 +1,5 @@
 import { act } from 'react-test-renderer';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { ScmWorkingSnapshot } from '@/sync/domains/state/storageTypes';
 
@@ -11,9 +11,11 @@ const readCachedSnapshotForMachinePathMock = vi.hoisted(() => vi.fn());
 const fetchSnapshotForMachinePathMock = vi.hoisted(() => vi.fn());
 const readCachedWorktreesEnrichmentMock = vi.hoisted(() => vi.fn());
 const fetchWorktreesEnrichmentMock = vi.hoisted(() => vi.fn());
-const focusEffectRunnerState = vi.hoisted(() => ({
-    callback: null as null | (() => void | (() => void)),
-}));
+// The picker screen starts unfocused so each spec decides when the route gains focus.
+const routeFocus = await vi.hoisted(async () => {
+    const { createRouteFocusStore } = await import('@/dev/testkit/mocks/router');
+    return createRouteFocusStore(false);
+});
 
 vi.mock('@/scm/scmRepositoryService', async () => {
     const actual = await vi.importActual<typeof import('@/scm/scmRepositoryService')>(
@@ -30,11 +32,10 @@ vi.mock('@/scm/scmRepositoryService', async () => {
     };
 });
 
-vi.mock('@react-navigation/native', () => ({
-    useFocusEffect: (callback: () => void | (() => void)) => {
-        focusEffectRunnerState.callback = callback;
-    },
-}));
+vi.mock('expo-router', async () => {
+    const { createExpoRouterMock } = await import('@/dev/testkit/mocks/router');
+    return createExpoRouterMock({ isFocused: routeFocus }).module;
+});
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -86,6 +87,10 @@ function makeSnapshot(partial?: Partial<ScmWorkingSnapshot>): ScmWorkingSnapshot
 }
 
 describe('useNewSessionRepoScmSnapshot', () => {
+    beforeEach(() => {
+        routeFocus.setFocused(false);
+    });
+
     it('seeds the hook from the cached light snapshot while the refresh request is still in flight', async () => {
         const cachedSnapshot = makeSnapshot({ fetchedAt: 1 });
         let resolveFetch: ((value: ScmWorkingSnapshot | null) => void) | null = null;
@@ -103,7 +108,7 @@ describe('useNewSessionRepoScmSnapshot', () => {
         }));
 
         await act(async () => {
-            focusEffectRunnerState.callback?.();
+            routeFocus.setFocused(true);
         });
 
         expect(hook.getCurrent()).toEqual(cachedSnapshot);
@@ -130,7 +135,7 @@ describe('useNewSessionRepoScmSnapshot', () => {
         }));
 
         await act(async () => {
-            focusEffectRunnerState.callback?.();
+            routeFocus.setFocused(true);
         });
         await flushHookEffects();
 
@@ -174,7 +179,7 @@ describe('useNewSessionRepoScmSnapshot', () => {
         }));
 
         await act(async () => {
-            focusEffectRunnerState.callback?.();
+            routeFocus.setFocused(true);
         });
         await flushHookEffects();
 
@@ -214,7 +219,7 @@ describe('useNewSessionRepoScmSnapshot', () => {
         }));
 
         await act(async () => {
-            focusEffectRunnerState.callback?.();
+            routeFocus.setFocused(true);
         });
         await flushHookEffects();
 
@@ -294,7 +299,7 @@ describe('useNewSessionRepoScmSnapshot', () => {
         );
 
         await act(async () => {
-            focusEffectRunnerState.callback?.();
+            routeFocus.setFocused(true);
         });
         await flushHookEffects();
         expect(hook.getCurrent()?.repo.rootPath).toBe('/repo');
@@ -337,7 +342,7 @@ describe('useNewSessionRepoScmSnapshot', () => {
             { initialProps: { machineId: 'machine-a', path: '/repo' } },
         );
         await act(async () => {
-            focusEffectRunnerState.callback?.();
+            routeFocus.setFocused(true);
         });
         await flushHookEffects();
         expect(hook.getCurrent()?.repo.rootPath).toBe('/repo');
@@ -371,14 +376,17 @@ describe('useNewSessionRepoScmSnapshot', () => {
         }));
 
         await act(async () => {
-            focusEffectRunnerState.callback?.();
+            routeFocus.setFocused(true);
         });
         await flushHookEffects();
 
         expect(hook.getCurrent()).toEqual(focusedSnapshot);
 
         await act(async () => {
-            focusEffectRunnerState.callback?.();
+            routeFocus.setFocused(false);
+        });
+        await act(async () => {
+            routeFocus.setFocused(true);
         });
         await flushHookEffects();
 

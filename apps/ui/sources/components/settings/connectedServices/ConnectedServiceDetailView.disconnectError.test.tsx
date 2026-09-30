@@ -47,10 +47,6 @@ installConnectedServicesCommonModuleMocks({
 });
 installConnectedServiceDetailShellMocks();
 
-vi.mock('@react-navigation/native', () => ({
-  useIsFocused: () => true,
-}));
-
 vi.mock('@/auth/context/AuthContext', () => ({
   useAuth: () => ({ credentials: { token: 't', secret: Buffer.from(new Uint8Array(32).fill(3)).toString('base64url') } }),
 }));

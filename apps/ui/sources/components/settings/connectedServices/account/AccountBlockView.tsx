@@ -2,8 +2,8 @@ import * as React from 'react';
 import { Platform, Pressable, View } from 'react-native';
 import {
     GestureDetector,
-    type ComposedGesture,
     type GestureType,
+    type LegacyComposedGesture,
 } from 'react-native-gesture-handler';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
@@ -100,7 +100,7 @@ export interface AccountBlockViewProps {
      * never passed down as a pre-built element — that element-through-memo path
      * crashes RNGH's web wrapper under React 19 + RNGH 2.28.
      */
-    reorderGesture?: GestureType | ComposedGesture;
+    reorderGesture?: GestureType | LegacyComposedGesture;
     showDivider?: boolean;
     testID?: string;
     quota: AccountBlockQuotaView | null;

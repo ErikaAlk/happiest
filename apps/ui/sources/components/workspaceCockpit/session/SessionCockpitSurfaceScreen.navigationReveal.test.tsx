@@ -78,8 +78,6 @@ vi.mock('expo-router', async () => {
     return createExpoRouterMock({ pathname: () => '/session/session-1/navigation' }).module;
 });
 
-vi.mock('@react-navigation/native', () => ({ useIsFocused: () => true }));
-
 vi.mock('react-native-safe-area-context', () => ({
     useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
@@ -163,7 +161,7 @@ async function loadCockpitHarness(): Promise<React.ComponentType<Readonly<{ even
         return (
             <AppPaneProvider>
                 <SessionCockpitChromeRegistryProvider>
-                    <SessionCockpitSurfaceNavigationProvider value={{ switchSurface, returnToPreviousSurface: () => switchSurface('chat') }}>
+                    <SessionCockpitSurfaceNavigationProvider value={{ isActive: true, switchSurface, returnToPreviousSurface: () => switchSurface('chat') }}>
                         <SessionCockpitSurfaceScreen
                             sessionId="session-1"
                             scopeId="session:session-1"

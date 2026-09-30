@@ -2,7 +2,7 @@
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import { expect, it, vi } from 'vitest';
-import type { NativeScrollEvent, NativeSyntheticEvent, ScrollView } from 'react-native';
+import type { NativeScrollEvent, NativeSyntheticEvent, ScrollViewInstance } from 'react-native';
 import { installMarkdownCommonModuleMocks } from './markdownTestHelpers';
 import { useMarkdownReadingAnchor } from '@/components/sessions/files/file/useMarkdownReadingAnchor';
 
@@ -33,7 +33,7 @@ it('measures a moved unchanged RNW block without a ResizeObserver size notificat
     function Preview({ markdown }: { markdown: string }) {
         const reading = useMarkdownReadingAnchor('same-file', 24);
         onScroll = reading.onScroll;
-        reading.scrollRef.current = { scrollTo: ({ y }: { y: number }) => { scrollY = y; } } as unknown as ScrollView;
+        reading.scrollRef.current = { scrollTo: ({ y }: { y: number }) => { scrollY = y; } } as unknown as ScrollViewInstance;
         return <MarkdownView markdown={markdown} sourceRangeLayoutObserver={reading.observer} />;
     }
     try {

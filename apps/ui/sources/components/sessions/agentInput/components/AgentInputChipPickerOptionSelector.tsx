@@ -31,7 +31,7 @@ type WebHoverablePressableState = Readonly<{
   hovered?: boolean;
 }>;
 
-type WebClickableViewProps = React.ComponentPropsWithRef<typeof View> & {
+type WebClickableViewProps = Omit<React.ComponentPropsWithRef<typeof View>, "onKeyDown"> & {
   onClick?: (event?: unknown) => void;
   onKeyDown?: (event: {
     key?: string;

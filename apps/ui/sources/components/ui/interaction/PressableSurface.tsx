@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, Pressable, type View } from 'react-native';
+import { Platform, Pressable, type ViewInstance } from 'react-native';
 import type {
     AccessibilityRole,
     AccessibilityState,
@@ -65,7 +65,7 @@ export const PressableSurface = React.memo((props: PressableSurfaceProps) => {
     const keyboardModality = useIsKeyboardModality();
     const [focused, setFocused] = React.useState(false);
     const [hovered, setHovered] = React.useState(false);
-    const anchorRef = React.useRef<View | null>(null);
+    const anchorRef = React.useRef<ViewInstance | null>(null);
     const ringVisible = focused && keyboardModality && !disabled;
     // `FocusRing` runs a Reanimated animated style, so an always-mounted one would cost a shared
     // value per control on every surface in the app for a ring that native can never show (RN

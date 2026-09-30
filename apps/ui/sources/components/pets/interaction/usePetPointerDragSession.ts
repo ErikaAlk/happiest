@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, type View } from 'react-native';
+import { Platform, type ViewInstance } from 'react-native';
 import type { PetAnimationStateV1 } from '@happier-dev/protocol';
 
 import { resolvePointerClientPoint } from '@/components/ui/panels/resolvePointerClientPoint';
@@ -209,7 +209,7 @@ export function usePetPointerDragSession(input: Readonly<{
     onActivate?: () => void | Promise<void>;
 }>): {
     dragState: PetAnimationStateV1 | null;
-    dragTargetRef: React.RefCallback<View>;
+    dragTargetRef: React.RefCallback<ViewInstance>;
     pointerHandlers: Readonly<{
         onPointerDown?: (event: unknown) => void;
         onMouseDown?: (event: unknown) => void;
@@ -393,7 +393,7 @@ export function usePetPointerDragSession(input: Readonly<{
         });
     }, [cleanupActiveDrag, endActiveDrag, handleMove]);
 
-    const dragTargetRef = React.useCallback((node: View | null) => {
+    const dragTargetRef = React.useCallback((node: ViewInstance | null) => {
         const previous = attachedTargetRef.current;
         if (previous) {
             previous.removeEventListener?.('pointerdown', startDrag as EventListener);

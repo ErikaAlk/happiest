@@ -1,0 +1,177 @@
+diff --git a/node_modules/react-native-worklets/lib/module/memory/serializable.native.js b/node_modules/react-native-worklets/lib/module/memory/serializable.native.js
+index fff291f..4190fd0 100644
+--- a/node_modules/react-native-worklets/lib/module/memory/serializable.native.js
++++ b/node_modules/react-native-worklets/lib/module/memory/serializable.native.js
+@@ -47,6 +47,18 @@ function getFromCache(value) {
+   }
+   return cached;
+ }
++
++// Native children can root callbacks whose closures reach the cache key, so
++// reconstructible clones are cached weakly. Explicit bindings and persistent
++// remote state stay strongly mapped to preserve their identity.
++function cacheReconstructibleClone(value, clone) {
++  if (globalThis.WeakRef) {
++    // WeakRef is installed on runtimes only with Hermes microtaskQueue enabled.
++    serializableMappingCache.set(value, new WeakRef(clone));
++  } else {
++    serializableMappingCache.set(value, clone);
++  }
++}
+ const VALID_ARRAY_VIEWS_NAMES = ['Int8Array', 'Uint8Array', 'Uint8ClampedArray', 'Int16Array', 'Uint16Array', 'Int32Array', 'Uint32Array', 'Float32Array', 'Float64Array', 'BigInt64Array', 'BigUint64Array', 'DataView'];
+ const DETECT_CYCLIC_OBJECT_DEPTH_THRESHOLD = 30;
+ // Below variable stores object that we process in createSerializable at the specified depth.
+@@ -281,17 +293,18 @@ function cloneObjectProperties(value, shouldPersistRemote, depth) {
+ function cloneArray(value, shouldPersistRemote, depth) {
+   const clonedElements = value.map((element, index) => __DEV__ ? withPathSegment(`[${index}]`, () => createSerializable(element, shouldPersistRemote, depth + 1)) : createSerializable(element, shouldPersistRemote, depth + 1));
+   const clone = WorkletsModule.createSerializableArray(clonedElements, shouldPersistRemote);
+-  serializableMappingCache.set(value, clone);
++  if (shouldPersistRemote) {
++    serializableMappingCache.set(value, clone);
++  } else {
++    cacheReconstructibleClone(value, clone);
++  }
+   serializableMappingCache.set(clone);
+   freezeObjectInDev(value);
+   return clone;
+ }
+ function cloneNonWorkletFunction(fun) {
+   const clone = WorkletsModule.createSerializableNonWorkletFunction(fun, __DEV__ ? fun.name : undefined);
+-  if (globalThis.WeakRef) {
+-    // WeakRef is installed on runtimes only with Hermes microtaskQueue enabled.
+-    serializableMappingCache.set(fun, new WeakRef(clone));
+-  }
++  cacheReconstructibleClone(fun, clone);
+   serializableMappingCache.set(clone);
+   freezeObjectInDev(fun);
+   return clone;
+@@ -355,7 +368,11 @@ function cloneTurboModuleLike(value, shouldPersistRemote, depth) {
+ function clonePlainJSObject(value, shouldPersistRemote, depth) {
+   const clonedProps = cloneObjectProperties(value, shouldPersistRemote, depth);
+   const clone = WorkletsModule.createSerializableObject(clonedProps, shouldPersistRemote, value);
+-  serializableMappingCache.set(value, clone);
++  if (shouldPersistRemote) {
++    serializableMappingCache.set(value, clone);
++  } else {
++    cacheReconstructibleClone(value, clone);
++  }
+   serializableMappingCache.set(clone);
+   freezeObjectInDev(value);
+   return clone;
+@@ -375,7 +392,7 @@ function cloneMap(value) {
+     }
+   }
+   const clone = WorkletsModule.createSerializableMap(clonedKeys, clonedValues);
+-  serializableMappingCache.set(value, clone);
++  cacheReconstructibleClone(value, clone);
+   serializableMappingCache.set(clone);
+   freezeObjectInDev(value);
+   return clone;
+@@ -392,7 +409,7 @@ function cloneSet(value) {
+     }
+   }
+   const clone = WorkletsModule.createSerializableSet(clonedElements);
+-  serializableMappingCache.set(value, clone);
++  cacheReconstructibleClone(value, clone);
+   serializableMappingCache.set(clone);
+   freezeObjectInDev(value);
+   return clone;
+@@ -483,6 +500,9 @@ function freezeObjectInDev(value) {
+       return;
+     }
+     Object.defineProperty(value, key, {
++      // Recreated weak clones must reuse these guards. In Hermes a new getter
++      // otherwise retains the previous descriptor and its getter environment.
++      configurable: false,
+       get() {
+         return element;
+       },
+diff --git a/node_modules/react-native-worklets/src/memory/serializable.native.ts b/node_modules/react-native-worklets/src/memory/serializable.native.ts
+index 78a9875..0e0890b 100644
+--- a/node_modules/react-native-worklets/src/memory/serializable.native.ts
++++ b/node_modules/react-native-worklets/src/memory/serializable.native.ts
+@@ -69,6 +69,18 @@ function getFromCache(value: object) {
+   return cached;
+ }
+ 
++// Native children can root callbacks whose closures reach the cache key, so
++// reconstructible clones are cached weakly. Explicit bindings and persistent
++// remote state stay strongly mapped to preserve their identity.
++function cacheReconstructibleClone(value: object, clone: SerializableRef) {
++  if (globalThis.WeakRef) {
++    // WeakRef is installed on runtimes only with Hermes microtaskQueue enabled.
++    serializableMappingCache.set(value, new WeakRef(clone));
++  } else {
++    serializableMappingCache.set(value, clone);
++  }
++}
++
+ const VALID_ARRAY_VIEWS_NAMES = [
+   'Int8Array',
+   'Uint8Array',
+@@ -403,7 +415,11 @@ function cloneArray<T extends unknown[]>(
+     clonedElements,
+     shouldPersistRemote
+   ) as SerializableRef<T>;
+-  serializableMappingCache.set(value, clone);
++  if (shouldPersistRemote) {
++    serializableMappingCache.set(value, clone);
++  } else {
++    cacheReconstructibleClone(value, clone);
++  }
+   serializableMappingCache.set(clone);
+ 
+   freezeObjectInDev(value);
+@@ -418,10 +434,7 @@ function cloneNonWorkletFunction<TArgs extends unknown[], TReturn>(
+     __DEV__ ? fun.name : undefined
+   ) as SerializableRef<(...args: TArgs) => TReturn>;
+ 
+-  if (globalThis.WeakRef) {
+-    // WeakRef is installed on runtimes only with Hermes microtaskQueue enabled.
+-    serializableMappingCache.set(fun, new WeakRef(clone));
+-  }
++  cacheReconstructibleClone(fun, clone);
+   serializableMappingCache.set(clone);
+   freezeObjectInDev(fun);
+ 
+@@ -533,7 +546,11 @@ function clonePlainJSObject<TValue extends object>(
+     shouldPersistRemote,
+     value
+   ) as SerializableRef<TValue>;
+-  serializableMappingCache.set(value, clone);
++  if (shouldPersistRemote) {
++    serializableMappingCache.set(value, clone);
++  } else {
++    cacheReconstructibleClone(value, clone);
++  }
+   serializableMappingCache.set(clone);
+ 
+   freezeObjectInDev(value);
+@@ -563,7 +580,7 @@ function cloneMap(
+     }
+   }
+   const clone = WorkletsModule.createSerializableMap(clonedKeys, clonedValues);
+-  serializableMappingCache.set(value, clone);
++  cacheReconstructibleClone(value, clone);
+   serializableMappingCache.set(clone);
+ 
+   freezeObjectInDev(value);
+@@ -586,7 +603,7 @@ function cloneSet(value: Set<unknown>): SerializableRef<Set<unknown>> {
+     }
+   }
+   const clone = WorkletsModule.createSerializableSet(clonedElements);
+-  serializableMappingCache.set(value, clone);
++  cacheReconstructibleClone(value, clone);
+   serializableMappingCache.set(clone);
+ 
+   freezeObjectInDev(value);
+@@ -712,6 +729,9 @@ function freezeObjectInDev<TValue extends object>(value: TValue) {
+       return;
+     }
+     Object.defineProperty(value, key, {
++      // Recreated weak clones must reuse these guards. In Hermes a new getter
++      // otherwise retains the previous descriptor and its getter environment.
++      configurable: false,
+       get() {
+         return element;
+       },

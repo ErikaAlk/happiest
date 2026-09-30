@@ -154,10 +154,10 @@ const ScrimBlurStack = React.memo(function ScrimBlurStack(props: Readonly<{ base
                 return (
                     <MaskedView
                         key={scale}
-                        style={RNStyleSheet.absoluteFillObject}
+                        style={RNStyleSheet.absoluteFill}
                         maskElement={(
                             <LinearGradient
-                                style={RNStyleSheet.absoluteFillObject}
+                                style={RNStyleSheet.absoluteFill}
                                 start={GRADIENT_START}
                                 end={GRADIENT_END}
                                 // The mask reads alpha only; black is simply "keep this pixel".
@@ -169,7 +169,7 @@ const ScrimBlurStack = React.memo(function ScrimBlurStack(props: Readonly<{ base
                         <BlurView
                             tint={theme.dark ? 'dark' : 'light'}
                             intensity={intensity}
-                            style={RNStyleSheet.absoluteFillObject}
+                            style={RNStyleSheet.absoluteFill}
                         />
                     </MaskedView>
                 );
@@ -234,7 +234,7 @@ export const OverlayScrim = React.memo(function OverlayScrim(props: OverlayScrim
             <View style={{ position: 'absolute', left: 0, right: 0, top: 0, height: rampHeight }}>
                 {showsBlur ? <ScrimBlurStack baseIntensity={blurIntensity} /> : null}
                 <LinearGradient
-                    style={RNStyleSheet.absoluteFillObject}
+                    style={RNStyleSheet.absoluteFill}
                     start={GRADIENT_START}
                     end={GRADIENT_END}
                     colors={toGradientColors(dimColors)}

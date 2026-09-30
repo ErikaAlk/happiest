@@ -1,9 +1,9 @@
 import type * as React from 'react';
-import type { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 
 export type SessionReminderPickerProps = Readonly<{
     mode: 'date' | 'time';
-    anchorRef: React.RefObject<View | null>;
+    anchorRef: React.RefObject<ViewInstance | null>;
     value: Date;
     minimumDate: Date;
     accentColor: string;

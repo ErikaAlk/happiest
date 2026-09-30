@@ -132,9 +132,6 @@ concurrency:
   group: deploy-ref-${{ github.repository }}-${{ inputs.environment }}-ui
   cancel-in-progress: false
 
-env:
-  EXPO_UNSTABLE_WEB_MODAL: "1"
-
 jobs:
   trusted_ref_guard:
     name: Trusted workflow ref guard

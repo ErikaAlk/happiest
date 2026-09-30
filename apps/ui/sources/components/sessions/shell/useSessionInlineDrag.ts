@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 import type { ViewStyle } from 'react-native';
 import { useSharedValue, useAnimatedStyle, withSpring, type AnimatedStyle } from 'react-native-reanimated';
-import { Gesture, type ComposedGesture, type GestureType } from 'react-native-gesture-handler';
+import { Gesture, type GestureType, type LegacyComposedGesture } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
 import { useUnistyles } from 'react-native-unistyles';
 
@@ -107,7 +107,7 @@ export type UseSessionInlineDragParams = Readonly<{
 }>;
 
 export type UseSessionInlineDragResult = Readonly<{
-    gesture: GestureType | ComposedGesture | undefined;
+    gesture: GestureType | LegacyComposedGesture | undefined;
     animatedStyle: AnimatedStyle<ViewStyle>;
 }>;
 

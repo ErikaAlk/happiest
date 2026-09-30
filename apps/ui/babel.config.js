@@ -43,7 +43,8 @@ module.exports = function (api) {
       {
         bundleMode: workletsBundleMode,
         ...(workletsBundleMode ? { strictGlobal: true } : {}),
-        workletizableModules: ['remend'],
+        // remend is imported by package name only and ships a single bundled file.
+        importForwarding: { moduleNames: ['remend'] },
       },
     ]
     : workletsPlugin;

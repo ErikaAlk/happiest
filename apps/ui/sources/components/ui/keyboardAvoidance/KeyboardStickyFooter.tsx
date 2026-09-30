@@ -1,6 +1,6 @@
 import * as React from 'react';
-import type { View, ViewProps } from 'react-native';
-import { Platform, View as ReactNativeView } from 'react-native';
+import type { ViewInstance, ViewProps } from 'react-native';
+import { Platform, View } from 'react-native';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 
 import { resolveKeyboardStickyFooterOffset } from './keyboardAvoidanceGeometry';
@@ -10,7 +10,7 @@ export type KeyboardStickyFooterProps = ViewProps & Readonly<{
     enabled?: boolean;
 }>;
 
-export const KeyboardStickyFooter = React.forwardRef<View, KeyboardStickyFooterProps>(
+export const KeyboardStickyFooter = React.forwardRef<ViewInstance, KeyboardStickyFooterProps>(
     function KeyboardStickyFooter({ offset, enabled, ...props }, ref) {
         if (Platform.OS === 'web') {
             return <KeyboardStickyFooterView ref={ref} {...props} />;
@@ -27,6 +27,6 @@ export const KeyboardStickyFooter = React.forwardRef<View, KeyboardStickyFooterP
     },
 );
 
-const KeyboardStickyFooterView = React.forwardRef<View, ViewProps>(function KeyboardStickyFooterView(props, ref) {
-    return <ReactNativeView ref={ref} {...props} />;
+const KeyboardStickyFooterView = React.forwardRef<ViewInstance, ViewProps>(function KeyboardStickyFooterView(props, ref) {
+    return <View ref={ref} {...props} />;
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, type ViewInstance } from 'react-native';
 
 import type { TreeDropMeasurableRef } from '@/components/ui/treeDragDrop';
 
@@ -21,7 +21,7 @@ export const SessionListHeaderFrame = React.memo(function SessionListHeaderFrame
     onRegisterTreeRowBounds: RegisterSessionListTreeRowBounds;
     onUnregisterTreeRowBounds: UnregisterSessionListTreeRowBounds;
 }>) {
-    const wrapperRef = React.useRef<View>(null);
+    const wrapperRef = React.useRef<ViewInstance>(null);
     React.useEffect(() => {
         return () => {
             props.onUnregisterTreeRowBounds(props.treeRowId);

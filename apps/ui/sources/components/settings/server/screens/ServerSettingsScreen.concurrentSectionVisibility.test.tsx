@@ -204,12 +204,11 @@ describe('ServerSettingsScreen (concurrent section visibility)', () => {
         setController({ relayDriftBanner: null });
 
         const { ServerSettingsScreen } = await import('./ServerSettingsScreen');
-        const { KeyboardAwareScrollView } = await import('@/components/ui/keyboardAvoidance');
 
         const screen = await renderScreen(React.createElement(ServerSettingsScreen));
-        const keyboardAwareList = screen.findByType(KeyboardAwareScrollView);
+        const keyboardAwareList = screen.findByType('ItemList' as any);
 
-        expect(keyboardAwareList.props.ScrollViewComponent).toBeTruthy();
+        expect(keyboardAwareList.props.keyboardAware).toBe(true);
         expect(keyboardAwareList.props.keyboardShouldPersistTaps).toBe('handled');
         expect(keyboardAwareList.props.keyboardDismissMode).toBe('interactive');
         expect(keyboardAwareList.props.automaticallyAdjustKeyboardInsets).toBe(true);

@@ -3,6 +3,7 @@ import {
     Pressable,
     View,
     type StyleProp,
+    type ViewInstance,
     type ViewStyle,
 } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
@@ -26,7 +27,7 @@ type DesktopPetOverlayContextMenuEvent = Readonly<{
     stopPropagation?: () => void;
 }>;
 
-type DesktopPetOverlayWebViewProps = React.ComponentProps<typeof View> & React.RefAttributes<View> & Readonly<{
+type DesktopPetOverlayWebViewProps = React.ComponentProps<typeof View> & Readonly<{
     'data-pet-no-drag': 'true';
     dataSet: Readonly<{ petNoDrag: 'true' }>;
     className: 'no-drag';
@@ -41,7 +42,7 @@ export function DesktopPetOverlayContextActions(props: Readonly<{
     style?: StyleProp<ViewStyle>;
 }>): React.ReactElement {
     const { theme } = useUnistyles();
-    const anchorRef = React.useRef<View>(null);
+    const anchorRef = React.useRef<ViewInstance>(null);
     const [open, setOpen] = React.useState(false);
     const hasTrayItems = props.trayCount > 0;
     const bubbleTheme = theme.colors.desktopPetOverlay?.bubble ?? {

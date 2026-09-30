@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, View } from 'react-native';
+import { Platform, View, type ViewInstance } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { GestureDetector } from 'react-native-gesture-handler';
 
@@ -42,7 +42,7 @@ export const DraggableSessionFolderHeaderFrame = React.memo(function DraggableSe
     onUnregisterTreeRowBounds: UnregisterSessionListTreeRowBounds;
 }>) {
     const dragKey = props.dragKey ?? `folder:${props.folderId ?? ''}`;
-    const wrapperRef = React.useRef<View>(null);
+    const wrapperRef = React.useRef<ViewInstance>(null);
     React.useEffect(() => {
         return () => {
             props.onUnregisterTreeRowBounds(props.treeRowId);

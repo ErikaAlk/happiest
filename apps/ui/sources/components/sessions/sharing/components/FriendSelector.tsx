@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { View, FlatList, ScrollView, Platform, Switch } from 'react-native';
+import { View, FlatList, ScrollView, Platform, Switch, type ScrollViewInstance } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { UserProfile, getDisplayName } from '@/sync/domains/social/friendTypes';
@@ -82,7 +82,7 @@ export const FriendSelector = memo(function FriendSelector({
         return friends.find(f => f.id === selectedUserId);
     }, [friends, selectedUserId]);
 
-    const scrollRef = React.useRef<ScrollView>(null);
+    const scrollRef = React.useRef<ScrollViewInstance>(null);
     const wheelScrollHandlers = useScrollViewWheelScrollTo(scrollRef);
 
     const handleConfirm = useCallback(async () => {

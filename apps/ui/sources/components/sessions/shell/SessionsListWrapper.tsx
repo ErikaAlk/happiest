@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { View } from 'react-native';
-import { usePathname } from 'expo-router';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, usePathname } from 'expo-router';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { SessionGettingStartedGuidance } from '@/components/sessions/guidance/SessionGettingStartedGuidance';
 import { useSessionListStorageKind } from '@/components/sessions/model/useSessionListStorageKind';

@@ -87,12 +87,9 @@ vi.mock('@/sync/domains/state/storage', async () => {
     useAllMachines: () => machineState.machines,
   };
 });
-vi.mock('@react-navigation/native', async () => {
-  const { createReactNavigationNativeMock } = await import('@/dev/testkit/mocks/reactNavigation');
-  return {
-    ...createReactNavigationNativeMock(),
-    useIsFocused: () => navigationFocusState.isFocused,
-  };
+vi.mock('expo-router', async () => {
+  const { createExpoRouterMock } = await import('@/dev/testkit/mocks/router');
+  return createExpoRouterMock({ isFocused: () => navigationFocusState.isFocused }).module;
 });
 
 /** Flattens a React children tree (numbers/strings/nested nodes) to its text. */

@@ -17,7 +17,7 @@ import { getSessionAvatarId, getSessionName, getSessionSubtitle } from '@/utils/
 import { sessionUnarchiveWithServerScope } from '@/sync/ops';
 import { sync } from '@/sync/sync';
 import { Icon } from '@/components/ui/icons/Icon';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from 'expo-router';
 import { useSessionListPaneSourceScopeKey } from '@/components/sessions/shell/surface/sessionListPaneRetention';
 import { useSessionNavigationCursorPublisher } from '@/sync/domains/session/navigation/useSessionNavigationCursorPublisher';
 import type { SessionListLikeItem } from '@/sync/domains/session/navigation/sessionNavigationOrder';

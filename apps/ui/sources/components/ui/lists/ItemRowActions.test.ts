@@ -56,9 +56,6 @@ vi.mock('react-native', async () => {
                                             AppState: {
                                                 addEventListener: () => ({ remove: () => {} }),
                                             },
-                                            InteractionManager: {
-                                                runAfterInteractions: () => {},
-                                            },
                                             useWindowDimensions: () => ({ width: 320, height: 800 }),
                                             StyleSheet: {
                                                 absoluteFill: {
@@ -105,7 +102,7 @@ describe('ItemRowActions', () => {
         expect(onPress).toHaveBeenCalledWith(event);
     });
 
-    it('invokes overflow actions even when InteractionManager does not run callbacks', async () => {
+    it('closes the overflow menu and then invokes the chosen action', async () => {
         const { ItemRowActions } = await import('./ItemRowActions');
 
         const onEdit = vi.fn();

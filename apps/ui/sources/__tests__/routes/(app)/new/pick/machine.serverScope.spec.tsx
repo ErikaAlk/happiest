@@ -151,15 +151,6 @@ installNewPickRouteCommonModuleMocks({
     }),
 });
 
-vi.mock('@react-navigation/native', () => ({
-    CommonActions: {
-        setParams: (params: Record<string, unknown>) => ({
-            type: 'SET_PARAMS',
-            payload: { params },
-        }),
-    },
-}));
-
 vi.mock('@/components/sessions/new/components/NewSessionMachineSelectionContent', () => ({
     NewSessionMachineSelectionContent: (props: any) => {
         capturedMachineSelectionContentProps = props;

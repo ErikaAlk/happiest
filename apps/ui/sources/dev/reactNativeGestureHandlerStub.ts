@@ -24,5 +24,3 @@ export const GestureDetector = 'GestureDetector';
 export const ScrollView = 'GestureHandlerScrollView';
 
 export const GestureHandlerRootView = 'GestureHandlerRootView';
-
-export const Swipeable = 'Swipeable';

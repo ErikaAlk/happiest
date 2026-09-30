@@ -16,7 +16,6 @@ vi.mock('@/components/ui/forms/dropdown/DropdownMenu', () => ({
 
 const mockGesture = { type: 'pan' };
 vi.mock('react-native-gesture-handler', () => ({
-    Swipeable: 'Swipeable',
     GestureDetector: (props: any) => React.createElement('GestureDetector', { gesture: props.gesture }, props.children),
 }));
 

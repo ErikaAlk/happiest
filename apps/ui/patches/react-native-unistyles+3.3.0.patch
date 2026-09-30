@@ -438,21 +438,25 @@ index f501232..b42e916 100644
  
  inline UnistylesRegistry& UnistylesRegistry::get() {
 diff --git a/node_modules/react-native-unistyles/cxx/hybridObjects/HybridShadowRegistry.cpp b/node_modules/react-native-unistyles/cxx/hybridObjects/HybridShadowRegistry.cpp
-index c3e6061..996c9b4 100644
+index 597e08c..c905c55 100644
 --- a/node_modules/react-native-unistyles/cxx/hybridObjects/HybridShadowRegistry.cpp
 +++ b/node_modules/react-native-unistyles/cxx/hybridObjects/HybridShadowRegistry.cpp
-@@ -14,8 +14,8 @@ jsi::Value HybridShadowRegistry::link(jsi::Runtime &rt, const jsi::Value &thisVa
+@@ -11,12 +11,12 @@ jsi::Value HybridShadowRegistry::link(jsi::Runtime &rt, const jsi::Value &thisVa
+     std::vector<core::Unistyle::Shared> unistyleWrappers = core::unistyleFromValue(rt, args[1]);
+     std::vector<std::vector<folly::dynamic>> arguments;
+     auto& registry = core::UnistylesRegistry::get();
+-    const bool wasSuspended = registry.isSuspended(&shadowNodeWrapper->getFamily());
++    const bool wasSuspended = registry.isSuspended(rt, &shadowNodeWrapper->getFamily());
  
      // this is special case for Animated, and prevents appending same unistyles to node
      // skip for suspended families - they need a full re-link with fresh UnistyleData
--    if (!registry.isSuspended(&shadowNodeWrapper->getFamily())) {
+     if (!wasSuspended) {
 -        registry.removeDuplicatedUnistyles(&shadowNodeWrapper->getFamily(), unistyleWrappers);
-+    if (!registry.isSuspended(rt, &shadowNodeWrapper->getFamily())) {
 +        registry.removeDuplicatedUnistyles(rt, &shadowNodeWrapper->getFamily(), unistyleWrappers);
  
          if (unistyleWrappers.empty()) {
              return jsi::Value::undefined();
-@@ -42,13 +42,13 @@ jsi::Value HybridShadowRegistry::link(jsi::Runtime &rt, const jsi::Value &thisVa
+@@ -43,13 +43,13 @@ jsi::Value HybridShadowRegistry::link(jsi::Runtime &rt, const jsi::Value &thisVa
          arguments.push_back({});
      }
  
@@ -468,7 +472,7 @@ index c3e6061..996c9b4 100644
      }
  
      auto parser = parser::Parser(this->_unistylesRuntime);
-@@ -117,7 +117,7 @@ jsi::Value HybridShadowRegistry::unlink(jsi::Runtime &rt, const jsi::Value &this
+@@ -122,7 +122,7 @@ jsi::Value HybridShadowRegistry::unlink(jsi::Runtime &rt, const jsi::Value &this
  
      auto& registry = core::UnistylesRegistry::get();
  
@@ -477,7 +481,7 @@ index c3e6061..996c9b4 100644
  
      return jsi::Value::undefined();
  }
-@@ -128,7 +128,7 @@ jsi::Value HybridShadowRegistry::suspend(jsi::Runtime &rt, const jsi::Value &thi
+@@ -133,7 +133,7 @@ jsi::Value HybridShadowRegistry::suspend(jsi::Runtime &rt, const jsi::Value &thi
      auto shadowNodeWrapper = getShadowNodeFromRef(rt, args[0]);
      auto& registry = core::UnistylesRegistry::get();
  
@@ -486,7 +490,7 @@ index c3e6061..996c9b4 100644
  
      return jsi::Value::undefined();
  }
-@@ -145,11 +145,11 @@ jsi::Value HybridShadowRegistry::setScopedTheme(jsi::Runtime &rt, const jsi::Val
+@@ -150,11 +150,11 @@ jsi::Value HybridShadowRegistry::setScopedTheme(jsi::Runtime &rt, const jsi::Val
      auto& registry = core::UnistylesRegistry::get();
  
      if (args[0].isUndefined()) {
@@ -500,7 +504,7 @@ index c3e6061..996c9b4 100644
      }
  
      return jsi::Value::undefined();
-@@ -157,7 +157,7 @@ jsi::Value HybridShadowRegistry::setScopedTheme(jsi::Runtime &rt, const jsi::Val
+@@ -162,7 +162,7 @@ jsi::Value HybridShadowRegistry::setScopedTheme(jsi::Runtime &rt, const jsi::Val
  
  jsi::Value HybridShadowRegistry::getScopedTheme(jsi::Runtime &rt, const jsi::Value &thisValue, const jsi::Value *args, size_t count) {
      auto& registry = core::UnistylesRegistry::get();
@@ -697,10 +701,10 @@ index 2ed9a83..c1731cd 100644
      std::shared_ptr<HybridStatusBar> _statusBar;
      std::shared_ptr<HybridNativePlatformSpec> _nativePlatform;
 diff --git a/node_modules/react-native-unistyles/cxx/parser/Parser.cpp b/node_modules/react-native-unistyles/cxx/parser/Parser.cpp
-index 536d771..2489950 100644
+index fa25269..40dfabb 100644
 --- a/node_modules/react-native-unistyles/cxx/parser/Parser.cpp
 +++ b/node_modules/react-native-unistyles/cxx/parser/Parser.cpp
-@@ -101,7 +101,7 @@ jsi::Value parser::Parser::getParsedStyleSheetForScopedTheme(jsi::Runtime& rt, c
+@@ -103,7 +103,7 @@ jsi::Value parser::Parser::getParsedStyleSheetForScopedTheme(jsi::Runtime& rt, c
          return jsi::Value::undefined();
      }
  
@@ -709,7 +713,7 @@ index 536d771..2489950 100644
      auto jsTheme = state.getJSThemeByName(rt, scopedTheme);
  
      if (unistyle->parent->type == StyleSheetType::Themable) {
-@@ -184,7 +184,7 @@ jsi::Object parser::Parser::unwrapStyleSheet(jsi::Runtime& rt, std::shared_ptr<S
+@@ -186,7 +186,7 @@ jsi::Object parser::Parser::unwrapStyleSheet(jsi::Runtime& rt, std::shared_ptr<S
      }
  
      // StyleSheet is a function
@@ -718,7 +722,7 @@ index 536d771..2489950 100644
      auto theme = state.getCurrentJSTheme(rt);
  
      if (styleSheet->type == StyleSheetType::Themable) {
-@@ -430,8 +430,9 @@ void parser::Parser::rebuildUnistyle(jsi::Runtime& rt, Unistyle::Shared unistyle
+@@ -432,8 +432,9 @@ void parser::Parser::rebuildUnistyle(jsi::Runtime& rt, Unistyle::Shared unistyle
  // convert dependency map to shadow tree updates
  void parser::Parser::rebuildShadowLeafUpdates(jsi::Runtime& rt, core::DependencyMap& dependencyMap) {
      auto& registry = core::UnistylesRegistry::get();
@@ -729,7 +733,7 @@ index 536d771..2489950 100644
          shadow::ShadowLeafUpdates updates;
          updates.reserve(dependencyMap.size());
  
-@@ -442,8 +443,8 @@ void parser::Parser::rebuildShadowLeafUpdates(jsi::Runtime& rt, core::Dependency
+@@ -444,8 +445,8 @@ void parser::Parser::rebuildShadowLeafUpdates(jsi::Runtime& rt, core::Dependency
              updates.emplace(shadowNode, std::move(rawProps));
          }
  
@@ -740,7 +744,7 @@ index 536d771..2489950 100644
      });
  }
  
-@@ -690,7 +691,7 @@ jsi::Value parser::Parser::parseBoxShadow(jsi::Runtime &rt, Unistyle::Shared uni
+@@ -692,7 +693,7 @@ jsi::Value parser::Parser::parseBoxShadow(jsi::Runtime &rt, Unistyle::Shared uni
  
  jsi::Array parser::Parser::parseBoxShadowString(jsi::Runtime& rt, std::string&& boxShadowString) {
      auto& registry = core::UnistylesRegistry::get();
@@ -749,7 +753,7 @@ index 536d771..2489950 100644
  
      return state.parseBoxShadowString(rt, std::move(boxShadowString));
  }
-@@ -767,14 +768,14 @@ jsi::Value parser::Parser::parseFilters(jsi::Runtime &rt, Unistyle::Shared unist
+@@ -769,14 +770,14 @@ jsi::Value parser::Parser::parseFilters(jsi::Runtime &rt, Unistyle::Shared unist
  // find value based on breakpoints and mq
  jsi::Value parser::Parser::getValueFromBreakpoints(jsi::Runtime& rt, Unistyle::Shared unistyle, jsi::Object& obj) {
      auto& registry = core::UnistylesRegistry::get();
@@ -766,7 +770,7 @@ index 536d771..2489950 100644
          ? Dimensions(rawDimensions.width / pixelRatio, rawDimensions.height / pixelRatio)
          : rawDimensions;
      auto currentOrientation = dimensions.width > dimensions.height
-@@ -1061,7 +1062,7 @@ jsi::Value parser::Parser::parseSecondLevel(jsi::Runtime &rt, Unistyle::Shared u
+@@ -1063,7 +1064,7 @@ jsi::Value parser::Parser::parseSecondLevel(jsi::Runtime &rt, Unistyle::Shared u
  // convert unistyles to folly with int colors
  folly::dynamic parser::Parser::parseStylesToShadowTreeStyles(jsi::Runtime& rt, const std::vector<std::shared_ptr<UnistyleData>>& unistyles) {
      jsi::Object convertedStyles(rt);
@@ -779,7 +783,10 @@ diff --git a/node_modules/react-native-unistyles/cxx/shadowTree/ShadowTrafficCon
 index aafbece..2c952a5 100644
 --- a/node_modules/react-native-unistyles/cxx/shadowTree/ShadowTrafficController.h
 +++ b/node_modules/react-native-unistyles/cxx/shadowTree/ShadowTrafficController.h
-@@ -24,4 +24,8 @@ struct ShadowTrafficController {
+@@ -20,9 +20,13 @@ struct ShadowTrafficController {
+         this->_canCommit = true;
+     }
+ 
 -    inline shadow::ShadowLeafUpdates& getUpdates() {
 +    inline shadow::ShadowLeafUpdates takeUpdates() {
          // call it only within withLock!
@@ -790,6 +797,8 @@ index aafbece..2c952a5 100644
 +
 +        return updates;
      }
+ 
+     inline void setUpdates(shadow::ShadowLeafUpdates& newUpdates) {
 diff --git a/node_modules/react-native-unistyles/cxx/shadowTree/ShadowTreeManager.cpp b/node_modules/react-native-unistyles/cxx/shadowTree/ShadowTreeManager.cpp
 index 01026dc..0e001a7 100644
 --- a/node_modules/react-native-unistyles/cxx/shadowTree/ShadowTreeManager.cpp
@@ -834,7 +843,7 @@ index b522fd2..0b6827a 100644
  
  RCT_EXPORT_MODULE(Unistyles)
  
-@@ -15,6 +17,8 @@ + (BOOL)requiresMainQueueSetup {
+@@ -15,6 +17,8 @@ RCT_EXPORT_MODULE(Unistyles)
  }
  
  - (void)installJSIBindingsWithRuntime:(jsi::Runtime&)rt callInvoker:(const std::shared_ptr<facebook::react::CallInvoker> &)callInvoker {
@@ -843,7 +852,7 @@ index b522fd2..0b6827a 100644
      // function is called on: first init and every live reload
      // check if this is live reload, if so let's replace UnistylesRuntime with new runtime
      auto hasUnistylesRuntime = HybridObjectRegistry::hasHybridObject("UnistylesRuntime");
-@@ -34,7 +38,7 @@ - (void)createHybrids:(jsi::Runtime&)rt callInvoker:(const std::shared_ptr<faceb
+@@ -34,7 +38,7 @@ RCT_EXPORT_MODULE(Unistyles)
      };
  
      auto nativePlatform = Unistyles::NativePlatform::create().getCxxPart();
@@ -852,7 +861,7 @@ index b522fd2..0b6827a 100644
      auto styleSheet = std::make_shared<HybridStyleSheet>(unistylesRuntime);
  
      HybridObjectRegistry::registerHybridObjectConstructor("UnistylesRuntime", [unistylesRuntime]() -> std::shared_ptr<HybridObject>{
-@@ -53,7 +57,10 @@ - (void)createHybrids:(jsi::Runtime&)rt callInvoker:(const std::shared_ptr<faceb
+@@ -53,7 +57,10 @@ RCT_EXPORT_MODULE(Unistyles)
  }
  
  - (void)invalidate {
@@ -865,23 +874,41 @@ index b522fd2..0b6827a 100644
      [super invalidate];
  }
 diff --git a/node_modules/react-native-unistyles/lib/commonjs/web/runtime.js b/node_modules/react-native-unistyles/lib/commonjs/web/runtime.js
-index 4b8e937..5b56e2d 100644
+index 305fa49..9dc4aa6 100644
 --- a/node_modules/react-native-unistyles/lib/commonjs/web/runtime.js
 +++ b/node_modules/react-native-unistyles/lib/commonjs/web/runtime.js
-@@ -67 +67 @@ class UnistylesRuntime {
+@@ -64,7 +64,7 @@ class UnistylesRuntime {
+     return this.services.state.breakpoint;
+   }
+   get orientation() {
 -    if ((0, _utils.isServer)()) {
 +    if ((0, _utils.isServer)() || !screen.orientation) {
+       return _types.Orientation.Portrait;
+     }
+     return screen.orientation.type.includes('portrait') ? _types.Orientation.Portrait : _types.Orientation.Landscape;
 diff --git a/node_modules/react-native-unistyles/lib/module/web/runtime.js b/node_modules/react-native-unistyles/lib/module/web/runtime.js
-index a374f73..598ddab 100644
+index 7f13a06..82bd0fe 100644
 --- a/node_modules/react-native-unistyles/lib/module/web/runtime.js
 +++ b/node_modules/react-native-unistyles/lib/module/web/runtime.js
-@@ -63 +63 @@ export class UnistylesRuntime {
+@@ -60,7 +60,7 @@ export class UnistylesRuntime {
+     return this.services.state.breakpoint;
+   }
+   get orientation() {
 -    if (isServer()) {
 +    if (isServer() || !screen.orientation) {
+       return Orientation.Portrait;
+     }
+     return screen.orientation.type.includes('portrait') ? Orientation.Portrait : Orientation.Landscape;
 diff --git a/node_modules/react-native-unistyles/src/web/runtime.ts b/node_modules/react-native-unistyles/src/web/runtime.ts
-index da887c7..d51f1bb 100644
+index a16dac0..c35283e 100644
 --- a/node_modules/react-native-unistyles/src/web/runtime.ts
 +++ b/node_modules/react-native-unistyles/src/web/runtime.ts
-@@ -80 +80 @@ export class UnistylesRuntime {
+@@ -76,7 +76,7 @@ export class UnistylesRuntime {
+     }
+ 
+     get orientation() {
 -        if (isServer()) {
 +        if (isServer() || !screen.orientation) {
+             return Orientation.Portrait
+         }
+ 

@@ -61,7 +61,6 @@ async function ensureUiWebDist({
     env: {
       ...env,
       CI: env.CI ?? '1',
-      EXPO_UNSTABLE_WEB_MODAL: '1',
     },
   });
 
@@ -74,7 +73,6 @@ async function ensureUiWebDist({
       env: {
         ...env,
         CI: env.CI ?? '1',
-        EXPO_UNSTABLE_WEB_MODAL: '1',
       },
     },
   );
@@ -88,7 +86,6 @@ async function ensureUiWebDist({
     env: {
       ...env,
       CI: env.CI ?? '1',
-      EXPO_UNSTABLE_WEB_MODAL: '1',
     },
   });
   return uiDistPath;

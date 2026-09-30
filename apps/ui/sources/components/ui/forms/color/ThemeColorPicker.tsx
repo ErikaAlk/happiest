@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, View, type ViewInstance } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 import ColorPicker, { HueSlider, OpacitySlider, Panel1, Swatches, type ColorFormatsObject } from 'reanimated-color-picker';
 
@@ -21,7 +21,7 @@ export const ThemeColorPicker = React.memo(function ThemeColorPicker(props: Read
     disabled?: boolean;
 }>) {
     const styles = stylesheet;
-    const anchorRef = React.useRef<View>(null);
+    const anchorRef = React.useRef<ViewInstance>(null);
     const [open, setOpen] = React.useState(false);
     const [textValue, setTextValue] = React.useState(props.value);
 

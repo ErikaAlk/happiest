@@ -27,7 +27,7 @@ export type AgentInputContentPopoverConfig = Readonly<{
     maxHeightCap?: number;
     maxWidthCap?: number;
     scrollEnabled?: boolean;
-    keyboardShouldPersistTaps?: boolean | 'always' | 'never' | 'handled';
+    keyboardShouldPersistTaps?: 'always' | 'never' | 'handled';
     edgeFades?: FloatingOverlayEdgeFades;
     edgeIndicators?: boolean | Readonly<{ size?: number; opacity?: number }>;
     initialVisibility?: Partial<ScrollEdgeVisibility>;
@@ -50,7 +50,7 @@ export type AgentInputContentPopoverProps = Readonly<{
     maxWidthCap?: number;
     testID?: string;
     scrollEnabled?: boolean;
-    keyboardShouldPersistTaps?: boolean | 'always' | 'never' | 'handled';
+    keyboardShouldPersistTaps?: 'always' | 'never' | 'handled';
     edgeFades?: FloatingOverlayEdgeFades;
     edgeIndicators?: boolean | Readonly<{ size?: number; opacity?: number }>;
     initialVisibility?: Partial<ScrollEdgeVisibility>;

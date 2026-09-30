@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { renderHook, renderScreen, flushHookEffects } from '@/dev/testkit';
 import { createExpoRouterMock } from '@/dev/testkit/mocks/router';
-import type { Router } from 'expo-router';
+import type { ImperativeRouter } from 'expo-router';
 import { createNewSessionPromptStore } from '@/components/sessions/new/hooks/screenModel/newSessionPromptStore';
 
 vi.mock('@/text', async () => {
@@ -79,16 +79,16 @@ describe('useNewSessionAgentInputPresentation', () => {
             back: () => routerMock.state.router.back(),
             canGoBack: vi.fn(() => false),
             push: (value: any) => routerMock.state.router.push(value),
-            navigate: vi.fn<Router['navigate']>(),
+            navigate: vi.fn<ImperativeRouter['navigate']>(),
             replace: (value: any) => routerMock.state.router.replace(value),
-            dismiss: vi.fn<Router['dismiss']>(),
-            dismissTo: vi.fn<Router['dismissTo']>(),
-            dismissAll: vi.fn<Router['dismissAll']>(),
+            dismiss: vi.fn<ImperativeRouter['dismiss']>(),
+            dismissTo: vi.fn<ImperativeRouter['dismissTo']>(),
+            dismissAll: vi.fn<ImperativeRouter['dismissAll']>(),
             canDismiss: vi.fn(() => false),
             setParams: vi.fn() as any,
-            reload: vi.fn<Router['reload']>(),
-            prefetch: vi.fn<Router['prefetch']>(),
-        } as unknown as Router;
+            reload: vi.fn<ImperativeRouter['reload']>(),
+            prefetch: vi.fn<ImperativeRouter['prefetch']>(),
+        } as unknown as ImperativeRouter;
 
         const hook = await renderHook(() => useNewSessionAgentInputPresentation({
             theme: sessionAgentInputTheme,
@@ -175,16 +175,16 @@ describe('useNewSessionAgentInputPresentation', () => {
             back: () => routerMock.state.router.back(),
             canGoBack: vi.fn(() => false),
             push: (value: any) => routerMock.state.router.push(value),
-            navigate: vi.fn<Router['navigate']>(),
+            navigate: vi.fn<ImperativeRouter['navigate']>(),
             replace: (value: any) => routerMock.state.router.replace(value),
-            dismiss: vi.fn<Router['dismiss']>(),
-            dismissTo: vi.fn<Router['dismissTo']>(),
-            dismissAll: vi.fn<Router['dismissAll']>(),
+            dismiss: vi.fn<ImperativeRouter['dismiss']>(),
+            dismissTo: vi.fn<ImperativeRouter['dismissTo']>(),
+            dismissAll: vi.fn<ImperativeRouter['dismissAll']>(),
             canDismiss: vi.fn(() => false),
             setParams: vi.fn() as any,
-            reload: vi.fn<Router['reload']>(),
-            prefetch: vi.fn<Router['prefetch']>(),
-        } as unknown as Router;
+            reload: vi.fn<ImperativeRouter['reload']>(),
+            prefetch: vi.fn<ImperativeRouter['prefetch']>(),
+        } as unknown as ImperativeRouter;
 
         const hook = await renderHook(() => useNewSessionAgentInputPresentation({
             theme: sessionAgentInputTheme,
@@ -315,16 +315,16 @@ describe('useNewSessionAgentInputPresentation', () => {
             back: () => routerMock.state.router.back(),
             canGoBack: vi.fn(() => false),
             push: (value: any) => routerMock.state.router.push(value),
-            navigate: vi.fn<Router['navigate']>(),
+            navigate: vi.fn<ImperativeRouter['navigate']>(),
             replace: (value: any) => routerMock.state.router.replace(value),
-            dismiss: vi.fn<Router['dismiss']>(),
-            dismissTo: vi.fn<Router['dismissTo']>(),
-            dismissAll: vi.fn<Router['dismissAll']>(),
+            dismiss: vi.fn<ImperativeRouter['dismiss']>(),
+            dismissTo: vi.fn<ImperativeRouter['dismissTo']>(),
+            dismissAll: vi.fn<ImperativeRouter['dismissAll']>(),
             canDismiss: vi.fn(() => false),
             setParams: vi.fn() as any,
-            reload: vi.fn<Router['reload']>(),
-            prefetch: vi.fn<Router['prefetch']>(),
-        } as unknown as Router;
+            reload: vi.fn<ImperativeRouter['reload']>(),
+            prefetch: vi.fn<ImperativeRouter['prefetch']>(),
+        } as unknown as ImperativeRouter;
         const promptStore = createNewSessionPromptStore('');
         const setSessionPrompt = vi.fn((next: string | ((previous: string) => string)) => {
             promptStore.setPrompt(next);
@@ -428,16 +428,16 @@ describe('useNewSessionAgentInputPresentation', () => {
             back: () => routerMock.state.router.back(),
             canGoBack: vi.fn(() => false),
             push: (value: any) => routerMock.state.router.push(value),
-            navigate: vi.fn<Router['navigate']>(),
+            navigate: vi.fn<ImperativeRouter['navigate']>(),
             replace: (value: any) => routerMock.state.router.replace(value),
-            dismiss: vi.fn<Router['dismiss']>(),
-            dismissTo: vi.fn<Router['dismissTo']>(),
-            dismissAll: vi.fn<Router['dismissAll']>(),
+            dismiss: vi.fn<ImperativeRouter['dismiss']>(),
+            dismissTo: vi.fn<ImperativeRouter['dismissTo']>(),
+            dismissAll: vi.fn<ImperativeRouter['dismissAll']>(),
             canDismiss: vi.fn(() => false),
             setParams: vi.fn() as any,
-            reload: vi.fn<Router['reload']>(),
-            prefetch: vi.fn<Router['prefetch']>(),
-        } as unknown as Router;
+            reload: vi.fn<ImperativeRouter['reload']>(),
+            prefetch: vi.fn<ImperativeRouter['prefetch']>(),
+        } as unknown as ImperativeRouter;
 
         const hook = await renderHook(() => useNewSessionAgentInputPresentation({
             theme: sessionAgentInputTheme,
@@ -523,16 +523,16 @@ describe('useNewSessionAgentInputPresentation', () => {
             back: () => routerMock.state.router.back(),
             canGoBack: vi.fn(() => false),
             push: (value: any) => routerMock.state.router.push(value),
-            navigate: vi.fn<Router['navigate']>(),
+            navigate: vi.fn<ImperativeRouter['navigate']>(),
             replace: (value: any) => routerMock.state.router.replace(value),
-            dismiss: vi.fn<Router['dismiss']>(),
-            dismissTo: vi.fn<Router['dismissTo']>(),
-            dismissAll: vi.fn<Router['dismissAll']>(),
+            dismiss: vi.fn<ImperativeRouter['dismiss']>(),
+            dismissTo: vi.fn<ImperativeRouter['dismissTo']>(),
+            dismissAll: vi.fn<ImperativeRouter['dismissAll']>(),
             canDismiss: vi.fn(() => false),
             setParams: vi.fn() as any,
-            reload: vi.fn<Router['reload']>(),
-            prefetch: vi.fn<Router['prefetch']>(),
-        } as unknown as Router;
+            reload: vi.fn<ImperativeRouter['reload']>(),
+            prefetch: vi.fn<ImperativeRouter['prefetch']>(),
+        } as unknown as ImperativeRouter;
         const now = Date.now();
         const buildProps = (activeAt: number): Parameters<typeof useNewSessionAgentInputPresentation>[0] => ({
             theme: sessionAgentInputTheme,
@@ -620,16 +620,16 @@ describe('useNewSessionAgentInputPresentation', () => {
             back: () => routerMock.state.router.back(),
             canGoBack: vi.fn(() => false),
             push: (value: any) => routerMock.state.router.push(value),
-            navigate: vi.fn<Router['navigate']>(),
+            navigate: vi.fn<ImperativeRouter['navigate']>(),
             replace: (value: any) => routerMock.state.router.replace(value),
-            dismiss: vi.fn<Router['dismiss']>(),
-            dismissTo: vi.fn<Router['dismissTo']>(),
-            dismissAll: vi.fn<Router['dismissAll']>(),
+            dismiss: vi.fn<ImperativeRouter['dismiss']>(),
+            dismissTo: vi.fn<ImperativeRouter['dismissTo']>(),
+            dismissAll: vi.fn<ImperativeRouter['dismissAll']>(),
             canDismiss: vi.fn(() => false),
             setParams: vi.fn() as any,
-            reload: vi.fn<Router['reload']>(),
-            prefetch: vi.fn<Router['prefetch']>(),
-        } as unknown as Router;
+            reload: vi.fn<ImperativeRouter['reload']>(),
+            prefetch: vi.fn<ImperativeRouter['prefetch']>(),
+        } as unknown as ImperativeRouter;
 
         const hook = await renderHook(() => useNewSessionAgentInputPresentation({
             theme: sessionAgentInputTheme,

@@ -85,7 +85,7 @@ describe('SegmentedTabBar', () => {
             ['alpha', 'ArrowRight', 'beta'],
         ]) {
             const preventDefault = vi.fn();
-            await act(async () => requireTab(screen, `seg:${from}`).props.onKeyDown({ key, preventDefault }));
+            await act(async () => requireTab(screen, `seg:${from}`).props.onKeyDown({ nativeEvent: { key }, preventDefault }));
             expect(preventDefault).toHaveBeenCalled();
             expect(focused).toBe(`seg:${to}`);
             expect(requireTab(screen, `seg:${to}`).props.accessibilityState.selected).toBe(true);
@@ -93,7 +93,7 @@ describe('SegmentedTabBar', () => {
             expect(requireTab(screen, `seg:${from}`).props.tabIndex).toBe(-1);
         }
         const preventDefault = vi.fn();
-        await act(async () => requireTab(screen, 'seg:beta').props.onKeyDown({ key: 'Tab', preventDefault }));
+        await act(async () => requireTab(screen, 'seg:beta').props.onKeyDown({ nativeEvent: { key: 'Tab' }, preventDefault }));
         expect(preventDefault).not.toHaveBeenCalled();
         await act(async () => {
             listeners.get('keydown')?.({ key: 'Tab' });
@@ -104,10 +104,10 @@ describe('SegmentedTabBar', () => {
         expect(flattenStyle(screen.findHostByTestId('seg:beta:focus-ring')?.props.style).opacity).toBe(0);
         const { I18nManager, Platform } = await import('react-native');
         I18nManager.isRTL = true;
-        await act(async () => requireTab(screen, 'seg:beta').props.onKeyDown({ key: 'ArrowRight', preventDefault: vi.fn() }));
+        await act(async () => requireTab(screen, 'seg:beta').props.onKeyDown({ nativeEvent: { key: 'ArrowRight' }, preventDefault: vi.fn() }));
         expect(requireTab(screen, 'seg:alpha').props.accessibilityState.selected).toBe(true);
         I18nManager.isRTL = false;
-        await act(async () => requireTab(screen, 'seg:beta').props.onKeyDown({ key: ' ', preventDefault: vi.fn() }));
+        await act(async () => requireTab(screen, 'seg:beta').props.onKeyDown({ nativeEvent: { key: ' ' }, preventDefault: vi.fn() }));
         expect(requireTab(screen, 'seg:beta').props.accessibilityState.selected).toBe(true);
         const platformOS = Platform.OS;
         Platform.OS = 'ios';

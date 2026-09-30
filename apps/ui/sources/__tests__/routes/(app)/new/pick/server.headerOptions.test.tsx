@@ -81,10 +81,6 @@ installServerPickerRouteCommonModuleMocks({
     },
 });
 
-vi.mock('@react-navigation/native', () => ({
-    CommonActions: { setParams: (params: any) => ({ type: 'SET_PARAMS', payload: params }) },
-}));
-
 vi.mock('@/components/ui/lists/ItemList', () => ({
     ItemList: (props: any) => React.createElement('ItemList', props, props.children),
     ItemListStatic: (props: any) => React.createElement('ItemListStatic', props, props.children),

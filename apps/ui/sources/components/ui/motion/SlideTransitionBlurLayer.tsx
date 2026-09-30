@@ -58,7 +58,7 @@ export type SlideTransitionBlurLayerProps = Readonly<{
 }>;
 
 const blurOverlayStyle: ViewStyle = {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
 };
 
 export function SlideTransitionBlurLayer(props: SlideTransitionBlurLayerProps): React.ReactElement | null {

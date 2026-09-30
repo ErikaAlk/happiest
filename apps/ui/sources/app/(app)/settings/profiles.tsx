@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Pressable, Platform } from 'react-native';
-import { useNavigation, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useSettingMutable } from '@/sync/domains/state/storage';
 import { StyleSheet } from 'react-native-unistyles';
 import { useUnistyles } from 'react-native-unistyles';
@@ -21,6 +21,7 @@ import { SecretRequirementModal, type SecretRequirementModalResult } from '@/com
 import { getSecretSatisfaction } from '@/utils/secrets/secretSatisfaction';
 import { getRequiredSecretEnvVarNames } from '@/sync/domains/profiles/profileSecrets';
 import { fireAndForget } from '@/utils/system/fireAndForget';
+import { useUnsavedChangesBeforeRemoveGuard } from '@/utils/navigation/useUnsavedChangesBeforeRemoveGuard';
 import { Icon } from '@/components/ui/icons/Icon';
 import { useApplySettings } from '@/sync/store/settingsWriters';
 
@@ -33,7 +34,6 @@ interface ProfileManagerProps {
 const ProfileManager = React.memo(function ProfileManager({ onProfileSelect, selectedProfileId }: ProfileManagerProps) {
     const { theme } = useUnistyles();
     const router = useRouter();
-    const navigation = useNavigation();
     const [useProfiles, setUseProfiles] = useSettingMutable('useProfiles');
     const [profiles, setProfiles] = useSettingMutable('profiles');
     const [lastUsedProfile, setLastUsedProfile] = useSettingMutable('lastUsedProfile');
@@ -120,27 +120,31 @@ const ProfileManager = React.memo(function ProfileManager({ onProfileSelect, sel
         setIsEditingDirty(false);
     }, []);
 
+    const requestUnsavedChangesDecision = React.useCallback(() => {
+        const isBuiltIn = !!editingProfile && DEFAULT_PROFILES.some((bp) => bp.id === editingProfile.id);
+        const saveText = isBuiltIn ? t('common.saveAs') : t('common.save');
+        const message = isBuiltIn
+            ? `${t('common.unsavedChangesWarning')}\n\n${t('profiles.builtInSaveAsHint')}`
+            : t('common.unsavedChangesWarning');
+        return promptUnsavedChangesAlert(
+            (title, message, buttons) => Modal.alert(title, message, buttons),
+            {
+                title: t('common.discardChanges'),
+                message,
+                discardText: t('common.discard'),
+                saveText,
+                keepEditingText: t('common.keepEditing'),
+            },
+        );
+    }, [editingProfile]);
+
     const requestCloseEditor = React.useCallback(() => {
         fireAndForget((async () => {
             if (!isEditingDirtyRef.current) {
                 closeEditor();
                 return;
             }
-            const isBuiltIn = !!editingProfile && DEFAULT_PROFILES.some((bp) => bp.id === editingProfile.id);
-            const saveText = isBuiltIn ? t('common.saveAs') : t('common.save');
-            const message = isBuiltIn
-                ? `${t('common.unsavedChangesWarning')}\n\n${t('profiles.builtInSaveAsHint')}`
-                : t('common.unsavedChangesWarning');
-            const decision = await promptUnsavedChangesAlert(
-                (title, message, buttons) => Modal.alert(title, message, buttons),
-                {
-                    title: t('common.discardChanges'),
-                    message,
-                    discardText: t('common.discard'),
-                    saveText,
-                    keepEditingText: t('common.keepEditing'),
-                },
-            );
+            const decision = await requestUnsavedChangesDecision();
 
             if (decision === 'discard') {
                 isEditingDirtyRef.current = false;
@@ -150,54 +154,16 @@ const ProfileManager = React.memo(function ProfileManager({ onProfileSelect, sel
                 saveRef.current?.();
             }
         })(), { tag: 'ProfilesScreen.requestCloseEditor' });
-    }, [closeEditor, editingProfile]);
+    }, [closeEditor, requestUnsavedChangesDecision]);
 
-    React.useEffect(() => {
-        const addListener = (navigation as any)?.addListener;
-        if (typeof addListener !== 'function') {
-            return;
-        }
-
-        const subscription = addListener.call(navigation, 'beforeRemove', (e: any) => {
-            if (!showAddForm || !isEditingDirtyRef.current) return;
-
-            e.preventDefault();
-
-            fireAndForget((async () => {
-                const isBuiltIn = !!editingProfile && DEFAULT_PROFILES.some((bp) => bp.id === editingProfile.id);
-                const saveText = isBuiltIn ? t('common.saveAs') : t('common.save');
-                const message = isBuiltIn
-                    ? `${t('common.unsavedChangesWarning')}\n\n${t('profiles.builtInSaveAsHint')}`
-                    : t('common.unsavedChangesWarning');
-
-                const decision = await promptUnsavedChangesAlert(
-                    (title, message, buttons) => Modal.alert(title, message, buttons),
-                    {
-                        title: t('common.discardChanges'),
-                        message,
-                        discardText: t('common.discard'),
-                        saveText,
-                        keepEditingText: t('common.keepEditing'),
-                    },
-                );
-
-                if (decision === 'discard') {
-                    isEditingDirtyRef.current = false;
-                    closeEditor();
-                    (navigation as any).dispatch(e.data.action);
-                } else if (decision === 'save') {
-                    // Save form state; only continue navigation if save succeeded.
-                    const didSave = saveRef.current?.() ?? false;
-                    if (didSave) {
-                        isEditingDirtyRef.current = false;
-                        (navigation as any).dispatch(e.data.action);
-                    }
-                }
-            })(), { tag: 'ProfilesScreen.beforeRemove' });
-        });
-
-        return () => subscription?.remove?.();
-    }, [closeEditor, editingProfile, navigation, showAddForm]);
+    useUnsavedChangesBeforeRemoveGuard({
+        isDirty: isEditingDirty,
+        enabled: showAddForm,
+        requestDecision: requestUnsavedChangesDecision,
+        onDiscard: closeEditor,
+        onSave: () => saveRef.current?.() ?? false,
+        tag: 'ProfilesScreen.beforeRemove',
+    });
 
     const handleDeleteProfile = async (profile: AIBackendProfile) => {
         const confirmed = await Modal.confirm(

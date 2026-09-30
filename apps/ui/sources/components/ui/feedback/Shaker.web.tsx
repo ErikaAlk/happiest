@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { View, ViewProps } from 'react-native';
+import { View, ViewProps, type ViewInstance } from 'react-native';
 
 export type ShakeInstance = {
     shake: () => void;
 }
 
 export const Shaker = React.memo(React.forwardRef<ShakeInstance, ViewProps>((props, ref) => {
-    const baseRef = React.useRef<View>(null);
+    const baseRef = React.useRef<ViewInstance>(null);
     React.useImperativeHandle(ref, () => ({
         shake: () => {
             const shakeElement = baseRef.current as any as HTMLDivElement

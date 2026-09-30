@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from 'expo-router';
 import { Platform } from 'react-native';
 
 import { PopoverScope } from '@/components/ui/popover';

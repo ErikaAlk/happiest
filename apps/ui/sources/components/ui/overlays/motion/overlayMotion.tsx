@@ -150,7 +150,7 @@ export function useOverlayMotionAnimation(params: Readonly<{
 }>): Readonly<{
     exitMs: number;
     progress: Animated.Value;
-    style: StyleProp<ViewStyle>;
+    style: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
 }> {
     const reducedMotion = useReducedMotionPreference();
     const progress = React.useRef(new Animated.Value(0)).current;

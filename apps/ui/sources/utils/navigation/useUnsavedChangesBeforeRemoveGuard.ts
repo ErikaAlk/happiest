@@ -1,94 +1,61 @@
 import * as React from 'react';
+import { usePreventRemove } from 'expo-router';
 
 import { fireAndForget } from '@/utils/system/fireAndForget';
 import type { UnsavedChangesDecision } from '@/utils/ui/promptUnsavedChangesAlert';
 
 export type { UnsavedChangesDecision };
 
+/**
+ * Blocks leaving the screen while it has unsaved changes and asks what to do with them. Discarding,
+ * or a successful save when `continueOnSave` is not `false`, continues the blocked navigation.
+ *
+ * The screen's own exits (save-and-close, a confirmed cancel) run before the cleared dirty state
+ * re-renders, so they either call the returned `allowRemoval` right before navigating or set
+ * `ignoreRef` to let the exit pass without a prompt.
+ */
 export function useUnsavedChangesBeforeRemoveGuard(params: Readonly<{
-    navigation: unknown;
+    isDirty: boolean;
     enabled?: boolean;
     ignoreRef?: React.MutableRefObject<boolean>;
-    isDirtyRef: React.MutableRefObject<boolean>;
     requestDecision: () => Promise<UnsavedChangesDecision>;
     onDiscard?: () => void;
     onSave?: () => boolean | Promise<boolean>;
     continueOnSave?: boolean;
-    onContinue: (action: unknown) => void;
     tag: string;
-}>) {
+}>): () => void {
     const {
-        navigation,
-        enabled: enabledParam,
+        isDirty,
+        enabled = true,
         ignoreRef,
-        isDirtyRef,
         requestDecision,
         onDiscard,
         onSave,
         continueOnSave,
-        onContinue,
         tag,
     } = params;
-    const enabled = enabledParam ?? true;
 
-    React.useEffect(() => {
-        if (!enabled) return;
-
-        const nav: any = navigation;
-        const addListener = nav?.addListener;
-        if (typeof addListener !== 'function') {
+    return usePreventRemove(enabled && isDirty, ({ repeat }) => {
+        if (ignoreRef?.current) {
+            repeat();
             return;
         }
 
-        const subscription = addListener.call(nav, 'beforeRemove', (event: any) => {
-            if (ignoreRef?.current) return;
-            if (!isDirtyRef.current) return;
+        fireAndForget((async () => {
+            const decision = await requestDecision();
 
-            if (typeof event?.preventDefault === 'function') {
-                event.preventDefault();
-            }
-
-            const action = event?.data?.action;
-
-            fireAndForget((async () => {
-                const decision = await requestDecision();
-
-                if (decision === 'discard') {
-                    isDirtyRef.current = false;
-                    onDiscard?.();
-                    onContinue(action);
-                    return;
-                }
-
-                if (decision === 'save') {
-                    const didSave = await onSave?.() ?? false;
-                    if (!didSave) return;
-                    isDirtyRef.current = false;
-
-                    if (continueOnSave !== false) {
-                        onContinue(action);
-                    }
-                }
-            })(), { tag });
-        });
-
-        return () => {
-            if (typeof subscription === 'function') {
-                subscription();
+            if (decision === 'discard') {
+                onDiscard?.();
+                repeat();
                 return;
             }
-            subscription?.remove?.();
-        };
-    }, [
-        enabled,
-        navigation,
-        ignoreRef,
-        isDirtyRef,
-        requestDecision,
-        onDiscard,
-        onSave,
-        continueOnSave,
-        onContinue,
-        tag,
-    ]);
+
+            if (decision === 'save') {
+                const didSave = await onSave?.() ?? false;
+                if (didSave && continueOnSave !== false) {
+                    repeat();
+                }
+            }
+        })(), { tag });
+    });
 }

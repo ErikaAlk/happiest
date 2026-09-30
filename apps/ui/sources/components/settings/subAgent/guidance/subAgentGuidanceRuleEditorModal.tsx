@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, ScrollView, View } from 'react-native';
+import { Platform, ScrollView, View, type ViewInstance } from 'react-native';
 import { useUnistyles } from 'react-native-unistyles';
 import { buildBackendTargetKey, type BackendTargetRefV1 } from '@happier-dev/protocol';
 
@@ -47,7 +47,7 @@ export function SubAgentGuidanceRuleEditorModal(props: Readonly<{
     const { theme } = useUnistyles();
     const { entry, mode, onClose, onResolve } = props;
     const enabledAgentIds = useEnabledAgentIds();
-    const popoverBoundaryRef = React.useRef<View>(null);
+    const popoverBoundaryRef = React.useRef<ViewInstance>(null);
     const [openPicker, setOpenPicker] = React.useState<null | 'backend' | 'model' | 'intent'>(null);
 
     const [enabled, setEnabled] = React.useState(entry.enabled !== false);

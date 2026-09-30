@@ -81,7 +81,7 @@ describe('babel.config.js', () => {
     expect(workletsPlugin?.[0]).toBe('react-native-worklets/plugin');
     expect(workletsPlugin?.[1]).toEqual(expect.objectContaining({
       bundleMode: false,
-      workletizableModules: expect.arrayContaining(['remend']),
+      importForwarding: { moduleNames: ['remend'] },
     }));
   });
 
@@ -93,7 +93,7 @@ describe('babel.config.js', () => {
     expect(workletsPlugin?.[1]).toEqual(expect.objectContaining({
       bundleMode: true,
       strictGlobal: true,
-      workletizableModules: expect.arrayContaining(['remend']),
+      importForwarding: { moduleNames: ['remend'] },
     }));
     expect(cacheUsingCalls).toContain('1|0');
   });

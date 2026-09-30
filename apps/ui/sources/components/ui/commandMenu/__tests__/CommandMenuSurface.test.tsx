@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import { View, type ViewInstance } from 'react-native';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderScreen } from '@/dev/testkit';
 
@@ -87,7 +87,7 @@ describe('CommandMenuSurface', () => {
     });
 
     it('forwards keyboard-safe popover overrides to Popover', async () => {
-        const boundaryRef = React.createRef<View>();
+        const boundaryRef = React.createRef<ViewInstance>();
         const backdrop = {
             style: { backgroundColor: 'transparent' },
             blockOutsidePointerEvents: 'above-anchor' as const,

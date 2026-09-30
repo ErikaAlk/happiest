@@ -42,7 +42,7 @@ function create(kind, data, children = [], keys = []) {
     return wrapper;
 }
 export const WorkletsModule = {
-    createSerializableFunction: fn => create('function', fn),
+    createSerializableNonWorkletFunction: fn => create('function', fn),
     createSerializableNumber: value => create('number', value),
     createSerializableString: value => create('string', value),
     createSerializableObject: props => create('object', null, Object.values(props).map(value => ids.get(value)), Object.keys(props)),

@@ -34,13 +34,7 @@ installRestoreScanComputerQrViewCommonModuleMocks({
             },
         });
     },
-    reactNavigation: async () => {
-        const { createReactNavigationNativeMock } = await import('@/dev/testkit/mocks/reactNavigation');
-        return {
-            ...createReactNavigationNativeMock(),
-            useIsFocused: () => navigationState.isFocused,
-        };
-    },
+    isFocused: () => navigationState.isFocused,
 });
 
 vi.mock('@/hooks/server/useFeatureDecision', () => ({

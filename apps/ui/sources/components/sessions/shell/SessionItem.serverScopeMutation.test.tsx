@@ -25,10 +25,6 @@ vi.mock('@/components/ui/forms/dropdown/ContextMenu', () => ({
     ContextMenu: (props: any) => React.createElement('ContextMenu', props),
 }));
 
-vi.mock('react-native-gesture-handler', () => ({
-    Swipeable: (props: any) => React.createElement('Swipeable', props),
-}));
-
 vi.mock('@/components/ui/text/Text', () => ({
     Text: 'Text',
     TextInput: 'TextInput',

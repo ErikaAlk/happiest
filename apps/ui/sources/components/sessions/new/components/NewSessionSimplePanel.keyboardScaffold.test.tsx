@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act } from 'react-test-renderer';
 
@@ -141,8 +141,7 @@ vi.mock('@/components/sessions/attachments/AttachmentFilePicker', () => ({
 }));
 
 function createFloatingPanelProps() {
-    // Test harness only verifies prop forwarding; no native View instance is mounted.
-    const popoverBoundaryRef = React.createRef<View>() as unknown as React.RefObject<View>;
+    const popoverBoundaryRef = React.createRef<ViewInstance>();
     return {
         popoverBoundaryRef,
         headerHeight: 0,
@@ -196,8 +195,7 @@ describe('NewSessionSimplePanel keyboard scaffold integration', () => {
     it('hands AgentInput the available panel height less the chrome this host draws in it', async () => {
         const { NewSessionSimplePanel } = await import('./NewSessionSimplePanel');
         let screen: Awaited<ReturnType<typeof renderScreen>> | undefined;
-        // Test harness only verifies ref forwarding; no native View instance is mounted.
-        const popoverBoundaryRef = React.createRef<View>() as unknown as React.RefObject<View>;
+        const popoverBoundaryRef = React.createRef<ViewInstance>();
 
         try {
             screen = await renderScreen(
@@ -421,7 +419,7 @@ describe('NewSessionSimplePanel keyboard scaffold integration', () => {
     it('skips rerendering the composer subtree when panel props are stable', async () => {
         const { NewSessionSimplePanel } = await import('./NewSessionSimplePanel');
         let screen: Awaited<ReturnType<typeof renderScreen>> | undefined;
-        const popoverBoundaryRef = React.createRef<View>() as unknown as React.RefObject<View>;
+        const popoverBoundaryRef = React.createRef<ViewInstance>();
         const props = {
             popoverBoundaryRef,
             headerHeight: 44,

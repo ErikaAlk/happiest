@@ -7,7 +7,6 @@ import { execFileSync } from 'node:child_process';
 import { parseArgs } from 'node:util';
 import { maybeUploadSentryExpoSourceMaps } from './sentry-upload-sourcemaps.mjs';
 import { withEasGitCaseSensitiveEnv } from './eas-git-case-sensitive-env.mjs';
-import { applyExpoWebModalEnv } from './expoWebModalEnv.mjs';
 import { applyExpoNodeHeapEnv } from '../../expo/expoNodeHeapEnv.mjs';
 import { normalizeInteractiveOverride, resolveExpoInteractivity } from './resolve-expo-interactivity.mjs';
 import { resolveEasBuildProfileEnv } from './resolve-eas-build-profile-env.mjs';
@@ -18,6 +17,7 @@ import {
   formatMobileReleaseEnvironment,
   normalizeMobileReleaseEnvironment,
   resolveMobileBuildNodeEnvironment,
+  resolveMobileBundleConsoleEnv,
   resolveMobileAppEnvironmentConfig,
 } from './mobile-release-environments.mjs';
 
@@ -372,13 +372,14 @@ function main() {
   }
 
   const easCommandEnv = withEasGitCaseSensitiveEnv(
-    applyExpoNodeHeapEnv(applyExpoWebModalEnv({
+    applyExpoNodeHeapEnv({
       ...process.env,
       APP_ENV: process.env.APP_ENV ?? appEnvironment,
       NODE_ENV: process.env.NODE_ENV ?? nodeEnvironment,
       EXPO_UPDATES_CHANNEL: process.env.EXPO_UPDATES_CHANNEL ?? updateLane,
+      ...resolveMobileBundleConsoleEnv(normalizedEnvironment),
       ...injectedEnv,
-    }), {
+    }, {
       envKey: 'HAPPIER_PIPELINE_EXPO_MAX_OLD_SPACE_SIZE_MB',
     }),
   );

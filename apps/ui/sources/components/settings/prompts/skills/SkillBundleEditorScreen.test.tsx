@@ -6,6 +6,7 @@ import * as React from 'react';
 import { act } from 'react-test-renderer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderScreen } from '@/dev/testkit';
+import { createRouteFocusStore } from '@/dev/testkit/mocks/router';
 import {
     installSkillBundleCommonModuleMocks,
     skillBundleRouterBackSpy,
@@ -18,7 +19,7 @@ import {
 const createSkillPromptBundleSpy = vi.fn(async () => 'new-bundle');
 const updateSkillPromptBundleSpy = vi.fn(async () => {});
 const setPromptFoldersSpy = vi.fn();
-let latestFocusEffect: (() => void) | undefined;
+const routeFocus = createRouteFocusStore();
 const fetchArtifactWithBodySpy = vi.fn(async () => null);
 const promptExternalLinksState = vi.hoisted(() => ({
     value: {
@@ -72,6 +73,7 @@ const artifactBodiesState = vi.hoisted(() => ({
 }));
 
 installSkillBundleCommonModuleMocks({
+    isFocused: routeFocus,
     storage: async (importOriginal) =>
         createPartialStorageModuleMock(importOriginal, {
             useAllMachines: () => ([
@@ -101,15 +103,6 @@ installSkillBundleCommonModuleMocks({
             },
         }),
 });
-
-vi.mock('@react-navigation/native', () => ({
-    useFocusEffect: (callback: () => void) => {
-        latestFocusEffect = callback;
-        React.useEffect(() => {
-            callback();
-        }, [callback]);
-    },
-}));
 
 vi.mock('@/components/ui/layout/layout', () => ({
     layout: { maxWidth: 960 },
@@ -195,7 +188,7 @@ describe('SkillBundleEditorScreen', () => {
         updateSkillPromptBundleSpy.mockClear();
         fetchArtifactWithBodySpy.mockClear();
         setPromptFoldersSpy.mockClear();
-        latestFocusEffect = undefined;
+        routeFocus.setFocused(true);
         promptFoldersState.value = {
             v: 1,
             folders: [
@@ -373,7 +366,10 @@ describe('SkillBundleEditorScreen', () => {
         };
 
         await act(async () => {
-            latestFocusEffect?.();
+            routeFocus.setFocused(false);
+        });
+        await act(async () => {
+            routeFocus.setFocused(true);
             await flushHookEffects({ cycles: 1, turns: 1 });
         });
 

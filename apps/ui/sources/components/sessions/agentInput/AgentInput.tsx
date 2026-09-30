@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Platform, useWindowDimensions, ViewStyle, Pressable, ScrollView } from 'react-native';
+import { View, Platform, useWindowDimensions, ViewStyle, Pressable, ScrollView, type ViewInstance } from 'react-native';
 import { layout } from '@/components/ui/layout/layout';
 import { MultiTextInput, KeyPressEvent, type MultiTextInputSubmitBehavior } from '@/components/ui/forms/MultiTextInput';
 import { MULTI_TEXT_INPUT_BASE_FONT_SIZE } from '@/components/ui/forms/multiTextInputTypography';
@@ -1228,7 +1228,7 @@ export const AgentInput = React.memo(React.forwardRef<MultiTextInputHandle, Agen
     }, [hasInputExpansion, inputContentHeightPx, inputExpansionCollapsedMaxHeight]);
     const shouldShowInputExpansionToggle = hasInputExpansion && inputExpansionToggleVisible;
     const shouldReserveInputExpansionToggleSpace = hasInputExpansion && inputExpansionCollapsedMaxHeight != null;
-    const composerAnchorRef = React.useRef<View>(null);
+    const composerAnchorRef = React.useRef<ViewInstance>(null);
     const [liveTextStatus, setLiveTextStatus] = React.useState(() => resolveLiveInputTextStatus(props.value));
     const liveTextStatusRef = React.useRef(liveTextStatus);
     const hasText = liveTextStatus.hasText;

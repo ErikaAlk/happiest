@@ -145,14 +145,6 @@ test('actool adapter leaves Linux and Windows environments unchanged without req
   }
 });
 
-test('tauri build-updater-artifacts script enables Expo Router web modal support', () => {
-  const script = fs.readFileSync(resolve(repoRoot, 'scripts', 'pipeline', 'tauri', 'build-updater-artifacts.mjs'), 'utf8');
-
-  assert.match(script, /applyExpoWebModalEnv/);
-  assert.match(script, /from '\.\.\/expo\/expoWebModalEnv\.mjs'/);
-  assert.doesNotMatch(script, /EXPO_UNSTABLE_WEB_MODAL:\s*'1'/);
-});
-
 test('tauri build-updater-artifacts script supports preview dry-run', async () => {
   const out = execFileSync(
     process.execPath,

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { InteractionManager, Platform, Pressable, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { Platform, Pressable, View } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { DEFAULT_AGENT_ID, getAgentCore, isAgentId, type AgentId } from '@/agents/catalog/catalog';
@@ -10,6 +10,7 @@ import { type ModalPortalTarget, useModalPortalTarget } from '@/modal/portal/Mod
 import { Typography } from '@/constants/Typography';
 import { t } from '@/text';
 import { getClipboardStringTrimmedSafe } from '@/utils/ui/clipboard';
+import { runAfterInteractionsWithFallback } from '@/utils/timing/runAfterInteractionsWithFallback';
 import { Icon } from '@/components/ui/icons/Icon';
 
 const stylesheet = StyleSheet.create((theme) => ({
@@ -196,12 +197,12 @@ export function NewSessionResumeSelectionContent(props: NewSessionResumeSelectio
 
         const cleanup = focusInputWithRetries();
         let interactionCleanup: (() => void) | undefined;
-        const task = InteractionManager.runAfterInteractions(() => {
+        const cancelDeferredFocus = runAfterInteractionsWithFallback(() => {
             interactionCleanup = focusInputWithRetries();
         });
 
         return () => {
-            task.cancel?.();
+            cancelDeferredFocus();
             interactionCleanup?.();
             cleanup();
         };

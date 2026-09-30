@@ -55,7 +55,7 @@ function readFontStyle(style: TextStyle): 'normal' | 'italic' | undefined {
     return style.fontStyle === 'normal' || style.fontStyle === 'italic' ? style.fontStyle : undefined;
 }
 
-function readTextAlign(style: TextStyle): NonNullable<TextStyle['textAlign']> | undefined {
+function readTextAlign(style: TextStyle): 'auto' | 'left' | 'right' | 'center' | 'justify' | undefined {
     const textAlign = style.textAlign;
     return textAlign === 'auto'
         || textAlign === 'left'

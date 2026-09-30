@@ -88,7 +88,7 @@ export const PlanetBackground = React.memo(function PlanetBackground(props: Plan
         // Native's `ViewStyle` type, but they're valid web CSS and RN-web
         // supports them.
         const webStyle = {
-            ...RNStyleSheet.absoluteFillObject,
+            ...RNStyleSheet.absoluteFill,
             backgroundImage: `url(${url})`,
             backgroundSize,
             backgroundPosition,
@@ -114,7 +114,7 @@ export const PlanetBackground = React.memo(function PlanetBackground(props: Plan
                 source={source}
                 contentFit="cover"
                 contentPosition={PLANET_DESKTOP_POSITION}
-                style={RNStyleSheet.absoluteFillObject}
+                style={RNStyleSheet.absoluteFill}
                 pointerEvents="none"
             />
         );
@@ -164,7 +164,7 @@ const PlanetBackgroundMobileNative = React.memo(function PlanetBackgroundMobileN
             accessible={false}
             pointerEvents="none"
             onLayout={onLayout}
-            style={RNStyleSheet.absoluteFillObject}
+            style={RNStyleSheet.absoluteFill}
         >
             {imageStyle ? (
                 <ExpoImage

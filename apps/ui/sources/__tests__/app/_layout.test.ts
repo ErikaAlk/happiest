@@ -181,9 +181,6 @@ vi.mock('react-native', async () => {
                                     Dimensions: {
                                         get: () => ({ width: 800, height: 600, scale: 2, fontScale: 1 }),
                                     },
-                                    InteractionManager: {
-                                        runAfterInteractions: (fn: () => void) => fn(),
-                                    },
                                     StyleSheet: {
                                         create: <T,>(styles: T) => styles,
                                     },

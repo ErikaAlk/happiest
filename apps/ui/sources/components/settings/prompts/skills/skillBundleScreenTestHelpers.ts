@@ -1,5 +1,7 @@
 import { vi } from 'vitest';
 
+import type { ExpoRouterMockOptions } from '@/dev/testkit/mocks/router';
+
 type SkillBundleModuleFactory = () => unknown | Promise<unknown>;
 type SkillBundleImportOriginal = <T = unknown>() => Promise<T>;
 type SkillBundleStorageModuleFactory = (
@@ -10,6 +12,8 @@ type InstallSkillBundleCommonModuleMocksOptions = Readonly<{
     modal?: SkillBundleModuleFactory;
     reactNative?: SkillBundleModuleFactory;
     router?: SkillBundleModuleFactory;
+    /** Route focus reported by the default expo-router mock. */
+    isFocused?: ExpoRouterMockOptions['isFocused'];
     storage?: SkillBundleStorageModuleFactory;
     text?: SkillBundleModuleFactory;
     unistyles?: SkillBundleModuleFactory;
@@ -23,6 +27,7 @@ const skillBundleModuleState = vi.hoisted(() => ({
         modal: undefined as SkillBundleModuleFactory | undefined,
         reactNative: undefined as SkillBundleModuleFactory | undefined,
         router: undefined as SkillBundleModuleFactory | undefined,
+        isFocused: undefined as ExpoRouterMockOptions['isFocused'],
         storage: undefined as SkillBundleStorageModuleFactory | undefined,
         text: undefined as SkillBundleModuleFactory | undefined,
         unistyles: undefined as SkillBundleModuleFactory | undefined,
@@ -41,6 +46,7 @@ export function resetSkillBundleCommonModuleMockState() {
         modal: undefined,
         reactNative: undefined,
         router: undefined,
+        isFocused: undefined,
         storage: undefined,
         text: undefined,
         unistyles: undefined,
@@ -54,6 +60,7 @@ export function installSkillBundleCommonModuleMocks(
         modal: options.modal,
         reactNative: options.reactNative,
         router: options.router,
+        isFocused: options.isFocused,
         storage: options.storage,
         text: options.text,
         unistyles: options.unistyles,
@@ -107,6 +114,7 @@ export function installSkillBundleCommonModuleMocks(
                 replace: skillBundleModuleState.routerReplaceSpy,
             },
             navigation: { canGoBack: () => false },
+            isFocused: activeOptions.isFocused,
         }).module;
     });
 

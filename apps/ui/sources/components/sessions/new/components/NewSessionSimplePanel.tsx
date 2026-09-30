@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { ViewStyle } from 'react-native';
+import type { ViewInstance, ViewStyle } from 'react-native';
 import { Keyboard, Platform, Pressable, View, useWindowDimensions } from 'react-native';
 import { useNavigation, useRouter } from 'expo-router';
 import Animated, {
@@ -77,7 +77,7 @@ export type NewSessionSimplePanelProps = Readonly<{
     composerTopContent?: React.ReactNode;
     statusBadges?: React.ComponentProps<typeof AgentInput>['statusBadges'];
     statusTrailingActions?: React.ReactNode;
-    popoverBoundaryRef: React.RefObject<View | null>;
+    popoverBoundaryRef: React.RefObject<ViewInstance | null>;
     headerHeight: number;
     safeAreaTop: number;
     safeAreaBottom: number;

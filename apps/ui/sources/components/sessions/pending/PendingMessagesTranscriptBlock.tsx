@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, Pressable, ScrollView, View } from 'react-native';
+import { Platform, Pressable, ScrollView, View, type ScrollViewInstance } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { Typography } from '@/constants/Typography';
 import type { DiscardedPendingMessage, PendingMessage } from '@/sync/domains/state/storageTypes';
@@ -364,7 +364,7 @@ export function PendingMessagesTranscriptBlock(props: Readonly<{
     const removeActionInFlightRef = React.useRef<Record<string, true>>({});
     const terminalComposerClear = useTerminalComposerClearAction(props.sessionId);
     const pendingInputInterruptAndRun = usePendingInputInterruptAndRunAction(props.sessionId);
-    const scrollRef = React.useRef<ScrollView | null>(null);
+    const scrollRef = React.useRef<ScrollViewInstance | null>(null);
     const canReorderPendingMessages = props.pendingMessages.length > 1
         && !props.pendingMessages.some(isPendingMessageProviderEffectPossible);
     // Height-bearing, so the size estimate reads this same predicate rather than restating it.

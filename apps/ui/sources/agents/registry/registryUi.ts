@@ -1,4 +1,4 @@
-import type { ImageSourcePropType } from 'react-native';
+import type { ImageProps } from 'expo-image';
 import type { UnistylesThemes } from 'react-native-unistyles';
 
 import type { AgentId } from './registryCore';
@@ -28,7 +28,7 @@ export type AgentIconSvgXmlResolver = (
 
 export type AgentUiConfig = Readonly<{
     id: AgentId;
-    icon: ImageSourcePropType | null;
+    icon: NonNullable<ImageProps['source']> | null;
     svgIconXml: AgentIconSvgXmlResolver | null;
     /**
      * Visual scaling for small list/picker icons (for example backend picker rows).
@@ -73,7 +73,7 @@ export const AGENTS_UI: Readonly<Record<AgentId, AgentUiConfig>> = Object.freeze
     agy: AGY_UI,
 });
 
-export function getAgentIconSource(agentId: AgentId): ImageSourcePropType | null {
+export function getAgentIconSource(agentId: AgentId): NonNullable<ImageProps['source']> | null {
     return AGENTS_UI[agentId].icon;
 }
 

@@ -14,7 +14,6 @@ const useProfileSpy = vi.hoisted(() => vi.fn(() => ({ id: 'u1' })));
 vi.mock('react-native-reanimated', () => ({}));
 
 vi.mock('react-native-gesture-handler', () => ({
-    Swipeable: 'Swipeable',
     GestureDetector: (props: any) => React.createElement('GestureDetector', props, props.children),
 }));
 

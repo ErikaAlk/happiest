@@ -1,4 +1,4 @@
-import type { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 
 import type { NewSessionSimplePanelProps } from '@/components/sessions/new/components/NewSessionSimplePanel';
 import type {
@@ -22,12 +22,12 @@ export type NewSessionSimpleScreenProps = NewSessionSimplePanelProps & Readonly<
 export type NewSessionScreenModel =
     | Readonly<{
         variant: 'simple';
-        popoverBoundaryRef: React.RefObject<View>;
+        popoverBoundaryRef: React.RefObject<ViewInstance | null>;
         simpleProps: NewSessionSimpleScreenProps;
     }>
     | Readonly<{
         variant: 'wizard';
-        popoverBoundaryRef: React.RefObject<View>;
+        popoverBoundaryRef: React.RefObject<ViewInstance | null>;
         wizardProps: Readonly<{
             layout: NewSessionWizardLayoutProps;
             sectionPresentation?: Partial<Record<NewSessionWizardSelectionSectionId, NewSessionWizardSectionPresentation>>;

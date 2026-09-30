@@ -1,6 +1,6 @@
 import type { CodeLinesExternalScrollView } from '@/components/ui/code/view/CodeLinesViewCore';
 import * as React from 'react';
-import { Platform, Pressable, View, type ScrollViewProps } from 'react-native';
+import { Platform, Pressable, View, type ScrollViewProps, type ViewInstance } from 'react-native';
 
 import { Text } from '@/components/ui/text/Text';
 import { ChangedFilesReviewNavigation } from './review/ChangedFilesReviewNavigation';
@@ -766,7 +766,7 @@ function ChangedFilesReviewInner(props: ChangedFilesReviewProps) {
         return estimatedChangedLinesByPath.get(path) ?? null;
     }, [estimatedChangedLinesByPath]);
 
-    const reviewViewportRef = React.useRef<View | null>(null);
+    const reviewViewportRef = React.useRef<ViewInstance | null>(null);
     const onScrollToLine = useChangedFilesReviewLineScroll({
         viewportRef: reviewViewportRef,
         listRef,

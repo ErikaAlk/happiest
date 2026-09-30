@@ -42,10 +42,6 @@ let isTabletDevice = false;
 
 vi.mock('react-native-reanimated', () => ({}));
 
-vi.mock('react-native-gesture-handler', () => ({
-    Swipeable: 'Swipeable',
-}));
-
 vi.mock('@expo/vector-icons', () => ({
     Ionicons: 'Ionicons',
     Octicons: 'Octicons',

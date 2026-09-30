@@ -4,7 +4,7 @@ import {
     Pressable,
     type GestureResponderEvent,
     type PressableProps,
-    type View,
+    type ViewInstance,
     type StyleProp,
     type ViewStyle,
 } from 'react-native';
@@ -37,7 +37,7 @@ export type PetCompanionSurfaceProps = Readonly<{
     stateStyle?: StyleProp<ViewStyle>;
     spriteTestID: string;
     hitboxTestID: string;
-    dragTargetRef?: React.Ref<View>;
+    dragTargetRef?: React.Ref<ViewInstance>;
     pointerHandlers?: Readonly<{
         onPointerDown?: (event: unknown) => void;
         onMouseDown?: (event: unknown) => void;

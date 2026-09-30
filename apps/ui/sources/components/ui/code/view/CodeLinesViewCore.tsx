@@ -1,5 +1,6 @@
 import React from 'react';
 import { FlatList, Platform, View } from 'react-native';
+import type { ListViewToken, ViewInstance } from 'react-native';
 
 import type { CodeLine } from '@/components/ui/code/model/codeLineTypes';
 import type { CodeLinesSyntaxHighlightingConfig } from '@/components/ui/code/highlighting/useCodeLinesSyntaxHighlighting';
@@ -11,14 +12,14 @@ import { buildCodeLineRange, isCodeLineRangeSelectionEvent } from '../interactio
 
 export type CodeLinesExternalScrollView = Readonly<{
     scrollRef: React.RefObject<{ scrollTo: (options: { y: number; animated: boolean }) => void } | null>;
-    contentRef?: React.RefObject<View | null>;
-    viewportRef?: React.RefObject<View | null>;
+    contentRef?: React.RefObject<ViewInstance | null>;
+    viewportRef?: React.RefObject<ViewInstance | null>;
     offsetRef: React.RefObject<number>;
 }>;
 
 function measureExternalLayout(
     owner: CodeLinesExternalScrollView,
-    row: View,
+    row: ViewInstance,
     measured: (x: number, y: number, width: number, height: number) => void,
 ): void {
     const content = owner.contentRef?.current;
@@ -84,7 +85,7 @@ export function CodeLinesViewCore(
         advancedTokensRevision?: number;
     }>
 ) {
-    const lineRefs = React.useRef(new Map<string, View>());
+    const lineRefs = React.useRef(new Map<string, ViewInstance>());
     const externalRowLayouts = React.useRef(new Map<string, { y: number; height: number }>());
     const measureExternalRow = React.useCallback((id: string) => {
         const owner = props.externalScrollView;
@@ -96,7 +97,7 @@ export function CodeLinesViewCore(
     }, [props.externalScrollView]);
     const lineNativeIdPrefix = React.useId();
     const completedScrollTarget = React.useRef<string | null>(null);
-    const contentRef = React.useRef<View | null>(null);
+    const contentRef = React.useRef<ViewInstance | null>(null);
     const nativeReadingAnchor = React.useRef<NativeCodeReadingAnchor | null>(null);
     const pendingReadingScroll = React.useRef<NativeCodeReadingAnchor | null>(null);
     const nativeScrollOffset = React.useRef(0);
@@ -118,9 +119,9 @@ export function CodeLinesViewCore(
             });
         });
     }, []);
-    const onViewableItemsChanged = React.useCallback(({ viewableItems }: { viewableItems: Array<{ index: number | null }> }) => {
-        const index = viewableItems.find((item) => item.index !== null)?.index;
-        if (index !== undefined && index !== null) {
+    const onViewableItemsChanged = React.useCallback(({ viewableItems }: { viewableItems: ListViewToken[] }) => {
+        const index = viewableItems.find((item) => item.index != null)?.index;
+        if (index != null) {
             nativeReadingAnchor.current = { index, offset: 0 };
             measureNativeReadingAnchor();
         }

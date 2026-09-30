@@ -94,6 +94,7 @@ installSessionShellCommonModuleMocks({
     router: async () =>
         createExpoRouterMock({
             pathname: () => mockPathname,
+            isFocused: () => sessionScreenFocused,
             router: {
                 push: vi.fn(),
                 back: vi.fn(),
@@ -174,10 +175,6 @@ vi.mock('@expo/vector-icons', () => ({
 }));
 vi.mock('react-native-safe-area-context', () => ({
     useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
-}));
-vi.mock('@react-navigation/native', () => ({
-    useFocusEffect: () => {},
-    useIsFocused: () => sessionScreenFocused,
 }));
 vi.mock('@/auth/context/AuthContext', () => ({
     useAuth: () => ({ credentials: authCredentials }),

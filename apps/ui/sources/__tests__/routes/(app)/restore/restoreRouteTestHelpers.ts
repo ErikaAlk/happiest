@@ -4,7 +4,6 @@ type ModuleFactory = () => unknown | Promise<unknown>;
 
 type InstallRestoreRouteModuleMocksOptions = Readonly<{
     reactNative?: ModuleFactory;
-    reactNavigation?: ModuleFactory;
     router?: ModuleFactory;
     modal?: ModuleFactory;
     text?: ModuleFactory;
@@ -14,7 +13,6 @@ type InstallRestoreRouteModuleMocksOptions = Readonly<{
 const restoreRouteTestState = vi.hoisted(() => ({
     options: {
         reactNative: undefined as ModuleFactory | undefined,
-        reactNavigation: undefined as ModuleFactory | undefined,
         router: undefined as ModuleFactory | undefined,
         modal: undefined as ModuleFactory | undefined,
         text: undefined as ModuleFactory | undefined,
@@ -25,7 +23,6 @@ const restoreRouteTestState = vi.hoisted(() => ({
 export function resetRestoreRouteTestState() {
     restoreRouteTestState.options = {
         reactNative: undefined,
-        reactNavigation: undefined,
         router: undefined,
         modal: undefined,
         text: undefined,
@@ -38,7 +35,6 @@ export function installRestoreRouteCommonModuleMocks(
 ) {
     restoreRouteTestState.options = {
         reactNative: options.reactNative,
-        reactNavigation: options.reactNavigation,
         router: options.router,
         modal: options.modal,
         text: options.text,
@@ -54,15 +50,6 @@ export function installRestoreRouteCommonModuleMocks(
 
         const { createReactNativeWebMock } = await import('@/dev/testkit/mocks/reactNative');
         return createReactNativeWebMock();
-    });
-
-    vi.mock('@react-navigation/native', async () => {
-        if (restoreRouteTestState.options.reactNavigation) {
-            return await restoreRouteTestState.options.reactNavigation();
-        }
-
-        const { createReactNavigationNativeMock } = await import('@/dev/testkit/mocks/reactNavigation');
-        return createReactNavigationNativeMock();
     });
 
     vi.mock('expo-router', async () => {

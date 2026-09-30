@@ -164,6 +164,8 @@ export default defineConfig({
             // Route all Vitest imports to the node-safe stub before Vite/Node load those internals.
             { find: /^react-native-reanimated(?:\/.*)?$/, replacement: resolve('./sources/dev/reactNativeReanimatedStub.ts') },
             { find: /(?:^|[\\/])node_modules[\\/]react-native-reanimated[\\/].*$/, replacement: resolve('./sources/dev/reactNativeReanimatedStub.ts') },
+            // Worklets publishes the same extensionless ESM and initializes the native runtime on import.
+            { find: /^react-native-worklets$/, replacement: resolve('./sources/dev/reactNativeWorkletsStub.ts') },
             // Keyboard controller imports Reanimated internals from its implementation package.
             { find: /^react-native-keyboard-controller(?:\/.*)?$/, replacement: resolve('./sources/dev/reactNativeKeyboardControllerStub.ts') },
             { find: /(?:^|[\\/])node_modules[\\/]react-native-keyboard-controller[\\/].*$/, replacement: resolve('./sources/dev/reactNativeKeyboardControllerStub.ts') },
@@ -186,9 +188,10 @@ export default defineConfig({
             // `expo-video` uses native/web view modules that Vitest cannot parse under Node.
             { find: 'expo-video', replacement: resolve('./sources/dev/expoVideoStub.ts') },
             // `expo-router` pulls in RN internals via its native dev-server helpers.
-            { find: 'expo-router', replacement: resolve('./sources/dev/expoRouterStub.ts') },
+            { find: /^expo-router$/, replacement: resolve('./sources/dev/expoRouterStub.ts') },
             // `react-native-gesture-handler` imports React Native internals (Flow syntax) in node.
-            { find: 'react-native-gesture-handler', replacement: resolve('./sources/dev/reactNativeGestureHandlerStub.ts') },
+            { find: /^react-native-gesture-handler$/, replacement: resolve('./sources/dev/reactNativeGestureHandlerStub.ts') },
+            { find: /^react-native-gesture-handler\/ReanimatedSwipeable$/, replacement: resolve('./sources/dev/reactNativeGestureHandlerReanimatedSwipeableStub.ts') },
             // `react-native-webview` depends on RN native modules and internals.
             { find: /^react-native-webview$/, replacement: resolve('./sources/dev/reactNativeWebviewStub.ts') },
             // Some dependencies accidentally pull in `expo` (which expects bundler-only runtime modules).

@@ -1,4 +1,4 @@
-import type { Router } from 'expo-router';
+import type { ImperativeRouter } from 'expo-router';
 
 import { setActiveServerAndSwitch } from '@/sync/domains/server/activeServerSwitch';
 
@@ -31,7 +31,7 @@ export type NavigateToSessionOptions = Readonly<{
 }>;
 
 /** Only the one method this needs, so an imperative caller can pass the module `router`. */
-export type SessionRouteNavigator = Pick<Router, 'navigate'>;
+export type SessionRouteNavigator = Pick<ImperativeRouter, 'navigate'>;
 
 export function navigateToSessionRoute(params: Readonly<{
     router: SessionRouteNavigator;

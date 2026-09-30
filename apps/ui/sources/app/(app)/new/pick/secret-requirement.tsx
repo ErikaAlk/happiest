@@ -9,7 +9,12 @@ import { SecretRequirementScreen, type SecretRequirementModalResult } from '@/co
 import { storeTempData } from '@/utils/sessions/tempDataStore';
 import { PopoverScope } from '@/components/ui/popover';
 import { safeRouterBack } from '@/utils/navigation/safeRouterBack';
-import { buildNewSessionPickerFallbackHref, setNewSessionPickerReturnParams } from '@/components/sessions/new/navigation/setNewSessionPickerReturnParams';
+import {
+    buildNewSessionPickerFallbackHref,
+    dispatchNewSessionPickerReturnParams,
+    resolveNewSessionPickerReturnRouteKey,
+    setNewSessionPickerReturnParams,
+} from '@/components/sessions/new/navigation/setNewSessionPickerReturnParams';
 
 type SecretRequirementRoutePayload = Readonly<{
     profileId: string;
@@ -108,13 +113,28 @@ export default React.memo(function SecretRequirementPickerScreen() {
         sendResultToNewSession({ action: 'cancel' });
     }, [sendResultToNewSession]);
 
-    React.useEffect(() => {
-        const sub = (navigation as any)?.addListener?.('beforeRemove', () => {
-            if (didSendResultRef.current) return;
-            sendResultToNewSession({ action: 'cancel' });
+    // Leaving by gesture or hardware back sends no result of its own, so unmounting delivers a
+    // cancel to the new-session route this screen was presented over. The route key is read while
+    // this screen is still in the navigation state, because it is gone by the time it unmounts.
+    const returnRouteKeyRef = React.useRef<string | null>(null);
+    returnRouteKeyRef.current = resolveNewSessionPickerReturnRouteKey((navigation as any).getState());
+    const deliverCancelOnRemovalRef = React.useRef<() => void>(() => {});
+    deliverCancelOnRemovalRef.current = () => {
+        const targetRouteKey = returnRouteKeyRef.current;
+        if (!profileId || didSendResultRef.current || !targetRouteKey) return;
+        didSendResultRef.current = true;
+        const payload: SecretRequirementRoutePayload = {
+            profileId,
+            revertOnCancel,
+            result: { action: 'cancel' },
+        };
+        dispatchNewSessionPickerReturnParams({
+            navigation: navigation as any,
+            targetRouteKey,
+            routeParams: { secretRequirementResultId: storeTempData(payload) },
         });
-        return () => sub?.();
-    }, [navigation, sendResultToNewSession]);
+    };
+    React.useEffect(() => () => deliverCancelOnRemovalRef.current(), []);
 
     const hasUsableRouteState = Boolean(profile && secretEnvVarName);
     React.useEffect(() => {

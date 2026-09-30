@@ -63,7 +63,7 @@ export const FilesystemBrowserList = React.memo(function FilesystemBrowserList(p
                 </Text>
             </Pressable>
         </View>
-    ) : null;
+    ) : undefined;
 
     const sharedListProps = {
         ref: props.listRef,

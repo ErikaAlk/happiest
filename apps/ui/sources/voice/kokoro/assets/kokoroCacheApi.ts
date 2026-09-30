@@ -153,11 +153,11 @@ async function createFileBackedCacheStorage(): Promise<CacheStorageLike> {
           } else {
             const buf = new Uint8Array(await response.arrayBuffer());
             loaded = buf.length;
-            (file as any).write(buf);
+            await (file as any).write(buf);
             progress_callback?.({ progress: 100, loaded, total: total || loaded });
           }
 
-          (meta as any).write(JSON.stringify({ key: request, headers }));
+          await (meta as any).write(JSON.stringify({ key: request, headers }));
         } catch (error) {
           try {
             if (file.exists) file.delete();

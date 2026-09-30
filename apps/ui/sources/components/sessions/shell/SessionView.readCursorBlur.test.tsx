@@ -12,6 +12,7 @@ import {
 } from '@/sync/domains/session/readState/sessionManualUnreadHold';
 import type { LocalSettings } from '@/sync/domains/settings/localSettings';
 import { resolveSessionReadableSeq } from '@/sync/domains/session/readCursor/resolveSessionReadableSeq';
+import type { RouteFocusStore } from '@/dev/testkit/mocks/router';
 import { installSessionShellCommonModuleMocks } from './sessionShellTestHelpers';
 
 
@@ -39,7 +40,7 @@ const transcriptState = vi.hoisted(() => ({
     latestReadyEventSeq: null as number | null,
     latestReadyEventAt: null as number | null,
 }));
-const focusCleanupState = vi.hoisted(() => ({ current: null as null | (() => void) }));
+const routeFocusState = vi.hoisted(() => ({ store: null as RouteFocusStore | null }));
 
 function getStorageStateForTest() {
     return {
@@ -73,26 +74,6 @@ vi.mock('@expo/vector-icons', () => ({
 }));
 vi.mock('react-native-safe-area-context', () => ({
     useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
-}));
-
-vi.mock('@react-navigation/native', () => ({
-    useFocusEffect: (effect: () => void | (() => void)) => {
-        React.useEffect(() => {
-            const cleanup = effect();
-            let active = true;
-            const runCleanup = () => {
-                if (!active) return;
-                active = false;
-                cleanup?.();
-                if (focusCleanupState.current === runCleanup) {
-                    focusCleanupState.current = null;
-                }
-            };
-            focusCleanupState.current = runCleanup;
-            return runCleanup;
-        }, [effect]);
-    },
-    useIsFocused: () => true,
 }));
 
 vi.mock('@/auth/context/AuthContext', () => ({
@@ -229,10 +210,12 @@ installSessionShellCommonModuleMocks({
         });
     },
     router: async () => {
-        const { createExpoRouterMock } = await import('@/dev/testkit/mocks/router');
+        const { createExpoRouterMock, createRouteFocusStore } = await import('@/dev/testkit/mocks/router');
+        routeFocusState.store = createRouteFocusStore();
         const routerMock = createExpoRouterMock({
             router: { push: vi.fn(), back: vi.fn(), setParams: vi.fn() },
             pathname: '/',
+            isFocused: routeFocusState.store,
         });
         return routerMock.module;
     },
@@ -473,7 +456,7 @@ describe('SessionView read cursor on blur', () => {
         transcriptState.latestReadyEventAt = null;
         markSessionViewedSpy.mockClear();
         scheduledInteractionCallbacks.length = 0;
-        focusCleanupState.current = null;
+        routeFocusState.store?.setFocused(true);
         resetSessionManualUnreadHoldsForTests();
     });
 
@@ -485,14 +468,12 @@ describe('SessionView read cursor on blur', () => {
                     <SessionView id="s1" />
                 </AppPaneProvider>)).tree;
 
-        expect(focusCleanupState.current).toBeTypeOf('function');
-
         // Ignore work scheduled on initial focus; we care about the blur path.
         scheduledInteractionCallbacks.length = 0;
         markSessionViewedSpy.mockClear();
 
         act(() => {
-            focusCleanupState.current?.();
+            routeFocusState.store?.setFocused(false);
         });
 
         expect(scheduledInteractionCallbacks).toHaveLength(1);
@@ -689,7 +670,7 @@ describe('SessionView read cursor on blur', () => {
         });
 
         act(() => {
-            focusCleanupState.current?.();
+            routeFocusState.store?.setFocused(false);
         });
 
         expect(scheduledInteractionCallbacks).toHaveLength(0);
@@ -763,7 +744,7 @@ describe('SessionView read cursor on blur', () => {
         expect(shouldSuppressAutomaticMarkViewed({ sessionId: 's1', sessionSeq: 2, activationId: otherActivationId })).toBe(true);
 
         act(() => {
-            focusCleanupState.current?.();
+            routeFocusState.store?.setFocused(false);
         });
 
         expect(scheduledInteractionCallbacks).toHaveLength(1);

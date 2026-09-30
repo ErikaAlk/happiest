@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act } from 'react-test-renderer';
 
@@ -181,7 +181,7 @@ describe('NewSessionWizard keyboard scaffold integration', () => {
     it('renders the wizard composer through the shared scaffold and caps its panel height for AgentInput', async () => {
         const { NewSessionWizard } = await import('./NewSessionWizard');
         let screen: Awaited<ReturnType<typeof renderScreen>> | undefined;
-        const popoverBoundaryRef = React.createRef<View>() as unknown as React.RefObject<View>;
+        const popoverBoundaryRef = React.createRef<ViewInstance>();
 
         try {
             screen = await renderScreen(

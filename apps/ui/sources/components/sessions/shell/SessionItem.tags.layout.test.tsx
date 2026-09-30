@@ -10,7 +10,6 @@ import { createSessionItemTestRowModel, installSessionShellCommonModuleMocks } f
 vi.mock('react-native-reanimated', () => ({}));
 
 vi.mock('react-native-gesture-handler', () => ({
-    Swipeable: (props: any) => React.createElement('Swipeable', props),
     GestureDetector: (props: any) => React.createElement('GestureDetector', props, props.children),
 }));
 

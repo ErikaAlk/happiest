@@ -36,4 +36,26 @@ export function useGlobalSearchParams(): Record<string, string | string[] | unde
     return {};
 }
 
+export function useIsFocused(): boolean {
+    return true;
+}
+
+export function useFocusEffect(effect: () => void | (() => void)): void {
+    React.useEffect(() => effect(), [effect]);
+}
+
+export function usePreventRemove(
+    _preventRemove: boolean,
+    _callback?: (event: { data: { action: unknown }; repeat: () => void }) => void,
+): () => void {
+    return () => {};
+}
+
+export function ThemeProvider(props: { children?: React.ReactNode }) {
+    return React.createElement(React.Fragment, null, props.children ?? null);
+}
+
+export const DefaultTheme = { dark: false, colors: {}, fonts: {} };
+export const DarkTheme = { dark: true, colors: {}, fonts: {} };
+
 export const router = useRouter();

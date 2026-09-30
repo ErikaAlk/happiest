@@ -336,9 +336,6 @@ const targetServerState = vi.hoisted(() => ({
     targetServerId: null as string | null,
     targetServerName: null as string | null,
 }));
-const interactionQueueState = vi.hoisted(() => ({
-    callbacks: [] as Array<() => void>,
-}));
 const storageSubscriptionState = vi.hoisted(() => ({
     listeners: new Set<() => void>(),
 }));
@@ -433,16 +430,6 @@ installNewSessionScreenModelCommonModuleMocks({
             Dimensions: {
                 get: () => ({ width: 900, height: 800 }),
             },
-            InteractionManager: {
-                runAfterInteractions: (fn: () => void) => {
-                    interactionQueueState.callbacks.push(fn);
-                    return {
-                        cancel: () => {
-                            interactionQueueState.callbacks = interactionQueueState.callbacks.filter((callback) => callback !== fn);
-                        },
-                    };
-                },
-            },
             useWindowDimensions: () => ({ width: 900, height: 800 }),
         });
     },
@@ -486,7 +473,14 @@ installNewSessionScreenModelCommonModuleMocks({
             navigation: { setParams: routerSetParamsMock, dispatch: vi.fn() },
             pathname: '/new',
         });
-        return expoRouterMock.module;
+        return {
+            ...expoRouterMock.module,
+            // Focus effects run only when a spec calls `runFocusEffects`, so each spec picks the
+            // moment the route regains focus.
+            useFocusEffect: (effect: () => void | (() => void)) => {
+                focusEffectRef.current.push(effect);
+            },
+        };
     },
     modal: async () => {
         const { createModalModuleMock } = await import('@/dev/testkit/mocks/modal');
@@ -520,13 +514,6 @@ vi.mock('@/components/automations/editor/AutomationSettingsForm', () => ({
     AutomationSettingsForm: (props: Record<string, unknown>) => React.createElement('AutomationSettingsForm', props),
 }));
 
-vi.mock('@react-navigation/native', () => ({
-    useIsFocused: () => true,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    useFocusEffect: (fn: any) => {
-        focusEffectRef.current.push(fn);
-    },
-}));
 
 vi.doMock('@/sync/domains/state/storage', async (importOriginal) => {
     const { createPartialStorageModuleMock } = await import('@/dev/testkit/mocks/storage');
@@ -985,7 +972,6 @@ export async function resetDraftPersistenceState(): Promise<void> {
     fireAndForgetState.promises = [];
     tryShowDaemonUnavailableAlertForRpcErrorMock.mockReset();
     tryShowDaemonUnavailableAlertForRpcErrorMock.mockReturnValue(false);
-    interactionQueueState.callbacks = [];
     focusEffectRef.current = [];
     activeServerAccountScopeState.value = { serverId: 'server-a', accountId: 'account-a' };
     accountProfileState.value = null;
@@ -1173,12 +1159,15 @@ export async function resetDraftPersistenceState(): Promise<void> {
     createSessionActionDraftMock.mockClear();
 }
 
+/**
+ * Runs the work the screen deferred through `runAfterInteractionsWithFallback`: a zero-delay timer
+ * on web and an immediate on native. Hook settling only drains microtasks, so that work stays
+ * pending until a spec calls this.
+ */
 export async function flushInteractionQueue(): Promise<void> {
-    while (interactionQueueState.callbacks.length > 0) {
-        const callback = interactionQueueState.callbacks.shift();
-        callback?.();
-        await settleNewSessionScreenModel();
-    }
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+    await settleNewSessionScreenModel();
 }
 
 export async function settleNewSessionScreenModel(options: FlushHookEffectsOptions = {}): Promise<void> {
@@ -1392,7 +1381,6 @@ export {
     fetchSnapshotForMachinePathMock,
     fireAndForgetState,
     focusEffectRef,
-    interactionQueueState,
     loadNewSessionDraftMock,
     machineMcpServersPreviewMock,
     modalAlertMock,

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, type ScrollViewInstance, type ViewInstance } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 import { Command, CommandCategory } from './types';
 import { CommandPaletteItem } from './CommandPaletteItem';
@@ -24,8 +24,8 @@ export function CommandPaletteResults({
     onSelectCommand, 
     onSelectionChange 
 }: CommandPaletteResultsProps) {
-    const scrollViewRef = React.useRef<ScrollView>(null);
-    const itemRefs = React.useRef<{ [key: number]: View | null }>({});
+    const scrollViewRef = React.useRef<ScrollViewInstance>(null);
+    const itemRefs = React.useRef<{ [key: number]: ViewInstance | null }>({});
     const isInsideModalBoundary = useIsInsideModalBoundary();
     const wheelScrollHandlers = useScrollViewWheelScrollTo(scrollViewRef);
     

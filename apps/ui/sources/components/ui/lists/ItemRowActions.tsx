@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Pressable, useWindowDimensions, type GestureResponderEvent, InteractionManager, Platform } from 'react-native';
+import { View, Pressable, useWindowDimensions, type GestureResponderEvent, Platform, type ViewInstance } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { type ItemAction } from '@/components/ui/lists/itemActions';
 import { Popover } from '@/components/ui/popover';
@@ -9,6 +9,7 @@ import { ActionListSection, type ActionListItem } from '@/components/ui/lists/Ac
 import { t } from '@/text';
 import { normalizeNodeForView } from '@/components/ui/rendering/normalizeNodeForView';
 import { Icon } from '@/components/ui/icons/Icon';
+import { runAfterInteractionsWithFallback } from '@/utils/timing/runAfterInteractionsWithFallback';
 
 export interface ItemRowActionsProps {
     title: string;
@@ -68,7 +69,7 @@ export function ItemRowActions(props: ItemRowActionsProps) {
             : windowWidth;
     const compact = widthForCompact < (props.compactThreshold ?? 450);
     const [showOverflow, setShowOverflow] = React.useState(false);
-    const overflowAnchorRef = React.useRef<View>(null);
+    const overflowAnchorRef = React.useRef<ViewInstance>(null);
 
     const blurTintOnWeb = React.useMemo(() => {
         return resolveWebBlurTintColor({ surfaceColor: theme.colors.surface.base, dark: theme.dark });
@@ -99,25 +100,7 @@ export function ItemRowActions(props: ItemRowActionsProps) {
 
     const closeThen = React.useCallback((fn: () => void) => {
         setShowOverflow(false);
-        let didRun = false;
-        const runOnce = () => {
-            if (didRun) return;
-            didRun = true;
-            fn();
-        };
-
-        // On RN 0.81 New Arch, InteractionManager is the no-op stub and resolves on a microtask, so
-        // it is never delayed by scroll/gestures and always wins this race. The timeout only covers
-        // an environment where InteractionManager is missing or throws.
-        const fallback = setTimeout(runOnce, 0);
-        try {
-            InteractionManager.runAfterInteractions(() => {
-                clearTimeout(fallback);
-                runOnce();
-            });
-        } catch {
-            // If InteractionManager isn't available, rely on the fallback.
-        }
+        runAfterInteractionsWithFallback(fn);
     }, []);
 
     const overflowActionItems = React.useMemo((): ActionListItem[] => {

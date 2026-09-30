@@ -1,9 +1,10 @@
 import * as React from 'react';
-import type { ScrollViewProps } from 'react-native';
+import type { ScrollViewInstance, ScrollViewProps } from 'react-native';
 import { Platform, ScrollView } from 'react-native';
 import {
     KeyboardAwareScrollView as RNKCKeyboardAwareScrollView,
     type KeyboardAwareScrollViewProps as RNKCKeyboardAwareScrollViewProps,
+    type KeyboardAwareScrollViewRef as RNKCKeyboardAwareScrollViewRef,
 } from 'react-native-keyboard-controller';
 
 import { DEFAULT_KEYBOARD_AWARE_SCREEN_MODE } from './keyboardAvoidanceDefaults';
@@ -14,7 +15,7 @@ import {
 } from './keyboardAvoidanceGeometry';
 
 export type KeyboardAwareScrollViewProps = ScrollViewProps
-    & Pick<RNKCKeyboardAwareScrollViewProps, 'disableScrollOnKeyboardHide' | 'extraKeyboardSpace' | 'ScrollViewComponent'>
+    & Pick<RNKCKeyboardAwareScrollViewProps, 'disableScrollOnKeyboardHide' | 'extraKeyboardSpace'>
     & Readonly<{
         mode?: Extract<KeyboardAwareScreenMode, 'scrollForm'>;
         keyboardVerticalOffset?: number;
@@ -22,7 +23,7 @@ export type KeyboardAwareScrollViewProps = ScrollViewProps
         enabled?: boolean;
     }>;
 
-export const KeyboardAwareScrollView = React.forwardRef<ScrollView, KeyboardAwareScrollViewProps>(
+export const KeyboardAwareScrollView = React.forwardRef<ScrollViewInstance, KeyboardAwareScrollViewProps>(
     function KeyboardAwareScrollView(
         {
             mode = 'scrollForm',
@@ -32,7 +33,6 @@ export const KeyboardAwareScrollView = React.forwardRef<ScrollView, KeyboardAwar
             automaticallyAdjustKeyboardInsets,
             disableScrollOnKeyboardHide,
             extraKeyboardSpace,
-            ScrollViewComponent,
             ...props
         },
         ref,
@@ -44,15 +44,6 @@ export const KeyboardAwareScrollView = React.forwardRef<ScrollView, KeyboardAwar
         });
 
         if (!defaults.useKeyboardController) {
-            if (ScrollViewComponent) {
-                return (
-                    <ScrollViewComponent
-                        automaticallyAdjustKeyboardInsets={automaticallyAdjustKeyboardInsets}
-                        {...props}
-                    />
-                );
-            }
-
             return (
                 <ScrollView
                     ref={ref}
@@ -64,13 +55,13 @@ export const KeyboardAwareScrollView = React.forwardRef<ScrollView, KeyboardAwar
 
         return (
             <RNKCKeyboardAwareScrollView
-                ref={ref}
+                // The library writes its handle, a ScrollViewInstance extended with keyboard methods, into this ref.
+                ref={ref as React.Ref<RNKCKeyboardAwareScrollViewRef>}
                 automaticallyAdjustKeyboardInsets={automaticallyAdjustKeyboardInsets ?? defaults.automaticallyAdjustKeyboardInsets}
                 bottomOffset={bottomOffset ?? defaults.bottomOffset}
                 disableScrollOnKeyboardHide={disableScrollOnKeyboardHide}
                 enabled={enabled ?? defaults.enabled}
                 extraKeyboardSpace={extraKeyboardSpace}
-                ScrollViewComponent={ScrollViewComponent}
                 {...props}
             />
         );

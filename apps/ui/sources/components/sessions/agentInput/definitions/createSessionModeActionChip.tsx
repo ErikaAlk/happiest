@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { Pressable, type View } from 'react-native';
+import { Pressable, type ViewInstance } from 'react-native';
 
 import { Text } from '@/components/ui/text/Text';
 import { ICON_SIZE, Icon, type IconName } from '@/components/ui/icons/Icon';
 import { AGENT_INPUT_CHIP_ICON_SIZE_PX, AGENT_INPUT_CHIP_ICON_STYLE } from './agentInputChipIconMetrics';
 
 export function createSessionModeActionChip(params: Readonly<{
-    anchorRef: React.RefObject<View | null>;
+    anchorRef: React.RefObject<ViewInstance | null>;
     tint: string;
     showLabel: boolean;
     label: string;

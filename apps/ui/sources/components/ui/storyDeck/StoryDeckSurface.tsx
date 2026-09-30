@@ -6,6 +6,7 @@ import {
     type LayoutChangeEvent,
     type NativeScrollEvent,
     type NativeSyntheticEvent,
+    type ScrollViewInstance,
 } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
@@ -78,7 +79,7 @@ export function StoryDeckSurface(props: StoryDeckSurfaceProps) {
     const styles = stylesheet;
     const { width: viewportWidth } = useWindowDimensions();
     const reducedMotion = useReducedMotionPreference();
-    const scrollRef = React.useRef<ScrollView | null>(null);
+    const scrollRef = React.useRef<ScrollViewInstance | null>(null);
     const softSlideRef = React.useRef<StoryDeckSlideTransitionHandle | null>(null);
     const [currentIndex, setCurrentIndex] = React.useState(0);
     const [measuredWidth, setMeasuredWidth] = React.useState<number | null>(null);

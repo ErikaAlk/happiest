@@ -313,8 +313,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     permissions: {}
-    env:
-      EXPO_UNSTABLE_WEB_MODAL: "1"
     steps:
       - name: Download exact candidate source transport
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093

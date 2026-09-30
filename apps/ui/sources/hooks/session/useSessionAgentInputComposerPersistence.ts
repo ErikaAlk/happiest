@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useIsFocused } from '@react-navigation/native';
+import { useSessionScreenIsFocused } from '@/components/sessions/shell/useSessionScreenIsFocused';
 import { AppState, type AppStateStatus } from 'react-native';
 
 import {
@@ -226,7 +226,7 @@ export function useSessionAgentInputComposerPersistence({
 }: UseSessionAgentInputComposerPersistenceParams): SessionAgentInputComposerPersistence {
     const scope = useStableServerAccountScope(useActiveServerAccountScope());
     useAgentInputComposerDraftGarbageCollection(scope);
-    const isFocused = useIsFocused();
+    const isFocused = useSessionScreenIsFocused();
     const owner = React.useMemo(() => createSessionDraftOwner(sessionId), [sessionId]);
     const subscribeToSemanticDraft = React.useCallback((listener: () => void) => {
         if (!scope || owner?.kind !== 'session') return () => undefined;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, ScrollView, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { Platform, ScrollView, View, type NativeScrollEvent, type NativeSyntheticEvent, type ScrollViewInstance } from 'react-native';
 import type { ScmLogEntry } from '@happier-dev/protocol';
 
 import { SourceControlOperationsHistorySection } from '@/components/sessions/files/SourceControlOperationsHistorySection';
@@ -28,7 +28,7 @@ export const SessionRightPanelGitHistoryTab = React.memo((props: SessionRightPan
         edgeThreshold: 1,
     });
 
-    const scrollRef = React.useRef<ScrollView>(null);
+    const scrollRef = React.useRef<ScrollViewInstance>(null);
     const rowsRef = React.useRef(new Map<string, { y: number; height: number }>());
     const anchorRef = React.useRef<{ sha: string; y: number } | null>(null);
     const offsetRef = React.useRef(0);

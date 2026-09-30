@@ -1,6 +1,5 @@
 import React from 'react';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useNavigation } from '@react-navigation/native';
+import { Stack, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 
 import { DEFAULT_AGENT_ID, isAgentId, type AgentId } from '@/agents/catalog/catalog';
 import { openDirectSessionsResumeIdPickerModal } from '@/components/sessions/directSessions/browse/openDirectSessionsResumeIdPickerModal';

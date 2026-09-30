@@ -21,9 +21,10 @@ vi.mock('react-native', async () => {
     });
 });
 
-vi.mock('@react-navigation/native', () => ({
-    useIsFocused: () => navigationMock.isFocused,
-}));
+vi.mock('expo-router', async () => {
+    const { createExpoRouterMock } = await import('@/dev/testkit/mocks/router');
+    return createExpoRouterMock({ isFocused: () => navigationMock.isFocused }).module;
+});
 
 vi.mock('@/components/ui/popover', () => ({
     PopoverScope: ({ children }: React.PropsWithChildren<Record<string, never>>) =>

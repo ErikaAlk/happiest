@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { StyleProp, TextStyle } from 'react-native';
-import { Platform, View } from 'react-native';
+import { Platform, View, type ViewInstance } from 'react-native';
 
 import type { Option, OptionLongPressHandler } from '../MarkdownBlockView';
 import type { MarkdownSourceRange, MarkdownSourceRangeAction, MarkdownSourceRangeLayoutObserver } from '../MarkdownView';
@@ -114,7 +114,7 @@ export const MarkdownViewRenderer = React.memo((props: MarkdownViewRendererProps
             return `${segment.sourceHash}:${occurrence}`;
         });
     }, [segments, props.sourceRangeLayoutObserver]);
-    const contentRef = React.useRef<View>(null);
+    const contentRef = React.useRef<ViewInstance>(null);
     const measureSourceRanges = React.useCallback(() => {
         if (Platform.OS !== 'web' || !props.sourceRangeLayoutObserver) return;
         // RNW View refs expose the DOM node. ResizeObserver does not report pure position changes.

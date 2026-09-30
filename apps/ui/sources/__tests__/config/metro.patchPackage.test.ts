@@ -92,7 +92,7 @@ describe('apps/ui patch-package Metro worklets patches', () => {
 
     it('hashes generated worklet files from both supported layouts using stable file content', () => {
         const patchContents = readFileSync(
-            join(getRepoRoot(), 'apps/ui/patches/metro+0.83.3.patch'),
+            join(getRepoRoot(), 'apps/ui/patches/metro+0.87.1.patch'),
             'utf8',
         );
 
@@ -110,14 +110,14 @@ describe('apps/ui patch-package Metro worklets patches', () => {
         writeFixtureFiles(fixtureDir, {
             'package.json': JSON.stringify({
                 dependencies: {
-                    metro: '0.83.3',
+                    metro: '0.87.1',
                 },
             }),
             'node_modules/metro/package.json': JSON.stringify({
                 name: 'metro',
-                version: '0.83.3',
+                version: '0.87.1',
             }),
-            'node_modules/metro/src/node-haste/DependencyGraph.js': `${Array.from({ length: 185 }, (_, index) => `// fixture padding ${index + 1}`).join('\n')}
+            'node_modules/metro/src/node-haste/DependencyGraph.js': `${Array.from({ length: 136 }, (_, index) => `// fixture padding ${index + 1}`).join('\n')}
     return (0, _nullthrows.default)(this._fileSystem).getAllFiles();
   }
   async getOrComputeSha1(mixedPath) {
@@ -136,8 +136,8 @@ describe('apps/ui patch-package Metro worklets patches', () => {
         });
 
         applyPatchPackage(fixtureDir, {
-            'metro+0.83.3.patch': readFileSync(
-                join(getRepoRoot(), 'apps/ui/patches/metro+0.83.3.patch'),
+            'metro+0.87.1.patch': readFileSync(
+                join(getRepoRoot(), 'apps/ui/patches/metro+0.87.1.patch'),
                 'utf8',
             ),
         });
@@ -160,6 +160,7 @@ describe('apps/ui patch-package Metro worklets patches', () => {
             'node_modules/metro-runtime/src/modules/HMRClient.js': `"use strict";
 
 const EventEmitter = require("./vendor/eventemitter3");
+const HEARTBEAT_INTERVAL_MS = 20_000;
 const inject = ({ module: [id, code], sourceURL }) => {
   if (global.globalEvalWithSourceUrl) {
     global.globalEvalWithSourceUrl(code, sourceURL);
@@ -285,7 +286,7 @@ module.exports = HMRClient;
 `,
         });
 
-        applyPatch(fixtureDir, 'apps/ui/patches/metro-runtime+0.83.3.patch');
+        applyPatch(fixtureDir, 'apps/ui/patches/metro-runtime+0.87.1.patch');
 
         const hmrClientModulePath = join(
             fixtureDir,

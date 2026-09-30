@@ -1,4 +1,4 @@
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from 'expo-router';
 
 import { Typography } from '@/constants/Typography';
 import type { Theme } from '@/theme';

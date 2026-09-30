@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { I18nManager, Platform, Pressable, View } from 'react-native';
+import { I18nManager, Platform, Pressable, View, type KeyDownEvent } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { FocusRing, WEB_FOCUS_OUTLINE_RESET } from '@/components/ui/interaction/FocusRing';
@@ -115,12 +115,13 @@ function SegmentedTabBarInner<T extends string>(props: SegmentedTabBarProps<T>) 
     const keyboardModality = useIsKeyboardModality();
     const [focusedTabId, setFocusedTabId] = React.useState<T | null>(null);
     const tabRefs = React.useRef(new Map<T, React.ElementRef<typeof Pressable>>());
-    const handleTabKeyDown = (index: number, event: React.KeyboardEvent) => {
-        const direction = event.key === 'ArrowRight' ? (I18nManager.isRTL ? -1 : 1)
-            : event.key === 'ArrowLeft' ? (I18nManager.isRTL ? 1 : -1) : 0;
-        const nextIndex = event.key === 'Home' ? 0 : event.key === 'End' ? props.tabs.length - 1
+    const handleTabKeyDown = (index: number, event: KeyDownEvent) => {
+        const key = event.nativeEvent.key;
+        const direction = key === 'ArrowRight' ? (I18nManager.isRTL ? -1 : 1)
+            : key === 'ArrowLeft' ? (I18nManager.isRTL ? 1 : -1) : 0;
+        const nextIndex = key === 'Home' ? 0 : key === 'End' ? props.tabs.length - 1
             : direction !== 0 ? (index + direction + props.tabs.length) % props.tabs.length
-                : event.key === ' ' || event.key === 'Spacebar' ? index : null;
+                : key === ' ' || key === 'Spacebar' ? index : null;
         if (nextIndex === null) return;
         const nextTab = props.tabs[nextIndex];
         if (!nextTab) return;
@@ -155,7 +156,7 @@ function SegmentedTabBarInner<T extends string>(props: SegmentedTabBarProps<T>) 
                             }}
                             {...(Platform.OS === 'web' ? {
                                 tabIndex: active ? 0 : -1,
-                                onKeyDown: (event: React.KeyboardEvent) => handleTabKeyDown(tabIndex, event),
+                                onKeyDown: (event: KeyDownEvent) => handleTabKeyDown(tabIndex, event),
                                 onFocus: () => setFocusedTabId(tab.id),
                                 onBlur: () => setFocusedTabId((current) => current === tab.id ? null : current),
                             } : {})}

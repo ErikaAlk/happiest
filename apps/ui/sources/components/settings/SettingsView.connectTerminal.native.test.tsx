@@ -14,12 +14,6 @@ const requestReviewMockState = vi.hoisted(() => ({
     canRequestReview: vi.fn(async () => false),
     requestReview: vi.fn(async () => {}),
 }));
-const interactionManagerMockState = vi.hoisted(() => ({
-    runAfterInteractions: vi.fn((fn: () => void) => {
-        fn();
-        return { cancel: () => {} };
-    }),
-}));
 
 installSettingsViewCommonModuleMocks({
     reactNative: async () => {
@@ -37,9 +31,6 @@ installSettingsViewCommonModuleMocks({
             },
             Text: 'Text',
             ActivityIndicator: 'ActivityIndicator',
-            InteractionManager: {
-                runAfterInteractions: interactionManagerMockState.runAfterInteractions,
-            },
         });
     },
     router: async () => {
@@ -88,10 +79,6 @@ vi.mock('@/components/ui/text/Text', () => ({
 
 vi.mock('@expo/vector-icons', () => ({
     Ionicons: 'Ionicons',
-}));
-
-vi.mock('@react-navigation/native', () => ({
-    useFocusEffect: (_cb: () => void) => {},
 }));
 
 vi.mock('expo-constants', () => ({
@@ -294,37 +281,6 @@ describe('SettingsView (native connect terminal)', () => {
         expect(processAuthUrlSpy).toHaveBeenCalledWith('happier:///account?manual');
     });
 
-    it('waits for native interactions before showing below-fold settings sections', async () => {
-        interactionManagerMockState.runAfterInteractions.mockClear();
-        let releaseInteractions: (() => void) | null = null;
-        interactionManagerMockState.runAfterInteractions.mockImplementationOnce((fn: () => void) => {
-            releaseInteractions = fn;
-            return { cancel: () => {} };
-        });
-
-        vi.resetModules();
-        const { SettingsView } = await import('./SettingsView');
-
-        vi.useFakeTimers();
-        try {
-            const screen = await renderScreen(<SettingsView />, { flushOptions: { cycles: 0 } });
-
-            await flushDeferredSettingsDelay(1000);
-
-            expect(interactionManagerMockState.runAfterInteractions).toHaveBeenCalledTimes(1);
-            expect(Boolean(findItemByTitle(screen.tree, 'settingsProviders.title'))).toBe(false);
-
-            await act(async () => {
-                releaseInteractions?.();
-            });
-            await flushDeferredSettingsDelay();
-
-            expect(findItemByTitle(screen.tree, 'settingsProviders.title')).toBeTruthy();
-        } finally {
-            vi.useRealTimers();
-        }
-    });
-
     it('defers below-fold settings sections until after interactions settle', async () => {
         vi.resetModules();
         const { SettingsView } = await import('./SettingsView');
@@ -338,7 +294,9 @@ describe('SettingsView (native connect terminal)', () => {
             expect(Boolean(findItemByTitle(screen.tree, 'settingsProviders.title'))).toBe(false);
             expect(Boolean(findItemByTitle(screen.tree, 'settings.sessions'))).toBe(false);
 
-            await flushDeferredSettingsDelay();
+            // Native defers through `setImmediate`, whose callback schedules the zero-delay first
+            // stage from inside the tick; fake timers run such a timer one millisecond later.
+            await flushDeferredSettingsDelay(1);
 
             expect(findItemByTitle(screen.tree, 'settingsProviders.title')).toBeTruthy();
             expect(Boolean(findItemByTitle(screen.tree, 'settings.sessions'))).toBe(false);

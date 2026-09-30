@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { ScrollView } from 'react-native';
+import type { ScrollViewInstance } from 'react-native';
 
 type NativeLayoutEvent = Readonly<{
     nativeEvent?: Readonly<{
@@ -21,7 +21,7 @@ type NativeScrollEvent = Readonly<{
 export type ScrollItemLayoutHandler = (event: NativeLayoutEvent) => void;
 
 export type ScrollRectIntoViewRegistry = Readonly<{
-    scrollRef: React.RefObject<ScrollView | null>;
+    scrollRef: React.RefObject<ScrollViewInstance | null>;
     registerItemLayout: (key: string) => ScrollItemLayoutHandler;
     onViewportLayout: (event: NativeLayoutEvent) => void;
     onContentSizeChange: (width: number, height: number) => void;
@@ -90,7 +90,7 @@ export function useScrollRectIntoViewRegistry(params: Readonly<{
     alignment?: 'nearest' | 'center';
     animated?: boolean;
 }>): ScrollRectIntoViewRegistry {
-    const scrollRef = React.useRef<ScrollView | null>(null);
+    const scrollRef = React.useRef<ScrollViewInstance | null>(null);
     const itemLayoutsRef = React.useRef(new Map<string, ScrollRect>());
     const activeKeyRef = React.useRef<string | null>(params.activeKey);
     const metricsRef = React.useRef<ScrollMetrics>({

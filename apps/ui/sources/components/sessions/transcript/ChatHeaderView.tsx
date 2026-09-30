@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View, Platform, Pressable, type LayoutChangeEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from 'expo-router';
 import { Avatar } from '@/components/ui/avatar/Avatar';
 import { AgentIcon } from '@/agents/registry/AgentIcon';
 import type { AgentId } from '@/agents/registry/registryCore';

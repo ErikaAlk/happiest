@@ -27,18 +27,17 @@ vi.mock('expo-image', () => ({
     Image: (props: Record<string, unknown>) => React.createElement('ExpoImage', props),
 }));
 
-vi.mock('@/assets/onboarding/planet-dark.jpg', () => ({ default: 'planet-dark.jpg' }));
-vi.mock('@/assets/onboarding/planet-light.jpg', () => ({ default: 'planet-light.jpg' }));
-
 import { PlanetBackground } from './PlanetBackground';
 
+// The component loads its assets through `require(...)`; the Node test runtime resolves an asset
+// require to the file's absolute path, whose separators follow the host platform.
 function sourceName(source: unknown): string | undefined {
     const value = typeof source === 'object' && source !== null && 'default' in source
         ? String((source as { default?: unknown }).default)
         : typeof source === 'string'
           ? source
           : undefined;
-    return value ? value.split('/').pop() : undefined;
+    return value ? value.split(/[\\/]/).pop() : undefined;
 }
 
 describe('PlanetBackground', () => {

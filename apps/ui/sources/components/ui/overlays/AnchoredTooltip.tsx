@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import { View, type ViewInstance } from 'react-native';
 import { useUnistyles } from 'react-native-unistyles';
 
 import { Popover } from '@/components/ui/popover/Popover';
@@ -8,7 +8,7 @@ import { Typography } from '@/constants/Typography';
 
 /** Mounted only while its trigger is hovered or keyboard-focused. Popover owns portal geometry. */
 export default function AnchoredTooltip(props: Readonly<{
-    anchorRef: React.RefObject<View | null>;
+    anchorRef: React.RefObject<ViewInstance | null>;
     label: string;
     content?: React.ReactNode;
     placement?: 'top' | 'bottom' | 'left' | 'right';

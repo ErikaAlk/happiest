@@ -29,6 +29,7 @@ let canGoBack = true;
 let deviceType: 'phone' | 'tablet' | 'desktop' = 'desktop';
 let mobileWorkspaceExperience: 'classic' | 'cockpit' = 'classic';
 const routerMock = createExpoRouterMock({
+    isFocused: () => isFocused,
     router: {
         back: routerBackSpy,
         push: vi.fn(),
@@ -94,10 +95,6 @@ installSessionRouteCommonModuleMocks({
         });
     },
 });
-
-vi.mock('@react-navigation/native', () => ({
-    useIsFocused: () => isFocused,
-}));
 
 vi.mock('@/components/appShell/panes/hooks/useAppPaneScope', () => ({
     useAppPaneScope: () => {

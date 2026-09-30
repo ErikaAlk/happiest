@@ -14,10 +14,6 @@ import { SESSION_ACTION_RENAME_ID } from '@/components/sessions/actions/sessionA
 
 vi.mock('react-native-reanimated', () => ({}));
 
-vi.mock('react-native-gesture-handler', () => ({
-    Swipeable: (props: any) => React.createElement('Swipeable', props),
-}));
-
 vi.mock('@/components/ui/forms/dropdown/DropdownMenu', () => ({
     DropdownMenu: (props: any) => React.createElement('DropdownMenu', props),
 }));

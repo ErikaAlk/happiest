@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, useWindowDimensions, InteractionManager } from 'react-native';
+import { useWindowDimensions, type ViewInstance } from 'react-native';
 import { useLaunchSelectionMachines, useSessionRecentPathEntries, storage, useSetting, useSettingMutable, useSettings } from '@/sync/domains/state/storage';
 import { settingsDefaults } from '@/sync/domains/settings/settings';
-import { useRouter, useLocalSearchParams, useNavigation, usePathname } from 'expo-router';
+import { useFocusEffect, useRouter, useLocalSearchParams, useNavigation, usePathname } from 'expo-router';
 import { useUnistyles } from 'react-native-unistyles';
 import { t } from '@/text';
 import { useHeaderHeight } from '@/utils/platform/responsive';
@@ -11,6 +11,7 @@ import { Modal } from '@/modal';
 import { sync } from '@/sync/sync';
 import { getTempData, type NewSessionData } from '@/utils/sessions/tempDataStore';
 import { fireAndForget } from '@/utils/system/fireAndForget';
+import { runAfterInteractionsWithFallback } from '@/utils/timing/runAfterInteractionsWithFallback';
 import { tryShowDaemonUnavailableAlertForRpcError } from '@/utils/errors/daemonUnavailableAlert';
 import { type PermissionMode, type ModelMode } from '@/sync/domains/permissions/permissionTypes';
 import { normalizePermissionModeForAgentType } from '@/sync/domains/permissions/permissionModeOptions';
@@ -32,7 +33,6 @@ import type { NewSessionDraft } from '@/sync/domains/state/persistence';
 import { NewSessionEngineOptionDetail } from '@/components/sessions/new/components/NewSessionEngineOptionDetail';
 import { consumeProfileIdParam } from '@/profileRouteParams';
 import { normalizeOptionalParam } from '@/profileRouteParams';
-import { useFocusEffect } from '@react-navigation/native';
 import { useMachineEnvPresence } from '@/hooks/machine/useMachineEnvPresence';
 import { normalizeSessionAuthoringConnectedServices } from '@/sync/domains/sessionAuthoring/sessionAuthoringNormalization';
 import type { CapabilityId } from '@/sync/api/capabilities/capabilitiesProtocol';
@@ -191,7 +191,7 @@ export function useNewSessionScreenModel(params?: Readonly<{ draftId?: string }>
     const headerHeight = useHeaderHeight();
     const { width: screenWidth } = useWindowDimensions();
     const selectedIndicatorColor = rt.themeName === 'dark' ? theme.colors.text.primary : theme.colors.button.primary.background;
-    const popoverBoundaryRef = React.useRef<View>(null!);
+    const popoverBoundaryRef = React.useRef<ViewInstance>(null);
 
     const newSessionSidePadding = 16;
     const newSessionBottomPadding = Math.max(screenWidth < 420 ? 8 : 16, safeArea.bottom);
@@ -458,7 +458,7 @@ export function useNewSessionScreenModel(params?: Readonly<{ draftId?: string }>
             // Ensure newly-registered machines show up without requiring an app restart.
             // Throttled to avoid spamming the server when navigating back/forth.
             // Defer until after interactions so the screen feels instant on iOS.
-            InteractionManager.runAfterInteractions(() => {
+            runAfterInteractionsWithFallback(() => {
                 fireAndForget(sync.refreshMachinesThrottled({ staleMs: 15_000 }), { tag: 'NewSessionScreenModel.refreshMachinesThrottled.focus' });
             });
         }, [])
@@ -1338,7 +1338,7 @@ export function useNewSessionScreenModel(params?: Readonly<{ draftId?: string }>
         if (!pending || pending.profileId !== selectedProfileId) return;
         pendingProfileSelectionRef.current = null;
 
-        InteractionManager.runAfterInteractions(() => {
+        runAfterInteractionsWithFallback(() => {
             // Ensure nothing changed while we waited.
             if (selectedProfileId !== pending.profileId) return;
 

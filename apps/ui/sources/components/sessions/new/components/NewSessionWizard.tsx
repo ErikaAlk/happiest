@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, ScrollView, View, useWindowDimensions, type View as RNView } from 'react-native';
+import { Platform, ScrollView, View, useWindowDimensions, type ScrollViewInstance, type ViewInstance } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Color from 'color';
 import { Typography } from '@/constants/Typography';
@@ -185,7 +185,7 @@ export interface NewSessionWizardProps {
     composerTopContent?: React.ReactNode;
     statusBadges?: React.ComponentProps<typeof AgentInput>['statusBadges'];
     statusTrailingActions?: React.ReactNode;
-    popoverBoundaryRef: React.RefObject<RNView>;
+    popoverBoundaryRef: React.RefObject<ViewInstance | null>;
     layout: NewSessionWizardLayoutProps;
     sectionPresentation?: Partial<Record<NewSessionWizardSelectionSectionId, NewSessionWizardSectionPresentation>>;
     useColumnLayout?: boolean;
@@ -247,7 +247,7 @@ export const NewSessionWizard = React.memo(function NewSessionWizard(props: NewS
         && windowWidth >= 1100;
 
     // Wizard-only scroll bookkeeping (keep it out of NewSessionScreen)
-    const scrollViewRef = React.useRef<ScrollView>(null);
+    const scrollViewRef = React.useRef<ScrollViewInstance>(null);
     const wizardSectionOffsets = React.useRef<{
         profile?: number;
         agent?: number;

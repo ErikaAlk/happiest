@@ -11,10 +11,6 @@ const mockSessions = vi.hoisted(() => ({
 }));
 
 vi.mock('@/text', () => createTextModuleMock({ translate: (key: string) => key }));
-vi.mock('@react-navigation/native', async () => {
-    const { createReactNavigationNativeMock } = await import('@/dev/testkit/mocks/reactNavigation');
-    return createReactNavigationNativeMock();
-});
 vi.mock('react-native', async () => {
     const { createReactNativeWebMock } = await import('@/dev/testkit/mocks/reactNative');
     return createReactNativeWebMock({

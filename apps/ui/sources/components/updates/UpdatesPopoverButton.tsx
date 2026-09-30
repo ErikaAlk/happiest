@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, Pressable, View } from 'react-native';
+import { Platform, Pressable, View, type ViewInstance } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
@@ -99,7 +99,7 @@ export const UpdatesPopoverButton = React.memo(function UpdatesPopoverButton(pro
 }>) {
     const { theme } = useUnistyles();
     const router = useRouter();
-    const anchorRef = React.useRef<View>(null);
+    const anchorRef = React.useRef<ViewInstance>(null);
     const [open, setOpen] = React.useState(false);
     const [webAnchorRect, setWebAnchorRect] = React.useState<WebRect | null>(null);
     const close = React.useCallback(() => setOpen(false), []);

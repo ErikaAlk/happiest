@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { Platform, ScrollView, View } from 'react-native';
 import Constants from 'expo-constants';
-import { useRouter } from 'expo-router';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useRouter } from 'expo-router';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { ActivitySpinner } from '@/components/ui/feedback/ActivitySpinner';
 

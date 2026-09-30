@@ -149,7 +149,6 @@ export function createGestureHandlerMock(options?: CreateGestureHandlerMockOptio
             React.createElement('GestureDetector', props, props.children),
         GestureHandlerRootView: (props: { children?: React.ReactNode }) =>
             React.createElement('GestureHandlerRootView', props, props.children),
-        Swipeable: 'Swipeable',
         ScrollView: 'GestureHandlerScrollView',
     };
 }

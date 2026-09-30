@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { AppState, InteractionManager, Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 
 import {
     TEXT_INPUT_LARGE_TEXT_CHANGE_DEBOUNCE_MS,
     WEB_TEXTAREA_AUTOSIZE_VALUE_LENGTH_LIMIT,
 } from '@/components/ui/forms/largeTextInputPolicy';
+import { runAfterInteractionsWithFallback } from '@/utils/timing/runAfterInteractionsWithFallback';
 
 const NEW_SESSION_DRAFT_AUTOPERSIST_DELAY_MS = {
     native: 3000,
@@ -149,7 +150,7 @@ export function useNewSessionDraftAutoPersist(params: Readonly<{
         if (Platform.OS === 'web') {
             persistDraftNowRef.current();
         } else {
-            InteractionManager.runAfterInteractions(() => {
+            runAfterInteractionsWithFallback(() => {
                 persistDraftNowRef.current();
             });
         }

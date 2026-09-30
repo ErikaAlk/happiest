@@ -2,7 +2,7 @@ import * as React from 'react';
 import { View } from 'react-native';
 
 import type { ActionId, BackendTargetRefV1, WindowsRemoteSessionLaunchMode } from '@happier-dev/protocol';
-import type { Router } from 'expo-router';
+import type { ImperativeRouter } from 'expo-router';
 
 import type { AutomationSettingsValue } from '@/components/automations/editor/AutomationSettingsForm';
 import { useNewSessionCheckoutActionChip } from '@/components/sessions/new/hooks/screenModel/useNewSessionCheckoutActionChip';
@@ -92,7 +92,7 @@ export function useNewSessionAgentInputPresentation(params: Readonly<{
     pendingGitWorktreeBaseRefRef: React.MutableRefObject<string | null>;
     pendingGitWorktreeSourceKindRef: React.MutableRefObject<'current' | 'local' | 'remote'>;
     shouldReconcileInitialHydratedCheckoutCreationDraftRef: React.MutableRefObject<boolean>;
-    router: Router;
+    router: ImperativeRouter;
     promptStore: NewSessionPromptStore;
     setSessionPrompt: React.Dispatch<React.SetStateAction<string>>;
     handleCreateSession: (opts?: HandleCreateSessionOptions) => void;

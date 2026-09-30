@@ -45,10 +45,10 @@ function useMachinePickerScreenOptions(params: Readonly<{
         </Pressable>
     ), [params.onBack, params.theme.colors.chrome.header.foreground]);
 
-    const headerTitle = React.useCallback(({ tintColor }: { children: string; tintColor?: string }) => (
+    const headerTitle = React.useCallback(() => (
         <HeaderTitleWithAction
             title={params.title}
-            tintColor={tintColor ?? params.theme.colors.chrome.header.foreground}
+            tintColor={params.theme.colors.chrome.header.foreground}
             actionLabel={t('common.refresh')}
             actionIconName="arrow-clockwise"
             actionColor={params.theme.colors.text.secondary}

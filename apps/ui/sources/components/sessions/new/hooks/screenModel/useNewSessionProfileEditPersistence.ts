@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { InteractionManager } from 'react-native';
 
-import { useIsFocused } from '@react-navigation/native';
-import type { Href, Router } from 'expo-router';
+import { useIsFocused, type Href, type ImperativeRouter } from 'expo-router';
 
 import type { AIBackendProfile } from '@/sync/domains/profiles/profileCompatibility';
+import { runAfterInteractionsWithFallback } from '@/utils/timing/runAfterInteractionsWithFallback';
 import type { NewSessionDraft } from '@/sync/domains/state/persistence';
 import {
     useNewSessionDraftAutoPersist,
@@ -12,7 +11,7 @@ import {
 } from '@/components/sessions/new/hooks/useNewSessionDraftAutoPersist';
 
 export function useNewSessionProfileEditPersistence(params: Readonly<{
-    router: Router;
+    router: ImperativeRouter;
     draftId: string;
     selectedMachineId: string | null;
     buildCurrentPersistedDraft: () => NewSessionDraft;
@@ -40,7 +39,7 @@ export function useNewSessionProfileEditPersistence(params: Readonly<{
             },
         } as Href);
 
-        InteractionManager.runAfterInteractions(() => {
+        runAfterInteractionsWithFallback(() => {
             if (persistenceGeneration !== params.draftPersistenceGenerationRef.current) {
                 return;
             }

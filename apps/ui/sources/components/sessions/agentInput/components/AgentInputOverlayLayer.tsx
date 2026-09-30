@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 
 import { t } from '@/text';
 import {
@@ -44,8 +44,8 @@ type SharedContentPopoverLike = Readonly<{
 type AgentInputContentPopoverEntry = Readonly<{
     key: string;
     open: boolean;
-    anchorRef: React.RefObject<View | null>;
-    boundaryRef?: React.RefObject<View | null> | null;
+    anchorRef: React.RefObject<ViewInstance | null>;
+    boundaryRef?: React.RefObject<ViewInstance | null> | null;
     content: AgentInputContentPopoverConfig['renderContent'];
     onRequestClose: () => void;
     maxHeightCap?: AgentInputContentPopoverConfig['maxHeightCap'];
@@ -60,9 +60,9 @@ type AgentInputContentPopoverEntry = Readonly<{
 
 function resolvePopoverAnchorRef(
     anchor: AgentInputPopoverAnchor,
-    chipAnchorRef: React.RefObject<View | null>,
-    actionMenuAnchorRef: React.RefObject<View | null>,
-): React.RefObject<View | null> {
+    chipAnchorRef: React.RefObject<ViewInstance | null>,
+    actionMenuAnchorRef: React.RefObject<ViewInstance | null>,
+): React.RefObject<ViewInstance | null> {
     return anchor === 'chip' ? chipAnchorRef : actionMenuAnchorRef;
 }
 
@@ -102,7 +102,7 @@ function resolveSharedContentPopoverOptions(
     | 'initialVisibility'
 > {
     return {
-        boundaryRef: popover.boundaryRef as React.RefObject<View | null> | null | undefined,
+        boundaryRef: popover.boundaryRef as React.RefObject<ViewInstance | null> | null | undefined,
         maxHeightCap: popover.maxHeightCap,
         maxWidthCap: popover.maxWidthCap,
         scrollEnabled: popover.scrollEnabled,
@@ -161,7 +161,7 @@ export function AgentInputOverlayLayer(props: Readonly<{
     screenWidth: number;
 
     showPermissionPopover: boolean;
-    permissionChipAnchorRef: React.RefObject<View | null>;
+    permissionChipAnchorRef: React.RefObject<ViewInstance | null>;
     onPermissionPopoverRequestClose: () => void;
     onPermissionSelect: (mode: PermissionMode) => void;
     agentId: AgentId;
@@ -180,7 +180,7 @@ export function AgentInputOverlayLayer(props: Readonly<{
 
     showActionMenu: boolean;
     hasActionMenuPopoverSections: boolean;
-    actionMenuAnchorRef: React.RefObject<View | null>;
+    actionMenuAnchorRef: React.RefObject<ViewInstance | null>;
     onActionMenuRequestClose: () => void;
     actionMenuActions: React.ComponentProps<typeof AgentInputActionMenuPopoverContent>['actionMenuActions'];
     maxWidthCap: number;
@@ -188,7 +188,7 @@ export function AgentInputOverlayLayer(props: Readonly<{
     showAgentPicker: boolean;
     hasAgentPickerOptions: boolean;
     agentPickerAnchor: AgentInputPopoverAnchor;
-    agentChipAnchorRef: React.RefObject<View | null>;
+    agentChipAnchorRef: React.RefObject<ViewInstance | null>;
     agentPickerTitle: string;
     agentPickerOptions: ReadonlyArray<AgentInputChipPickerOption>;
     effectiveAgentPickerSelectedOptionId?: string | null;
@@ -200,7 +200,7 @@ export function AgentInputOverlayLayer(props: Readonly<{
     showSessionModePicker: boolean;
     shouldRenderSessionModeChip: boolean;
     sessionModePickerAnchor: AgentInputPopoverAnchor;
-    sessionModeChipAnchorRef: React.RefObject<View | null>;
+    sessionModeChipAnchorRef: React.RefObject<ViewInstance | null>;
     sessionModePickerOptions: ReadonlyArray<SimpleOption>;
     sessionModeSelectedOptionId?: string | null;
     onSessionModeSelect?: (selectedId: string) => void;
@@ -208,36 +208,36 @@ export function AgentInputOverlayLayer(props: Readonly<{
 
     activeExtraCollapsedPopoverChip: AgentInputExtraActionChip | null;
     activeExtraCollapsedPopoverAnchor: AgentInputPopoverAnchor;
-    extraChipAnchorRefsByKey: Readonly<Record<string, React.RefObject<View | null>>>;
+    extraChipAnchorRefsByKey: Readonly<Record<string, React.RefObject<ViewInstance | null>>>;
     onActiveExtraCollapsedPopoverChipClose: () => void;
 
     showMachinePopover: boolean;
     machinePopoverAnchor: AgentInputPopoverAnchor;
-    machineChipAnchorRef: React.RefObject<View | null>;
+    machineChipAnchorRef: React.RefObject<ViewInstance | null>;
     machinePopover?: SharedContentPopoverLike;
     onMachinePopoverRequestClose: () => void;
 
     showProfilePopover: boolean;
     profilePopoverAnchor: AgentInputPopoverAnchor;
-    profileChipAnchorRef: React.RefObject<View | null>;
+    profileChipAnchorRef: React.RefObject<ViewInstance | null>;
     profilePopover?: SharedContentPopoverLike;
     onProfilePopoverRequestClose: () => void;
 
     showPathPopover: boolean;
     pathPopoverAnchor: AgentInputPopoverAnchor;
-    pathChipAnchorRef: React.RefObject<View | null>;
+    pathChipAnchorRef: React.RefObject<ViewInstance | null>;
     pathPopover?: SharedContentPopoverLike;
     onPathPopoverRequestClose: () => void;
 
     showResumePopover: boolean;
     resumePopoverAnchor: AgentInputPopoverAnchor;
-    resumeChipAnchorRef: React.RefObject<View | null>;
+    resumeChipAnchorRef: React.RefObject<ViewInstance | null>;
     resumePopover?: SharedContentPopoverLike;
     onResumePopoverRequestClose: () => void;
 
     showEnvVarsPopover: boolean;
     envVarsPopoverAnchor: AgentInputPopoverAnchor;
-    envVarsChipAnchorRef: React.RefObject<View | null>;
+    envVarsChipAnchorRef: React.RefObject<ViewInstance | null>;
     envVarsPopover?: SharedContentPopoverLike;
     onEnvVarsPopoverRequestClose: () => void;
 }>): React.ReactNode {
@@ -292,7 +292,7 @@ export function AgentInputOverlayLayer(props: Readonly<{
                 : props.actionMenuAnchorRef,
             content: props.activeExtraCollapsedPopoverChip.collapsedContentPopover.renderContent,
             onRequestClose: props.onActiveExtraCollapsedPopoverChipClose,
-            boundaryRef: props.activeExtraCollapsedPopoverChip.collapsedContentPopover.boundaryRef as React.RefObject<View | null> | null | undefined,
+            boundaryRef: props.activeExtraCollapsedPopoverChip.collapsedContentPopover.boundaryRef as React.RefObject<ViewInstance | null> | null | undefined,
             maxHeightCap: props.activeExtraCollapsedPopoverChip.collapsedContentPopover.maxHeightCap,
             maxWidthCap: props.activeExtraCollapsedPopoverChip.collapsedContentPopover.maxWidthCap,
             scrollEnabled: props.activeExtraCollapsedPopoverChip.collapsedContentPopover.scrollEnabled,

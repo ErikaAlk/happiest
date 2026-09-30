@@ -88,7 +88,7 @@ const stylesheet = StyleSheet.create({
         opacity: 0,
     },
     layer: {
-        // Written out rather than spread from `StyleSheet.absoluteFillObject` because the stacking
+        // Written out rather than spread from `StyleSheet.absoluteFill` because the stacking
         // IS the contract here: two marks occupying the same square is what keeps the transition
         // from resizing the row, and it should be visible at the place it is relied upon.
         position: 'absolute',

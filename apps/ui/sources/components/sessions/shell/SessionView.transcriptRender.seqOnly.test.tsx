@@ -44,8 +44,8 @@ const pendingMessagesHookSpy = vi.hoisted(() => vi.fn());
 const subagentSourceMessagesHookSpy = vi.hoisted(() => vi.fn());
 const sessionExecutionRunsSupportedHookSpy = vi.hoisted(() => vi.fn());
 const selectSyncErrorForServerSpy = vi.hoisted(() => vi.fn((_syncError: unknown, _serverId: string | null) => null));
-// Route focus and pathname are reactive in production (React Navigation / expo-router re-render
-// their subscribers on a route change). These stores keep that property so a spec can move the
+// Route focus and pathname are reactive in production (expo-router re-renders its subscribers on a
+// route change). These stores keep that property so a spec can move the
 // route mid-test and observe what the mounted tree does, instead of only what a fresh mount does.
 const createReactiveRouteState = vi.hoisted(() => <TValue,>(initialValue: TValue) => {
     const listeners = new Set<() => void>();
@@ -167,14 +167,6 @@ vi.mock('@expo/vector-icons', () => ({
 vi.mock('react-native-safe-area-context', () => ({
     useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
-vi.mock('@react-navigation/native', () => ({
-    useFocusEffect: () => {},
-    useIsFocused: () => React.useSyncExternalStore(
-        sessionScreenFocusState.subscribe,
-        sessionScreenFocusState.read,
-        sessionScreenFocusState.read,
-    ),
-}));
 vi.mock('@/auth/context/AuthContext', () => ({
     useAuth: () => ({ credentials: authCredentials }),
 }));
@@ -233,6 +225,11 @@ installSessionShellCommonModuleMocks({
                 routerPathnameState.read,
                 routerPathnameState.read,
             ),
+            isFocused: {
+                isFocused: sessionScreenFocusState.read,
+                setFocused: sessionScreenFocusState.set,
+                subscribe: sessionScreenFocusState.subscribe,
+            },
             router: {
                 push: vi.fn(),
                 back: vi.fn(),

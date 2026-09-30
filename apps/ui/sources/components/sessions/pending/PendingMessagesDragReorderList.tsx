@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, type ScrollViewInstance } from 'react-native';
 import Animated, {
     useAnimatedStyle,
     useDerivedValue,
@@ -22,7 +22,7 @@ import {
 export type PendingMessagesDragReorderListProps = Readonly<{
     messages: ReadonlyArray<PendingMessage>;
     longPressMs?: number;
-    scrollRef?: React.RefObject<ScrollView | null>;
+    scrollRef?: React.RefObject<ScrollViewInstance | null>;
     onScrollToOffset?: ((y: number) => void) | null;
     viewportHeightPx?: number | null;
     scrollOffsetY?: number | null;

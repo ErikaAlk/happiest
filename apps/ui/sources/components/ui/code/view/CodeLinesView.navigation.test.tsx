@@ -1,5 +1,5 @@
 import React from 'react';
-import type { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 import { act } from 'react-test-renderer';
 import { describe, expect, it, vi } from 'vitest';
 import { renderScreen } from '@/dev/testkit/render/renderScreen';
@@ -25,7 +25,7 @@ describe('code line navigation', () => {
         const externalScrollView = {
             scrollRef: { current: { scrollTo: ({ y }: { y: number }) => { scrollY = y; } } },
             // Native measurement boundary supplied by createNodeMock.
-            contentRef: { current: {} as View },
+            contentRef: { current: {} as ViewInstance },
             offsetRef: { current: 0 },
         };
         const screen = await renderScreen(<CodeLinesViewCore lines={lines} virtualized={false} scrollToLineId="a:2" externalScrollView={externalScrollView} />, {

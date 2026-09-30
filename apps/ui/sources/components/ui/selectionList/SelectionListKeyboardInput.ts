@@ -17,7 +17,7 @@ import type { SelectionListKeyboardNavApi } from './useSelectionListKeyboardNav'
 
 /**
  * Loose shape used by both web (`KeyboardEvent`-like via rn-web's
- * `onKeyPress`) and native (`NativeSyntheticEvent<TextInputKeyPressEventData>`).
+ * `onKeyPress`) and native (`TextInputKeyPressEvent`).
  * Modeled here as a type (no `any`) so we can share one handler for both
  * platforms without losing type safety.
  */

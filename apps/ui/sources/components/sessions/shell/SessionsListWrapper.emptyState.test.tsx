@@ -81,6 +81,19 @@ installSessionShellCommonModuleMocks({
                 () => routeState.pathname,
                 () => routeState.pathname,
             ),
+            isFocused: {
+                isFocused: () => focusState.isFocused,
+                setFocused: (focused) => {
+                    focusState.isFocused = focused;
+                    for (const listener of [...focusState.listeners]) listener();
+                },
+                subscribe: (listener) => {
+                    focusState.listeners.add(listener);
+                    return () => {
+                        focusState.listeners.delete(listener);
+                    };
+                },
+            },
         }).module;
     },
     storage: async () => {
@@ -167,18 +180,6 @@ vi.mock('@/components/sessions/shell/NewSessionDraftsSection', () => ({
     useNewSessionDraftProjections: () => Array.from({ length: draftListState.count }, (_, index) => ({
         draftId: `draft-${index}`,
     })),
-}));
-vi.mock('@react-navigation/native', () => ({
-    useIsFocused: () => React.useSyncExternalStore(
-        (listener) => {
-            focusState.listeners.add(listener);
-            return () => {
-                focusState.listeners.delete(listener);
-            };
-        },
-        () => focusState.isFocused,
-        () => focusState.isFocused,
-    ),
 }));
 async function setRoutePathname(pathname: string) {
     await act(async () => {

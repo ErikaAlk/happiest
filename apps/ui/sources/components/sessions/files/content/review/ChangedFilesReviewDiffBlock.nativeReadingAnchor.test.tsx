@@ -1,5 +1,5 @@
 import React from 'react';
-import type { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 import { act } from 'react-test-renderer';
 import { describe, expect, it, vi } from 'vitest';
 import { renderScreen } from '@/dev/testkit/render/renderScreen';
@@ -32,7 +32,7 @@ describe('native review block reading continuity', () => {
         const externalScrollView = {
             scrollRef: { current: { scrollTo: ({ y }: { y: number }) => { scrollY = y; } } },
             // Genuine native viewport geometry; internal store/viewer/mapping stay real.
-            viewportRef: { current: { measureInWindow: (success: (x: number, y: number) => void) => success(0, 0) } as View },
+            viewportRef: { current: { measureInWindow: (success: (x: number, y: number) => void) => success(0, 0) } as ViewInstance },
             offsetRef: { current: scrollY },
         };
         const props = { theme: { colors: { text: { secondary: '#999' }, border: { default: '#999' } } }, sessionId: 's', snapshotSignature: null,

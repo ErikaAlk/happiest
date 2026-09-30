@@ -2,9 +2,9 @@ import * as React from 'react';
 import {
     View,
     NativeSyntheticEvent,
-    type TextInputScrollEventData,
-    TextInputKeyPressEventData,
-    TextInputSelectionChangeEventData,
+    type ScrollEvent,
+    type TextInputKeyPressEvent,
+    type TextInputSelectionChangeEvent,
     TextStyle,
     findNodeHandle,
     type LayoutChangeEvent,
@@ -296,8 +296,8 @@ export const MultiTextInput = React.forwardRef<MultiTextInputHandle, MultiTextIn
     latestNativeTextRef.current = value;
     const lastReportedContentHeightRef = React.useRef<number | null>(null);
 
-    const handleKeyPress = React.useCallback((e: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
-        const nativeEvent = e.nativeEvent as TextInputKeyPressEventData & Partial<KeyboardKeyPressEvent>;
+    const handleKeyPress = React.useCallback((e: TextInputKeyPressEvent) => {
+        const nativeEvent = e.nativeEvent as TextInputKeyPressEvent['nativeEvent'] & Partial<KeyboardKeyPressEvent>;
         const keyEvent = normalizeKeyboardKeyPressEvent(nativeEvent);
         let handled = false;
 
@@ -401,14 +401,14 @@ export const MultiTextInput = React.forwardRef<MultiTextInputHandle, MultiTextIn
         }
     }, []);
 
-    const handleScroll = React.useCallback((e: NativeSyntheticEvent<TextInputScrollEventData>) => {
+    const handleScroll = React.useCallback((e: ScrollEvent) => {
         const offset = e.nativeEvent?.contentOffset;
         if (!offset) return;
         contentScrollOffsetRef.current = { x: offset.x, y: offset.y };
         props.onScrollYChange?.(offset.y);
     }, [props.onScrollYChange]);
 
-    const handleSelectionChange = React.useCallback((e: NativeSyntheticEvent<TextInputSelectionChangeEventData>) => {
+    const handleSelectionChange = React.useCallback((e: TextInputSelectionChangeEvent) => {
         if (e.nativeEvent.selection) {
             const liveText = latestNativeTextRef.current;
             const selection = clampTextSelection(e.nativeEvent.selection, liveText.length);

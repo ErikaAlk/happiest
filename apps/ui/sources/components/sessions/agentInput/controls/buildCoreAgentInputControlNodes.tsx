@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 
 import type { AgentId } from '@/agents/catalog/catalog';
 import type { AgentInputControlId } from './agentInputControlTypes';
@@ -26,42 +26,42 @@ type SessionModeChipControlLike = Readonly<{
 
 export function buildCoreAgentInputControlNodes(params: Readonly<{
     showPermissionChip: boolean;
-    permissionChipAnchorRef: React.RefObject<View | null>;
+    permissionChipAnchorRef: React.RefObject<ViewInstance | null>;
     permissionChipLabel: string | null;
     onPermissionPress: () => void;
     hasActionMenuPopoverSections: boolean;
-    actionMenuAnchorRef: React.RefObject<View | null>;
+    actionMenuAnchorRef: React.RefObject<ViewInstance | null>;
     onActionMenuPress: () => void;
     actionBarIsCollapsed: boolean;
     sessionModeChipControl: SessionModeChipControlLike | null | undefined;
     shouldRenderSessionModeChip: boolean;
-    sessionModeChipAnchorRef: React.RefObject<View | null>;
+    sessionModeChipAnchorRef: React.RefObject<ViewInstance | null>;
     sessionModeChipPresentation: SessionModeChipPresentation | null | undefined;
     sessionModeAccessibilityLabel: string;
     onModePress: () => void;
     hasProfile: boolean;
-    profileChipAnchorRef: React.RefObject<View | null>;
+    profileChipAnchorRef: React.RefObject<ViewInstance | null>;
     profileIcon: string;
     profileLabel: string | null;
     onProfilePress: () => void;
     hasEnvVars: boolean;
-    envVarsChipAnchorRef: React.RefObject<View | null>;
+    envVarsChipAnchorRef: React.RefObject<ViewInstance | null>;
     envVarsCount?: number;
     onEnvVarsPress: () => void;
     agentId: AgentId;
     hasAgentSelection: boolean;
-    agentChipAnchorRef: React.RefObject<View | null>;
+    agentChipAnchorRef: React.RefObject<ViewInstance | null>;
     agentLabel: string;
     engineLabel: string;
     onAgentPress: () => void;
     onAgentIntent?: () => void;
-    machineChipAnchorRef: React.RefObject<View | null>;
+    machineChipAnchorRef: React.RefObject<ViewInstance | null>;
     onMachinePress?: () => void;
     machineName?: string | null;
-    pathChipAnchorRef: React.RefObject<View | null>;
+    pathChipAnchorRef: React.RefObject<ViewInstance | null>;
     onPathPress?: () => void;
     currentPath?: string | null;
-    resumeChipAnchorRef: React.RefObject<View | null>;
+    resumeChipAnchorRef: React.RefObject<ViewInstance | null>;
     onResumePress?: () => void;
     blurInput: () => void;
     resumeSessionId: string | null | undefined;

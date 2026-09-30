@@ -258,10 +258,6 @@ installSessionShellCommonModuleMocks({
 vi.mock('react-native-safe-area-context', () => ({
     useSafeAreaInsets: () => ({ top: 0, bottom: safeAreaState.bottom, left: 0, right: 0 }),
 }));
-vi.mock('@react-navigation/native', () => ({
-    useFocusEffect: () => {},
-    useIsFocused: () => true,
-}));
 vi.mock('@/auth/context/AuthContext', () => ({
     useAuth: () => ({ credentials: { token: 't', secret: 's' } }),
 }));

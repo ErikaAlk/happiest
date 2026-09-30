@@ -22,7 +22,6 @@ type KeyboardAvoidingViewProps = Readonly<{
 type KeyboardControllerMockProps = React.PropsWithChildren<Record<string, unknown>>;
 
 const keyboardOffsetState = vi.hoisted(() => ({
-    headerHeight: 0,
     platformOS: 'ios' as 'ios' | 'android',
     statusBarHeight: 0,
 }));
@@ -37,10 +36,6 @@ vi.mock('expo-constants', () => ({
     },
 }));
 
-vi.mock('@react-navigation/elements', () => ({
-    useHeaderHeight: () => keyboardOffsetState.headerHeight,
-}));
-
 vi.mock('react-native-keyboard-controller', () => ({
     KeyboardAwareScrollView: ({ children, ...props }: KeyboardControllerMockProps) =>
         React.createElement('KeyboardAwareScrollView', props, children),
@@ -53,10 +48,8 @@ vi.mock('react-native-keyboard-controller', () => ({
 const routerMock = createRouterMock();
 const navigationMock = createNavigationMock() as ReturnType<typeof createNavigationMock> & {
     setOptions: ReturnType<typeof vi.fn>;
-    addListener: ReturnType<typeof vi.fn>;
 };
 navigationMock.setOptions = vi.fn();
-navigationMock.addListener = vi.fn(() => ({ remove: vi.fn() }));
 const stackOptionsCapture = createStackOptionsCapture();
 
 installPickerCommonModuleMocks({
@@ -143,7 +136,6 @@ describe('ProfileEditScreen (header buttons)', () => {
     });
 
     beforeEach(() => {
-        keyboardOffsetState.headerHeight = 0;
         keyboardOffsetState.platformOS = 'ios';
         keyboardOffsetState.statusBarHeight = 0;
         stackOptionsCapture.reset();
@@ -173,20 +165,22 @@ describe('ProfileEditScreen (header buttons)', () => {
         expect(saveButton?.props?.disabled).toBe(true);
     });
 
-    it('keeps the profile edit form inside the standard keyboard-aware screen frame', async () => {
+    it('offsets the iOS keyboard-aware form frame by the status bar and the app header it sits under', async () => {
+        keyboardOffsetState.statusBarHeight = 20;
+
         const ProfileEditScreen = (await import('@/app/(app)/new/pick/profile-edit')).default;
         const { KeyboardAwareScreen } = await import('@/components/ui/keyboardAvoidance');
+        const { getHeaderHeight } = await import('@/utils/platform/responsive');
         const screen = await renderScreen(React.createElement(ProfileEditScreen));
 
         const keyboardFrame = screen.findByType(KeyboardAwareScreen);
         expect(keyboardFrame.props.mode).toBe('form');
-        expect(keyboardFrame.props.keyboardVerticalOffset).toBe(0);
+        expect(keyboardFrame.props.keyboardVerticalOffset).toBe(20 + getHeaderHeight(false, 'phone'));
     });
 
-    it('does not apply the native header offset to Android keyboard avoidance', async () => {
+    it('does not apply the header offset to Android keyboard avoidance', async () => {
         keyboardOffsetState.platformOS = 'android';
         keyboardOffsetState.statusBarHeight = 24;
-        keyboardOffsetState.headerHeight = 56;
 
         const ProfileEditScreen = (await import('@/app/(app)/new/pick/profile-edit')).default;
         const { KeyboardAwareScreen } = await import('@/components/ui/keyboardAvoidance');

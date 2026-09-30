@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Platform, ScrollView, useWindowDimensions, View } from 'react-native';
+import type { ScrollViewInstance, ViewInstance } from 'react-native';
 
 import { Text } from '@/components/ui/text/Text';
 import { CodeLinesView } from '@/components/ui/code/view/CodeLinesView';
@@ -172,8 +173,8 @@ function FileContentPanelInner({
     onContentSizeChange,
     onScroll,
 }: FileContentPanelProps) {
-    const codeScrollRef = React.useRef<ScrollView | null>(null);
-    const codeScrollContentRef = React.useRef<View>(null);
+    const codeScrollRef = React.useRef<ScrollViewInstance | null>(null);
+    const codeScrollContentRef = React.useRef<ViewInstance | null>(null);
     const codeScrollOffsetRef = React.useRef(0);
     const externalCodeScrollView = React.useMemo(() => ({
         scrollRef: codeScrollRef,
@@ -618,8 +619,7 @@ function FileContentPanelInner({
     const renderCodeScroll = (children: React.ReactNode) => (
         <ScrollView
             ref={codeScrollRef}
-            // RN declares this host ref non-null even though it is null before mount.
-            innerViewRef={codeScrollContentRef as React.RefObject<View>}
+            innerViewRef={codeScrollContentRef}
             style={{ flex: 1, minHeight: 0 }}
             testID={scrollTestID}
             onLayout={onLayout}

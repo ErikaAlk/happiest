@@ -1,5 +1,5 @@
 import React from 'react';
-import type { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 import type { CodeLine } from '../model/codeLineTypes';
 import { act } from 'react-test-renderer';
 import { describe, expect, it, vi } from 'vitest';
@@ -33,7 +33,7 @@ describe('native code reading continuity', () => {
         const externalScrollView = {
             scrollRef: { current: { scrollTo: ({ y }: { y: number }) => { scrollY = y; } } },
             // Native host geometry boundary.
-            contentRef: { current: {} as View },
+            contentRef: { current: {} as ViewInstance },
             offsetRef: { current: scrollY },
         };
         const render = () => <>
@@ -99,7 +99,7 @@ describe('native code reading continuity', () => {
         const externalScrollView = {
             scrollRef: { current: { scrollTo: ({ y }: { y: number }) => { scrollY = y; } } },
             // Native host measurement boundary is supplied by createNodeMock.
-            contentRef: { current: {} as View },
+            contentRef: { current: {} as ViewInstance },
             offsetRef: { current: scrollY },
         };
         const screen = await renderScreen(<CodeLinesViewCore virtualized={false} externalScrollView={externalScrollView} lines={buildCodeLinesFromFile({ text: `a\nb\n${tail}` })} />, {

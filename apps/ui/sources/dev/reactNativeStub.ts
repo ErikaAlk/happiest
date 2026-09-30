@@ -53,11 +53,9 @@ export const AppState = {
     currentState: 'active',
     addEventListener: () => ({ remove: () => {} }),
 } as const;
-export const InteractionManager = {
-    runAfterInteractions: (fn: () => void) => {
-        fn();
-        return { cancel: () => {} };
-    },
+export const BackHandler = {
+    addEventListener: () => ({ remove: () => {} }),
+    exitApp: () => {},
 } as const;
 export const Keyboard = {
     addListener: () => ({ remove: () => {} }),
@@ -75,9 +73,13 @@ function flattenStyle(style: any): any {
     if (typeof style === 'object') return style;
     return {};
 }
-export const StyleSheet = { create: (styles: any) => styles, flatten: flattenStyle, hairlineWidth: 1 } as const;
-// Many components spread this object into style definitions.
-(StyleSheet as any).absoluteFillObject = {};
+export const StyleSheet = {
+    create: (styles: any) => styles,
+    flatten: flattenStyle,
+    hairlineWidth: 1,
+    // Many components spread this object into style definitions.
+    absoluteFill: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 },
+} as const;
 export const TurboModuleRegistry = {
     get: (_name: string) => ({}),
     getEnforcing: (_name: string) => ({}),

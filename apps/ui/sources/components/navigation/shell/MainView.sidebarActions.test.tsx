@@ -64,6 +64,7 @@ installNavigationShellCommonModuleMocks({
         const expoRouterMock = createExpoRouterMock({
             router: { push: routerPushSpy, replace: routerReplaceSpy },
             pathname: () => routerState.pathname,
+            isFocused: () => navigationFocusState.isFocused,
         });
         return {
             ...expoRouterMock.module,
@@ -173,13 +174,6 @@ vi.mock('@/hooks/ui/useTabState', () => ({
     }),
 }));
 
-vi.mock('@react-navigation/native', async () => {
-    const { createReactNavigationNativeMock } = await import('@/dev/testkit/mocks/reactNavigation');
-    return {
-        ...createReactNavigationNativeMock(),
-        useIsFocused: () => navigationFocusState.isFocused,
-    };
-});
 
 vi.mock('@/components/sessions/guidance/SessionGettingStartedGuidance', () => ({
     SessionGettingStartedGuidance: 'SessionGettingStartedGuidance',

@@ -5,7 +5,7 @@ import {
     type LayoutChangeEvent,
     type NativeScrollEvent,
     type NativeSyntheticEvent,
-    type ScrollView,
+    type ScrollViewInstance,
     type StyleProp,
     type ViewStyle,
 } from 'react-native';
@@ -93,7 +93,7 @@ interface FloatingOverlayProps {
     maxHeight?: number;
     scrollEnabled?: boolean;
     showScrollIndicator?: boolean;
-    keyboardShouldPersistTaps?: boolean | 'always' | 'never' | 'handled';
+    keyboardShouldPersistTaps?: 'always' | 'never' | 'handled';
     edgeFades?: FloatingOverlayEdgeFades;
     containerStyle?: StyleProp<ViewStyle>;
     scrollViewStyle?: StyleProp<ViewStyle>;
@@ -112,7 +112,7 @@ interface FloatingOverlayProps {
      * that typically have more content below).
      */
     initialVisibility?: Partial<ScrollEdgeVisibility>;
-    scrollViewRef?: React.Ref<ScrollView>;
+    scrollViewRef?: React.Ref<ScrollViewInstance>;
     onScrollViewLayout?: (event: LayoutChangeEvent) => void;
     onScrollViewContentSizeChange?: (width: number, height: number) => void;
     onScrollViewScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;

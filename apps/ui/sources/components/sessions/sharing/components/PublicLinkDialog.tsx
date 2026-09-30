@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from 'react';
-import { View, Switch, Platform, Linking, ScrollView } from 'react-native';
+import { View, Switch, Platform, Linking, ScrollView, type ScrollViewInstance } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { Typography } from '@/constants/Typography';
@@ -46,7 +46,7 @@ export const PublicLinkDialog = memo(function PublicLinkDialog({
     const [isConsentRequired, setIsConsentRequired] = useState(true);
     const copyFeedback = useTemporaryCopyFeedback();
 
-    const scrollRef = React.useRef<ScrollView>(null);
+    const scrollRef = React.useRef<ScrollViewInstance>(null);
     const wheelScrollHandlers = useScrollViewWheelScrollTo(scrollRef);
 
     const buildPublicShareUrl = React.useCallback((token: string): string => {
