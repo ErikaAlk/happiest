@@ -355,8 +355,8 @@ fn normalize_system_task_log_path(path: &str) -> Result<PathBuf, String> {
     let path = std::fs::canonicalize(&path)
         .map_err(|error| format!("Log path does not exist: {error}"))?;
 
-    let allowed_root = resolve_happier_log_root_dir().ok_or_else(|| {
-        "Unable to resolve the Happier log root directory for this platform.".to_string()
+    let allowed_root = resolve_log_root_dir().ok_or_else(|| {
+        "Unable to resolve the Happiest log root directory for this platform.".to_string()
     })?;
     let allowed_root = std::fs::canonicalize(&allowed_root).unwrap_or(allowed_root);
 
@@ -374,8 +374,11 @@ fn normalize_system_task_log_path(path: &str) -> Result<PathBuf, String> {
     Ok(path)
 }
 
-fn resolve_happier_log_root_dir() -> Option<PathBuf> {
-    resolve_home_dir().map(|home_dir| home_dir.join(".happier"))
+/// Home directory of the CLI and daemon (`productIdentity.homeDirName`); their logs live under it.
+const HOME_DIR_NAME: &str = ".happiest";
+
+fn resolve_log_root_dir() -> Option<PathBuf> {
+    resolve_home_dir().map(|home_dir| home_dir.join(HOME_DIR_NAME))
 }
 
 fn resolve_home_dir() -> Option<PathBuf> {
@@ -770,11 +773,11 @@ mod tests {
     }
 
     #[test]
-    fn normalize_system_task_log_path_accepts_paths_inside_happier_root() {
+    fn normalize_system_task_log_path_accepts_paths_inside_home_root() {
         let _env_guard = env_lock().lock().expect("env lock should not be poisoned");
         let temp_dir = create_temp_dir("system-task-log-path");
         let home_dir = temp_dir.join("home");
-        let allowed_root = home_dir.join(".happier");
+        let allowed_root = home_dir.join(".happiest");
         let log_dir = allowed_root.join("logs");
         fs::create_dir_all(&log_dir).expect("log dir should create");
         let log_path = log_dir.join("daemon.log");
@@ -799,11 +802,11 @@ mod tests {
     }
 
     #[test]
-    fn normalize_system_task_log_path_rejects_paths_outside_happier_root() {
+    fn normalize_system_task_log_path_rejects_paths_outside_home_root() {
         let _env_guard = env_lock().lock().expect("env lock should not be poisoned");
         let temp_dir = create_temp_dir("system-task-log-path-outside");
         let home_dir = temp_dir.join("home");
-        let allowed_root = home_dir.join(".happier");
+        let allowed_root = home_dir.join(".happiest");
         fs::create_dir_all(&allowed_root).expect("allowed root should create");
         let outside_path = temp_dir.join("outside.log");
         fs::write(&outside_path, "log").expect("outside log file should write");
