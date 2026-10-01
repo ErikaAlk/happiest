@@ -1,5 +1,6 @@
 import * as systemTasks from '@happier-dev/cli-common/systemTasks';
 import {
+  classifyTailscaleServeRootSlot,
   extractTailscaleServeHttpsUrl,
   runTailscaleLogin,
   runTailscaleServeEnable,
@@ -9,6 +10,7 @@ import {
   type RunTailscaleLoginResult,
   type RunTailscaleServeEnableResult,
   type TailscaleSecureAccessTaskResult,
+  type TailscaleServeRootSlot,
   type TailscaleStatusSnapshot,
 } from '@happier-dev/cli-common/tailscale';
 
@@ -32,6 +34,8 @@ type SecureAccessTailscaleState = Readonly<{
   daemonReachable: boolean;
   authUrl: string | null;
   shareableHttpsUrl: string | null;
+  /** Who holds the root HTTPS route `tailscale serve` would replace; null when Serve status could not be read. */
+  serveRootSlot: TailscaleServeRootSlot | null;
 }>;
 
 type SecureAccessTailscaleInspectOptions = Readonly<{
@@ -222,6 +226,25 @@ export function createSecureAccessTailscaleHandler(overrides?: Partial<SecureAcc
         shareableHttpsUrl: state.shareableHttpsUrl,
         requiresApproval: null,
       };
+    }
+
+    // `tailscale serve` on the root path replaces whatever already answers there, which may
+    // be another product's relay or the user's own service.
+    if (parsed.servePath === '/') {
+      if (state.serveRootSlot === null) {
+        throw new systemTasks.SystemTaskExecutionError(
+          'tailscale_serve_status_unavailable',
+          'Could not read Tailscale Serve status. Existing Tailscale routing was left unchanged.',
+        );
+      }
+      if (state.serveRootSlot.kind === 'conflict') {
+        const exposure = state.serveRootSlot.exposure === 'funnel' ? 'Funnel' : 'Serve';
+        const address = state.serveRootSlot.httpsUrl ?? 'this HTTPS address';
+        throw new systemTasks.SystemTaskExecutionError(
+          'tailscale_serve_conflict',
+          `Tailscale ${exposure} already uses ${address} for another service. Existing Tailscale routing was left unchanged.`,
+        );
+      }
     }
 
     yield {
@@ -419,6 +442,7 @@ async function inspectSecureAccessTailscaleState(
         daemonReachable: false,
         authUrl: null,
         shareableHttpsUrl: null,
+        serveRootSlot: null,
       };
     }
     throw error;
@@ -436,14 +460,15 @@ async function inspectSecureAccessTailscaleState(
       daemonReachable: status.daemonReachable,
       authUrl: status.authUrl,
       shareableHttpsUrl: null,
+      serveRootSlot: null,
     };
   }
 
-  const serveStatus = await runTailscaleServeStatus({ timeoutMs: resolveCommandTimeoutMs() }).catch(() => '');
+  const serveStatus = await runTailscaleServeStatus({ timeoutMs: resolveCommandTimeoutMs() }).catch(() => null);
   const upstream = String(params.upstreamUrl ?? '').trim();
   const httpsBaseUrl = upstream
-    ? tailscaleServeHttpsUrlForInternalServerUrlFromStatus(serveStatus, upstream)
-    : extractTailscaleServeHttpsUrl(serveStatus);
+    ? tailscaleServeHttpsUrlForInternalServerUrlFromStatus(serveStatus ?? '', upstream)
+    : extractTailscaleServeHttpsUrl(serveStatus ?? '');
 
   return {
     installed: true,
@@ -452,6 +477,7 @@ async function inspectSecureAccessTailscaleState(
     daemonReachable: true,
     authUrl: status.authUrl,
     shareableHttpsUrl: appendServePathToHttpsUrl(httpsBaseUrl, params.servePath),
+    serveRootSlot: serveStatus === null ? null : classifyTailscaleServeRootSlot(serveStatus, upstream),
   };
 }
 

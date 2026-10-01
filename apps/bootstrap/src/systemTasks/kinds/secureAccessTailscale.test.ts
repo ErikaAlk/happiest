@@ -71,6 +71,7 @@ describe('createSecureAccessTailscaleHandler', () => {
                     daemonReachable: false,
                     authUrl: null,
                     shareableHttpsUrl: null,
+                    serveRootSlot: null,
                 };
             }
             return {
@@ -80,6 +81,7 @@ describe('createSecureAccessTailscaleHandler', () => {
                 daemonReachable: true,
                 authUrl: null,
                 shareableHttpsUrl: 'https://relay.tailf00.ts.net',
+                serveRootSlot: { kind: 'exact' as const, httpsUrl: 'https://relay.tailf00.ts.net' },
             };
         });
 
@@ -125,7 +127,7 @@ describe('createSecureAccessTailscaleHandler', () => {
         });
     });
 
-    it('does not treat an unrelated serve https URL as valid when the upstream port does not match', async () => {
+    it('leaves a root HTTPS route that serves another upstream untouched', async () => {
         tailscaleMocks.runTailscaleStatusJson.mockResolvedValueOnce({
             backendState: 'Running',
             authUrl: null,
@@ -140,6 +142,56 @@ describe('createSecureAccessTailscaleHandler', () => {
             'https://other.tailf00.ts.net',
             '|-- / proxy http://127.0.0.1:9999',
         ].join('\n'));
+
+        await expect(collectHandlerRun({
+            handler: createSecureAccessTailscaleHandler(),
+            input: {
+                upstreamUrl: 'http://127.0.0.1:3005',
+                servePath: '/',
+                loginPolicy: 'skip',
+            },
+        })).rejects.toMatchObject({ code: 'tailscale_serve_conflict' });
+
+        expect(tailscaleMocks.runTailscaleServeEnable).not.toHaveBeenCalled();
+    });
+
+    it('does not enable Serve when the current Serve routing cannot be read', async () => {
+        tailscaleMocks.runTailscaleStatusJson.mockResolvedValueOnce({
+            backendState: 'Running',
+            authUrl: null,
+            dnsName: 'relay.tailf00.ts.net',
+            tailnetName: 'example-tailnet',
+            tailscaleIps: ['100.64.0.10'],
+            loggedIn: true,
+            running: true,
+            daemonReachable: true,
+        });
+        tailscaleMocks.runTailscaleServeStatus.mockRejectedValueOnce(new Error('serve status timed out'));
+
+        await expect(collectHandlerRun({
+            handler: createSecureAccessTailscaleHandler(),
+            input: {
+                upstreamUrl: 'http://127.0.0.1:3005',
+                servePath: '/',
+                loginPolicy: 'skip',
+            },
+        })).rejects.toMatchObject({ code: 'tailscale_serve_status_unavailable' });
+
+        expect(tailscaleMocks.runTailscaleServeEnable).not.toHaveBeenCalled();
+    });
+
+    it('enables Serve when the root HTTPS route is free', async () => {
+        tailscaleMocks.runTailscaleStatusJson.mockResolvedValueOnce({
+            backendState: 'Running',
+            authUrl: null,
+            dnsName: 'relay.tailf00.ts.net',
+            tailnetName: 'example-tailnet',
+            tailscaleIps: ['100.64.0.10'],
+            loggedIn: true,
+            running: true,
+            daemonReachable: true,
+        });
+        tailscaleMocks.runTailscaleServeStatus.mockResolvedValueOnce('No serve config');
         tailscaleMocks.runTailscaleServeEnable.mockResolvedValueOnce({
             approvalUrl: null,
             httpsUrl: 'https://relay.tailf00.ts.net',
