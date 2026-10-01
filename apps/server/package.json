@@ -1,7 +1,7 @@
 {
   "name": "@happier-dev/server",
   "version": "0.2.12",
-  "repository": "https://github.com/happier-dev/happier.git",
+  "repository": "https://github.com/ErikaAlk/happiest.git",
   "author": "Leeroy Brun <leeroy.brun@gmail.com>",
   "license": "MIT",
   "private": true,

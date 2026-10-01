@@ -1,3 +1,5 @@
+const githubRepo = 'ErikaAlk/happiest';
+
 /**
  * The product this repository builds and installs on a machine.
  *
@@ -10,6 +12,12 @@
 export const productIdentity = {
   /** Display name shown to people. */
   productName: 'Happiest',
+  /** GitHub repository (`owner/name`) that hosts this product's source, releases and issues. */
+  githubRepo,
+  /** Where people report problems. */
+  issuesUrl: `https://github.com/${githubRepo}/issues`,
+  /** Server a fresh install connects to; the same address serves the web app. */
+  defaultServerUrl: 'https://happiest.erikaalk.click',
   /** Command installed for the stable ring; other rings append their rolling suffix. */
   commandName: 'happiest',
   /** Home directory under the user's home; `HAPPIEST_HOME_DIR` overrides it. */

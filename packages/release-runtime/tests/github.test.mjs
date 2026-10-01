@@ -1,7 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { fetchGitHubLatestRelease, fetchGitHubReleaseByTag, fetchFirstGitHubReleaseByTags } from '../dist/github.js';
+import {
+  fetchGitHubLatestRelease,
+  fetchGitHubReleaseByTag,
+  fetchFirstGitHubReleaseByTags,
+  resolveReleaseGithubRepo,
+} from '../dist/github.js';
 
 function createFetchStub(routeMap) {
   const calls = [];
@@ -168,4 +173,11 @@ test('fetchGitHubLatestRelease calls GitHub latest endpoint and returns JSON', a
   assert.equal(release.tag_name, 'v0.9.5');
   assert.equal(stub.calls[0].url, url);
   assert.match(String(stub.calls[0].init.headers['user-agent'] ?? ''), /test-agent/);
+});
+
+test('resolveReleaseGithubRepo reads releases from this product fork unless HAPPIEST_GITHUB_REPO names another', () => {
+  assert.equal(resolveReleaseGithubRepo({}), 'ErikaAlk/happiest');
+  assert.equal(resolveReleaseGithubRepo({ HAPPIEST_GITHUB_REPO: '  ' }), 'ErikaAlk/happiest');
+  assert.equal(resolveReleaseGithubRepo({ HAPPIER_GITHUB_REPO: 'happier-dev/happier' }), 'ErikaAlk/happiest');
+  assert.equal(resolveReleaseGithubRepo({ HAPPIEST_GITHUB_REPO: 'someone/fork' }), 'someone/fork');
 });

@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 import type { PublicReleaseRingId } from '@happier-dev/release-runtime/releaseRings';
 import { resolveReleaseAssetBundle } from '@happier-dev/release-runtime/assets';
-import { fetchGitHubReleaseByTag } from '@happier-dev/release-runtime/github';
+import { fetchGitHubReleaseByTag, resolveReleaseGithubRepo } from '@happier-dev/release-runtime/github';
 import { DEFAULT_MINISIGN_PUBLIC_KEY } from '@happier-dev/release-runtime/minisign';
 import { downloadVerifiedReleaseAssetBundle } from '@happier-dev/release-runtime/verifiedDownload';
 
@@ -212,11 +212,9 @@ function resolveFirstPartyReleaseArtifactSource(params: Readonly<{
     githubRepo: normalizeFirstPartyReleaseValue(
       source?.githubRepo
         ?? params.githubRepo
-        ?? process.env.HAPPIEST_FIRST_PARTY_RELEASE_REPO
-        ?? process.env.HAPPIEST_GITHUB_REPO
-        ?? 'happier-dev/happier',
-      'happier-dev/happier',
-    ),
+        ?? process.env.HAPPIEST_FIRST_PARTY_RELEASE_REPO,
+      '',
+    ) || resolveReleaseGithubRepo(),
     githubToken: normalizeFirstPartyReleaseValue(
       source?.githubToken
         ?? params.githubToken

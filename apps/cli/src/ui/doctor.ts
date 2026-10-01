@@ -27,6 +27,7 @@ import {
     renderDoctorCleanupOwnershipSummary,
     type DoctorCleanupOwnershipSummary,
 } from '@/ui/doctorCleanupOwnershipSummary'
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity'
 import { getReleaseRingCatalogEntry } from '@happier-dev/release-runtime/releaseRings'
 import { resolveDaemonStartupSourceServiceManagedState } from '@/daemon/ownership/daemonOwnershipMetadata'
 
@@ -545,8 +546,8 @@ export async function runDoctorCommand(filter?: 'all' | 'daemon'): Promise<void>
 
         // Support and bug reports
         console.log(chalk.bold('\n🐛 Support & Bug Reports'));
-        console.log(`Report issues: ${chalk.blue('https://github.com/happier-dev/happier/issues')}`);
-        console.log(`Documentation: ${chalk.blue('https://cloud.happier.dev')}`);
+        console.log(`Report issues: ${chalk.blue(productIdentity.issuesUrl)}`);
+        console.log(`Documentation: ${chalk.blue(`https://github.com/${productIdentity.githubRepo}#readme`)}`);
     }
 
     console.log(chalk.green('\n✅ Doctor diagnosis complete!\n'));

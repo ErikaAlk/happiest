@@ -1,5 +1,8 @@
 const productIdentity = {
   productName: 'Happiest',
+  githubRepo: 'ErikaAlk/happiest',
+  issuesUrl: 'https://github.com/ErikaAlk/happiest/issues',
+  defaultServerUrl: 'https://happiest.erikaalk.click',
   commandName: 'happiest',
   homeDirName: '.happiest',
   cliRuntimeDirName: 'happiest-runtime',

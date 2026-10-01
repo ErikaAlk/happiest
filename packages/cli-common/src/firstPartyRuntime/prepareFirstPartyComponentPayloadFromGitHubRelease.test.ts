@@ -11,7 +11,8 @@ const {
   fetchGitHubReleaseByTagMock: vi.fn(),
 }));
 
-vi.mock('@happier-dev/release-runtime/github', () => ({
+vi.mock('@happier-dev/release-runtime/github', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@happier-dev/release-runtime/github')>()),
   fetchGitHubReleaseByTag: fetchGitHubReleaseByTagMock,
 }));
 

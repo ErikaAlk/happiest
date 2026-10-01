@@ -1,6 +1,12 @@
 import { requestJson } from './http.js';
+import { productIdentity } from './productIdentity.js';
 
 type FetchImpl = typeof fetch;
+
+/** GitHub repository this product's releases are read from; `HAPPIEST_GITHUB_REPO` points it at another fork. */
+export function resolveReleaseGithubRepo(env: Readonly<Record<string, string | undefined>> = process.env): string {
+  return String(env.HAPPIEST_GITHUB_REPO ?? '').trim() || productIdentity.githubRepo;
+}
 
 function buildGitHubReleaseTagUrl(githubRepo: string, tag: string) {
   const repo = String(githubRepo ?? '').trim();

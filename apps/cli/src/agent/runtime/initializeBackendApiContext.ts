@@ -3,9 +3,10 @@ import type { MachineMetadata } from '@/api/types';
 import { ensureMachineRegistered } from '@/api/machine/ensureMachineRegistered';
 import type { Credentials } from '@/persistence';
 import { readDaemonState, readSettings } from '@/persistence';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
-const DEFAULT_MISSING_MACHINE_ID_MESSAGE =
-  '[START] No machine ID found in settings. Please report this issue on https://github.com/happier-dev/happier/issues';
+const MISSING_MACHINE_ID_MESSAGE =
+  `[START] No machine ID found in settings, which is unexpected since authAndSetupMachineIfNeeded should have created it. Please report this issue on ${productIdentity.issuesUrl}`;
 
 const silentRecoveryLogger = {
   info: () => undefined,
@@ -28,7 +29,6 @@ async function shouldSkipMachineRegistration(explicitSkip: boolean | undefined):
 export async function initializeBackendApiContext(opts: {
   credentials: Credentials;
   machineMetadata: MachineMetadata;
-  missingMachineIdMessage?: string;
   skipMachineRegistration?: boolean;
   suppressMachineRegistrationRecoveryLogs?: boolean;
 }): Promise<{
@@ -39,7 +39,7 @@ export async function initializeBackendApiContext(opts: {
   const settings = await readSettings();
   const machineId = settings?.machineId;
   if (!machineId) {
-    console.error(opts.missingMachineIdMessage ?? DEFAULT_MISSING_MACHINE_ID_MESSAGE);
+    console.error(MISSING_MACHINE_ID_MESSAGE);
     process.exit(1);
   }
   if (await shouldSkipMachineRegistration(opts.skipMachineRegistration)) {

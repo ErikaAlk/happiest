@@ -700,8 +700,6 @@ export async function runCodex(opts: {
     const { api, machineId } = await initializeBackendApiContext({
         credentials: opts.credentials,
         machineMetadata: initialMachineMetadata,
-        missingMachineIdMessage:
-            '[START] No machine ID found in settings, which is unexpected since authAndSetupMachineIfNeeded should have created it. Please report this issue on https://github.com/happier-dev/happier/issues',
         skipMachineRegistration: opts.startedBy === 'daemon',
     });
     stopApiContextSpan();

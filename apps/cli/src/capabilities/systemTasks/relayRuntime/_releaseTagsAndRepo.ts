@@ -1,11 +1,8 @@
 /**
- * Shared GitHub release-tag + repo resolution for the Happier relay server.
+ * Shared GitHub release-tag resolution for the relay server.
  * Single source of truth — previously duplicated in `liveRelayRuntime.ts`
- * and `diagnostics/doctorRepair/relayUpdateCheck.ts`.
- *
- * The CLI is distributed via npm (`@happier-dev/cli`) and uses the
- * `readNpmDistTagVersion` helper instead of GitHub; this module is
- * relay-specific.
+ * and `diagnostics/doctorRepair/relayUpdateCheck.ts`. The repository the
+ * releases come from is resolved by `resolveReleaseGithubRepo`.
  */
 
 import type { PublicReleaseRingId, PublicReleaseRingLabel } from '@happier-dev/release-runtime/releaseRings';
@@ -27,16 +24,6 @@ export function resolveRelayReleaseTag(channel: RelayChannelInput): string {
   if (label === 'preview') return 'server-preview';
   if (label === 'dev') return 'server-dev';
   return 'server-stable';
-}
-
-/**
- * Resolve the owner/repo slug used for Happier GitHub releases.
- * Honours the `HAPPIEST_GITHUB_REPO` env var (for forked or internal repos)
- * and falls back to the canonical `happier-dev/happier`.
- */
-export function resolveHappierGithubRepo(): string {
-  const raw = String(process.env.HAPPIEST_GITHUB_REPO ?? '').trim();
-  return raw || 'happier-dev/happier';
 }
 
 function normaliseToPublicLabel(channel: RelayChannelInput): PublicReleaseRingLabel {

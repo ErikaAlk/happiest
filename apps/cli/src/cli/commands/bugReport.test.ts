@@ -506,7 +506,7 @@ describe('runBugReportCommand', () => {
     if (result.mode !== 'fallback') {
       throw new Error('expected fallback mode');
     }
-    expect(result.issueUrl).toContain('github.com/happier-dev/happier/issues/new');
+    expect(result.issueUrl).toContain('github.com/ErikaAlk/happiest/issues/new');
     expect(submitSpy).not.toHaveBeenCalled();
     expect(collectDiagnosticsSpy).not.toHaveBeenCalled();
   });
@@ -690,7 +690,7 @@ describe('runBugReportCommand', () => {
     if (result.mode === 'fallback') {
       expect(result.reason).toBe('submit-failed');
       expect(result.errorMessage).toContain('Unable to connect');
-      expect(result.issueUrl).toMatch(/^https:\/\/github\.com\/happier-dev\/happier\/issues\/new/);
+      expect(result.issueUrl).toMatch(/^https:\/\/github\.com\/ErikaAlk\/happiest\/issues\/new/);
     }
   });
 
@@ -711,7 +711,7 @@ describe('runBugReportCommand', () => {
     if (result.mode === 'fallback') {
       expect(result.reason).toBe('feature-fetch-failed');
       expect(result.errorMessage).toContain('Active server unreachable');
-      expect(result.issueUrl).toMatch(/^https:\/\/github\.com\/happier-dev\/happier\/issues\/new/);
+      expect(result.issueUrl).toMatch(/^https:\/\/github\.com\/ErikaAlk\/happiest\/issues\/new/);
     }
   });
 

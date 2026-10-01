@@ -47,8 +47,10 @@ export type BugReportServiceSubmitInput = {
   existingIssueNumber?: number;
 };
 
-export const BUG_REPORT_DEFAULT_ISSUE_OWNER = 'happier-dev';
-export const BUG_REPORT_DEFAULT_ISSUE_REPO = 'happier';
+// Same repository as `productIdentity.githubRepo`; protocol builds before release-runtime, so it
+// carries the literals and the identity contract test compares them.
+export const BUG_REPORT_DEFAULT_ISSUE_OWNER = 'ErikaAlk';
+export const BUG_REPORT_DEFAULT_ISSUE_REPO = 'happiest';
 export const BUG_REPORT_DEFAULT_ISSUE_LABELS: readonly string[] = ['bug'];
 export const BUG_REPORT_FALLBACK_MAX_LABELS = 10;
 export const BUG_REPORT_FALLBACK_MAX_LABEL_LENGTH = 40;

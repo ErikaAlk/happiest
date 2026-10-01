@@ -68,7 +68,11 @@ import {
 import { resolveReleaseAssetBundle } from '@happier-dev/release-runtime/assets';
 import { downloadVerifiedReleaseAssetBundle } from '@happier-dev/release-runtime/verifiedDownload';
 import { extractFirstPartyReleaseArchiveToDirectory } from '@happier-dev/release-runtime/archiveExtraction';
-import { fetchFirstGitHubReleaseByTags, fetchGitHubReleaseByTag } from '@happier-dev/release-runtime/github';
+import {
+  fetchFirstGitHubReleaseByTags,
+  fetchGitHubReleaseByTag,
+  resolveReleaseGithubRepo,
+} from '@happier-dev/release-runtime/github';
 import { findExtractedExecutableByName } from './self_host/findExtractedExecutableByName.mjs';
 import { maybeInstallCompanionCli } from './self_host/install_companion_cli.mjs';
 import { listVersionedDirectoryIdsNewestFirst, pruneVersionedDirectories } from './self_host/version_retention.mjs';
@@ -78,7 +82,6 @@ const { serverHost: DEFAULT_SERVER_HOST, serverPort: DEFAULT_SERVER_PORT } = res
 const DEFAULT_UPDATER_LABEL = `${productIdentity.commandName}-self-host-updater`;
 const SELF_HOST_DISPLAY_NAME = `${productIdentity.productName} Self-Host`;
 const DEFAULTS = Object.freeze({
-  githubRepo: 'happier-dev/happier',
   healthCheckTimeoutMs: 90_000,
   autoUpdateIntervalMinutes: 1440,
   uiWebProduct: 'happier-ui-web',
@@ -351,7 +354,7 @@ export function resolveConfig({ channel, mode = 'user', platform = process.platf
   const serviceName = String(process.env.HAPPIEST_SELF_HOST_SERVICE_NAME ?? defaults.serviceName).trim() || defaults.serviceName;
   const serverHost = String(process.env.HAPPIER_SERVER_HOST ?? DEFAULT_SERVER_HOST).trim();
   const serverPort = parsePort(process.env.HAPPIER_SERVER_PORT, DEFAULT_SERVER_PORT);
-  const githubRepo = String(process.env.HAPPIEST_GITHUB_REPO ?? DEFAULTS.githubRepo).trim();
+  const githubRepo = resolveReleaseGithubRepo(process.env);
   const autoUpdate = resolveSelfHostAutoUpdateDefault(process.env);
   const autoUpdateIntervalMinutes = resolveSelfHostAutoUpdateIntervalMinutes(process.env);
   const autoUpdateAt = resolveSelfHostAutoUpdateAt(process.env);

@@ -25,6 +25,7 @@ import {
   recordCliUpdateCheck,
   resolveNpmPackageNameOverride,
 } from '@happier-dev/cli-common/update';
+import { resolveReleaseGithubRepo } from '@happier-dev/release-runtime/github';
 import {
   getReleaseRingCatalogEntry,
   normalizePublicReleaseRingId,
@@ -66,7 +67,7 @@ function usage(): string {
     `${chalk.bold('Environment:')}`,
     `  HAPPIER_CLI_UPDATE_CHECK=0                 Disable update notice + background check`,
     `  HAPPIER_CLI_UPDATE_PACKAGE_NAME=@scope/pkg Override the npm package name checked/installed`,
-    `  HAPPIEST_GITHUB_REPO=happier-dev/happier   Override GitHub repo for binary updates`,
+    `  HAPPIEST_GITHUB_REPO=owner/repo            Override GitHub repo for binary updates`,
     `  HAPPIER_GITHUB_TOKEN=...                   GitHub token for release API (optional)`,
     '',
   ].join('\n');
@@ -153,11 +154,6 @@ export function detectInstallSource(path: string): 'npm' | 'binary' {
   return 'binary';
 }
 
-function resolveBinaryUpdateRepo(env: NodeJS.ProcessEnv): string {
-  const raw = String(env.HAPPIEST_GITHUB_REPO ?? '').trim();
-  return raw || 'happier-dev/happier';
-}
-
 function resolveBinaryUpdateToken(env: NodeJS.ProcessEnv): string {
   return String(env.HAPPIER_GITHUB_TOKEN ?? env.GITHUB_TOKEN ?? '').trim();
 }
@@ -211,7 +207,7 @@ async function cmdCheck(argv: string[], rawArgv: readonly string[] = process.arg
     const { versionId: latest } = await resolveFirstPartyComponentRelease({
       componentId: 'happier-cli',
       channel,
-      githubRepo: resolveBinaryUpdateRepo(process.env),
+      githubRepo: resolveReleaseGithubRepo(process.env),
       githubToken: resolveBinaryUpdateToken(process.env),
       userAgent: 'happier-cli',
     });
@@ -322,7 +318,7 @@ async function cmdUpdate(argv: string[], rawArgv: readonly string[] = process.ar
     targetVersion: effective.targetVersion,
     preparePayload: async (params) => await prepareFirstPartyComponentPayloadFromGitHubRelease({
       ...params,
-      githubRepo: resolveBinaryUpdateRepo(process.env),
+      githubRepo: resolveReleaseGithubRepo(process.env),
       githubToken: resolveBinaryUpdateToken(process.env),
       userAgent: 'happier-cli',
       minisignPubkeyFile: String(process.env.HAPPIEST_MINISIGN_PUBKEY ??'').trim() || undefined,

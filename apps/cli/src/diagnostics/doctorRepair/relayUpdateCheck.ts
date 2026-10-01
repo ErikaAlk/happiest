@@ -1,14 +1,11 @@
 import { join } from 'node:path';
 
 import { readUpdateCache, writeUpdateCache } from '@happier-dev/cli-common/update';
-import { fetchGitHubReleaseByTag } from '@happier-dev/release-runtime/github';
+import { fetchGitHubReleaseByTag, resolveReleaseGithubRepo } from '@happier-dev/release-runtime/github';
 import type { PublicReleaseRingLabel } from '@happier-dev/release-runtime/releaseRings';
 
 import { configuration } from '@/configuration';
-import {
-  resolveHappierGithubRepo,
-  resolveRelayReleaseTag,
-} from '@/capabilities/systemTasks/relayRuntime/_releaseTagsAndRepo';
+import { resolveRelayReleaseTag } from '@/capabilities/systemTasks/relayRuntime/_releaseTagsAndRepo';
 
 import { extractSemverFromReleaseJson, withTimeout } from './_updateCheck';
 
@@ -58,7 +55,7 @@ export async function readLatestRelayVersion(
 
   const release = await withTimeout(
     fetchGitHubReleaseByTag({
-      githubRepo: resolveHappierGithubRepo(),
+      githubRepo: resolveReleaseGithubRepo(),
       tag: resolveRelayReleaseTag(channel),
       userAgent: 'happier-cli/doctor-repair',
     }),

@@ -32,11 +32,11 @@ import {
 } from '@happier-dev/cli-common/firstPartyRuntime';
 import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { resolveReleaseAssetBundle } from '@happier-dev/release-runtime/assets';
-import { fetchGitHubReleaseByTag } from '@happier-dev/release-runtime/github';
+import { fetchGitHubReleaseByTag, resolveReleaseGithubRepo } from '@happier-dev/release-runtime/github';
 import { DEFAULT_MINISIGN_PUBLIC_KEY } from '@happier-dev/release-runtime/minisign';
 import { downloadVerifiedReleaseAssetBundle } from '@happier-dev/release-runtime/verifiedDownload';
 
-import { resolveHappierGithubRepo, resolveRelayReleaseTag } from './_releaseTagsAndRepo';
+import { resolveRelayReleaseTag } from './_releaseTagsAndRepo';
 
 type RelayRuntimeTaskParams = Readonly<{
   platform?: NodeJS.Platform;
@@ -167,7 +167,7 @@ function resolveRelayRuntimeConfig(params: RelayRuntimeTaskParams): RelayRuntime
   const serviceName = String(process.env.HAPPIEST_SELF_HOST_SERVICE_NAME ?? defaults.serviceName).trim() || defaults.serviceName;
   const serverHost = String(process.env.HAPPIER_SERVER_HOST ?? defaults.serverHost).trim() || defaults.serverHost;
   const serverPort = parsePort(process.env.HAPPIER_SERVER_PORT, defaults.serverPort);
-  const githubRepo = resolveHappierGithubRepo();
+  const githubRepo = resolveReleaseGithubRepo();
   const serverBinaryName = resolveServerRuntimeExecutableNames(platform).server;
 
   return {
