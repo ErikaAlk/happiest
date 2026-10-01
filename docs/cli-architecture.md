@@ -182,15 +182,15 @@ a process running as the user could defeat any of them. `happierCli.ts` addition
 a managed CLI is reacquired once and then fails by name, and an override CLI fails immediately
 without reacquisition.
 
-### One default channel per Happier home
+### One default channel per Happiest home
 
-A Happier home has one default `happier` command and one default-following background service, and
+A Happiest home has one default `happiest` command and one default-following background service, and
 both belong to the **default release channel** (`default-cli-release-channel.json`; the service runs
-that channel's `~/.happier/bin/happier` shim). Two rules keep a second channel from fighting it:
+that channel's `~/.happiest/bin/happiest` shim). Two rules keep a second channel from fighting it:
 
 - **Installing another channel never takes the default.** `installVersionedPayload` keeps the
-  recorded default channel (marker and `happier` shim) whenever that channel's managed CLI is
-  installed; the installed channel only gets its own shim (`hprev`, `hdev`). It becomes the default
+  recorded default channel (marker and `happiest` shim) whenever that channel's managed CLI is
+  installed; the installed channel only gets its own shim (`happiest-preview`, `happiest-dev`). It becomes the default
   on a first install into an empty home, or when the user chose it explicitly — the official
   installers' `self __install-payload --channel` passes `selectAsDefaultReleaseChannel`. So a desktop
   app, a `self update` or any other acquisition of a second channel never changes which CLI the
@@ -283,12 +283,13 @@ not end sessions, but it is unverified on a real Windows host. Remote update is 
 (below).
 
 **Rolling back across a migration.** The previous version must read whatever the new one wrote
-before it failed. Every predecessor that can run this transaction is ≥ 0.2.13 (the transaction
-ships in the CLI and in the desktop's hsetup, whose setup floor is 0.2.13), and the persisted
-formats a new daemon may migrate at start are forward-tolerant within 0.2 (settings
-`SUPPORTED_SCHEMA_VERSION` 6 is unchanged since 0.2.12 and a newer schema only logs a warning). No
-0.2 release forbids rollback; the first release whose migration an older reader cannot read must add
-a rollback floor to this transaction before it ships.
+before it failed. Every predecessor that can run this transaction is a Happiest release, 0.1.0 or
+later (the transaction ships in the CLI and in the desktop's hsetup, whose setup floor is 0.1.0),
+and the persisted formats a new daemon may migrate at start are forward-tolerant (settings
+`SUPPORTED_SCHEMA_VERSION` 6 is unchanged since upstream Happier 0.2.12, older than the upstream
+source Happiest 0.1.0 is built from, and a newer schema only logs a warning). No release so far forbids rollback; the first
+release whose migration an older reader cannot read must add a rollback floor to this transaction
+before it ships.
 
 **K5 — per-machine update facts.** `readCliUpdateFacts` (`apps/cli/src/cli/runtime/update/cliUpdateFacts.ts`,
 schema `CliUpdateFactsSchema` in `@happier-dev/protocol`) reports `currentVersion`, the ring-filtered

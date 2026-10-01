@@ -256,9 +256,18 @@ describe('ensureSetupCapableLocalHappierCli', () => {
     }).finally(() => rmSync(rootDir, { recursive: true, force: true }));
   }
 
+  it('drives the CLI version this repository releases', async () => {
+    const releasedCliVersion = JSON.parse(readFileSync(new URL('../../../cli/package.json', import.meta.url), 'utf8')).version;
+    await withOverrideCli(async ({ cliPath, processEnv }) => {
+      const readVersion = vi.fn(async () => releasedCliVersion);
+      await expect(ensureSetupCapableLocalHappierCli({ releaseRing: 'stable', processEnv }, { readVersion }))
+        .resolves.toEqual({ command: cliPath, provenance: 'override', version: releasedCliVersion });
+    });
+  });
+
   it('reports an env-resolved CLI as an override and never reacquires it, even below the floor', async () => {
     await withOverrideCli(async ({ cliPath, processEnv }) => {
-      const readVersion = vi.fn(async () => '0.2.12');
+      const readVersion = vi.fn(async () => '0.0.9');
       await expect(ensureSetupCapableLocalHappierCli({ releaseRing: 'stable', processEnv }, { readVersion }))
         .rejects.toMatchObject({ code: 'cli_override_below_setup_floor' });
       expect(preparePayloadMock).not.toHaveBeenCalled();
@@ -280,12 +289,12 @@ describe('ensureSetupCapableLocalHappierCli', () => {
     try {
       writeInstalledPayloadFixture({
         happyHomeDir,
-        versionId: '0.2.12',
-        binaryContents: '#!/bin/sh\nprintf "0.2.12\\n"\n',
+        versionId: '0.0.9',
+        binaryContents: '#!/bin/sh\nprintf "0.0.9\\n"\n',
       });
-      preparePayloadMock.mockResolvedValue({ versionId: '0.2.12', payloadRoot: rootDir, cleanup: async () => {} });
+      preparePayloadMock.mockResolvedValue({ versionId: '0.0.9', payloadRoot: rootDir, cleanup: async () => {} });
       installPayloadMock.mockResolvedValue(undefined);
-      const readVersion = vi.fn(async () => '0.2.12');
+      const readVersion = vi.fn(async () => '0.0.9');
       const processEnv = { ...process.env, HAPPIEST_HOME_DIR: happyHomeDir };
 
       await expect(ensureSetupCapableLocalHappierCli({ releaseRing: 'stable', processEnv }, { readVersion }))
@@ -368,19 +377,19 @@ describe('ensureSetupCapableLocalHappierCli', () => {
     try {
       writeInstalledPayloadFixture({
         happyHomeDir,
-        versionId: '0.2.12',
-        binaryContents: '#!/bin/sh\nprintf "0.2.12\\n"\n',
+        versionId: '0.0.9',
+        binaryContents: '#!/bin/sh\nprintf "0.0.9\\n"\n',
       });
       writeFileSync(join(happyHomeDir, 'default-cli-release-channel.json'), '{"releaseChannel":"stable"}\n', 'utf8');
-      preparePayloadMock.mockResolvedValue({ versionId: '0.2.12', payloadRoot: rootDir, cleanup: async () => {} });
-      const readVersion = vi.fn(async () => '0.2.12');
+      preparePayloadMock.mockResolvedValue({ versionId: '0.0.9', payloadRoot: rootDir, cleanup: async () => {} });
+      const readVersion = vi.fn(async () => '0.0.9');
       const processEnv = { ...process.env, HAPPIEST_HOME_DIR: happyHomeDir, HAPPIEST_BOOTSTRAP_CLI_PATH: '', HAPPIER_STACK_REPO_DIR: rootDir };
 
       const failure = await ensureSetupCapableLocalHappierCli({ releaseRing: 'preview', processEnv }, { readVersion })
         .then(() => null, (error: unknown) => error as { code?: string; message?: string });
       expect(failure?.code).toBe('cli_default_channel_below_setup_floor');
       expect(failure?.message).toContain('stable');
-      expect(failure?.message).toContain('0.2.12');
+      expect(failure?.message).toContain('0.0.9');
       expect(failure?.message).toContain(SETUP_CLI_VERSION_FLOOR);
       expect(failure?.message).toContain('--channel preview');
       expect(preparePayloadMock).toHaveBeenCalledWith(expect.objectContaining({ channel: 'stable' }));
@@ -397,13 +406,13 @@ describe('ensureSetupCapableLocalHappierCli', () => {
     try {
       writeInstalledPayloadFixture({
         happyHomeDir,
-        versionId: '0.2.12',
-        binaryContents: '#!/bin/sh\nprintf "0.2.12\\n"\n',
+        versionId: '0.0.9',
+        binaryContents: '#!/bin/sh\nprintf "0.0.9\\n"\n',
       });
       preparePayloadMock.mockResolvedValue({ versionId: SETUP_CLI_VERSION_FLOOR, payloadRoot: rootDir, cleanup: async () => {} });
       installPayloadMock.mockResolvedValue(undefined);
       const readVersion = vi.fn()
-        .mockResolvedValueOnce('0.2.12')
+        .mockResolvedValueOnce('0.0.9')
         .mockResolvedValueOnce(SETUP_CLI_VERSION_FLOOR);
       const processEnv = { ...process.env, HAPPIEST_HOME_DIR: happyHomeDir };
 
@@ -635,9 +644,9 @@ describe('the one-CLI question (R12)', () => {
       await writeHappierCliChoice({ choice: { mode: 'own', command }, processEnv });
       await expect(inspectLocalHappierCliChoice({ processEnv }, { readVersion })).resolves.toEqual({ choice: { mode: 'own', command }, question: null });
 
-      readVersion.mockResolvedValue('0.2.5');
+      readVersion.mockResolvedValue('0.0.5');
       await expect(inspectLocalHappierCliChoice({ processEnv }, { readVersion }))
-        .resolves.toMatchObject({ question: { command, version: '0.2.5', belowSetupFloor: true } });
+        .resolves.toMatchObject({ question: { command, version: '0.0.5', belowSetupFloor: true } });
     });
   });
 
@@ -702,7 +711,7 @@ describe('the one-CLI question (R12)', () => {
   it('keeps the user\'s own CLI below the floor as theirs to update, naming the exact command, and never acquires', async () => {
     await withNpmCli(async ({ command, processEnv }) => {
       await writeHappierCliChoice({ choice: { mode: 'own', command }, processEnv });
-      const readVersion = vi.fn(async () => '0.2.5');
+      const readVersion = vi.fn(async () => '0.0.5');
 
       await expect(ensureSetupCapableLocalHappierCli({ releaseRing: 'stable', processEnv }, { readVersion })).rejects.toMatchObject({
         code: 'cli_own_below_setup_floor',

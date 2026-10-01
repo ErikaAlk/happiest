@@ -37,15 +37,16 @@ const DEFAULT_ENV_VAR_NAMES = [
 ] as const;
 
 /**
- * The oldest Happier CLI release desktop setup can drive. Raise it only when setup starts
+ * The oldest Happiest CLI release desktop setup can drive. Raise it only when setup starts
  * depending on a newer command contract, and say which one in the commit.
  *
- * 0.2.13: `auth status --json` reports `accountId`; `auth wait --replace-existing` claims a
- * pairing for a different account without resetting credentials.
+ * 0.1.0: the first Happiest release; it already has every command contract setup uses
+ * (`auth status --json` reports `accountId`; `auth wait --replace-existing` claims a pairing
+ * for a different account without resetting credentials).
  *
  * Compared on the semver base only, so a preview or dev build of the same base satisfies it.
  */
-export const SETUP_CLI_VERSION_FLOOR = '0.2.13';
+export const SETUP_CLI_VERSION_FLOOR = '0.1.0';
 
 export type SetupCapableLocalHappierCli = ResolvedLocalFirstPartyCommand & Readonly<{
   version: string;
