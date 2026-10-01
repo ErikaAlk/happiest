@@ -22,7 +22,7 @@ test('pipeline CLI release can inspect public dev release facts without predicti
                 '--deploy-environment',
                 'dev',
                 '--deploy-targets',
-                'ui,server,server_runner,cli,stack',
+                'ui,server_runner,cli',
                 '--force-deploy',
                 'true',
                 '--repository',
@@ -47,7 +47,7 @@ test('pipeline CLI release can inspect public dev release facts without predicti
         assert.match(out, /\[pipeline\] release: environment=dev confirm=release dev to dev/);
         assert.match(out, /\[pipeline\] rolling version suffix: dev\./);
         assert.match(out, /\[pipeline\] dry-run: hosted dispatch is owned by nightly-dev\.yml/);
-        assert.match(out, /- deploy_targets: ui,server,server_runner,cli,stack/);
+        assert.match(out, /- deploy_targets: ui,server_runner,cli/);
         assert.match(out, /- force_deploy: true/);
         assert.doesNotMatch(out, /runPublish|runDeploy/);
     } finally {

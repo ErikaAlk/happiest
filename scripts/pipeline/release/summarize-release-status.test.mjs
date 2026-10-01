@@ -120,29 +120,29 @@ test('accepted owner outcomes remain published rather than being called complete
 
 test('failed required surface is terminally failed', () => {
   const result = summarizeReleaseStatus(input({
-    requestedSurfaces: [{ id: 'docker', required: true, evidence: 'verified' }],
+    requestedSurfaces: [{ id: 'server', required: true, evidence: 'verified' }],
     surfaces: [{
-      id: 'docker',
+      id: 'server',
       result: 'failed',
-      recoveryHint: { workflow: 'publish-docker', inputs: { sha: SOURCE_SHA } },
+      recoveryHint: { workflow: 'publish-server', inputs: { sha: SOURCE_SHA } },
     }],
   }));
   assert.deepEqual(result.surfaces[0], {
-    id: 'docker',
+    id: 'server',
     requested: true,
     required: true,
     evidence: 'verified',
     state: 'failed',
     result: 'failed',
-    recoveryHint: { inputs: { sha: SOURCE_SHA }, workflow: 'publish-docker' },
+    recoveryHint: { inputs: { sha: SOURCE_SHA }, workflow: 'publish-server' },
   });
   assert.equal(result.terminal, 'failed');
 });
 
 test('a selected surface failure is terminal even when its release plan marks it optional', () => {
   const result = summarizeReleaseStatus(input({
-    requestedSurfaces: [{ id: 'deploy_docs', required: false, evidence: 'accepted' }],
-    surfaces: [{ id: 'deploy_docs', result: 'failed', recoveryHint: { job: 'deploy_docs' } }],
+    requestedSurfaces: [{ id: 'desktop', required: false, evidence: 'accepted' }],
+    surfaces: [{ id: 'desktop', result: 'failed', recoveryHint: { job: 'desktop' } }],
   }));
   assert.equal(result.surfaces[0].state, 'failed');
   assert.equal(result.terminal, 'failed');

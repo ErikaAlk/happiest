@@ -40,11 +40,7 @@ test('nightly-dev verifies exact immutable candidates before promoting rolling r
   assert.match(raw, /promote_hstack:[\s\S]*?needs:\s*\[prepare_release_candidate, hstack, release_verify\]/);
   assert.match(raw, /promote_cli:[\s\S]*?needs:\s*\[prepare_release_candidate, cli, release_verify\]/);
   assert.match(raw, /promote_ui_web:[\s\S]*?needs:\s*\[prepare_release_candidate, ui_web, release_verify\]/);
-  assert.match(
-    raw,
-    /docker:[\s\S]*?needs:\s*\[prepare_release_candidate, cli, server_runtime, release_verify\][\s\S]*?server_version:\s*\$\{\{ needs\.server_runtime\.outputs\.version \}\}[\s\S]*?cli_version:\s*\$\{\{ needs\.cli\.outputs\.version \}\}/,
-    'Docker should wait for grouped verification and consume the exact verified CLI and server candidate versions',
-  );
+  assert.doesNotMatch(raw, /\n  docker:|publish-docker|DOCKER_RESULT|packages:\s*write/, 'the fork publishes no Docker images');
   assert.match(
     raw,
     /verify_promoted:[\s\S]*?needs:\s*\[prepare_release_candidate, promote_server, promote_hstack, promote_cli, promote_ui_web, ui_mobile, ui_desktop\][\s\S]*?for tag in server-dev stack-dev cli-dev ui-web-dev ui-mobile-dev ui-desktop-dev/,
@@ -59,11 +55,9 @@ test('nightly-dev verifies exact immutable candidates before promoting rolling r
 
   assert.doesNotMatch(
     releaseVerifyBlock,
-    /needs:\s*\[[^\]]*(?:ui_mobile|ui_desktop|docker)/,
-    'candidate verification must not depend on jobs that already publish user-consumed mobile, desktop, or Docker outputs',
+    /needs:\s*\[[^\]]*(?:ui_mobile|ui_desktop)/,
+    'candidate verification must not depend on jobs that already publish user-consumed mobile or desktop outputs',
   );
-  const promotedVerificationBlock = raw.slice(raw.indexOf('\n  verify_promoted:'), raw.indexOf('\n  advance_source_issues_to_dev:'));
-  assert.doesNotMatch(promotedVerificationBlock, /needs:\s*\[[^\]]*docker/, 'Docker publication has no GitHub rolling Release to verify');
 });
 
 test('nightly-dev publishes the newest forward-only CI-certified dev SHA and reports blocked newer heads', async () => {
@@ -178,7 +172,6 @@ test('nightly status projector emits the strict summarizer contract', () => {
       UI_WEB_RESULT: 'success',
       MOBILE_RESULT: 'success',
       DESKTOP_RESULT: 'success',
-      DOCKER_RESULT: 'success',
       POST_PROMOTION_RESULT: 'success',
       VERIFY_RESULT: 'success',
       PROMOTE_SERVER_RESULT: 'success',

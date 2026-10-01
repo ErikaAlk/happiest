@@ -8,7 +8,6 @@ const base = {
   environment: 'preview',
   publishServerRuntimeNeeded: true,
   publishCliBinariesNeeded: true,
-  publishStack: false,
   sourceChecksWaived: false,
   risks: { mysqlContract: false, platformServices: false, trustRoots: false },
   gates: { mysql: 'skipped', platform: 'skipped', trustRoots: 'skipped' },
@@ -18,15 +17,25 @@ test('admits a preview when no heavy risk gate applies', () => {
   assert.deepEqual(admitRelease(base), { admitted: true });
 });
 
-test('requires platform evidence when a stack artifact changes the self-host runtime', () => {
-  assert.throws(() => admitRelease({
+test('requires platform evidence when a server runtime or CLI artifact changes the self-host runtime', () => {
+  for (const published of [
+    { publishServerRuntimeNeeded: true, publishCliBinariesNeeded: false },
+    { publishServerRuntimeNeeded: false, publishCliBinariesNeeded: true },
+  ]) {
+    assert.throws(() => admitRelease({
+      ...base,
+      ...published,
+      risks: { ...base.risks, platformServices: true },
+      gates: { ...base.gates, platform: 'skipped' },
+    }), /platform gates/);
+  }
+  assert.deepEqual(admitRelease({
     ...base,
     publishServerRuntimeNeeded: false,
     publishCliBinariesNeeded: false,
-    publishStack: true,
     risks: { ...base.risks, platformServices: true },
     gates: { ...base.gates, platform: 'skipped' },
-  }), /platform gates/);
+  }), { admitted: true });
 });
 
 test('an explicit source-CI waiver also waives source-only MySQL and platform gates but not artifact trust', () => {

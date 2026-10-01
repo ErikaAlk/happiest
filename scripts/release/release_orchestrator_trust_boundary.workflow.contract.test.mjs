@@ -48,16 +48,17 @@ test('release actor guard loads its local action from trusted workflow control',
   assert.ok(job.steps.indexOf(checkouts[0]) < guardIndex, 'trusted checkout must precede the App-credential guard');
 });
 
-test('deploy planning keeps release source inert and executes trusted workflow control', async () => {
+test('release planning keeps release source inert and executes trusted workflow control', async () => {
   const workflow = await loadReleaseWorkflow();
-  const job = workflow.jobs.deploy_plan;
+  const job = workflow.jobs.plan;
 
-  assert.equal(job.environment, undefined, 'deploy planning must not request release-shared secrets');
+  assert.equal(workflow.jobs.deploy_plan, undefined, 'the fork release plans no deploy-branch promotion');
+  assert.equal(job.environment, undefined, 'release planning must not request release-shared secrets');
   assert.equal(job.permissions?.contents, 'read');
   assert.equal(
     job.steps.some((step) => step?.uses === 'actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547'),
     false,
-    'deploy planning does not need an App token',
+    'release planning does not need an App token',
   );
 
   const checkouts = checkoutSteps(job);
@@ -67,11 +68,13 @@ test('deploy planning keeps release source inert and executes trusted workflow c
   assert.equal(checkouts[1]?.with?.path, 'release-source');
   assert.equal(checkouts[1]?.with?.['persist-credentials'], false);
 
-  const compute = job.steps.find((step) => step?.id === 'plan');
-  assert.equal(compute?.['working-directory'], 'release-source');
-  assert.match(compute?.run ?? '', /node \.\.\/scripts\/pipeline\/release\/compute-deploy-plan\.mjs/);
-  assert.doesNotMatch(compute?.run ?? '', /node scripts\//, 'candidate source must not supply executable planning code');
-  assertNoExpressionInterpolationInShell(job, 'deploy_plan');
+  for (const id of ['plan', 'versioned_plan', 'bump_plan']) {
+    const planner = job.steps.find((step) => step?.id === id);
+    assert.equal(planner?.['working-directory'], 'release-source', id);
+    assert.match(planner?.run ?? '', /node \.\.\/scripts\/pipeline\/release\//, id);
+    assert.doesNotMatch(planner?.run ?? '', /node scripts\//, `${id}: candidate source must not supply executable planning code`);
+  }
+  assertNoExpressionInterpolationInShell(job, 'plan');
 });
 
 test('release workflow fences dispatcher-observed workflow control before any release actor or mutation', async () => {

@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { chmodSync, cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { delimiter, join, resolve } from 'node:path';
+import { delimiter, join } from 'node:path';
 
 import { resolveRemoteReleasePlanningRefs } from '../pipeline/release/lib/release-planning-remote-refs.mjs';
 
@@ -116,75 +116,6 @@ test('remote release planning resolves and fetches immutable objects without cha
     assert.equal(resolved.tags['cli-v0.2.1'], git(seed, ['rev-parse', 'cli-v0.2.1^{}']));
     assert.equal(git(work, ['cat-file', '-t', `${resolved.branches.preview}^{commit}`]), 'commit');
     assert.equal(git(work, ['cat-file', '-t', `${resolved.tags['cli-v0.2.1']}^{commit}`]), 'commit');
-    assert.equal(snapshotRefs(work), before);
-  } finally {
-    rmSync(root, { recursive: true, force: true });
-  }
-});
-
-test('public deploy-plan command resolves current remote objects without changing heads, remotes, or tags', () => {
-  const sourceRepo = resolve(new URL('../..', import.meta.url).pathname);
-  const root = mkdtempSync(join(tmpdir(), 'release-deploy-plan-refs-'));
-  const remote = join(root, 'remote.git');
-  const seed = join(root, 'seed');
-  const work = join(root, 'work');
-
-  try {
-    git(root, ['init', '--bare', remote]);
-    git(root, ['init', seed]);
-    git(seed, ['config', 'user.email', 'test@example.com']);
-    git(seed, ['config', 'user.name', 'Test']);
-    writeFileSync(join(seed, 'README.md'), 'initial\n');
-    git(seed, ['add', 'README.md']);
-    git(seed, ['commit', '-m', 'initial']);
-    git(seed, ['branch', '-M', 'dev']);
-    for (const branch of ['main', 'preview', 'deploy/preview/server', 'stale']) {
-      git(seed, ['branch', branch]);
-    }
-    git(seed, ['remote', 'add', 'origin', remote]);
-    git(seed, ['push', 'origin', 'dev', 'main', 'preview', 'deploy/preview/server', 'stale']);
-    git(remote, ['symbolic-ref', 'HEAD', 'refs/heads/dev']);
-
-    git(root, ['clone', '--no-tags', remote, work]);
-    mkdirSync(join(work, 'scripts'), { recursive: true });
-    cpSync(join(sourceRepo, 'scripts', 'pipeline'), join(work, 'scripts', 'pipeline'), { recursive: true });
-    mkdirSync(join(work, 'packages', 'release-runtime'), { recursive: true });
-    cpSync(
-      join(sourceRepo, 'packages', 'release-runtime', 'releaseRings.cjs'),
-      join(work, 'packages', 'release-runtime', 'releaseRings.cjs'),
-    );
-    mkdirSync(join(work, 'apps', 'ui'), { recursive: true });
-    cpSync(join(sourceRepo, 'apps', 'ui', 'appVariantConfig.cjs'), join(work, 'apps', 'ui', 'appVariantConfig.cjs'));
-    symlinkSync(join(sourceRepo, 'node_modules'), join(work, 'node_modules'), 'dir');
-    git(work, ['tag', 'keep-local']);
-
-    git(seed, ['checkout', 'preview']);
-    writeFileSync(join(seed, 'README.md'), 'advanced preview\n');
-    git(seed, ['commit', '-am', 'advance preview']);
-    git(seed, ['push', 'origin', 'preview']);
-    git(seed, ['push', 'origin', '--delete', 'stale']);
-
-    const advertisedPreview = git(seed, ['rev-parse', 'preview']);
-    const before = snapshotRefs(work);
-    const output = execFileSync(process.execPath, [
-      join(work, 'scripts', 'pipeline', 'run.mjs'),
-      'release-compute-deploy-plan',
-      '--deploy-environment', 'preview',
-      '--source-ref', 'preview',
-      '--force-deploy', 'false',
-      '--deploy-ui', 'false',
-      '--deploy-server', 'true',
-      '--deploy-website', 'false',
-      '--deploy-docs', 'false',
-      '--secrets-source', 'env',
-    ], {
-      cwd: work,
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
-    const result = JSON.parse(output.trim());
-
-    assert.equal(result.source_sha, advertisedPreview);
     assert.equal(snapshotRefs(work), before);
   } finally {
     rmSync(root, { recursive: true, force: true });

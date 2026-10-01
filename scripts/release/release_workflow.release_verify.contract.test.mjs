@@ -35,7 +35,7 @@ test('release workflow verifies immutable candidates before promoting preview or
   );
   assert.match(
     raw,
-    /verify_release_candidates:[\s\S]*?needs:\s*\[plan, prepare_release_candidate, publish_cli_binaries, publish_hstack_binaries, publish_server_runtime, publish_ui_web\][\s\S]*?candidate_source_sha:\s*\$\{\{\s*needs\.prepare_release_candidate\.outputs\.source_sha\s*\}\}[\s\S]*?candidate_cli_version:\s*\$\{\{\s*needs\.publish_cli_binaries\.outputs\.version\s*\}\}[\s\S]*?candidate_stack_version:\s*\$\{\{\s*needs\.publish_hstack_binaries\.outputs\.version\s*\}\}[\s\S]*?candidate_server_version:\s*\$\{\{\s*needs\.publish_server_runtime\.outputs\.version\s*\}\}[\s\S]*?candidate_ui_web_version:\s*\$\{\{\s*needs\.publish_ui_web\.outputs\.version\s*\}\}/,
+    /verify_release_candidates:[\s\S]*?needs:\s*\[plan, prepare_release_candidate, publish_cli_binaries, publish_server_runtime, publish_ui_web\][\s\S]*?candidate_source_sha:\s*\$\{\{\s*needs\.prepare_release_candidate\.outputs\.source_sha\s*\}\}[\s\S]*?candidate_cli_version:\s*\$\{\{\s*needs\.publish_cli_binaries\.outputs\.version\s*\}\}[\s\S]*?candidate_server_version:\s*\$\{\{\s*needs\.publish_server_runtime\.outputs\.version\s*\}\}[\s\S]*?candidate_ui_web_version:\s*\$\{\{\s*needs\.publish_ui_web\.outputs\.version\s*\}\}/,
     'the verifier must consume the exact source and immutable versions emitted by the candidate jobs',
   );
   assert.match(
@@ -50,14 +50,11 @@ test('release workflow verifies immutable candidates before promoting preview or
     raw,
     /promote_cli_binaries:[\s\S]*?needs:\s*\[resolve_resume, prepare_release_candidate, verify_release_candidates, publish_cli_binaries\][\s\S]*?retry_version:\s*\$\{\{\s*needs\.publish_cli_binaries\.outputs\.version\s*\}\}/,
   );
-  assert.match(raw, /promote_hstack_binaries:[\s\S]*?needs:\s*\[resolve_resume, prepare_release_candidate, verify_release_candidates, publish_hstack_binaries\]/);
 
-  for (const job of ['promote_hstack_binaries', 'promote_cli_binaries', 'promote_server_runtime', 'promote_ui_web']) {
+  for (const job of ['promote_cli_binaries', 'promote_server_runtime', 'promote_ui_web']) {
     assert.ok(workflow.jobs.release_verify.needs.includes(job));
   }
-  for (const optionalJob of ['deploy_ui', 'deploy_website', 'deploy_docs', 'publish_docker']) {
-    assert.ok(!workflow.jobs.release_verify.needs.includes(optionalJob), `${optionalJob} must not delay core release signoff`);
-  }
+  assert.ok(!workflow.jobs.release_verify.needs.includes('deploy_ui'), 'the desktop publication must not delay core release signoff');
   assert.match(JSON.stringify(workflow.jobs.release_verify.steps), /Verify rolling references bind the candidate SHA/);
   assert.deepEqual(workflow.jobs.plan.needs, ['release_actor_guard', 'resolve_resume', 'release_preflight']);
   assert.match(String(workflow.jobs.plan.if), /needs\.release_preflight\.result == 'success'/);
@@ -68,22 +65,27 @@ test('release workflow verifies immutable candidates before promoting preview or
   );
 });
 
-test('post-promotion verification receives the selected server runtime probe URL', async () => {
+test('post-promotion verification checks only the rolling references of the published GitHub release artifacts', async () => {
   const workflow = YAML.parse(await readFile(join(repoRoot, '.github', 'workflows', 'release.yml'), 'utf8'));
-  assert.ok(workflow.jobs.release_verify.needs.includes('deploy_server'));
-  const serverProbe = workflow.jobs.release_verify.steps.find((step) => step.name === 'Verify loaded server API revision');
-  assert.ok(serverProbe, 'the short signoff must retain the deployed-server identity check');
-  assert.equal(serverProbe.env.CANDIDATE_SOURCE_SHA, '${{ needs.prepare_release_candidate.outputs.source_sha }}');
-  assert.equal(serverProbe.env.SERVER_API_VERSION_URL, "${{ inputs.environment == 'production' && vars.HAPPIER_SERVER_API_PRODUCTION_VERSION_URL || vars.HAPPIER_SERVER_API_PREVIEW_VERSION_URL }}");
-  assert.match(
-    String(serverProbe.if),
-    /vars\.HAPPIER_SERVER_API_(?:PRODUCTION|PREVIEW)_VERSION_URL != ''/,
-    'a loaded-runtime check may only run when the selected deployment exposes a canonical probe URL',
+  const finalVerifier = workflow.jobs.release_verify;
+  assert.deepEqual(finalVerifier.needs, [
+    'resolve_resume',
+    'plan',
+    'prepare_release_candidate',
+    'verify_release_candidates',
+    'promote_cli_binaries',
+    'promote_server_runtime',
+    'promote_ui_web',
+  ]);
+  assert.deepEqual(
+    finalVerifier.steps.map((step) => step.name),
+    ['Checkout trusted workflow control bytes', 'Setup Node', 'Verify rolling references bind the candidate SHA'],
+    'no hosted server is deployed, so there is no loaded-runtime revision to observe',
   );
-  const unobservable = workflow.jobs.release_verify.steps.find((step) => step.name === 'Record unavailable server runtime observation');
-  assert.ok(unobservable, 'an unobservable loaded runtime must be reported explicitly instead of failing or claiming verification');
-  assert.match(String(unobservable.if), /vars\.HAPPIER_SERVER_API_(?:PRODUCTION|PREVIEW)_VERSION_URL == ''/);
-  assert.doesNotMatch(JSON.stringify(workflow.jobs.release_verify), /run_installers_smoke|run_binary_smoke|run_session_continuity/);
+  assert.doesNotMatch(
+    JSON.stringify(finalVerifier),
+    /deploy_server|HAPPIER_SERVER_API|verify-loaded-release-revision|run_installers_smoke|run_binary_smoke|run_session_continuity/,
+  );
 });
 
 test('preview and stable releases advance a pre-promotion issue snapshot only after release verification', async () => {
@@ -147,17 +149,6 @@ test('release workflow admits exact candidate notes before branch promotion and 
   );
 });
 
-test('release deploy planning compares deploy branches against the exact prepared candidate', async () => {
-  const raw = await readFile(join(repoRoot, '.github', 'workflows', 'release.yml'), 'utf8');
-  const deployPlan = raw.slice(raw.indexOf('\n  deploy_plan:'), raw.indexOf('\n  promote_main:'));
-
-  assert.match(deployPlan, /needs:\s*\[resolve_resume, plan, promote_preview, promote_main, prepare_release_candidate\]/);
-  assert.match(deployPlan, /ref:\s*\$\{\{\s*needs\.prepare_release_candidate\.outputs\.source_sha\s*\}\}/);
-  assert.match(deployPlan, /SOURCE_SHA:\s*\$\{\{\s*needs\.prepare_release_candidate\.outputs\.source_sha\s*\}\}/);
-  assert.match(deployPlan, /--source-ref "\$\{SOURCE_SHA\}"/);
-  assert.doesNotMatch(deployPlan, /SOURCE_REF:\s*\$\{\{\s*inputs\.environment == 'production' && 'main' \|\| 'preview'\s*\}\}/);
-});
-
 test('release workflow derives validation, notes, and terminal status from the exact bound candidate', async () => {
   const raw = await readFile(join(repoRoot, '.github', 'workflows', 'release.yml'), 'utf8');
   const candidateVerification = raw.slice(raw.indexOf('\n  verify_release_candidates:'), raw.indexOf('\n  promote_server_runtime:'));
@@ -186,11 +177,9 @@ test('release workflow derives validation, notes, and terminal status from the e
     'publish_server_runtime',
     'publish_ui_web',
     'publish_cli_binaries',
-    'publish_hstack_binaries',
     'promote_server_runtime',
     'promote_ui_web',
     'promote_cli_binaries',
-    'promote_hstack_binaries',
   ]) {
     assert.match(
       raw,
@@ -246,7 +235,7 @@ test('server releases admit the focused MySQL contract and stable platform evide
   assert.equal(platformGate.uses, './.github/workflows/tests.yml');
   assert.match(platformGate.if, /needs\.plan\.outputs\.risk_platform_services == 'true'/);
   assert.match(platformGate.if, /inputs\.waive_ci != true/);
-  assert.match(platformGate.if, /needs\.plan\.outputs\.publish_stack == 'true'/);
+  assert.doesNotMatch(platformGate.if, /publish_stack/);
   assert.equal(platformGate.with.checkout_sha, '${{ needs.plan.outputs.source_sha }}');
   assert.equal(platformGate.with.select_jobs_explicitly, true);
   assert.equal(platformGate.with.run_self_host_systemd, true);
@@ -262,7 +251,7 @@ test('server releases admit the focused MySQL contract and stable platform evide
   assert.equal(admissionStep.env.RISK_MYSQL_CONTRACT, '${{ needs.plan.outputs.risk_mysql_contract }}');
   assert.equal(admissionStep.env.RISK_PLATFORM_SERVICES, '${{ needs.plan.outputs.risk_platform_services }}');
   assert.equal(admissionStep.env.RISK_TRUST_ROOTS, '${{ needs.plan.outputs.risk_trust_roots }}');
-  assert.equal(admissionStep.env.PUBLISH_STACK, '${{ needs.plan.outputs.publish_stack }}');
+  assert.equal(admissionStep.env.PUBLISH_STACK, undefined);
   assert.equal(admissionStep.env.WAIVE_SOURCE_CHECKS, '${{ inputs.waive_ci }}');
 
   for (const jobName of ['promote_preview', 'promote_main']) {

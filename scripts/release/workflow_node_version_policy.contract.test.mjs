@@ -62,7 +62,6 @@ test('release and extended validation workflows use canonical Corepack and depen
     'promote-server.yml',
     'promote-website.yml',
     'publish-cli-binaries.yml',
-    'publish-docker.yml',
     'publish-hstack-binaries.yml',
     'publish-server-runtime.yml',
     'publish-ui-mobile-dev.yml',
@@ -143,7 +142,6 @@ test('every workflow runner job declares a positive timeout bound', async () => 
     'build-ui-mobile-local.yml': { build_android: 180, build_ios: 180, ota_update: 90 },
     'promote-docs.yml': { deploy_cloudflare: 60 },
     'promote-website.yml': { deploy_cloudflare: 60 },
-    'publish-docker.yml': { publish: 120 },
     'tests-dispatch.yml': {
       resolve: 10,
       release_actor_guard: 15,
@@ -165,7 +163,6 @@ test('every workflow runner job declares a positive timeout bound', async () => 
 test('metadata-only and opaque publication jobs do not install workspace dependencies', async () => {
   const jobsByWorkflow = {
     'publish-cli-binaries.yml': ['prepare'],
-    'publish-docker.yml': ['publish'],
     'publish-hstack-binaries.yml': ['prepare'],
   };
 

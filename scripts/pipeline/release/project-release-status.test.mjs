@@ -51,6 +51,7 @@ test('nightly status preserves an independently verified sibling after grouped f
   assert.equal(cli?.state, 'complete');
   assert.equal(cli?.identity?.verified, true);
   assert.equal(status.surfaces.find((surface) => surface.id === 'ui_desktop')?.identity?.candidateOriginRunId, 37);
+  assert.equal(status.surfaces.some((surface) => surface.id === 'docker'), false, 'nightlies do not publish Docker images');
   assert.equal(status.terminal, 'failed');
 });
 
@@ -66,11 +67,11 @@ test('standard status keeps unrequested surfaces out of failure admission', () =
     IMMUTABLE_VERIFICATION_RESULT: 'success',
     RELEASE_VERIFY_RESULT: 'success',
   });
-  assert.equal(status.surfaces.find((surface) => surface.id === 'docker')?.state, 'not_requested');
+  assert.equal(status.surfaces.find((surface) => surface.id === 'deploy_ui')?.state, 'not_requested');
   assert.equal(status.terminal, 'complete');
 });
 
-test('standard status has no npm surface because releases do not publish npm packages', () => {
+test('standard status only lists what the fork publishes to GitHub releases', () => {
   const status = projectReleaseStatus('standard', {
     RELEASE_RUN: '43',
     RELEASE_RUN_URL: 'https://github.com/ErikaAlk/happiest/actions/runs/43',
@@ -81,27 +82,18 @@ test('standard status has no npm surface because releases do not publish npm pac
     IMMUTABLE_VERIFICATION_RESULT: 'success',
     RELEASE_VERIFY_RESULT: 'success',
   });
-  assert.equal(status.surfaces.some((surface) => surface.id === 'npm'), false);
-});
-
-test('standard status keeps a requested skipped Docker publication visible as partial', () => {
-  const status = projectReleaseStatus('standard', {
-    RELEASE_RUN: '44',
-    RELEASE_RUN_URL: 'https://github.com/happier-dev/happier/actions/runs/44',
-    RELEASE_RUN_NAME: 'RELEASE — Publish (rel_abcdefgh)',
-    HMAINT_OPERATION_ID: 'rel_abcdefgh',
-    RELEASE_CHANNEL: 'preview',
-    SOURCE_SHA: 'c'.repeat(40),
-    REQUEST_DOCKER: 'true',
-    DOCKER_RESULT: 'skipped',
-    CANDIDATE_RESULT: 'success',
-    IMMUTABLE_VERIFICATION_RESULT: 'success',
-    RELEASE_VERIFY_RESULT: 'success',
-  });
-  const docker = status.surfaces.find((surface) => surface.id === 'docker');
-  assert.equal(docker?.requested, true);
-  assert.equal(docker?.state, 'partial');
-  assert.equal(status.terminal, 'partial');
+  assert.deepEqual(status.surfaces.map((surface) => surface.id), [
+    'candidate',
+    'immutable_candidate_verification',
+    'cli-immutable-candidate',
+    'server-immutable-candidate',
+    'ui-web-immutable-candidate',
+    'cli_rolling_release',
+    'server_rolling_release',
+    'ui_web_rolling_release',
+    'deploy_ui',
+    'post_promotion_identity',
+  ]);
 });
 
 test('standard status fails when a requested UI delivery is skipped after core signoff', () => {
@@ -124,7 +116,7 @@ test('standard status fails when a requested UI delivery is skipped after core s
   assert.equal(status.terminal, 'failed');
 });
 
-test('standard status treats a requested full UI delivery as required and preserves its exact intent', () => {
+test('standard status treats a requested desktop delivery as required and preserves its exact mode', () => {
   const status = projectReleaseStatus('standard', {
     RELEASE_RUN: '451',
     RELEASE_RUN_URL: 'https://github.com/happier-dev/happier/actions/runs/451',
@@ -134,8 +126,6 @@ test('standard status treats a requested full UI delivery as required and preser
     SOURCE_SHA: 'd'.repeat(40),
     REQUEST_DEPLOY_UI: 'true',
     DEPLOY_UI_RESULT: 'success',
-    DEPLOY_UI_WEB: 'true',
-    DEPLOY_UI_EXPO_ACTION: 'full',
     DEPLOY_UI_DESKTOP_MODE: 'build_and_publish',
     CANDIDATE_RESULT: 'success',
     IMMUTABLE_VERIFICATION_RESULT: 'success',
@@ -146,13 +136,11 @@ test('standard status treats a requested full UI delivery as required and preser
   assert.deepEqual(deployUi?.identity, {
     sourceSha: 'd'.repeat(40),
     verified: false,
-    deployWeb: true,
-    expoAction: 'full',
     desktopMode: 'build_and_publish',
   });
 });
 
-test('standard status carries accepted downstream evidence across a control-fixed resume', () => {
+test('standard status carries accepted desktop evidence across a control-fixed resume', () => {
   const status = projectReleaseStatus('standard', {
     RELEASE_RUN: '46',
     RELEASE_RUN_URL: 'https://github.com/happier-dev/happier/actions/runs/46',
@@ -160,17 +148,18 @@ test('standard status carries accepted downstream evidence across a control-fixe
     HMAINT_OPERATION_ID: 'rel_abcdefgh',
     RELEASE_CHANNEL: 'preview',
     SOURCE_SHA: 'e'.repeat(40),
-    REQUEST_DOCKER: 'true',
-    DOCKER_RESULT: 'skipped',
-    DOCKER_RESUME_COMPLETE: 'true',
+    REQUEST_DEPLOY_UI: 'true',
+    DEPLOY_UI_RESULT: 'skipped',
+    DEPLOY_UI_RESUME_COMPLETE: 'true',
+    DEPLOY_UI_DESKTOP_MODE: 'build_only',
     CANDIDATE_RESULT: 'success',
     IMMUTABLE_VERIFICATION_RESULT: 'success',
     RELEASE_VERIFY_RESULT: 'success',
   });
-  const docker = status.surfaces.find((surface) => surface.id === 'docker');
-  assert.equal(docker?.requested, true);
-  assert.equal(docker?.result, 'accepted');
-  assert.equal(docker?.state, 'published');
+  const deployUi = status.surfaces.find((surface) => surface.id === 'deploy_ui');
+  assert.equal(deployUi?.requested, true);
+  assert.equal(deployUi?.result, 'accepted');
+  assert.equal(deployUi?.state, 'published');
   assert.equal(status.terminal, 'published');
 });
 

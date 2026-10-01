@@ -7,15 +7,9 @@
 //
 // This is intentionally JS (not YAML) so both scripts and workflows can consume it.
 
-export const releaseTargets = Object.freeze([
-  'ui',
-  'server',
-  'website',
-  'docs',
-  'cli',
-  'stack',
-  'server_runner',
-]);
+// Release targets are the artifacts published as GitHub releases: the UI web bundle and desktop app,
+// the CLI binaries, and the server runner binaries.
+export const releaseTargets = Object.freeze(['ui', 'cli', 'server_runner']);
 
 export const components = Object.freeze({
   ui: {

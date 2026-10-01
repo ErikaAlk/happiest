@@ -121,7 +121,6 @@ function main() {
       'versioned-stack-changed': { type: 'string' },
       'versioned-server-changed': { type: 'string' },
       'resume-cli-version': { type: 'string', default: '' },
-      'resume-stack-version': { type: 'string', default: '' },
       'resume-server-version': { type: 'string', default: '' },
       'require-materialized': { type: 'boolean', default: false },
       'github-output': { type: 'string', default: '' },
@@ -176,11 +175,9 @@ function main() {
   const versionedStackChanged = parseOptionalBoolString(values['versioned-stack-changed'], '--versioned-stack-changed');
   const versionedServerChanged = parseOptionalBoolString(values['versioned-server-changed'], '--versioned-server-changed');
   const resumeCliVersion = String(values['resume-cli-version'] ?? '').trim();
-  const resumeStackVersion = String(values['resume-stack-version'] ?? '').trim();
   const resumeServerVersion = String(values['resume-server-version'] ?? '').trim();
 
   const publishCli = deployTargets.includes('cli');
-  const publishStack = deployTargets.includes('stack');
   const publishServer = deployTargets.includes('server_runner');
 
   const changedApp = versionedAppChanged ?? (changedUi || changedShared);
@@ -205,19 +202,6 @@ function main() {
       if (devVersion === mainVersion && resumeCliVersion !== devVersion) {
         fail(
           `Refusing production deploy_targets includes cli without a version change (dev and main both at ${devVersion}). Set bump!=none or bump_cli_override!=none.`,
-        );
-      }
-    }
-
-    if (publishStack && bumpStack === 'none') {
-      const devVersion = readJsonVersionFromDisk('apps/stack/package.json');
-      const mainVersion = readJsonVersionFromGit('apps/stack/package.json');
-      if (!devVersion || !mainVersion) {
-        fail('Unable to resolve stack versions for production validation.');
-      }
-      if (devVersion === mainVersion && resumeStackVersion !== devVersion) {
-        fail(
-          `Refusing production deploy_targets includes stack without a version change (dev and main both at ${devVersion}). Set bump!=none or bump_stack_override!=none.`,
         );
       }
     }
@@ -248,7 +232,6 @@ function main() {
 
   const result = {
     publish_cli: publishCli,
-    publish_stack: publishStack,
     publish_server: publishServer,
     bump_app: bumpApp,
     bump_cli: bumpCli,
@@ -260,7 +243,6 @@ function main() {
 
   writeGithubOutput(String(values['github-output'] ?? '').trim(), {
     publish_cli: publishCli ? 'true' : 'false',
-    publish_stack: publishStack ? 'true' : 'false',
     publish_server: publishServer ? 'true' : 'false',
     bump_app: bumpApp,
     bump_cli: bumpCli,

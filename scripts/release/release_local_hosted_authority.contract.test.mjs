@@ -53,7 +53,7 @@ exit 0
         '--confirm', 'release dev to preview',
         '--repository', 'happier-dev/happier',
         '--deploy-environment', 'preview',
-        '--deploy-targets', 'server,server_runner',
+        '--deploy-targets', 'ui,server_runner',
         '--source-sha', AUTHORIZED_DEV_SHA,
         '--workflow-control-sha', AUTHORIZED_DEV_SHA,
         '--resume-run-id', '31506884258',
@@ -75,7 +75,9 @@ exit 0
     const commands = readFileSync(log, 'utf8');
     assert.match(commands, /gh workflow run release\.yml/);
     assert.match(commands, /-f environment=preview/);
-    assert.match(commands, /-f deploy_targets=server,server_runner/);
+    assert.match(commands, /-f deploy_targets=ui,server_runner/);
+    assert.doesNotMatch(commands, /-f ui_expo_action=/, 'the hosted release has no Expo publication input');
+    assert.match(commands, /-f desktop_mode=none/);
     assert.doesNotMatch(commands, /-f checks_profile=/, 'the hosted workflow must resolve checks from the public profile itself');
     assert.match(commands, /-f validation_profile=stable/);
     assert.match(commands, new RegExp(`-f authorized_promotion_source_sha=${AUTHORIZED_DEV_SHA}`));
@@ -95,7 +97,7 @@ exit 0
         '--confirm', 'release dev to preview and main',
         '--repository', 'happier-dev/happier',
         '--deploy-environment', 'preview-and-production',
-        '--deploy-targets', 'ui,server',
+        '--deploy-targets', 'ui,cli',
         '--source-sha', AUTHORIZED_DEV_SHA,
         '--workflow-control-sha', AUTHORIZED_DEV_SHA,
         '--release-notes-id', '2026-09-07.1',
@@ -139,7 +141,7 @@ test('the local release command rejects malformed resume run identities before e
           '--confirm', 'release dev to preview',
           '--repository', 'happier-dev/happier',
           '--deploy-environment', 'preview',
-          '--deploy-targets', 'server',
+          '--deploy-targets', 'server_runner',
           '--release-notes-id', '2026-08-09.1',
           ...resumeRunIdArgs,
           '--allow-dirty', 'true',
@@ -190,7 +192,7 @@ exit 2
         '--confirm', 'release dev to preview',
         '--repository', 'happier-dev/happier',
         '--deploy-environment', 'preview',
-        '--deploy-targets', 'server',
+        '--deploy-targets', 'server_runner',
         '--source-sha', AUTHORIZED_DEV_SHA,
         '--release-notes-id', '2026-08-09.1',
         '--allow-dirty', 'true',
@@ -236,6 +238,7 @@ exit 0
       ['--bump-app-override', 'patch'],
       ['--bump-cli-override', 'patch'],
       ['--bump-stack-override', 'patch'],
+      ['--ui-expo-action', 'full'],
       ['--ui-expo-android-release-status', 'completed'],
       ['--sync-dev-from-main', 'false'],
       ['--ui-expo-builder', 'eas_local'],
@@ -258,7 +261,7 @@ exit 0
           '--confirm', 'release dev to preview',
           '--repository', 'happier-dev/happier',
           '--deploy-environment', 'preview',
-          '--deploy-targets', 'server',
+          '--deploy-targets', 'server_runner',
           '--allow-dirty', 'true',
           option, value,
         ],
@@ -297,7 +300,7 @@ test('the local release command rejects the removed bump option before any relea
         '--confirm', 'release dev to preview',
         '--repository', 'happier-dev/happier',
         '--deploy-environment', 'preview',
-        '--deploy-targets', 'server',
+        '--deploy-targets', 'server_runner',
         '--bump', 'patch',
       ],
       {

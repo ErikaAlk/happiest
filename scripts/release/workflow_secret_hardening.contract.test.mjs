@@ -221,7 +221,6 @@ test('release actor credentials are unavailable until secret-free workflow-ref a
     'promote-website.yml',
     'providers-contracts.yml',
     'publish-cli-binaries.yml',
-    'publish-docker.yml',
     'publish-github-release.yml',
     'publish-hstack-binaries.yml',
     'publish-server-runtime.yml',

@@ -32,10 +32,6 @@ on:
         required: false
         default: false
         type: boolean
-      resume_stack_requested:
-        required: false
-        default: false
-        type: boolean
       resume_server_requested:
         required: false
         default: false
@@ -136,7 +132,6 @@ jobs:
           CHANGED_SERVER: ${{ steps.source.outputs.changed_server }}
           CHANGED_SHARED: ${{ steps.source.outputs.changed_shared }}
           RESUME_CLI_REQUESTED: ${{ inputs.resume_cli_requested }}
-          RESUME_STACK_REQUESTED: ${{ inputs.resume_stack_requested }}
           RESUME_SERVER_REQUESTED: ${{ inputs.resume_server_requested }}
           RISK_MYSQL_CONTRACT: ${{ steps.source.outputs.risk_mysql_contract }}
           RISK_PLATFORM_SERVICES: ${{ steps.source.outputs.risk_platform_services }}

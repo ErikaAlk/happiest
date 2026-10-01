@@ -23,7 +23,7 @@ function parseTargets(value) {
 /**
  * @param {{ deployTargets: string[]; forceDeploy: boolean;
  * changed: { ui: boolean; cli: boolean; server: boolean; shared: boolean };
- * resume: { cli: boolean; stack: boolean; server: boolean };
+ * resume: { cli: boolean; server: boolean };
  * risks: { mysqlContract: boolean; platformServices: boolean; trustRoots: boolean } }} input
  */
 export function resolveSourceValidationPlan(input) {
@@ -39,11 +39,10 @@ export function resolveSourceValidationPlan(input) {
     || targets.has('cli')
     || input.changed.cli
     || input.changed.shared;
-  const stackNeeded = input.resume.stack || targets.has('stack');
 
   return {
     runMysql: input.risks.mysqlContract && serverRuntimeNeeded,
-    runPlatform: input.risks.platformServices && (serverRuntimeNeeded || cliBinariesNeeded || stackNeeded),
+    runPlatform: input.risks.platformServices && (serverRuntimeNeeded || cliBinariesNeeded),
     runTrustRoots: input.risks.trustRoots,
   };
 }
@@ -61,7 +60,6 @@ export function resolveSourceValidationPlanFromEnvironment(env) {
     },
     resume: {
       cli: enabled(env.RESUME_CLI_REQUESTED),
-      stack: enabled(env.RESUME_STACK_REQUESTED),
       server: enabled(env.RESUME_SERVER_REQUESTED),
     },
     risks: {

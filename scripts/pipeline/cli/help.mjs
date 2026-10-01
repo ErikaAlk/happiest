@@ -75,7 +75,6 @@ export function renderPipelineHelp(opts) {
         `${style.bold('deploy')}                 ${COMMAND_HELP.deploy.summary}`,
         `${style.bold('promote-deploy-branch')}  ${COMMAND_HELP['promote-deploy-branch'].summary}`,
         `${style.bold('checks')}                 ${COMMAND_HELP.checks.summary}`,
-        `${style.bold('docker-publish')}         ${COMMAND_HELP['docker-publish'].summary}`,
         `${style.bold('ui-mobile-release')}      ${COMMAND_HELP['ui-mobile-release'].summary}`,
         `${style.bold('expo-submit')}            ${COMMAND_HELP['expo-submit'].summary}`,
         '',

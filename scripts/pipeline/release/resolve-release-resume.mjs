@@ -17,15 +17,10 @@ const SHA_PATTERN = /^[a-f0-9]{40}$/u;
 const DIGEST_PATTERN = /^sha256:[a-f0-9]{64}$/u;
 const RESUMABLE_PRODUCTS = new Set(['cli', 'stack', 'server', 'ui-web']);
 const RESUMABLE_REQUESTED_SURFACES = new Map([
-  ['deploy_docs', 'deployDocs'],
-  ['deploy_server', 'deployServer'],
   ['deploy_ui', 'deployUi'],
-  ['deploy_website', 'deployWebsite'],
-  ['docker', 'docker'],
 ]);
 const RESUMABLE_VERIFIED_SURFACES = new Map([
   ['cli_rolling_release', 'cliRolling'],
-  ['hstack_rolling_release', 'stackRolling'],
   ['server_rolling_release', 'serverRolling'],
   ['ui_web_rolling_release', 'uiWebRolling'],
 ]);
@@ -57,12 +52,6 @@ function requiredSha(value, label) {
   const sha = requiredString(value, label).toLowerCase();
   if (!SHA_PATTERN.test(sha)) throw new Error(`[release] ${label} must be a full commit SHA`);
   return sha;
-}
-
-/** @param {unknown} value @param {string} label */
-function requiredBoolean(value, label) {
-  if (typeof value !== 'boolean') throw new Error(`[release] ${label} must be boolean`);
-  return value;
 }
 
 /** @param {unknown} value @param {string} label @param {readonly string[]} allowed */
@@ -247,22 +236,17 @@ export function resolveReleaseResume(input) {
 
   /** @type {Record<'cli' | 'stack' | 'server' | 'ui-web', string>} */
   const versions = { cli: '', stack: '', server: '', 'ui-web': '' };
-  /** @type {Record<'deployDocs' | 'deployServer' | 'deployUi' | 'deployWebsite' | 'docker', boolean>} */
-  const requested = { deployDocs: false, deployServer: false, deployUi: false, deployWebsite: false, docker: false };
-  /** @type {Record<'cliRolling' | 'deployDocs' | 'deployServer' | 'deployUi' | 'deployWebsite' | 'docker' | 'serverRolling' | 'stackRolling' | 'uiWebRolling', boolean>} */
+  /** @type {Record<'deployUi', boolean>} */
+  const requested = { deployUi: false };
+  /** @type {Record<'cliRolling' | 'deployUi' | 'serverRolling' | 'uiWebRolling', boolean>} */
   const completed = {
     cliRolling: false,
-    deployDocs: false,
-    deployServer: false,
     deployUi: false,
-    deployWebsite: false,
-    docker: false,
     serverRolling: false,
-    stackRolling: false,
     uiWebRolling: false,
   };
   const resumeInputs = {
-    deployUi: { deployWeb: false, expoAction: 'none', desktopMode: 'none' },
+    deployUi: { desktopMode: 'none' },
   };
   const seenRequestedSurfaces = new Set();
   for (const [index, rawSurface] of status.surfaces.entries()) {
@@ -288,11 +272,11 @@ export function resolveReleaseResume(input) {
       if (identity.verified !== true) {
         throw new Error(`[release] completed ${surfaceId} must carry verified identity evidence`);
       }
-      completed[/** @type {'cliRolling' | 'serverRolling' | 'stackRolling' | 'uiWebRolling'} */ (verifiedCompletionKey)] = true;
+      completed[/** @type {'cliRolling' | 'serverRolling' | 'uiWebRolling'} */ (verifiedCompletionKey)] = true;
     }
     const requestKey = RESUMABLE_REQUESTED_SURFACES.get(surfaceId);
     if (requestKey) {
-      const typedRequestKey = /** @type {'deployDocs' | 'deployServer' | 'deployUi' | 'deployWebsite' | 'docker'} */ (requestKey);
+      const typedRequestKey = /** @type {'deployUi'} */ (requestKey);
       if (seenRequestedSurfaces.has(surfaceId)) {
         throw new Error(`[release] duplicate resumable requested surface: ${surfaceId}`);
       }
@@ -308,8 +292,6 @@ export function resolveReleaseResume(input) {
             throw new Error('requested deploy_ui source SHA does not match the release');
           }
           resumeInputs.deployUi = {
-            deployWeb: requiredBoolean(identity.deployWeb, 'requested deploy_ui deployWeb'),
-            expoAction: requiredChoice(identity.expoAction, 'requested deploy_ui expoAction', ['none', 'ota', 'native', 'native_submit', 'full']),
             desktopMode: requiredChoice(identity.desktopMode, 'requested deploy_ui desktopMode', ['none', 'build_only', 'build_and_publish']),
           };
         } catch (error) {
@@ -454,22 +436,11 @@ export async function main(argv = process.argv.slice(2)) {
       stack_version: resolved.versions.stack,
       server_version: resolved.versions.server,
       ui_web_version: resolved.versions['ui-web'],
-      deploy_docs_requested: resolved.requested.deployDocs,
-      deploy_server_requested: resolved.requested.deployServer,
       deploy_ui_requested: resolved.requested.deployUi,
-      deploy_website_requested: resolved.requested.deployWebsite,
-      docker_requested: resolved.requested.docker,
-      deploy_docs_complete: resolved.completed.deployDocs,
-      deploy_server_complete: resolved.completed.deployServer,
       deploy_ui_complete: resolved.completed.deployUi,
-      deploy_website_complete: resolved.completed.deployWebsite,
-      docker_complete: resolved.completed.docker,
       cli_rolling_complete: resolved.completed.cliRolling,
-      stack_rolling_complete: resolved.completed.stackRolling,
       server_rolling_complete: resolved.completed.serverRolling,
       ui_web_rolling_complete: resolved.completed.uiWebRolling,
-      deploy_ui_web_requested: resolved.resumeInputs?.deployUi.deployWeb ?? false,
-      deploy_ui_expo_action: resolved.resumeInputs?.deployUi.expoAction ?? 'none',
       deploy_ui_desktop_mode: resolved.resumeInputs?.deployUi.desktopMode ?? 'none',
     });
     return resolved;

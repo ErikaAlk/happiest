@@ -18,21 +18,15 @@ on:
         default: false
         type: boolean
       deploy_targets:
-        description: "Deploy — Comma-separated targets: ui,server,website,docs,cli,stack,server_runner"
+        description: "Deploy — Comma-separated targets: ui,cli,server_runner"
         required: true
-        default: ui,server,website,docs
+        default: ui,cli,server_runner
         type: string
       force_deploy:
         description: "Deploy — Force enabled targets even when unchanged"
         required: true
         default: false
         type: boolean
-      ui_expo_action:
-        description: "Deploy — UI Expo action"
-        required: true
-        default: none
-        type: choice
-        options: [none, ota, native, native_submit, full]
       desktop_mode:
         description: "Deploy — Desktop artifacts mode"
         required: true
@@ -102,7 +96,6 @@ permissions:
   actions: read
   contents: write
   issues: write
-  packages: write
   pull-requests: read
 
 concurrency:
@@ -160,7 +153,6 @@ jobs:
       actions: write
       contents: write
       issues: write
-      packages: write
       pull-requests: read
     uses: ./.github/workflows/release.yml
     secrets: inherit
@@ -170,7 +162,6 @@ jobs:
       environment: preview
       deploy_targets: ${{ inputs.deploy_targets }}
       force_deploy: ${{ inputs.force_deploy }}
-      ui_expo_action: ${{ inputs.ui_expo_action }}
       desktop_mode: ${{ inputs.desktop_mode }}
       waive_ci: ${{ inputs.waive_ci }}
       include_validation_suites: ${{ inputs.include_validation_suites }}
@@ -194,7 +185,6 @@ jobs:
       actions: write
       contents: write
       issues: write
-      packages: write
       pull-requests: read
     uses: ./.github/workflows/release.yml
     secrets: inherit
@@ -204,7 +194,6 @@ jobs:
       environment: production
       deploy_targets: ${{ inputs.deploy_targets }}
       force_deploy: ${{ inputs.force_deploy }}
-      ui_expo_action: ${{ inputs.ui_expo_action }}
       desktop_mode: ${{ inputs.desktop_mode }}
       waive_ci: ${{ inputs.waive_ci }}
       include_validation_suites: ${{ inputs.include_validation_suites }}

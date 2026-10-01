@@ -44,15 +44,7 @@ test('release-contract exposes canonical release targets and suite capabilities 
     contract.targets,
     Object.values(versionedComponents).map(({ id, baselineTagPrefix, changedWhen }) => ({ id, baselineTagPrefix, changedWhen })),
   );
-  assert.deepEqual(contract.releaseTargets, [
-    'ui',
-    'server',
-    'website',
-    'docs',
-    'cli',
-    'stack',
-    'server_runner',
-  ]);
+  assert.deepEqual(contract.releaseTargets, ['ui', 'cli', 'server_runner']);
   assert.deepEqual(
     contract.validationSuites,
     RELEASE_VALIDATION_SUITES.map((suite) => ({

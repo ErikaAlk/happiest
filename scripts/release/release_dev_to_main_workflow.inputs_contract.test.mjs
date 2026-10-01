@@ -24,7 +24,7 @@ test('release workflow uses compact grouped inputs', async () => {
   const { parsed } = await loadWorkflow();
   const inputs = parsed?.on?.workflow_dispatch?.inputs ?? {};
 
-  for (const key of ['validation_profile', 'deploy_targets', 'force_deploy', 'ui_expo_action', 'desktop_mode', 'waive_ci', 'include_validation_suites', 'waive_validation_suites', 'override_reason', 'confirm', 'authorized_promotion_source_sha', 'workflow_control_sha']) {
+  for (const key of ['validation_profile', 'deploy_targets', 'force_deploy', 'desktop_mode', 'waive_ci', 'include_validation_suites', 'waive_validation_suites', 'override_reason', 'confirm', 'authorized_promotion_source_sha', 'workflow_control_sha']) {
     assert.ok(inputs[key], `expected grouped input ${key}`);
   }
   assert.equal(inputs.checks_profile, undefined, 'the public release profile owns its checks mapping');
@@ -34,6 +34,8 @@ test('release workflow uses compact grouped inputs', async () => {
   assert.equal(inputs.workflow_control_sha.default, '');
   assert.equal(inputs.release_message, undefined, 'release notes must come from the exact candidate rather than a manual input');
   assert.equal(inputs.bump, undefined, 'versions must already be materialized; maintainers do not choose a bump at dispatch');
+  assert.equal(inputs.deploy_targets.default, 'ui,cli,server_runner');
+  assert.match(inputs.deploy_targets.description, /ui,cli,server_runner/);
 
   for (const legacyKey of [
     'custom_checks',
@@ -41,6 +43,7 @@ test('release workflow uses compact grouped inputs', async () => {
     'providers_preset',
     'providers_tier',
     'release_verify_profile',
+    'ui_expo_action',
     'ui_expo_builder',
     'ui_expo_profile',
     'ui_expo_platform',
@@ -92,9 +95,10 @@ test('release workflow derives promote mode from confirm and uses compact defaul
   assert.doesNotMatch(raw, /inputs\.providers_tier/, 'manual release workflow should not expose provider tier');
 
   assert.match(raw, /contains\(format\(',\{0\},', inputs\.deploy_targets\), ',ui,'\)/);
-  assert.match(raw, /contains\(format\(',\{0\},', inputs\.deploy_targets\), ',server,'\)/);
-  assert.match(raw, /contains\(format\(',\{0\},', inputs\.deploy_targets\), ',website,'\)/);
-  assert.match(raw, /contains\(format\(',\{0\},', inputs\.deploy_targets\), ',docs,'\)/);
+  for (const hostedTarget of ['server', 'website', 'docs', 'stack']) {
+    assert.doesNotMatch(raw, new RegExp(`contains\\(format\\(',\\{0\\},', inputs\\.deploy_targets\\), ',${hostedTarget},'\\)`));
+  }
+  assert.doesNotMatch(raw, /ui_expo_action|UI_EXPO_ACTION/);
 
   assert.match(raw, /deploy_ui_desktop_mode:\s*\$\{\{[^\n]*inputs\.desktop_mode/);
   assert.doesNotMatch(raw, /desktop_build:\s*\$\{\{ inputs\.desktop_mode != 'none' \}\}/);

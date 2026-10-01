@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -19,7 +19,6 @@ const cases = [
   ['release-compute-changed-components', 'scripts/pipeline/release/compute-changed-components.mjs'],
   ['release-compute-versioned-component-changes', 'scripts/pipeline/release/compute-versioned-component-changes.mjs'],
   ['release-resolve-bump-plan', 'scripts/pipeline/release/resolve-bump-plan.mjs'],
-  ['release-compute-deploy-plan', 'scripts/pipeline/release/compute-deploy-plan.mjs'],
   ['release-build-ui-web-bundle', 'scripts/pipeline/release/build-ui-web-bundle.mjs'],
   ['release-validate', 'scripts/pipeline/release-validation/validate-release.mjs'],
 ];
@@ -48,44 +47,16 @@ for (const [subcommand, expectedRelPath] of cases) {
   });
 }
 
-test('release-compute-deploy-plan forwards --deploy-environment to the wrapped script', async () => {
-  const out = execFileSync(
-    process.execPath,
-    [
-      resolve(repoRoot, 'scripts', 'pipeline', 'run.mjs'),
-      'release-compute-deploy-plan',
-      '--deploy-environment',
-      'production',
-      '--source-ref',
-      'dev',
-      '--force-deploy',
-      'false',
-      '--deploy-ui',
-      'true',
-      '--deploy-server',
-      'true',
-      '--deploy-website',
-      'true',
-      '--deploy-docs',
-      'true',
-      '--dry-run',
-    ],
-    {
-      cwd: repoRoot,
-      env: {
-        ...process.env,
-        GH_TOKEN: '',
-        GH_REPO: '',
-        GITHUB_REPOSITORY: '',
-      },
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'pipe'],
-      timeout: 30_000,
-    },
-  );
-
-  assert.match(out, /--deploy-environment/);
-  assert.match(out, /production/);
+test('the deploy-branch plan and Docker publication subcommands no longer exist', () => {
+  for (const subcommand of ['release-compute-deploy-plan', 'docker-publish']) {
+    const result = spawnSync(
+      process.execPath,
+      [resolve(repoRoot, 'scripts', 'pipeline', 'run.mjs'), subcommand, '--dry-run'],
+      { cwd: repoRoot, encoding: 'utf8', timeout: 30_000 },
+    );
+    assert.equal(result.status, 1, subcommand);
+    assert.match(result.stderr, new RegExp(`Unsupported subcommand: ${subcommand}`), subcommand);
+  }
 });
 
 test('release-sync-installers check is hermetic and never reads release secrets', () => {

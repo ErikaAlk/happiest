@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { resolveSourceValidationPlan } from './resolve-source-validation-plan.mjs';
+import { resolveSourceValidationPlan, resolveSourceValidationPlanFromEnvironment } from './resolve-source-validation-plan.mjs';
 
 const base = {
   deployTargets: [],
   forceDeploy: false,
   changed: { ui: false, cli: false, server: false, shared: false },
-  resume: { cli: false, stack: false, server: false },
+  resume: { cli: false, server: false },
   risks: { mysqlContract: false, platformServices: false, trustRoots: false },
 };
 
@@ -22,7 +22,7 @@ test('selects no expensive source gates when the unioned change has no matching 
 test('selects the union of channel-relevant source risks once', () => {
   assert.deepEqual(resolveSourceValidationPlan({
     ...base,
-    deployTargets: ['cli', 'stack'],
+    deployTargets: ['cli'],
     changed: { ...base.changed, server: true },
     risks: { mysqlContract: true, platformServices: true, trustRoots: true },
   }), {
@@ -41,6 +41,15 @@ test('does not run service gates for risky paths when no affected binary or runt
     runPlatform: false,
     runTrustRoots: false,
   });
+});
+
+test('rejects deploy targets the fork does not publish', () => {
+  for (const target of ['stack', 'server', 'website', 'docs']) {
+    assert.throws(
+      () => resolveSourceValidationPlanFromEnvironment({ DEPLOY_TARGETS: `cli,${target}` }),
+      new RegExp(`unsupported release target '${target}'`, 'u'),
+    );
+  }
 });
 
 test('resume and force inputs preserve validation for reused publish surfaces', () => {

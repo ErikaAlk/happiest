@@ -12,7 +12,6 @@
 
 import { COMMAND_HELP_ORCHESTRATORS } from './help-specs/orchestrators.mjs';
 import { COMMAND_HELP_CHECKS } from './help-specs/checks.mjs';
-import { COMMAND_HELP_DOCKER } from './help-specs/docker.mjs';
 import { COMMAND_HELP_PUBLISH } from './help-specs/publish.mjs';
 import { COMMAND_HELP_EXPO } from './help-specs/expo.mjs';
 import { COMMAND_HELP_TAURI } from './help-specs/tauri.mjs';
@@ -30,7 +29,6 @@ import { COMMAND_HELP_MISC } from './help-specs/misc.mjs';
 export const COMMAND_HELP = {
   ...COMMAND_HELP_ORCHESTRATORS,
   ...COMMAND_HELP_CHECKS,
-  ...COMMAND_HELP_DOCKER,
   ...COMMAND_HELP_PUBLISH,
   ...COMMAND_HELP_EXPO,
   ...COMMAND_HELP_TAURI,

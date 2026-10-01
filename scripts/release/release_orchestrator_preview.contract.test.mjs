@@ -40,7 +40,7 @@ test('release workflow only promotes and publishes the exact prepared candidate 
     authorizedPromotionSourceSha: 'a'.repeat(40),
     releaseNotesId: 'release-1',
     bump: 'none',
-    deployTargets: 'ui,server',
+    deployTargets: 'ui,server_runner',
     environment: 'preview',
     dryRun: false,
   };
@@ -65,15 +65,20 @@ test('release workflow only promotes and publishes the exact prepared candidate 
 test('release workflow publishes server runner only when explicitly requested', async () => {
   const raw = await loadWorkflow('release.yml');
 
-  // Server runner publishing must be an explicit target so server deploy remains independent.
+  // Server runner publishing is an explicit target.
   // The logic lives in the shared pipeline script (not inline bash).
   assert.match(raw, /node \.\.\/scripts\/pipeline\/release\/resolve-bump-plan\.mjs/);
   assert.match(raw, /--deploy-targets "\$\{DEPLOY_TARGETS\}"/);
 
   assert.match(
     raw,
+    /publish_server_runtime_needed:\s*\$\{\{[^\n]*inputs\.force_deploy == true[^\n]*steps\.bump_plan\.outputs\.publish_server == 'true'[^\n]*steps\.plan\.outputs\.changed_ui == 'true'[^\n]*steps\.plan\.outputs\.changed_server == 'true'[^\n]*steps\.plan\.outputs\.changed_shared == 'true'[^\n]*\}\}[\s\S]*?publish_server_runtime:[\s\S]*?needs\.plan\.outputs\.publish_server_runtime_needed == 'true'/,
+    'server runtime artifacts should publish when server code or its embedded UI changes',
+  );
+  assert.match(
+    raw,
     /publish_server_runtime:[\s\S]*?uses:\s*\.\/\.github\/workflows\/publish-server-runtime\.yml/,
-    'server runtime publishing should be handled by a dedicated workflow (decoupled from SaaS deploy)',
+    'server runtime publishing should be handled by a dedicated workflow',
   );
   assert.match(
     raw,
@@ -89,11 +94,6 @@ test('release workflow publishes server runner only when explicitly requested', 
     raw,
     /publish_server_runtime:[\s\S]*?allow_stable:\s*\$\{\{\s*inputs\.environment == 'production'\s*\}\}/,
     'server runtime publishing should explicitly unlock stable publishing only for production releases',
-  );
-  assert.match(
-    raw,
-    /deploy_server:[\s\S]*?publish_runtime_release:\s*false/,
-    'SaaS server deploy must not implicitly publish rolling server runtime releases',
   );
 });
 
@@ -115,45 +115,33 @@ test('release workflow accepts the public validation profile and routes its auto
   assert.equal(candidateVerifier?.with?.run_installers_smoke, undefined);
 });
 
-test('release workflow fans a versioned Stack target through immutable publication, grouped verification, promotion, and core signoff', async () => {
-  const [raw, verifierRaw] = await Promise.all([
+test('release workflow does not publish, verify, or promote HStack, which only the nightly workflow still builds', async () => {
+  const [raw, verifierRaw, nightlyRaw] = await Promise.all([
     loadWorkflow('release.yml'),
     loadWorkflow('release-verify.yml'),
+    loadWorkflow('nightly-dev.yml'),
   ]);
   const jobs = parse(raw)?.jobs ?? {};
-  const publisher = jobs.publish_hstack_binaries;
   const candidateVerifier = jobs.verify_release_candidates;
-  const promoter = jobs.promote_hstack_binaries;
   const finalVerifier = jobs.release_verify;
   const verifierInputs = parse(verifierRaw)?.on?.workflow_call?.inputs ?? {};
 
-  assert.equal(publisher?.uses, './.github/workflows/publish-hstack-binaries.yml');
-  assert.match(String(publisher?.if ?? ''), /needs\.plan\.outputs\.publish_stack == 'true'/);
-  assert.match(String(publisher?.with?.authorized_sha ?? ''), /needs\.prepare_release_candidate\.outputs\.source_sha/);
-  assert.equal(publisher?.with?.publish_rolling, false);
+  assert.doesNotMatch(raw, /hstack|stack_requested|stack_rolling_complete|publish_stack|HSTACK|stack-\$CHANNEL_SUFFIX/i);
+  assert.equal(jobs.publish_hstack_binaries, undefined);
+  assert.equal(jobs.promote_hstack_binaries, undefined);
+  assert.equal(candidateVerifier?.with?.candidate_stack_version, undefined);
+  assert.equal(candidateVerifier?.with?.verify_stack_release, undefined);
+  assert.equal(jobs.verify_resume_candidates?.with?.candidate_stack_version, undefined);
+  assert.match(JSON.stringify(finalVerifier?.steps ?? []), /server-\$CHANNEL_SUFFIX cli-\$CHANNEL_SUFFIX ui-web-\$CHANNEL_SUFFIX/);
 
-  assert.ok(candidateVerifier?.needs?.includes('publish_hstack_binaries'));
-  assert.match(String(candidateVerifier?.with?.candidate_stack_version ?? ''), /needs\.publish_hstack_binaries\.outputs\.version/);
-  assert.match(String(candidateVerifier?.with?.verify_stack_release ?? ''), /needs\.publish_hstack_binaries\.result == 'success'/);
-
-  assert.equal(promoter?.uses, './.github/workflows/publish-hstack-binaries.yml');
-  assert.ok(promoter?.needs?.includes('verify_release_candidates'));
-  assert.ok(promoter?.needs?.includes('publish_hstack_binaries'));
-  assert.match(String(promoter?.if ?? ''), /needs\.verify_release_candidates\.result == 'success'/);
-  assert.match(String(promoter?.with?.retry_version ?? ''), /needs\.publish_hstack_binaries\.outputs\.version/);
-
-  assert.equal(finalVerifier?.needs?.includes('publish_hstack_binaries'), false);
-  assert.ok(finalVerifier?.needs?.includes('verify_release_candidates'));
-  assert.ok(finalVerifier?.needs?.includes('promote_hstack_binaries'));
-  assert.match(String(finalVerifier?.if ?? ''), /needs\.promote_hstack_binaries\.result == 'success'/);
-  assert.match(JSON.stringify(finalVerifier?.steps ?? []), /server-\$CHANNEL_SUFFIX stack-\$CHANNEL_SUFFIX cli-\$CHANNEL_SUFFIX ui-web-\$CHANNEL_SUFFIX/);
-  assert.equal(verifierInputs?.verify_stack_release?.type, 'boolean');
-  const stackIdentityGuard = parse(verifierRaw)?.jobs?.verify_candidate?.steps?.find(
-    (step) => step.name === 'Require requested HStack verification identity',
+  // The nightly workflow still builds HStack, so the shared verifier keeps the candidate input but no release caller sets a stack verification requirement.
+  assert.equal(verifierInputs?.candidate_stack_version?.type, 'string');
+  assert.equal(verifierInputs?.verify_stack_release, undefined);
+  assert.equal(
+    parse(verifierRaw)?.jobs?.verify_candidate?.steps?.find((step) => step.name === 'Require requested HStack verification identity'),
+    undefined,
   );
-  assert.ok(stackIdentityGuard);
-  assert.match(String(stackIdentityGuard.if ?? ''), /inputs\.verify_stack_release/);
-  assert.match(String(stackIdentityGuard.if ?? ''), /inputs\.candidate_stack_version == ''/);
+  assert.match(nightlyRaw, /candidate_stack_version:\s*\$\{\{ needs\.hstack\.outputs\.version \}\}/);
 });
 
 test('release workflow can publish self-host UI web bundle via a dedicated workflow', async () => {
@@ -178,36 +166,11 @@ test('release workflow can publish self-host UI web bundle via a dedicated workf
     /publish_ui_web:[\s\S]*?allow_stable:\s*\$\{\{\s*inputs\.environment == 'production'\s*\}\}/,
     'ui web bundle publishing should explicitly unlock stable publishing only for production releases',
   );
-});
 
-test('release workflow routes docker publishing through stable for production and preview for preview', async () => {
-  const raw = await loadWorkflow('release.yml');
-  assert.match(
-    raw,
-    /publish_docker:[\s\S]*?channel:\s*\$\{\{\s*inputs\.environment == 'production' && 'stable' \|\| 'preview'\s*\}\}/,
-    'docker publishing should select stable vs preview through the shared channel mapping',
-  );
-  assert.match(
-    raw,
-    /publish_docker:[\s\S]*?source_ref:\s*\$\{\{\s*needs\.prepare_release_candidate\.outputs\.source_sha\s*\}\}/,
-    'docker publishing should build from the exact prepared candidate',
-  );
-});
-
-test('release workflow delegates deploy plan computation to pipeline script', async () => {
-  const raw = await loadWorkflow('release.yml');
-
-  assert.match(
-    raw,
-    /- name: Compute deploy plan[\s\S]*?node \.\.\/scripts\/pipeline\/release\/compute-deploy-plan\.mjs/,
-    'release.yml should delegate deploy plan computation to compute-deploy-plan.mjs',
-  );
-  assert.doesNotMatch(raw, /plan_one\(\)/, 'release.yml should not embed deploy plan logic in inline bash');
-  assert.doesNotMatch(
-    raw,
-    /\/tmp\/changed_deploy_/,
-    'release.yml should not write deploy plan path lists to /tmp (logic belongs in compute-deploy-plan.mjs)',
-  );
+  const plan = parse(raw)?.jobs?.plan;
+  assert.match(plan?.outputs?.publish_ui_web_needed, /inputs\.deploy_targets/);
+  assert.match(plan?.outputs?.publish_ui_web_needed, /steps\.plan\.outputs\.changed_ui == 'true'/);
+  assert.match(parse(raw)?.jobs?.publish_ui_web?.if, /needs\.plan\.outputs\.publish_ui_web_needed == 'true'/);
 });
 
 test('release workflows do not embed invalid JS escaping in node -p/-e snippets', async () => {

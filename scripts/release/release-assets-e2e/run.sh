@@ -531,7 +531,7 @@ run_dockerhub_images_smoke() {
     return 0
   fi
 
-  # Published Docker Hub images (see scripts/pipeline/docker/publish-images.mjs).
+  # Docker Hub images published by the upstream project (this fork publishes no Docker images).
   relay_image="happierdev/relay-server:${docker_channel}"
   devbox_image="happierdev/dev-box:${docker_channel}"
 

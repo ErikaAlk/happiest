@@ -102,10 +102,6 @@ on:
         required: false
         default: false
         type: boolean
-      verify_stack_release:
-        required: false
-        default: false
-        type: boolean
 
 permissions:
   contents: read
@@ -153,11 +149,6 @@ jobs:
       - name: Install minisign from trusted control bytes
         uses: ./.release-control/.github/actions/bootstrap-minisign
 
-      - name: Require requested HStack verification identity
-        if: ${{ inputs.verify_stack_release && inputs.candidate_stack_version == '' }}
-        run: |
-          echo 'Stack release verification requires candidate_stack_version.' >&2
-          exit 1
       - name: Verify CLI candidate
         id: verify_cli
         if: ${{ always() && inputs.candidate_cli_version != '' }}

@@ -39,16 +39,8 @@ test('classifyChangedPaths ignores unknown paths', () => {
   for (const v of Object.values(flags)) assert.equal(v, false);
 });
 
-test('release target registry owns every supported local release target', async () => {
+test('release target registry only lists the artifacts the fork publishes to GitHub releases', async () => {
   const { releaseTargets } = await import('../pipeline/release/component-registry.mjs');
 
-  assert.deepEqual(releaseTargets, [
-    'ui',
-    'server',
-    'website',
-    'docs',
-    'cli',
-    'stack',
-    'server_runner',
-  ]);
+  assert.deepEqual(releaseTargets, ['ui', 'cli', 'server_runner']);
 });

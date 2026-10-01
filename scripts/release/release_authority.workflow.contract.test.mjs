@@ -40,25 +40,25 @@ function renderConcurrencyGroup(template, { repository, channel, ref }) {
     .replaceAll('${{ github.ref }}', ref);
 }
 
-test('the full hosted release binds one exact candidate SHA and publishes runtime before deploying that exact SHA', () => {
+test('the full hosted release binds one exact candidate SHA and publishes the runtime and desktop app from that exact SHA', () => {
   const release = workflow('release.yml');
   const candidate = release.jobs.prepare_release_candidate;
   assert.ok(candidate, 'release workflow must bind the post-promotion candidate source once');
   assert.ok(candidate.outputs.source_sha);
 
   const publisher = release.jobs.publish_server_runtime;
-  const deploy = release.jobs.deploy_server;
+  const desktop = release.jobs.deploy_ui;
   assert.ok(needs(publisher).includes('prepare_release_candidate'));
-  assert.ok(needs(deploy).includes('prepare_release_candidate'));
-  assert.ok(needs(deploy).includes('promote_server_runtime'));
+  assert.ok(needs(desktop).includes('prepare_release_candidate'));
   assert.equal(
     publisher.with.authorized_sha,
     '${{ needs.prepare_release_candidate.outputs.source_sha }}',
   );
   assert.equal(
-    deploy.with.source_ref,
+    desktop.with.source_ref,
     '${{ needs.prepare_release_candidate.outputs.source_sha }}',
   );
+  assert.equal(release.jobs.deploy_server, undefined, 'the fork release deploys no hosted server');
 });
 
 test('every GitHub App token reachable from full or nightly release declares repository and permission scope', () => {
@@ -79,9 +79,6 @@ test('every GitHub App token reachable from full or nightly release declares rep
 
 test('previously broad release-path tokens use the minimum current-repository contents permission', () => {
   const expected = new Map([
-    ['promote-website.yml/promote/Create GitHub App token', 'write'],
-    ['promote-docs.yml/promote/Create GitHub App token', 'write'],
-    ['publish-docker.yml/publish/Create GitHub App token', 'read'],
     ['build-ui-mobile-local.yml/publish_android_apk/Create GitHub App token (APK publishing)', 'write'],
     ['publish-ui-mobile-dev.yml/publish/Create GitHub App token', 'read'],
     ['publish-ui-mobile-dev.yml/ios_cloud/Create GitHub App token', 'read'],
@@ -287,7 +284,6 @@ test('rolling recovery remains bound to the caller-authorized source SHA across 
   const release = workflow('release.yml');
   for (const jobName of [
     'promote_server_runtime',
-    'promote_hstack_binaries',
     'promote_cli_binaries',
     'promote_ui_web',
   ]) {

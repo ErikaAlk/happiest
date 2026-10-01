@@ -11,8 +11,7 @@ const base = {
   releaseNotesId: '2026.08.11-preview',
   bump: 'none',
   confirm: 'release dev to preview',
-  deployTargets: 'ui,server',
-  uiExpoAction: 'full',
+  deployTargets: 'ui,cli,server_runner',
   desktopMode: 'build_and_publish',
   environment: 'preview',
   dryRun: false,
@@ -31,22 +30,26 @@ test('resolves preview source and comparison refs', () => {
     sourceRef: 'dev',
     baseRef: 'preview',
     compareLabel: 'preview..dev',
-    deployTargets: ['ui', 'server'],
-    uiExpoAction: 'full',
+    deployTargets: ['ui', 'cli', 'server_runner'],
     desktopMode: 'build_and_publish',
     overrides: { waiveCi: false, includeValidationSuiteIds: [], waiveValidationSuiteIds: [], reason: '' },
   });
 });
 
-test('rejects UI publication modes without the UI target', () => {
+test('rejects the desktop mode without the UI target', () => {
   assert.throws(
-    () => validateReleaseDispatch({ ...base, deployTargets: 'server', uiExpoAction: 'full' }),
+    () => validateReleaseDispatch({ ...base, deployTargets: 'server_runner', desktopMode: 'build_and_publish' }),
     /requires deploy_targets to include ui/u,
   );
-  assert.throws(
-    () => validateReleaseDispatch({ ...base, deployTargets: 'server', uiExpoAction: 'none', desktopMode: 'build_and_publish' }),
-    /requires deploy_targets to include ui/u,
-  );
+});
+
+test('only accepts the targets the fork publishes to GitHub releases', () => {
+  for (const target of ['server', 'website', 'docs', 'stack']) {
+    assert.throws(
+      () => validateReleaseDispatch({ ...base, deployTargets: `ui,${target}` }),
+      new RegExp(`Unknown deploy_targets entry: '${target}'`, 'u'),
+    );
+  }
 });
 
 test('requires an attempt identity for conductor-owned dispatches', () => {

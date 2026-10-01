@@ -9,7 +9,7 @@ import { createReleaseCliDryRunEnv, RELEASE_CLI_DRY_RUN_TIMEOUT_MS } from './rel
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..', '..');
 
-test('pipeline CLI release dry-run reports hosted deploy inputs without predicting deploy jobs', async () => {
+test('pipeline CLI release dry-run reports hosted release inputs without predicting release jobs', async () => {
   const stub = createReleaseCliDryRunEnv();
   try {
     const out = execFileSync(
@@ -22,7 +22,7 @@ test('pipeline CLI release dry-run reports hosted deploy inputs without predicti
         '--deploy-environment',
         'preview',
         '--deploy-targets',
-        'server',
+        'server_runner',
         '--force-deploy',
         'true',
         '--repository',
@@ -41,11 +41,6 @@ test('pipeline CLI release dry-run reports hosted deploy inputs without predicti
         cwd: repoRoot,
         env: {
           ...stub.env,
-          DEPLOY_WEBHOOK_URL: 'https://ci.example.com/api/deploy',
-          CF_WEBHOOK_DEPLOY_CLIENT_ID: 'cf-id',
-          CF_WEBHOOK_DEPLOY_CLIENT_SECRET: 'cf-secret',
-          HAPPIER_SERVER_API_DEPLOY_WEBHOOKS: 'server-api',
-          HAPPIER_SERVER_WORKER_DEPLOY_WEBHOOKS: 'server-worker',
           GH_TOKEN: '',
           GH_REPO: '',
           GITHUB_REPOSITORY: '',
@@ -60,11 +55,13 @@ test('pipeline CLI release dry-run reports hosted deploy inputs without predicti
     assert.match(out, /release profile=integrated/);
     assert.doesNotMatch(out, /hosted checks profile|checks_profile/, 'the hosted workflow resolves checks from the public profile');
     assert.match(out, /\[pipeline\] dry-run: hosted dispatch inputs/);
-    assert.match(out, /- deploy_targets: server/);
+    assert.match(out, /- deploy_targets: server_runner/);
     assert.match(out, /- force_deploy: true/);
+    assert.match(out, /- desktop_mode: none/);
     assert.match(out, /- waive_ci: true/);
     assert.match(out, /- waive_validation_suites: docker-release-assets/);
     assert.match(out, /- override_reason: Maintainer accepted the bounded release risk\./);
+    assert.doesNotMatch(out, /deploy facts|ui_expo_action/, 'the fork release has no deploy branches and no Expo publication');
     assert.doesNotMatch(out, /runDeployServer|runPublish/);
   } finally {
     stub.cleanup();
@@ -84,7 +81,7 @@ test('pipeline CLI release dry-run defaults production to the stable release pro
         '--deploy-environment',
         'production',
         '--deploy-targets',
-        'server',
+        'server_runner',
         '--repository',
         'happier-dev/happier',
         '--release-notes-id',
@@ -95,11 +92,6 @@ test('pipeline CLI release dry-run defaults production to the stable release pro
         cwd: repoRoot,
         env: {
           ...stub.env,
-          DEPLOY_WEBHOOK_URL: 'https://ci.example.com/api/deploy',
-          CF_WEBHOOK_DEPLOY_CLIENT_ID: 'cf-id',
-          CF_WEBHOOK_DEPLOY_CLIENT_SECRET: 'cf-secret',
-          HAPPIER_SERVER_API_DEPLOY_WEBHOOKS: 'server-api',
-          HAPPIER_SERVER_WORKER_DEPLOY_WEBHOOKS: 'server-worker',
           GH_TOKEN: '',
           GH_REPO: '',
           GITHUB_REPOSITORY: '',
@@ -129,7 +121,7 @@ test('pipeline CLI rejects the manual deep profile before release work begins', 
       '--deploy-environment',
       'preview',
       '--deploy-targets',
-      'server',
+      'server_runner',
       '--repository',
       'happier-dev/happier',
       '--release-notes-id',
@@ -162,7 +154,7 @@ test('pipeline CLI does not expose a release-time version bump option', () => {
         '--deploy-environment',
         'preview',
         '--deploy-targets',
-        'server',
+        'server_runner',
         '--repository',
         'happier-dev/happier',
         '--release-notes-id',
@@ -180,6 +172,42 @@ test('pipeline CLI does not expose a release-time version bump option', () => {
 
     assert.equal(result.status, 1);
     assert.match(result.stderr, /Unknown option '--bump'/);
+  } finally {
+    stub.cleanup();
+  }
+});
+
+test('pipeline CLI only dispatches the targets and options the fork release publishes', () => {
+  const stub = createReleaseCliDryRunEnv();
+  try {
+    const run = (...extra) => spawnSync(
+      process.execPath,
+      [
+        resolve(repoRoot, 'scripts', 'pipeline', 'run.mjs'),
+        'release',
+        '--confirm',
+        'release dev to preview',
+        '--deploy-environment',
+        'preview',
+        '--repository',
+        'happier-dev/happier',
+        '--release-notes-id',
+        'test-release',
+        '--dry-run',
+        ...extra,
+      ],
+      { cwd: repoRoot, env: { ...stub.env }, encoding: 'utf8' },
+    );
+
+    for (const target of ['server', 'website', 'docs', 'stack']) {
+      const result = run('--deploy-targets', `ui,${target}`);
+      assert.equal(result.status, 1, target);
+      assert.match(result.stderr, new RegExp(`--deploy-targets contains unsupported target '${target}' \\(supported: ui,cli,server_runner\\)`), target);
+    }
+
+    const expo = run('--ui-expo-action', 'none');
+    assert.equal(expo.status, 1);
+    assert.match(expo.stderr, /Unknown option '--ui-expo-action'/);
   } finally {
     stub.cleanup();
   }

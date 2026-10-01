@@ -345,7 +345,7 @@ export const COMMAND_HELP_RELEASE_INTERNALS = {
       '--bump-app-override <preset>      Script flag (default: preset).',
       '--bump-cli-override <preset>      Script flag (default: preset).',
       '--bump-stack-override <preset>    Script flag (default: preset).',
-      '--deploy-targets <csv>            Script flag.',
+      '--deploy-targets <csv>            Script flag; ui,cli,server_runner.',
       '--changed-ui <bool>',
       '--changed-cli <bool>',
       '--changed-stack <bool>',
@@ -360,31 +360,6 @@ export const COMMAND_HELP_RELEASE_INTERNALS = {
     ],
     bullets: ['Generally invoked via release-bump-plan.'],
     examples: ['node scripts/pipeline/run.mjs release-resolve-bump-plan --environment preview --bump-preset patch --changed-ui true'],
-  },
-
-  'release-compute-deploy-plan': {
-    summary: 'Compute whether deploy branches need updating for each hosted component (advanced helper).',
-    usage:
-      'node scripts/pipeline/run.mjs release-compute-deploy-plan --deploy-environment <preview|production> --source-ref <ref-or-sha> --force-deploy <bool> --deploy-ui <bool> --deploy-server <bool> --deploy-website <bool> --deploy-docs <bool>',
-    options: [
-      '--deploy-environment <env>        Script flag (required).',
-      '--source-ref <ref-or-sha>         Script flag (required); accepts an exact admitted commit SHA.',
-      '--force-deploy <bool>             Script flag.',
-      '--deploy-ui <bool>                Script flag.',
-      '--deploy-server <bool>            Script flag.',
-      '--deploy-website <bool>           Script flag.',
-      '--deploy-docs <bool>              Script flag.',
-      '--remote <name>                   Script flag (default: origin).',
-      '--github-output <path>            Script flag.',
-      '--dry-run                         Wrapper flag.',
-      '--secrets-source <auto|env|keychain>  Wrapper flag.',
-      '--keychain-service <name>         Wrapper flag.',
-      '--keychain-account <name>         Wrapper flag.',
-    ],
-    bullets: ['Used internally to decide whether to promote deploy branches.'],
-    examples: [
-      'node scripts/pipeline/run.mjs release-compute-deploy-plan --deploy-environment preview --source-ref <40-character-sha> --force-deploy false --deploy-ui true --deploy-server true --deploy-website true --deploy-docs true',
-    ],
   },
 
   'release-build-ui-web-bundle': {

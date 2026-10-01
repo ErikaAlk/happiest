@@ -42,44 +42,20 @@ on:
         value: ${{ jobs.resolve.outputs.ui_web_version }}
       cli_requested:
         value: ${{ jobs.resolve.outputs.cli_version != '' }}
-      stack_requested:
-        value: ${{ jobs.resolve.outputs.stack_version != '' }}
       server_requested:
         value: ${{ jobs.resolve.outputs.server_version != '' }}
       ui_web_requested:
         value: ${{ jobs.resolve.outputs.ui_web_version != '' }}
       deploy_ui_requested:
         value: ${{ jobs.resolve.outputs.deploy_ui_requested }}
-      deploy_server_requested:
-        value: ${{ jobs.resolve.outputs.deploy_server_requested }}
-      deploy_website_requested:
-        value: ${{ jobs.resolve.outputs.deploy_website_requested }}
-      deploy_docs_requested:
-        value: ${{ jobs.resolve.outputs.deploy_docs_requested }}
-      docker_requested:
-        value: ${{ jobs.resolve.outputs.docker_requested }}
       deploy_ui_complete:
         value: ${{ jobs.resolve.outputs.deploy_ui_complete }}
-      deploy_server_complete:
-        value: ${{ jobs.resolve.outputs.deploy_server_complete }}
-      deploy_website_complete:
-        value: ${{ jobs.resolve.outputs.deploy_website_complete }}
-      deploy_docs_complete:
-        value: ${{ jobs.resolve.outputs.deploy_docs_complete }}
-      docker_complete:
-        value: ${{ jobs.resolve.outputs.docker_complete }}
       cli_rolling_complete:
         value: ${{ jobs.resolve.outputs.cli_rolling_complete }}
-      stack_rolling_complete:
-        value: ${{ jobs.resolve.outputs.stack_rolling_complete }}
       server_rolling_complete:
         value: ${{ jobs.resolve.outputs.server_rolling_complete }}
       ui_web_rolling_complete:
         value: ${{ jobs.resolve.outputs.ui_web_rolling_complete }}
-      deploy_ui_web_requested:
-        value: ${{ jobs.resolve.outputs.deploy_ui_web_requested }}
-      deploy_ui_expo_action:
-        value: ${{ jobs.resolve.outputs.deploy_ui_expo_action }}
       deploy_ui_desktop_mode:
         value: ${{ jobs.resolve.outputs.deploy_ui_desktop_mode }}
 
@@ -104,21 +80,10 @@ jobs:
       server_version: ${{ steps.resume.outputs.server_version || steps.empty.outputs.server_version }}
       ui_web_version: ${{ steps.resume.outputs.ui_web_version || steps.empty.outputs.ui_web_version }}
       deploy_ui_requested: ${{ steps.resume.outputs.deploy_ui_requested || steps.empty.outputs.deploy_ui_requested }}
-      deploy_server_requested: ${{ steps.resume.outputs.deploy_server_requested || steps.empty.outputs.deploy_server_requested }}
-      deploy_website_requested: ${{ steps.resume.outputs.deploy_website_requested || steps.empty.outputs.deploy_website_requested }}
-      deploy_docs_requested: ${{ steps.resume.outputs.deploy_docs_requested || steps.empty.outputs.deploy_docs_requested }}
-      docker_requested: ${{ steps.resume.outputs.docker_requested || steps.empty.outputs.docker_requested }}
       deploy_ui_complete: ${{ steps.resume.outputs.deploy_ui_complete || steps.empty.outputs.deploy_ui_complete }}
-      deploy_server_complete: ${{ steps.resume.outputs.deploy_server_complete || steps.empty.outputs.deploy_server_complete }}
-      deploy_website_complete: ${{ steps.resume.outputs.deploy_website_complete || steps.empty.outputs.deploy_website_complete }}
-      deploy_docs_complete: ${{ steps.resume.outputs.deploy_docs_complete || steps.empty.outputs.deploy_docs_complete }}
-      docker_complete: ${{ steps.resume.outputs.docker_complete || steps.empty.outputs.docker_complete }}
       cli_rolling_complete: ${{ steps.resume.outputs.cli_rolling_complete || steps.empty.outputs.cli_rolling_complete }}
-      stack_rolling_complete: ${{ steps.resume.outputs.stack_rolling_complete || steps.empty.outputs.stack_rolling_complete }}
       server_rolling_complete: ${{ steps.resume.outputs.server_rolling_complete || steps.empty.outputs.server_rolling_complete }}
       ui_web_rolling_complete: ${{ steps.resume.outputs.ui_web_rolling_complete || steps.empty.outputs.ui_web_rolling_complete }}
-      deploy_ui_web_requested: ${{ steps.resume.outputs.deploy_ui_web_requested || steps.empty.outputs.deploy_ui_web_requested }}
-      deploy_ui_expo_action: ${{ steps.resume.outputs.deploy_ui_expo_action || steps.empty.outputs.deploy_ui_expo_action }}
       deploy_ui_desktop_mode: ${{ steps.resume.outputs.deploy_ui_desktop_mode || steps.empty.outputs.deploy_ui_desktop_mode }}
     steps:
       - name: Checkout trusted resume control bytes
@@ -147,21 +112,10 @@ jobs:
             echo 'server_version='
             echo 'ui_web_version='
             echo 'deploy_ui_requested=false'
-            echo 'deploy_server_requested=false'
-            echo 'deploy_website_requested=false'
-            echo 'deploy_docs_requested=false'
-            echo 'docker_requested=false'
             echo 'deploy_ui_complete=false'
-            echo 'deploy_server_complete=false'
-            echo 'deploy_website_complete=false'
-            echo 'deploy_docs_complete=false'
-            echo 'docker_complete=false'
             echo 'cli_rolling_complete=false'
-            echo 'stack_rolling_complete=false'
             echo 'server_rolling_complete=false'
             echo 'ui_web_rolling_complete=false'
-            echo 'deploy_ui_web_requested=false'
-            echo 'deploy_ui_expo_action=none'
             echo 'deploy_ui_desktop_mode=none'
           } >> "$GITHUB_OUTPUT"
 

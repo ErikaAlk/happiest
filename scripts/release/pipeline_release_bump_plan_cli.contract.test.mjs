@@ -24,7 +24,7 @@ test('pipeline CLI can compute release bump plan (dry-run safe, pure)', async ()
       '--bump-stack-override',
       'preset',
       '--deploy-targets',
-      'ui,cli,stack',
+      'ui,cli',
       '--changed-ui',
       'true',
       '--changed-cli',
@@ -53,7 +53,7 @@ test('pipeline CLI can compute release bump plan (dry-run safe, pure)', async ()
   assert.equal(parsed.bump_cli, 'none');
   assert.equal(parsed.bump_stack, 'patch');
   assert.equal(parsed.publish_cli, true);
-  assert.equal(parsed.publish_stack, true);
+  assert.equal(parsed.publish_stack, undefined);
   assert.equal(parsed.publish_server, false);
 });
 

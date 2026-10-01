@@ -64,6 +64,64 @@ test('the fork publishes no npm package and no Homebrew formula', () => {
   assert.equal(release.jobs.publish_homebrew_tap, undefined);
 });
 
+test('the fork release only produces GitHub releases and deploys no hosted service, Expo build, or Docker image', () => {
+  const hostedServiceWorkflows = ['promote-server.yml', 'promote-website.yml', 'promote-docs.yml'];
+
+  assert.equal(existsSync(resolve(workflowsDir, 'publish-docker.yml')), false);
+  for (const name of ['release.yml', 'release-preview-and-production.yml', 'nightly-dev.yml']) {
+    assert.doesNotMatch(read(name), /publish-docker|packages:\s*write/, `${name} must not publish Docker images`);
+  }
+  for (const name of ['release.yml', 'release-preview-and-production.yml']) {
+    const raw = read(name);
+    assert.doesNotMatch(raw, /ui_expo_action|UI_EXPO_ACTION/, `${name} has no Expo action input`);
+    for (const workflowName of [...hostedServiceWorkflows, 'publish-hstack-binaries.yml']) {
+      assert.doesNotMatch(raw, new RegExp(workflowName.replace('.', '\\.')), `${name} must not call ${workflowName}`);
+    }
+  }
+
+  const release = load('release.yml');
+  for (const jobName of [
+    'deploy_plan',
+    'deploy_server',
+    'deploy_website',
+    'deploy_docs',
+    'publish_docker',
+    'publish_hstack_binaries',
+    'promote_hstack_binaries',
+  ]) {
+    assert.equal(release.jobs[jobName], undefined, `release.yml must not define ${jobName}`);
+  }
+  for (const input of [release.on.workflow_dispatch.inputs, release.on.workflow_call.inputs, load('release-preview-and-production.yml').on.workflow_dispatch.inputs]) {
+    assert.equal(input.ui_expo_action, undefined);
+    assert.ok(input.desktop_mode);
+  }
+  assert.equal(release.on.workflow_dispatch.inputs.deploy_targets.default, 'ui,cli,server_runner');
+  assert.match(release.on.workflow_dispatch.inputs.deploy_targets.description, /ui,cli,server_runner$/);
+
+  // The UI deployment is the desktop build only: no web hosting and no Expo publication.
+  const deployUi = release.jobs.deploy_ui;
+  assert.equal(deployUi.uses, './.github/workflows/promote-ui.yml');
+  assert.equal(deployUi.with.deploy_web, false);
+  assert.equal(deployUi.with.expo_action, 'none');
+  assert.equal(deployUi.with.desktop_mode, '${{ needs.plan.outputs.deploy_ui_desktop_mode }}');
+  assert.match(deployUi.if, /needs\.plan\.outputs\.deploy_ui_requested == 'true'/);
+
+  // Every called workflow that remains in the release exists, and none of them is a hosted service deployment.
+  const releaseCalls = Object.values(release.jobs).filter((job) => job.uses).map((job) => job.uses);
+  assert.ok(releaseCalls.length > 0);
+  for (const uses of releaseCalls) {
+    const called = uses.replace('./.github/workflows/', '');
+    assert.equal(existsSync(resolve(workflowsDir, called)), true, `${uses} must exist`);
+    assert.equal(hostedServiceWorkflows.includes(called), false, `${uses} deploys a hosted service`);
+  }
+
+  // The nightly workflow still builds HStack but pushes no Docker image.
+  const nightly = load('nightly-dev.yml');
+  assert.equal(nightly.jobs.docker, undefined);
+  assert.ok(nightly.jobs.hstack);
+  assert.ok(nightly.jobs.release_status.needs.every((name) => name in nightly.jobs));
+});
+
 test('the fork release path builds no macOS target and uses no Apple signing', () => {
   for (const name of releasePathWorkflows) {
     assert.doesNotMatch(

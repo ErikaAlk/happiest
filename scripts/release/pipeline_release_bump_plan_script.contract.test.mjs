@@ -25,7 +25,7 @@ test('resolve-bump-plan computes bump + publish flags from changed components an
       '--bump-stack-override',
       'preset',
       '--deploy-targets',
-      'ui,server,cli,stack',
+      'ui,cli',
       '--changed-ui',
       'true',
       '--changed-cli',
@@ -45,7 +45,6 @@ test('resolve-bump-plan computes bump + publish flags from changed components an
   const parsed = JSON.parse(out);
   assert.deepEqual(parsed, {
     publish_cli: true,
-    publish_stack: true,
     publish_server: false,
     bump_app: 'patch',
     bump_cli: 'none',
@@ -72,7 +71,7 @@ test('resolve-bump-plan only publishes server runner when deploy_targets include
       '--bump-stack-override',
       'preset',
       '--deploy-targets',
-      'server',
+      'ui,cli',
       '--changed-ui',
       'false',
       '--changed-cli',
@@ -127,6 +126,29 @@ test('resolve-bump-plan only publishes server runner when deploy_targets include
   assert.equal(parsed2.publish_server, true);
 });
 
+test('resolve-bump-plan rejects stack and hosted-service deploy targets', () => {
+  for (const target of ['stack', 'server', 'website', 'docs']) {
+    const result = spawnSync(
+      process.execPath,
+      [
+        resolve(repoRoot, 'scripts', 'pipeline', 'release', 'resolve-bump-plan.mjs'),
+        '--environment', 'preview',
+        '--bump-preset', 'none',
+        '--deploy-targets', `ui,${target}`,
+        '--changed-ui', 'false',
+        '--changed-cli', 'false',
+        '--changed-stack', 'false',
+        '--changed-server', 'false',
+        '--changed-website', 'false',
+        '--changed-shared', 'false',
+      ],
+      { cwd: repoRoot, env: process.env, encoding: 'utf8' },
+    );
+    assert.equal(result.status, 1, target);
+    assert.match(result.stderr, new RegExp(`--deploy-targets contains unsupported entry '${target}'`, 'u'));
+  }
+});
+
 test('resolve-bump-plan honors per-component versioned change inputs over global shared fanout', async () => {
   const out = execFileSync(
     process.execPath,
@@ -143,7 +165,7 @@ test('resolve-bump-plan honors per-component versioned change inputs over global
       '--bump-stack-override',
       'preset',
       '--deploy-targets',
-      'ui,cli,stack,server_runner',
+      'ui,cli,server_runner',
       '--changed-ui',
       'false',
       '--changed-cli',
@@ -171,7 +193,6 @@ test('resolve-bump-plan honors per-component versioned change inputs over global
   const parsed = JSON.parse(out);
   assert.deepEqual(parsed, {
     publish_cli: true,
-    publish_stack: true,
     publish_server: true,
     bump_app: 'none',
     bump_cli: 'patch',

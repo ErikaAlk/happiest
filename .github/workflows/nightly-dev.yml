@@ -24,7 +24,6 @@ on:
 permissions:
   actions: read
   contents: write
-  packages: write
 
 concurrency:
   group: nightly-dev-${{ github.ref }}
@@ -514,22 +513,6 @@ jobs:
       candidate_cli_version: ${{ needs.cli.outputs.version }}
       release_message: ${{ needs.prepare_release_candidate.outputs.release_message }}
 
-  docker:
-    name: Docker images (dev)
-    needs: [prepare_release_candidate, cli, server_runtime, release_verify]
-    uses: ./.github/workflows/publish-docker.yml
-    secrets: inherit
-    with:
-      channel: dev
-      source_ref: ${{ needs.prepare_release_candidate.outputs.source_sha }}
-      authorized_sha: ${{ needs.prepare_release_candidate.outputs.source_sha }}
-      server_version: ${{ needs.server_runtime.outputs.version }}
-      cli_version: ${{ needs.cli.outputs.version }}
-      push_latest: true
-      registries: dockerhub,ghcr
-      build_relay: true
-      build_dev_box: true
-
   verify_promoted:
     name: Verify promoted nightly references
     needs: [prepare_release_candidate, promote_server, promote_hstack, promote_cli, promote_ui_web, ui_mobile, ui_desktop]
@@ -602,7 +585,7 @@ jobs:
   release_status:
     name: Project terminal nightly release status
     if: ${{ always() }}
-    needs: [prepare_release_candidate, nightly_waiting_for_ci, nightly_noop, cli, hstack, server_runtime, ui_web, release_verify, verify_resume_candidates, promote_server, promote_hstack, promote_cli, promote_ui_web, ui_mobile, ui_desktop, docker, verify_promoted, advance_source_issues_to_dev]
+    needs: [prepare_release_candidate, nightly_waiting_for_ci, nightly_noop, cli, hstack, server_runtime, ui_web, release_verify, verify_resume_candidates, promote_server, promote_hstack, promote_cli, promote_ui_web, ui_mobile, ui_desktop, verify_promoted, advance_source_issues_to_dev]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -650,7 +633,6 @@ jobs:
           MOBILE_RESULT: ${{ needs.ui_mobile.result }}
           DESKTOP_RESULT: ${{ needs.ui_desktop.result }}
           DESKTOP_ORIGIN_RUN_ID: ${{ inputs.resume_run_id || github.run_id }}
-          DOCKER_RESULT: ${{ needs.docker.result }}
           POST_PROMOTION_RESULT: ${{ needs.verify_promoted.result }}
         run: |
           set -euo pipefail

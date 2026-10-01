@@ -21,16 +21,12 @@ test('promote-website delegates deploy branch promotion to pipeline script', asy
   assert.doesNotMatch(raw, /Wait for deploy workflow/i);
 });
 
-test('release grants reusable promote-website the contents permission it requests', async () => {
+test('the fork release does not call the reusable promote-website workflow', async () => {
   const { parse } = await import('yaml');
   const release = parse(await loadWorkflow('release.yml'));
-  const deployWebsite = release?.jobs?.deploy_website;
 
-  assert.equal(
-    deployWebsite?.permissions?.contents,
-    'write',
-    'release caller must permit promote-website to write its deploy branch',
-  );
+  assert.equal(release?.jobs?.deploy_website, undefined);
+  assert.doesNotMatch(JSON.stringify(release), /promote-website\.yml/);
 });
 
 // The website is published to Cloudflare Workers static assets, not to the

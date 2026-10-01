@@ -16,7 +16,7 @@ const SOURCE_SHA = 'a'.repeat(40);
 const DIGEST = `sha256:${'b'.repeat(64)}`;
 const REPOSITORY = 'happier-dev/happier';
 const RUN_ID = 31495263783;
-const STANDARD_OPTIONAL_SURFACE_IDS = ['deploy_ui', 'deploy_server', 'deploy_website', 'deploy_docs', 'docker'];
+const STANDARD_OPTIONAL_SURFACE_IDS = ['deploy_ui'];
 
 function originRun(overrides = {}) {
   return {
@@ -105,8 +105,6 @@ function standardOptionalSurfaces(requested) {
       identity: {
         sourceSha: SOURCE_SHA,
         verified: false,
-        deployWeb: true,
-        expoAction: 'none',
         desktopMode: 'none',
       },
     } : {}),
@@ -203,25 +201,49 @@ test('resume resolution reuses only successful verified immutable candidates', (
       server: '',
       'ui-web': '',
     },
-    requested: {
-      deployDocs: false,
-      deployServer: false,
-      deployUi: false,
-      deployWebsite: false,
-      docker: false,
-    },
+    requested: { deployUi: false },
     completed: {
       cliRolling: false,
-      deployDocs: false,
-      deployServer: false,
       deployUi: false,
-      deployWebsite: false,
-      docker: false,
       serverRolling: false,
-      stackRolling: false,
       uiWebRolling: false,
     },
   });
+});
+
+test('nightly resume still reuses the verified HStack candidate that the nightly workflow publishes', () => {
+  const resolved = resolveReleaseResume({
+    originRun: originRun(),
+    artifacts: [statusArtifact()],
+    downloadedDigest: DIGEST,
+    status: status({
+      surfaces: [
+        ...status().surfaces,
+        {
+          id: 'hstack-immutable-candidate',
+          requested: true,
+          required: true,
+          evidence: 'verified',
+          state: 'complete',
+          result: 'success',
+          identity: { verified: true, product: 'stack', sourceSha: SOURCE_SHA, version: '0.2.10-dev.74' },
+        },
+        {
+          id: 'hstack_rolling_release',
+          requested: true,
+          required: false,
+          evidence: 'verified',
+          state: 'complete',
+          result: 'success',
+          identity: { sourceSha: SOURCE_SHA, verified: true },
+        },
+      ],
+    }),
+    expected,
+  });
+
+  assert.equal(resolved.versions.stack, '0.2.10-dev.74');
+  assert.equal(Object.hasOwn(resolved.completed, 'stackRolling'), false);
 });
 
 test('nightly desktop resume admits exact unsigned artifacts independently of missing or expired siblings', () => {
@@ -263,7 +285,7 @@ test('nightly desktop resume admits exact unsigned artifacts independently of mi
   assert.throws(() => resolveReleaseResume({ ...input, originRun: { ...input.originRun, run_number: '337\nother=true' } }), /run number/);
 });
 
-test('release resume preserves originally requested optional publication surfaces', () => {
+test('release resume preserves the originally requested desktop publication surface', () => {
   const releaseExpected = {
     repository: REPOSITORY,
     workflowPath: '.github/workflows/release.yml',
@@ -284,16 +306,10 @@ test('release resume preserves originally requested optional publication surface
     downloadedDigest: DIGEST,
     status: releaseStatus,
     expected: releaseExpected,
-  }).requested, {
-    deployDocs: true,
-    deployServer: true,
-    deployUi: true,
-    deployWebsite: true,
-    docker: true,
-  });
+  }).requested, { deployUi: true });
 });
 
-test('release resume preserves exact completed downstream publications without rerunning siblings', () => {
+test('release resume preserves the exact completed desktop publication without rerunning siblings', () => {
   const optionalSurfaces = standardOptionalSurfaces(true).map((surface) => ({
     ...surface,
     state: 'published',
@@ -321,13 +337,8 @@ test('release resume preserves exact completed downstream publications without r
 
   assert.deepEqual(resolved.completed, {
     cliRolling: false,
-    deployDocs: true,
-    deployServer: true,
     deployUi: true,
-    deployWebsite: true,
-    docker: true,
     serverRolling: false,
-    stackRolling: false,
     uiWebRolling: false,
   });
 });
@@ -335,7 +346,6 @@ test('release resume preserves exact completed downstream publications without r
 test('release resume preserves exact verified rolling projections without mutating them again', () => {
   const rollingSurfaces = [
     ['cli_rolling_release', 'cliRolling'],
-    ['hstack_rolling_release', 'stackRolling'],
     ['server_rolling_release', 'serverRolling'],
     ['ui_web_rolling_release', 'uiWebRolling'],
   ].map(([id]) => ({
@@ -363,7 +373,6 @@ test('release resume preserves exact verified rolling projections without mutati
   });
 
   assert.equal(resolved.completed.cliRolling, true);
-  assert.equal(resolved.completed.stackRolling, true);
   assert.equal(resolved.completed.serverRolling, true);
   assert.equal(resolved.completed.uiWebRolling, true);
 });
@@ -406,8 +415,6 @@ test('release resume rejects completed downstream evidence bound to another sour
     identity: {
       sourceSha: 'f'.repeat(40),
       verified: false,
-      deployWeb: true,
-      expoAction: 'none',
       desktopMode: 'none',
     },
   };
@@ -425,7 +432,7 @@ test('release resume rejects completed downstream evidence bound to another sour
   }), /deploy_ui source SHA/);
 });
 
-test('release resume preserves an explicitly requested UI no-op publication intent', () => {
+test('release resume preserves an explicitly requested desktop no-op publication intent', () => {
   const releaseExpected = {
     repository: REPOSITORY,
     workflowPath: '.github/workflows/release.yml',
@@ -443,8 +450,6 @@ test('release resume preserves an explicitly requested UI no-op publication inte
     identity: {
       sourceSha: SOURCE_SHA,
       verified: false,
-      deployWeb: false,
-      expoAction: 'none',
       desktopMode: 'none',
     },
   };
@@ -461,14 +466,10 @@ test('release resume preserves an explicitly requested UI no-op publication inte
   });
 
   assert.equal(resolved.requested.deployUi, true);
-  assert.deepEqual(resolved.resumeInputs.deployUi, {
-    deployWeb: false,
-    expoAction: 'none',
-    desktopMode: 'none',
-  });
+  assert.deepEqual(resolved.resumeInputs.deployUi, { desktopMode: 'none' });
 });
 
-test('release resume preserves full UI publication intent for exact recovery', () => {
+test('release resume preserves the desktop publication mode for exact recovery', () => {
   const optionalSurfaces = standardOptionalSurfaces(false);
   const deployUiIndex = optionalSurfaces.findIndex((surface) => surface.id === 'deploy_ui');
   optionalSurfaces[deployUiIndex] = {
@@ -481,8 +482,6 @@ test('release resume preserves full UI publication intent for exact recovery', (
     identity: {
       sourceSha: SOURCE_SHA,
       verified: false,
-      deployWeb: true,
-      expoAction: 'full',
       desktopMode: 'build_and_publish',
     },
   };
@@ -505,11 +504,28 @@ test('release resume preserves full UI publication intent for exact recovery', (
     },
   });
 
-  assert.deepEqual(resolved.resumeInputs.deployUi, {
-    deployWeb: true,
-    expoAction: 'full',
-    desktopMode: 'build_and_publish',
-  });
+  assert.deepEqual(resolved.resumeInputs.deployUi, { desktopMode: 'build_and_publish' });
+});
+
+test('release resume rejects a requested desktop publication whose mode cannot be reconstructed', () => {
+  const [deployUi] = standardOptionalSurfaces(true);
+  assert.throws(() => resolveReleaseResume({
+    originRun: originRun({ path: '.github/workflows/release.yml' }),
+    artifacts: [statusArtifact()],
+    downloadedDigest: DIGEST,
+    status: status({
+      channel: 'preview',
+      surfaces: [
+        previewCliCandidate(),
+        { ...deployUi, identity: { sourceSha: SOURCE_SHA, verified: false, desktopMode: 'build_everything' } },
+      ],
+    }),
+    expected: {
+      repository: REPOSITORY,
+      workflowPath: '.github/workflows/release.yml',
+      channel: 'preview',
+    },
+  }), /cannot reconstruct requested deploy_ui intent/);
 });
 
 test('release resume fails closed when the origin status omits optional request intent', () => {
