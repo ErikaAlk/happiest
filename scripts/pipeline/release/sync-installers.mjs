@@ -4,7 +4,7 @@
 
 import { chmod, mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createNumericPlanetFrame } from '../../../packages/cli-common/numericPlanetFrame.mjs';
 
 import {
@@ -122,9 +122,12 @@ export async function syncInstallers({
     if (!sourceContents) {
       throw new Error(`[release] missing installer source file: ${sourcePath}`);
     }
-    const projected = Buffer.from(projectInstallerPlanet(sourceContents.toString('utf8'), spec.source));
+    // Installers ship byte-for-byte and run under bash, so their canonical form uses LF even when a
+    // Windows checkout converted the source to CRLF.
+    const lfSource = sourceContents.toString('utf8').replaceAll('\r\n', '\n');
+    const projected = Buffer.from(projectInstallerPlanet(lfSource, spec.source));
     if (!buffersEqual(sourceContents, projected)) {
-      if (checkOnly) throw new Error('[release] installer source planet is out of sync: ' + sourcePath);
+      if (checkOnly) throw new Error('[release] installer source is out of sync (LF line endings, planet projection): ' + sourcePath);
       await writeFile(sourcePath, projected);
       sourceContents = projected;
     }
@@ -184,7 +187,7 @@ async function main() {
   console.log(JSON.stringify(result, null, 2));
 }
 
-if (process.argv[1] && import.meta.url.endsWith(process.argv[1])) {
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
   main().catch((error) => {
     console.error(error instanceof Error ? error.message : String(error));
     process.exit(1);

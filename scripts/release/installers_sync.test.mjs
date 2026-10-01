@@ -107,6 +107,31 @@ test('syncInstallers projects the shared planet into canonical and published ins
   assert.equal(await readFile(sourcePath, 'utf8'), staleSource, '--check must never repair source implicitly');
 });
 
+test('syncInstallers writes LF installers from a CRLF checkout and checks the source line endings', async (t) => {
+  const root = await mkdtemp(join(tmpdir(), 'happier-installer-eol-sync-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const sourceDir = join(root, 'source');
+  const targetDir = join(root, 'target');
+  await mkdir(sourceDir, { recursive: true });
+  for (const name of sourceFiles()) {
+    const art = ['install.sh', 'install.ps1'].includes(name)
+      ? '# BEGIN GENERATED NUMERIC PLANET\n# stale planet\n# END GENERATED NUMERIC PLANET\n'
+      : '';
+    await writeFile(join(sourceDir, name), (fixtureForSource(name) + art).replaceAll('\n', '\r\n'), 'utf8');
+  }
+
+  await assert.rejects(syncInstallers({ sourceDir, targetDir, checkOnly: true }), /out of sync/);
+  await syncInstallers({ sourceDir, targetDir });
+
+  for (const name of sourceFiles()) {
+    assert.doesNotMatch(await readFile(join(sourceDir, name), 'utf8'), /\r/, `${name} source must use LF`);
+  }
+  for (const name of publishedTargets()) {
+    assert.doesNotMatch(await readFile(join(targetDir, name), 'utf8'), /\r/, `${name} must be published with LF`);
+  }
+  await assert.doesNotReject(syncInstallers({ sourceDir, targetDir, checkOnly: true }));
+});
+
 test('syncInstallers publishes preview and dev shortcut endpoints', () => {
   const targets = publishedTargets();
   assert.ok(targets.includes('install-preview'), 'expected install-preview to be published');

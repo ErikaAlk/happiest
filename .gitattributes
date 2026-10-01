@@ -1,0 +1,8 @@
+# Shell scripts run under bash, including ones copied into Linux containers from a Windows
+# checkout, so they keep LF line endings even with core.autocrlf.
+*.sh text eol=lf
+
+# Installer sources and their published copies ship byte-for-byte.
+scripts/release/installers/* text eol=lf
+apps/website/public/install* text eol=lf
+apps/website/public/happier-release.pub text eol=lf
