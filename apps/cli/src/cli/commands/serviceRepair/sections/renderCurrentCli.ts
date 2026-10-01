@@ -18,8 +18,8 @@ export function renderCurrentCli(cli: CurrentCliInfo): string[] {
   lines.push(`  ${summary}   ${severity.info(shimHint)}`);
 
   if (cli.pathWinnerResolvesToThisBinary === false && cli.pathWinnerShim) {
-    lines.push(`  ${glyph.action()} ${severity.action('`happier` on your PATH resolves to a different install')}`);
-    lines.push(`    ${glyph.arrow()} run this install with ${code(cli.shim ?? 'hdev')} until PATH is fixed`);
+    lines.push(`  ${glyph.action()} ${severity.action(`\`${cli.pathWinnerShim}\` on your PATH resolves to a different install`)}`);
+    lines.push(`    ${glyph.arrow()} run this install with ${code(cli.shim)} until PATH is fixed`);
   }
   return lines;
 }

@@ -7,8 +7,9 @@ import { renderSessionListTable } from '@/ui/renderSessionListTable';
 import { createCliActionExecutorFromCredentials } from '@/session/actions/createCliActionExecutorFromCredentials';
 import { normalizeActionExecuteResult } from '@/cli/commands/session/shared/normalizeActionExecuteResult';
 import { tryHandleApprovalRequestCreated } from '@/cli/commands/session/shared/tryHandleApprovalRequestCreated';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
-const SESSION_LIST_USAGE = 'Usage: happier session list [--active] [--archived] [--limit N] [--cursor C] [--include-system] [--resumable] [--plain] [--json]';
+const SESSION_LIST_USAGE = `Usage: ${formatCliCommand('session list [--active] [--archived] [--limit N] [--cursor C] [--include-system] [--resumable] [--plain] [--json]')}`;
 const SESSION_LIST_BOOLEAN_FLAGS = new Set(['--active', '--archived', '--include-system', '--resumable', '--plain', '--json']);
 const SESSION_LIST_VALUE_FLAGS = new Set(['--limit', '--cursor']);
 
@@ -56,7 +57,7 @@ export async function cmdSessionList(
       await printJsonEnvelope({ ok: false, kind: 'session_list', error: { code: 'not_authenticated' } });
       return;
     }
-    console.error(chalk.red('Error:'), 'Not authenticated. Run "happier auth login" first.');
+    console.error(chalk.red('Error:'), `Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
     process.exit(1);
   }
 

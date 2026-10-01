@@ -4,6 +4,7 @@ import { runAutomationNow, type AutomationRunSummary } from '@/api/automations';
 import type { CommandContext } from '@/cli/commandRegistry';
 import { mapUnknownErrorToControlError } from '@/cli/control/controlErrorMapping';
 import { printJsonEnvelope, wantsJson } from '@/cli/output/jsonEnvelope';
+import { formatCliCommand, resolveCliCommandName } from '@/cli/runtime/cliCommand';
 import { readCredentials } from '@/persistence';
 
 type AutomationCommandDeps = Readonly<{
@@ -21,11 +22,12 @@ const DEFAULT_DEPS: AutomationCommandDeps = {
 };
 
 function showAutomationHelp(): void {
+  const cli = resolveCliCommandName();
   console.log(`
-${chalk.bold('happier automation')} - Manage automations
+${chalk.bold(`${cli} automation`)} - Manage automations
 
 ${chalk.bold('Usage:')}
-  happier automation run <automation-id> [--idempotency-key <key>] [--json]
+  ${cli} automation run <automation-id> [--idempotency-key <key>] [--json]
 
 ${chalk.bold('Commands:')}
   run    Queue an immediate run through the automation's existing assignments
@@ -67,7 +69,7 @@ function parseRunArgs(args: readonly string[]): Readonly<{
   }
 
   if (positionals.length !== 1 || !positionals[0]) {
-    throw new Error('Usage: happier automation run <automation-id> [--idempotency-key <key>] [--json]');
+    throw new Error(`Usage: ${formatCliCommand('automation run <automation-id> [--idempotency-key <key>] [--json]')}`);
   }
   if (idempotencyKey && idempotencyKey.length > 191) {
     throw new Error('--idempotency-key must be at most 191 characters');
@@ -91,7 +93,7 @@ export async function handleAutomationCommand(
   const parsed = parseRunArgs(args);
   const credentials = await deps.readCredentialsFn();
   if (!credentials) {
-    const error = new Error('Not authenticated. Run "happier auth login" first.');
+    const error = new Error(`Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
     (error as Error & { code?: string }).code = 'not_authenticated';
     throw error;
   }

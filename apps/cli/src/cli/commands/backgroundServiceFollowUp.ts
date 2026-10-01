@@ -6,6 +6,7 @@ import { isAuthenticationError } from '@/api/client/httpStatusError';
 import { resolveLoopbackHttpUrl } from '@/api/client/loopbackUrl';
 import { configuration } from '@/configuration';
 import { readCredentials, type Credentials } from '@/persistence';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 import { promptInput, runCliAction } from './server/commandUtilities';
 
@@ -81,8 +82,8 @@ function resolveRestartArgs(mode: BackgroundServiceFollowUpMode): string[] {
 
 function renderRestartCommand(mode: BackgroundServiceFollowUpMode): string {
     return mode === 'system'
-        ? '  happier service restart --mode system'
-        : '  happier service restart';
+        ? `  ${formatCliCommand('service restart --mode system')}`
+        : `  ${formatCliCommand('service restart')}`;
 }
 
 function hasDuplicateDefaultFollowingModes(
@@ -103,7 +104,7 @@ function renderRepairGuidance(params: Readonly<{ modes?: readonly BackgroundServ
     const requiresSudo = params.modes?.includes('system') ?? false;
     return [
         'Multiple default-following background services are installed. Repair automatic startup before restarting a background service for this change:',
-        requiresSudo ? '  sudo happier doctor repair --yes' : '  happier doctor repair --yes',
+        requiresSudo ? `  sudo ${formatCliCommand('doctor repair --yes')}` : `  ${formatCliCommand('doctor repair --yes')}`,
     ];
 }
 
@@ -111,7 +112,7 @@ function renderMissingHomeRepairGuidance(params: Readonly<{ modes?: readonly Bac
     const requiresSudo = params.modes?.includes('system') ?? false;
     return [
         'Detected default-following background services with missing Happier home metadata. Automatic restart guidance will not replace or remove them; remove the legacy service(s) from the owning installation first:',
-        requiresSudo ? '  sudo happier doctor repair --yes' : '  happier doctor repair --yes',
+        requiresSudo ? `  sudo ${formatCliCommand('doctor repair --yes')}` : `  ${formatCliCommand('doctor repair --yes')}`,
     ];
 }
 
@@ -225,7 +226,7 @@ function renderManualServerChangeFollowUp(params: Readonly<{
 
     return [
         `Authenticate Happier against ${params.targetServerUrl} and then restart the background service so it follows that server:`,
-        '  happier auth login',
+        `  ${formatCliCommand('auth login')}`,
         ...resolveRestartModes(params.modes).map(renderRestartCommand),
     ];
 }

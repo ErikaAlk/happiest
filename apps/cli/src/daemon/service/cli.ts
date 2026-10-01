@@ -52,7 +52,7 @@ import {
 } from '@happier-dev/cli-common/firstPartyRuntime';
 import { stopDaemon } from '@/daemon/controlClient';
 import { restartDaemonAndWait } from '@/daemon/restartDaemonAndWait';
-import { resolveInvokerName } from '@/cli/runtime/resolveInvokerName';
+import { formatCliCommand, resolveCliCommandName } from '@/cli/runtime/cliCommand';
 
 import { discoverInstalledDaemonServiceEntries } from './discoverInstalledDaemonServiceEntries';
 import {
@@ -1333,7 +1333,7 @@ export async function runDaemonServiceCliCommand(params: Readonly<{
   }
   const paths = resolveDaemonServicePaths(runtime, { mode });
   const action = parsed.action;
-  const commandPath = params.commandPath ?? `${resolveInvokerName() ?? 'happier'} service`;
+  const commandPath = params.commandPath ?? formatCliCommand('service');
 
   if (flags.help) {
       if (flags.json) {
@@ -1344,29 +1344,30 @@ export async function runDaemonServiceCliCommand(params: Readonly<{
         });
         return;
     }
+    const cli = resolveCliCommandName();
     process.stdout.write(
       [
-        'happier service',
+        `${cli} service`,
         '',
         'Usage:',
-        '  happier service list [--json]',
-        '  happier service paths [--json]',
-        '  happier service status [--json]',
-        '  happier service install [--local-relay] [--dry-run] [--yes] [--takeover] [--replace-existing=ring|all] [--autostart <at-login|on-demand>] [--no-autostart] [--json]',
-        '  happier service uninstall [--ring <stable|preview|dev>] [--instance <id>] [--all] [--yes] [--dry-run] [--json]',
-        '  happier service repair [--yes] [--json] (legacy alias for `happier doctor repair`)',
-        '  happier service start|stop|restart [--dry-run] [--takeover] [--json]',
-        '  happier service logs [--json]',
-        '  happier service tail',
+        `  ${cli} service list [--json]`,
+        `  ${cli} service paths [--json]`,
+        `  ${cli} service status [--json]`,
+        `  ${cli} service install [--local-relay] [--dry-run] [--yes] [--takeover] [--replace-existing=ring|all] [--autostart <at-login|on-demand>] [--no-autostart] [--json]`,
+        `  ${cli} service uninstall [--ring <stable|preview|dev>] [--instance <id>] [--all] [--yes] [--dry-run] [--json]`,
+        `  ${cli} service repair [--yes] [--json] (legacy alias for \`${cli} doctor repair\`)`,
+        `  ${cli} service start|stop|restart [--dry-run] [--takeover] [--json]`,
+        `  ${cli} service logs [--json]`,
+        `  ${cli} service tail`,
         '',
         'Autostart:',
         '  --no-autostart installs the background service without a login trigger, so the',
-        '  daemon runs only while something starts it (the desktop app, or `happier service start`).',
+        `  daemon runs only while something starts it (the desktop app, or \`${cli} service start\`).`,
         '  Re-run install with --autostart at-login to start it at login again. Without either',
         '  flag an existing installation keeps the mode it already has.',
         '',
         'Compatibility aliases:',
-        '  happier daemon service ...',
+        `  ${cli} daemon service ...`,
         '',
       ].join('\n'),
     );
@@ -1472,7 +1473,7 @@ export async function runDaemonServiceCliCommand(params: Readonly<{
         conflict: takeoverDecision.conflict,
       });
       const lines = takeoverDecision.conflict.kind === 'manual-owner-conflict'
-        ? [...message.lines, buildDaemonServiceTakeoverHint({ commandPath: 'happier service', action: 'install' })]
+        ? [...message.lines, buildDaemonServiceTakeoverHint({ commandPath, action: 'install' })]
         : [...message.lines];
       if (flags.json) {
         printJson({
@@ -1858,7 +1859,7 @@ export async function runDaemonServiceCliCommand(params: Readonly<{
       path: paths.installedPath,
       expectedLabel: paths.label,
     })) {
-      const msg = `Background service is not installed (${paths.installedPath}). Run: happier service install`;
+      const msg = `Background service is not installed (${paths.installedPath}). Run: ${commandPath} install`;
       if (flags.json) printJson({ ok: false, error: 'not_installed', message: msg, platform: runtime.platform });
       else process.stderr.write(`${msg}\n`);
       return;
@@ -2015,7 +2016,7 @@ export async function runDaemonServiceCliCommand(params: Readonly<{
           conflict: takeoverDecision.conflict,
         });
         const lines = takeoverDecision.conflict.kind === 'manual-owner-conflict'
-          ? [...message.lines, buildDaemonServiceTakeoverHint({ commandPath: 'happier service', action })]
+          ? [...message.lines, buildDaemonServiceTakeoverHint({ commandPath, action })]
           : [...message.lines];
         if (flags.json) {
           printJson({
@@ -2278,9 +2279,9 @@ export async function runDaemonServiceCliCommand(params: Readonly<{
       }
       if (owner.currentInvocationMatches === false) {
         process.stdout.write(owner.serviceManaged === true
-          ? 'Warning: Current CLI differs from the running daemon. Use `happier doctor repair` if you want automatic startup to switch to this installation.\n'
+          ? `Warning: Current CLI differs from the running daemon. Use \`${formatCliCommand('doctor repair')}\` if you want automatic startup to switch to this installation.\n`
           : owner.serviceManaged === false
-            ? 'Warning: Current CLI differs from the running daemon. Use `happier daemon restart` if you want the manually started daemon to switch to this installation.\n'
+            ? `Warning: Current CLI differs from the running daemon. Use \`${formatCliCommand('daemon restart')}\` if you want the manually started daemon to switch to this installation.\n`
             : 'Warning: Current CLI differs from the running daemon. Restart the current daemon before trying to switch this installation.\n');
       }
     }
@@ -2303,7 +2304,7 @@ export async function runDaemonServiceCliCommand(params: Readonly<{
       return;
     }
     if (runtime.platform === 'win32') {
-      process.stderr.write('tail is not supported on Windows yet. Use: happier service logs\n');
+      process.stderr.write(`tail is not supported on Windows yet. Use: ${commandPath} logs\n`);
       return;
     }
     // Best-effort: follow both stdout + stderr if tail exists.

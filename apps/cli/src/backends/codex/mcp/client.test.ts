@@ -59,6 +59,6 @@ describe('createCodexTransport', () => {
         mode: 'codex-cli',
         mcpServerArgs: [],
       }),
-    ).toThrow(/happier claude/);
+    ).toThrow(/happiest claude/);
   });
 });

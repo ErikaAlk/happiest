@@ -17,6 +17,7 @@ import {
   parseConnectedServicesLaunchAuth,
   type ConnectedServicesLaunchAuthIntent,
 } from '@/cli/connectedServicesLaunchAuth';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 export type SessionCreateSpawnActionInput = Record<string, unknown>;
 
@@ -30,7 +31,7 @@ export type ParsedSessionCreateSpawnOptions = Readonly<{
 }>;
 
 export const SESSION_CREATE_USAGE = [
-  'happier session create [options]',
+  formatCliCommand('session create [options]'),
   '',
   'Options:',
   '  [--path <path>] [--backend <backend-target>]',

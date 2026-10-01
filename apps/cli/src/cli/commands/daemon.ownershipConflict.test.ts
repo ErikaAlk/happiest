@@ -23,11 +23,11 @@ const {
         title: 'A background service is already installed for the selected relay.',
         lines: params?.action === 'daemon-restart'
             ? [
-                'Use `happier doctor repair` to switch automatic startup to this installation.',
+                'Use `happiest doctor repair` to switch automatic startup to this installation.',
                 'If you want to restart the daemon manually, stop or replace the installed background service first.',
             ]
             : [
-                'Use `happier service start` to start the installed background service instead of starting another daemon.',
+                'Use `happiest service start` to start the installed background service instead of starting another daemon.',
                 'If you want to start another daemon, stop or replace the installed background service first.',
             ],
     })),
@@ -96,11 +96,11 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
             title: 'A background service is already installed for the selected relay.',
             lines: params?.action === 'daemon-restart'
                 ? [
-                    'Use `happier doctor repair` to switch automatic startup to this installation.',
+                    'Use `happiest doctor repair` to switch automatic startup to this installation.',
                     'If you want to restart the daemon manually, stop or replace the installed background service first.',
                 ]
                 : [
-                    'Use `happier service start` to start the installed background service instead of starting another daemon.',
+                    'Use `happiest service start` to start the installed background service instead of starting another daemon.',
                     'If you want to start another daemon, stop or replace the installed background service first.',
                 ],
         }));
@@ -163,7 +163,7 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
                 expect(spawnDetachedDaemonStartSyncMock).not.toHaveBeenCalled();
                 expect(startOutput.text()).toContain('background service');
                 expect(startOutput.text()).toContain('selected relay');
-                expect(startOutput.text()).toContain('happier doctor repair');
+                expect(startOutput.text()).toContain('happiest doctor repair');
 
                 const stopOutput = captureConsoleText();
                 try {
@@ -180,7 +180,7 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
 
                 expect(stopDaemonMock).not.toHaveBeenCalled();
                 expect(stopOutput.text()).toContain('background service');
-                expect(stopOutput.text()).toContain('happier service stop');
+                expect(stopOutput.text()).toContain('happiest service stop');
 
                 const restartOutput = captureConsoleText();
                 try {
@@ -196,8 +196,8 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
                 }
 
                 expect(restartOutput.text()).toContain('background service');
-                expect(restartOutput.text()).toContain('happier doctor repair');
-                expect(restartOutput.text()).not.toContain('happier service stop');
+                expect(restartOutput.text()).toContain('happiest doctor repair');
+                expect(restartOutput.text()).not.toContain('happiest service stop');
             } finally {
                 exitSpy.mockRestore();
             }
@@ -443,7 +443,7 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
             expect(spawnDetachedDaemonStartSyncMock).not.toHaveBeenCalled();
             expect(waitForDaemonRunningWithinBudgetMock).not.toHaveBeenCalled();
             expect(output.text()).toContain('background service is already installed');
-            expect(output.text()).toContain('happier doctor repair');
+            expect(output.text()).toContain('happiest doctor repair');
         });
     });
 
@@ -751,7 +751,7 @@ describe('handleDaemonCliCommand ownership conflicts', () => {
 
             expect(spawnDetachedDaemonStartSyncMock).not.toHaveBeenCalled();
             expect(output.text()).toContain('background service is already installed');
-            expect(output.text()).toContain('happier service start');
+            expect(output.text()).toContain('happiest service start');
             expect(output.text()).toContain('stop or replace the installed background service first');
         });
     });

@@ -1,3 +1,4 @@
+import { resolveCliCommandName } from '@/cli/runtime/cliCommand';
 import { code, glyph, sectionHeader, severity } from '@/ui/format/styles';
 import type { AuthProfileSnapshot } from '@/diagnostics/doctorRepair';
 
@@ -22,7 +23,7 @@ const SECTION_HEADER = 'Authentication';
 export function renderAuthentication(
   profiles: readonly AuthProfileSnapshot[],
   hasAny: boolean,
-  invoker: string = 'happier',
+  invoker: string = resolveCliCommandName(),
 ): string[] {
   if (!hasAny) {
     return [

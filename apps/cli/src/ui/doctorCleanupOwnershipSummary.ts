@@ -1,3 +1,5 @@
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
+
 export type DoctorCleanupOwnershipSummary = Readonly<{
   title: string;
   lines: readonly string[];
@@ -18,9 +20,9 @@ export function renderDoctorCleanupOwnershipSummary(params: Readonly<{
   ];
 
   if (params.serviceManaged === true) {
-    lines.push('Use `happier doctor repair` if you want automatic startup to switch to this installation.');
+    lines.push(`Use \`${formatCliCommand('doctor repair')}\` if you want automatic startup to switch to this installation.`);
   } else if (params.serviceManaged === false) {
-    lines.push('Use `happier daemon restart` if you want the manual start to switch to this installation.');
+    lines.push(`Use \`${formatCliCommand('daemon restart')}\` if you want the manual start to switch to this installation.`);
   } else {
     lines.push('Restart the running daemon before trying to switch this installation.');
   }

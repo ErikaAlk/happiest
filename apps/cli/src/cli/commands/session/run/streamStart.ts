@@ -7,6 +7,7 @@ import { wantsJson, printJsonEnvelope, writeJsonStdout } from '@/cli/output/json
 import { hasFlag, readCommandPositionals } from '@/cli/commands/shared/argvFlags';
 import { resolveSessionTransportContext } from '@/session/services/resolveSessionTransportContext';
 import { startExecutionRunStream } from '@/session/services/executionRuns';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 export async function cmdSessionRunStreamStart(
   argv: string[],
@@ -17,7 +18,7 @@ export async function cmdSessionRunStreamStart(
   const resume = hasFlag(argv, '--resume');
 
   if (!idOrPrefix || !runId || !message) {
-    throw new Error('Usage: happier session run stream-start <session-id-or-prefix> <run-id> <message> [--resume] [--json]');
+    throw new Error(`Usage: ${formatCliCommand('session run stream-start <session-id-or-prefix> <run-id> <message> [--resume] [--json]')}`);
   }
 
   const credentials = await deps.readCredentialsFn();
@@ -26,7 +27,7 @@ export async function cmdSessionRunStreamStart(
       await printJsonEnvelope({ ok: false, kind: 'session_run_stream_start', error: { code: 'not_authenticated' } });
       return;
     }
-    console.error(chalk.red('Error:'), 'Not authenticated. Run "happier auth login" first.');
+    console.error(chalk.red('Error:'), `Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
     process.exit(1);
   }
 

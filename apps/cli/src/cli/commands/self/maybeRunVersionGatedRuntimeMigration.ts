@@ -3,6 +3,7 @@ import { compareVersions, normalizeSemverBase } from '@happier-dev/cli-common/up
 import { resolveBackgroundServiceRepairPlanForCurrentRuntime } from '@/diagnostics/backgroundServiceRepair/resolveBackgroundServiceRepairPlanForCurrentRuntime';
 import type { DaemonServiceMode } from '@/daemon/service/plan';
 import { isInteractiveTerminal } from '@/terminal/prompts/promptInput';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 import { handleServiceRepairCliCommand } from '../serviceRepair/handleServiceRepairCliCommand';
 import { resolveBackgroundServiceRepairSystemUser } from '../serviceRepair/repairSystemUser';
@@ -136,7 +137,7 @@ export async function maybeRunVersionGatedRuntimeMigration(params: Readonly<{
   });
   if (preferredMode !== 'user') {
       if (!systemUser) {
-      console.warn('Skipping automatic system background service migration because no system user could be resolved. Re-run manually with: sudo happier doctor repair --yes --mode system --system-user <user>');
+      console.warn(`Skipping automatic system background service migration because no system user could be resolved. Re-run manually with: sudo ${formatCliCommand('doctor repair --yes --mode system --system-user <user>')}`);
       return false;
     }
     repairState = await resolveBackgroundServiceRepairPlanForCurrentRuntime({
@@ -157,7 +158,7 @@ export async function maybeRunVersionGatedRuntimeMigration(params: Readonly<{
       ? action.service.mode === 'system'
       : action.mode === 'system');
   if (requiresRootForPlan) {
-    console.warn('Skipping automatic system background service migration without root privileges. Re-run manually with: sudo happier doctor repair --yes --mode system');
+    console.warn(`Skipping automatic system background service migration without root privileges. Re-run manually with: sudo ${formatCliCommand('doctor repair --yes --mode system')}`);
     return false;
   }
 

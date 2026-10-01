@@ -1,5 +1,6 @@
 import { createServerUrlComparableKey } from '@happier-dev/protocol';
 
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { readSettings } from '@/persistence';
 import { resolveHappierHomeDirComparableKey } from './happierHomeDirComparableKey';
 
@@ -228,8 +229,8 @@ export function renderDaemonInstalledServiceConflict(params: Readonly<{
           : 'restart the daemon manually';
   const serviceCommand =
     params.action === 'daemon-restart'
-      ? 'Use `happier doctor repair` to switch automatic startup to this installation.'
-      : 'Use `happier service start` to start the installed background service instead of starting another daemon.';
+      ? `Use \`${formatCliCommand('doctor repair')}\` to switch automatic startup to this installation.`
+      : `Use \`${formatCliCommand('service start')}\` to start the installed background service instead of starting another daemon.`;
   const serviceSummary = renderDaemonServiceInventory(params.services);
   return {
     title: 'A background service is already installed for the selected relay.',

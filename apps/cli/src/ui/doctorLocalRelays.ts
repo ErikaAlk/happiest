@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import type { DoctorSnapshot } from '@/ui/doctorSnapshot';
 import { formatReleaseChannel } from '@/ui/format/releaseChannel';
 
@@ -77,7 +78,7 @@ export function formatDoctorLocalRelayLines(
         .join(dim(', '));
       lines.push('');
       lines.push(chalk.yellow(`  • Tip: you have local relays for ${installedChannels}, but this CLI is ${formatReleaseChannel(currentCliReleaseChannel)}.`));
-      lines.push(dim(`    • If you use a local relay, install the ${currentCliReleaseChannel} relay: happier relay host install --channel ${currentCliReleaseChannel}`));
+      lines.push(dim(`    • If you use a local relay, install the ${currentCliReleaseChannel} relay: ${formatCliCommand(`relay host install --channel ${currentCliReleaseChannel}`)}`));
     }
   }
 

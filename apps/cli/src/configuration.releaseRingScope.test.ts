@@ -17,7 +17,7 @@ describe('configuration daemon ownership paths', () => {
   it('uses the canonical daemon state and lock file when invoked via the public dev shim name', async () => {
     process.env.HAPPIEST_HOME_DIR = '/tmp/happier-test-home';
     delete process.env.HAPPIER_RELEASE_RING;
-    process.argv = ['node', '/Users/alice/.happier/bin/hdev', 'daemon', 'status'];
+    process.argv = ['node', '/Users/alice/.happiest/bin/happiest-dev', 'daemon', 'status'];
 
     const { configuration } = await import('./configuration');
     const base = `/tmp/happier-test-home/servers/${configuration.activeServerId}`;
@@ -28,7 +28,7 @@ describe('configuration daemon ownership paths', () => {
   it('uses the canonical daemon state and lock file when invoked via the preview shim name', async () => {
     process.env.HAPPIEST_HOME_DIR = '/tmp/happier-test-home';
     delete process.env.HAPPIER_RELEASE_RING;
-    process.argv = ['node', '/Users/alice/.happier/bin/hprev', 'daemon', 'status'];
+    process.argv = ['node', '/Users/alice/.happiest/bin/happiest-preview', 'daemon', 'status'];
 
     const { configuration } = await import('./configuration');
     const base = `/tmp/happier-test-home/servers/${configuration.activeServerId}`;
@@ -39,7 +39,7 @@ describe('configuration daemon ownership paths', () => {
   it('uses the same canonical daemon state filename when invoked via the stable shim name', async () => {
     process.env.HAPPIEST_HOME_DIR = '/tmp/happier-test-home';
     delete process.env.HAPPIER_RELEASE_RING;
-    process.argv = ['node', '/Users/alice/.happier/bin/happier', 'daemon', 'status'];
+    process.argv = ['node', '/Users/alice/.happiest/bin/happiest', 'daemon', 'status'];
 
     const { configuration } = await import('./configuration');
     const base = `/tmp/happier-test-home/servers/${configuration.activeServerId}`;

@@ -4,6 +4,7 @@ import { ApiClient } from '@/api/api';
 import { readCredentials } from '@/persistence';
 
 import type { CommandContext } from '@/cli/commandRegistry';
+import { formatCliCommand, resolveCliCommandName } from '@/cli/runtime/cliCommand';
 
 export async function sendPushNotification({
   api,
@@ -55,21 +56,22 @@ async function handleNotifyCommand(args: string[]): Promise<void> {
   }
 
   if (showHelp) {
+    const cli = resolveCliCommandName();
     console.log(`
-${chalk.bold('happy notify')} - Send notification
+${chalk.bold(`${cli} notify`)} - Send notification
 
 ${chalk.bold('Usage:')}
-  happier notify -p <message> [-t <title>]    Send notification with custom message and optional title
-  happier notify -h, --help                   Show this help
+  ${cli} notify -p <message> [-t <title>]    Send notification with custom message and optional title
+  ${cli} notify -h, --help                   Show this help
 
 ${chalk.bold('Options:')}
   -p <message>    Notification message (required)
   -t <title>      Notification title (optional, defaults to "Happier")
 
 ${chalk.bold('Examples:')}
-  happier notify -p "Deployment complete!"
-  happier notify -p "System update complete" -t "Server Status"
-  happier notify -t "Alert" -p "Database connection restored"
+  ${cli} notify -p "Deployment complete!"
+  ${cli} notify -p "System update complete" -t "Server Status"
+  ${cli} notify -t "Alert" -p "Database connection restored"
 `);
     return;
   }
@@ -78,13 +80,13 @@ ${chalk.bold('Examples:')}
     console.error(
       chalk.red('Error: Message is required. Use -p "your message" to specify the notification text.'),
     );
-    console.log(chalk.gray('Run "happier notify --help" for usage information.'));
+    console.log(chalk.gray(`Run "${formatCliCommand('notify --help')}" for usage information.`));
     process.exit(1);
   }
 
   const credentials = await readCredentials();
   if (!credentials) {
-    console.error(chalk.red('Error: Not authenticated. Please run "happier auth login" first.'));
+    console.error(chalk.red(`Error: Not authenticated. Please run "${formatCliCommand('auth login')}" first.`));
     process.exit(1);
   }
 

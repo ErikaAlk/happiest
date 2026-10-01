@@ -1,3 +1,4 @@
+import type { ManagedCliToolName } from '@happier-dev/cli-common/firstPartyRuntime';
 import type { PublicReleaseRingId, PublicReleaseRingLabel } from '@happier-dev/release-runtime/releaseRings';
 
 import type { DaemonServiceMode, DaemonServiceTargetMode } from '@/daemon/service/plan';
@@ -53,21 +54,18 @@ export type CurrentCliInfo = Readonly<{
   version: string;
   binaryPath: string | null;
   /**
-   * Channel-derived shim name (`happier` for stable, `hprev` for preview,
-   * `hdev` for dev). Used for rendering the CLI inventory summary.
+   * The command this CLI's release ring installs (`happiest`, `happiest-preview`,
+   * `happiest-dev`). Used for rendering the CLI inventory summary.
    */
-  shim: 'happier' | 'hprev' | 'hdev' | null;
+  shim: ManagedCliToolName;
   /**
-   * The actual invocation name observed from `process.argv` / env. May
-   * differ from `shim` when the user runs the dev binary directly (e.g.
-   * `node apps/cli/bin/happiest.mjs`) or via a custom alias. Used in repair
-   * copy so command suggestions match the binary the user actually ran —
-   * if they invoked via `hdev`, suggestions should say `hdev daemon start`,
-   * not the hardcoded `happier`. Falls back to `shim ?? 'happier'` when
-   * the invoker can't be resolved.
+   * The command people type to run this CLI (`resolveCliCommandName`). May
+   * differ from `shim` when the user runs the source launcher or a wrapper.
+   * Used in repair copy so command suggestions match what the user actually
+   * ran — invoked via `happiest-dev`, suggestions say `happiest-dev daemon start`.
    */
   invoker: string;
-  pathWinnerShim: 'happier' | 'hprev' | 'hdev' | null;
+  pathWinnerShim: ManagedCliToolName | null;
   pathWinnerResolvesToThisBinary: boolean | null;
 }>;
 

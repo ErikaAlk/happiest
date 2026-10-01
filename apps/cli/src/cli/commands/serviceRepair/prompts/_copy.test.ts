@@ -83,12 +83,12 @@ describe('serviceRepair prompt copy', () => {
       serverName: 'Cloud',
       serverUrl: 'https://api.happier.dev',
     };
-    const copy = copyAuthExpiredForActiveProfile(finding, 'hdev');
+    const copy = copyAuthExpiredForActiveProfile(finding, 'happiest-dev');
 
-    // `happier auth` alone only prints help; the remedy must be the parsed
+    // `happiest auth` alone only prints help; the remedy must be the parsed
     // `auth login` form so the printed command actually runs.
-    expect(copy).toContain('  hdev auth login');
-    expect(copy).not.toContain('  hdev auth\n');
+    expect(copy).toContain('  happiest-dev auth login');
+    expect(copy).not.toContain('  happiest-dev auth\n');
   });
 
   it('prints the same executable sign-in command the doctor report renders', () => {
@@ -100,16 +100,16 @@ describe('serviceRepair prompt copy', () => {
       serverName: 'Company',
       serverUrl: 'https://relay.company.test',
     };
-    const copy = copyAuthMissingForProfile(finding, 'hdev');
+    const copy = copyAuthMissingForProfile(finding, 'happiest-dev');
 
-    expect(copy).toContain('  hdev auth login --server company');
-    expect(copy).not.toContain('hdev auth --server company');
+    expect(copy).toContain('  happiest-dev auth login --server company');
+    expect(copy).not.toContain('happiest-dev auth --server company');
   });
 
   it('names the parsed sign-in command when no server profile exists yet', () => {
-    const copy = copyNoServersConfigured('hdev');
+    const copy = copyNoServersConfigured('happiest-dev');
 
-    expect(copy).toContain('  hdev auth login');
-    expect(copy.join('\n')).not.toMatch(/^\s*hdev auth\s*$/m);
+    expect(copy).toContain('  happiest-dev auth login');
+    expect(copy.join('\n')).not.toMatch(/^\s*happiest-dev auth\s*$/m);
   });
 });

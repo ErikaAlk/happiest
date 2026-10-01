@@ -377,7 +377,7 @@ describe('happier server background service follow-up', () => {
             expect(spawnHappyCLIMock).not.toHaveBeenCalled();
             expect(axiosGetMock).not.toHaveBeenCalled();
             const out = output.logs.join('\n');
-            expect(out).toContain('happier service restart');
+            expect(out).toContain('happiest service restart');
             expect(out).toContain('https://b.example.test');
         } finally {
             output.restore();
@@ -456,8 +456,8 @@ describe('happier server background service follow-up', () => {
             expect(axiosGetMock).toHaveBeenCalledTimes(1);
             const out = output.logs.join('\n');
             expect(out).toContain('Authenticate Happier against https://b.example.test and then restart the background service so it follows that server:');
-            expect(out).toContain('happier auth login');
-            expect(out).toContain('happier service restart');
+            expect(out).toContain('happiest auth login');
+            expect(out).toContain('happiest service restart');
         } finally {
             output.restore();
             restoreTty();
@@ -536,7 +536,7 @@ describe('happier server background service follow-up', () => {
 
             expect(spawnHappyCLIMock).not.toHaveBeenCalled();
             expect(output.logs.join('\n')).toContain('Multiple default-following background services are installed');
-            expect(output.logs.join('\n')).toContain('sudo happier doctor repair --yes');
+            expect(output.logs.join('\n')).toContain('sudo happiest doctor repair --yes');
         } finally {
             output.restore();
             if (previousHome === undefined) delete process.env.HAPPIEST_HOME_DIR;
@@ -585,7 +585,7 @@ describe('happier server background service follow-up', () => {
             label: 'happier-daemon.default',
             targetMode: 'default-following',
         }])).toEqual(['system']);
-        expect(output.join('\n')).toContain('happier service restart --mode system');
+        expect(output.join('\n')).toContain('happiest service restart --mode system');
     });
 
     it('requires repair guidance when duplicate default-following services share the same mode', async () => {
@@ -632,7 +632,7 @@ describe('happier server background service follow-up', () => {
 
         expect(runCliAction).not.toHaveBeenCalled();
         expect(output.join('\n')).toContain('Multiple default-following background services are installed');
-        expect(output.join('\n')).toContain('happier doctor repair --yes');
+        expect(output.join('\n')).toContain('happiest doctor repair --yes');
     });
 
     it('requires repair guidance when a default-following service is missing Happier home metadata', async () => {
@@ -663,7 +663,7 @@ describe('happier server background service follow-up', () => {
 
         expect(runCliAction).not.toHaveBeenCalled();
         expect(output.join('\n')).toContain('missing Happier home metadata');
-        expect(output.join('\n')).toContain('happier doctor repair --yes');
+        expect(output.join('\n')).toContain('happiest doctor repair --yes');
     });
 
     it('does not tell the user to authenticate again when restart fails after auth login already succeeded', async () => {
@@ -698,7 +698,7 @@ describe('happier server background service follow-up', () => {
 
         expect(runCliAction).toHaveBeenCalledTimes(1);
         expect(runCliAction).toHaveBeenCalledWith(['auth', 'login']);
-        expect(output.join('\n')).not.toContain('happier auth login');
+        expect(output.join('\n')).not.toContain('happiest auth login');
     });
 
     it('restarts every valid default-following service after guided authentication without another prompt', async () => {
@@ -759,7 +759,7 @@ describe('happier server background service follow-up', () => {
 
         expect(runCliAction).toHaveBeenCalledTimes(1);
         expect(runCliAction).toHaveBeenCalledWith(['service', 'restart']);
-        expect(output.join('\n')).not.toContain('happier auth login');
+        expect(output.join('\n')).not.toContain('happiest auth login');
     });
 
     it('probes credentials against the follow-up targetServerUrl (not the current configuration)', async () => {

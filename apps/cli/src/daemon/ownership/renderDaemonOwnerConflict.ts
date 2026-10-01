@@ -1,3 +1,4 @@
+import { formatCliCommand, resolveCliCommandName } from '@/cli/runtime/cliCommand';
 import type { CurrentDaemonOwner } from '@/daemon/ownership/evaluateCurrentDaemonOwner';
 import { buildDaemonTakeoverHint } from '@/daemon/ownership/resolveDaemonTakeoverDecision';
 
@@ -36,6 +37,8 @@ export function renderDaemonOwnerConflict(params: Readonly<{
 }>): Readonly<{ title: string; lines: readonly string[] }> {
   const owner = params.owner;
   const details = buildOwnerDetails(owner);
+  const cli = resolveCliCommandName();
+  const daemonCommandPath = formatCliCommand('daemon');
 
   if (params.intent === 'session-autostart') {
     return {
@@ -52,9 +55,9 @@ export function renderDaemonOwnerConflict(params: Readonly<{
             ? 'Happier will continue without starting another daemon.'
             : 'Happier will continue without changing the current daemon.',
         owner.serviceManaged
-          ? 'Use `happier doctor repair` if you want automatic startup to switch to this installation.'
+          ? `Use \`${cli} doctor repair\` if you want automatic startup to switch to this installation.`
           : owner.serviceManaged === false
-            ? 'Use `happier daemon restart` if you want to replace the current manual daemon.'
+            ? `Use \`${cli} daemon restart\` if you want to replace the current manual daemon.`
             : 'Restart the current daemon before trying to switch which installation is running.',
       ],
     };
@@ -70,15 +73,15 @@ export function renderDaemonOwnerConflict(params: Readonly<{
       lines: [
         ...details,
         owner.serviceManaged
-          ? 'Use `happier doctor repair` if you want automatic startup to switch to this installation.'
+          ? `Use \`${cli} doctor repair\` if you want automatic startup to switch to this installation.`
           : owner.serviceManaged === false
             ? [
-                'Stop the current manual daemon with `happier daemon stop` before starting another one.',
-                buildDaemonTakeoverHint({ commandPath: 'happier daemon', action: 'start' }),
+                `Stop the current manual daemon with \`${cli} daemon stop\` before starting another one.`,
+                buildDaemonTakeoverHint({ commandPath: daemonCommandPath, action: 'start' }),
               ].join(' ')
             : [
                 'Stop the current daemon before starting another one.',
-                `If this is a legacy manual daemon start, ${buildDaemonTakeoverHint({ commandPath: 'happier daemon', action: 'start' }).toLowerCase()}`,
+                `If this is a legacy manual daemon start, ${buildDaemonTakeoverHint({ commandPath: daemonCommandPath, action: 'start' }).toLowerCase()}`,
               ].join(' '),
       ],
     };
@@ -94,15 +97,15 @@ export function renderDaemonOwnerConflict(params: Readonly<{
       lines: [
         ...details,
         owner.serviceManaged
-          ? 'Use `happier doctor repair` if you want automatic startup to switch to this installation.'
+          ? `Use \`${cli} doctor repair\` if you want automatic startup to switch to this installation.`
           : owner.serviceManaged === false
             ? [
-                'Stop the current manual daemon with `happier daemon stop` before starting another one.',
-                buildDaemonTakeoverHint({ commandPath: 'happier daemon', action: 'start-sync' }),
+                `Stop the current manual daemon with \`${cli} daemon stop\` before starting another one.`,
+                buildDaemonTakeoverHint({ commandPath: daemonCommandPath, action: 'start-sync' }),
               ].join(' ')
             : [
                 'Stop the current daemon before starting another one.',
-                `If this is a legacy manual daemon start, ${buildDaemonTakeoverHint({ commandPath: 'happier daemon', action: 'start-sync' }).toLowerCase()}`,
+                `If this is a legacy manual daemon start, ${buildDaemonTakeoverHint({ commandPath: daemonCommandPath, action: 'start-sync' }).toLowerCase()}`,
               ].join(' '),
       ],
     };
@@ -114,7 +117,7 @@ export function renderDaemonOwnerConflict(params: Readonly<{
         title: 'Another manually started daemon is already running for the selected relay.',
         lines: [
           ...details,
-          buildDaemonTakeoverHint({ commandPath: 'happier daemon', action: 'restart' }),
+          buildDaemonTakeoverHint({ commandPath: daemonCommandPath, action: 'restart' }),
         ],
       };
     }
@@ -126,10 +129,10 @@ export function renderDaemonOwnerConflict(params: Readonly<{
       lines: [
         ...details,
         owner.serviceManaged === true
-          ? 'Use `happier doctor repair` instead of `happier daemon restart`.'
+          ? `Use \`${cli} doctor repair\` instead of \`${cli} daemon restart\`.`
           : [
-              `If this is a legacy manual daemon start, ${buildDaemonTakeoverHint({ commandPath: 'happier daemon', action: 'restart' }).toLowerCase()}`,
-              'Use `happier service restart` only if you know the current daemon came from the background service.',
+              `If this is a legacy manual daemon start, ${buildDaemonTakeoverHint({ commandPath: daemonCommandPath, action: 'restart' }).toLowerCase()}`,
+              `Use \`${cli} service restart\` only if you know the current daemon came from the background service.`,
             ].join(' '),
       ],
     };
@@ -142,8 +145,8 @@ export function renderDaemonOwnerConflict(params: Readonly<{
     lines: [
       ...details,
       owner.serviceManaged === true
-        ? 'Use `happier service stop` instead of `happier daemon stop`.'
-        : 'Use `happier service stop` only if you know the current daemon came from the background service.',
+        ? `Use \`${cli} service stop\` instead of \`${cli} daemon stop\`.`
+        : `Use \`${cli} service stop\` only if you know the current daemon came from the background service.`,
     ],
   };
 }

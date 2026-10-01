@@ -16,9 +16,9 @@ describe('happier daemon service', () => {
         terminalRuntime: null,
       });
 
-      expect(output.text()).toContain('happier daemon stop               Stop a manual daemon');
-      expect(output.text()).toContain('use happier service stop for installed background services');
-      expect(output.text()).toContain('For installed background services, use happier service start|stop|restart');
+      expect(output.text()).toContain('happiest daemon stop               Stop a manual daemon');
+      expect(output.text()).toContain('use happiest service stop for installed background services');
+      expect(output.text()).toContain('For installed background services, use happiest service start|stop|restart');
     } finally {
       output.restore();
     }
@@ -33,10 +33,10 @@ describe('happier daemon service', () => {
         terminalRuntime: null,
       });
 
-      expect(stdout.text()).toContain('happier service');
+      expect(stdout.text()).toContain('happiest service');
       expect(stdout.text()).toContain('Usage:');
-      expect(stdout.text()).toContain('happier service status [--json]');
-      expect(stdout.text()).toContain('happier service list [--json]');
+      expect(stdout.text()).toContain('happiest service status [--json]');
+      expect(stdout.text()).toContain('happiest service list [--json]');
     } finally {
       stdout.restore();
     }

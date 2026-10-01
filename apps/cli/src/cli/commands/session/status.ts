@@ -6,6 +6,7 @@ import { hasFlag, readCommandPositionals } from '@/cli/commands/shared/argvFlags
 import { createCliActionExecutorFromCredentials } from '@/session/actions/createCliActionExecutorFromCredentials';
 import { normalizeActionExecuteResult } from './shared/normalizeActionExecuteResult';
 import { tryHandleApprovalRequestCreated } from './shared/tryHandleApprovalRequestCreated';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 export async function cmdSessionStatus(
   argv: string[],
@@ -15,7 +16,7 @@ export async function cmdSessionStatus(
   const live = hasFlag(argv, '--live');
   const [idOrPrefix = ''] = readCommandPositionals(argv, { startIndex: 1 });
   if (!idOrPrefix) {
-    throw new Error('Usage: happier session status <session-id-or-prefix> [--live] [--json]');
+    throw new Error(`Usage: ${formatCliCommand('session status <session-id-or-prefix> [--live] [--json]')}`);
   }
 
   const credentials = await deps.readCredentialsFn();
@@ -24,7 +25,7 @@ export async function cmdSessionStatus(
       await printJsonEnvelope({ ok: false, kind: 'session_status', error: { code: 'not_authenticated' } });
       return;
     }
-    console.error(chalk.red('Error:'), 'Not authenticated. Run "happier auth login" first.');
+    console.error(chalk.red('Error:'), `Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
     process.exit(1);
   }
 

@@ -148,7 +148,7 @@ describe('handleMachineCommand', () => {
     }
   });
 
-  it('uses the current hdev invoker channel when setup omits explicit channel flags', async () => {
+  it('uses the current happiest-dev invoker channel when setup omits explicit channel flags', async () => {
     const originalArgv = [...process.argv];
     const result: SystemTaskResult = {
       protocolVersion: SYSTEM_TASK_PROTOCOL_VERSION,
@@ -165,7 +165,7 @@ describe('handleMachineCommand', () => {
     }));
 
     try {
-      process.argv = ['hdev', 'machine', 'setup'];
+      process.argv = ['happiest-dev', 'machine', 'setup'];
       await handleMachineCommand(
         ['setup', '--ssh', 'dev@example.test', '--json'],
         {

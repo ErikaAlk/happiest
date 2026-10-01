@@ -6,6 +6,7 @@ import { wantsJson, printJsonEnvelope } from '@/cli/output/jsonEnvelope';
 import { createCliActionExecutorFromCredentials } from '@/session/actions/createCliActionExecutorFromCredentials';
 import { normalizeActionExecuteResult } from './shared/normalizeActionExecuteResult';
 import { tryHandleApprovalRequestCreated } from './shared/tryHandleApprovalRequestCreated';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 function normalizeModelIdOrThrow(raw: string): string {
   const trimmed = raw.trim();
@@ -24,7 +25,7 @@ export async function cmdSessionSetModel(
   const json = wantsJson(argv);
   const [idOrPrefix = '', rawModelId = ''] = readCommandPositionals(argv, { startIndex: 1 });
   if (!idOrPrefix || !rawModelId) {
-    throw new Error('Usage: happier session set-model <session-id-or-prefix> <model-id> [--json]');
+    throw new Error(`Usage: ${formatCliCommand('session set-model <session-id-or-prefix> <model-id> [--json]')}`);
   }
 
   const modelId = normalizeModelIdOrThrow(rawModelId);
@@ -35,7 +36,7 @@ export async function cmdSessionSetModel(
       await printJsonEnvelope({ ok: false, kind: 'session_set_model', error: { code: 'not_authenticated' } });
       return;
     }
-    console.error(chalk.red('Error:'), 'Not authenticated. Run "happier auth login" first.');
+    console.error(chalk.red('Error:'), `Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
     process.exit(1);
   }
 

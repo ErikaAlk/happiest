@@ -1,3 +1,4 @@
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { configuration } from '@/configuration';
 import { resolveBackgroundServiceRepairPlanForCurrentRuntime } from '@/diagnostics/backgroundServiceRepair/resolveBackgroundServiceRepairPlanForCurrentRuntime';
 import { resolveDaemonServiceCliRuntimeFromEnv } from '@/daemon/service/cli';
@@ -14,7 +15,7 @@ function buildRepairRecommendedWarning(actionCount: number): DoctorWarning {
     message: actionCount === 1
       ? 'Automatic startup repair is recommended for this installation.'
       : `Automatic startup repair is recommended (${actionCount} actions).`,
-    repairCommands: ['happier doctor repair --yes'],
+    repairCommands: [formatCliCommand('doctor repair --yes')],
   };
 }
 
@@ -23,7 +24,7 @@ function buildManualRepairWarning(message: string): DoctorWarning {
     code: 'backgroundServiceRepairManual',
     severity: 'warning',
     message,
-    repairCommands: ['happier doctor repair'],
+    repairCommands: [formatCliCommand('doctor repair')],
   };
 }
 
@@ -44,9 +45,9 @@ function buildRunningDaemonMismatchWarning(params: Readonly<{
   }
 
   const repairCommands = daemon.serviceManaged === true
-    ? ['happier doctor repair']
+    ? [formatCliCommand('doctor repair')]
     : daemon.serviceManaged === false
-      ? ['happier daemon restart']
+      ? [formatCliCommand('daemon restart')]
       : [];
 
   return {

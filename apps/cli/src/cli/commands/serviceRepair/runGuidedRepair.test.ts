@@ -74,7 +74,7 @@ describe('runGuidedRepair running daemon CLI mismatch repair', () => {
       currentCli: {
         releaseChannel: 'dev',
         version: '0.12.0',
-        invoker: 'happier',
+        invoker: 'happiest',
       },
     });
 
@@ -97,7 +97,7 @@ describe('runGuidedRepair running daemon CLI mismatch repair', () => {
       currentCli: {
         releaseChannel: 'dev',
         version: '0.12.0',
-        invoker: 'happier',
+        invoker: 'happiest',
       },
     });
 

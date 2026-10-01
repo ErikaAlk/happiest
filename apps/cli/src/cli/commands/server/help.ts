@@ -1,19 +1,21 @@
 import chalk from 'chalk';
 
 import { configuration } from '@/configuration';
+import { resolveCliCommandName } from '@/cli/runtime/cliCommand';
 
 export function showServerHelp(): void {
+  const cli = resolveCliCommandName();
   console.log(`
-${chalk.bold('happier server')} - Manage relay profiles
+${chalk.bold(`${cli} server`)} - Manage relay profiles
 
 ${chalk.bold('Usage:')}
-  happier server list
-  happier server current
-  happier server add [--name <name>] [--server-url <url>] [--public-server-url <url>] [--webapp-url <url>] [--use] [--no-use] [--yes] [--start-daemon] [--install-service]
-  happier server use <name-or-id>
-  happier server remove <name-or-id> [--force]
-  happier server test [<name-or-id>]
-  happier server set [--server-id <id>] --server-url <url> [--public-server-url <url>] [--webapp-url <url>]
+  ${cli} server list
+  ${cli} server current
+  ${cli} server add [--name <name>] [--server-url <url>] [--public-server-url <url>] [--webapp-url <url>] [--use] [--no-use] [--yes] [--start-daemon] [--install-service]
+  ${cli} server use <name-or-id>
+  ${cli} server remove <name-or-id> [--force]
+  ${cli} server test [<name-or-id>]
+  ${cli} server set [--server-id <id>] --server-url <url> [--public-server-url <url>] [--webapp-url <url>]
 
 ${chalk.bold('Notes:')}
   • Profiles are stored in ${configuration.settingsFile}

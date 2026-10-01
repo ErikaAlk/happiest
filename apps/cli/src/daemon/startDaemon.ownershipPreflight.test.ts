@@ -25,7 +25,7 @@ const {
     renderDaemonInstalledServiceConflictMock: vi.fn(() => ({
         title: 'A background service is already installed for the selected relay.',
         lines: [
-            'Use `happier service start` to start the installed background service instead of starting another daemon.',
+            'Use `happiest service start` to start the installed background service instead of starting another daemon.',
             'If you want to start a manual daemon, stop or replace the installed background service first.',
         ],
     })),
@@ -119,7 +119,7 @@ describe('startDaemon ownership preflight', () => {
         renderDaemonInstalledServiceConflictMock.mockImplementation(() => ({
             title: 'A background service is already installed for the selected relay.',
             lines: [
-                'Use `happier service start` to start the installed background service instead of starting another daemon.',
+                'Use `happiest service start` to start the installed background service instead of starting another daemon.',
                 'If you want to start a manual daemon, stop or replace the installed background service first.',
             ],
         }));
@@ -565,7 +565,7 @@ describe('startDaemon ownership preflight', () => {
             logger.flushSync();
             const logContent = await readFile(logger.logFilePath, 'utf8');
             expect(logContent).toContain('Installed background service prevented manual daemon startup');
-            expect(logContent).toContain('happier service start');
+            expect(logContent).toContain('happiest service start');
             expect(waitForInitialCredentialsMock).not.toHaveBeenCalled();
         });
     });

@@ -6,6 +6,7 @@ import { wantsJson, printJsonEnvelope } from '@/cli/output/jsonEnvelope';
 import { createCliActionExecutorFromCredentials } from '@/session/actions/createCliActionExecutorFromCredentials';
 import { normalizeActionExecuteResult } from './shared/normalizeActionExecuteResult';
 import { tryHandleApprovalRequestCreated } from './shared/tryHandleApprovalRequestCreated';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 export async function cmdSessionSetTitle(
   argv: string[],
@@ -14,7 +15,7 @@ export async function cmdSessionSetTitle(
   const json = wantsJson(argv);
   const [idOrPrefix = '', title = ''] = readCommandPositionals(argv, { startIndex: 1 });
   if (!idOrPrefix || !title) {
-    throw new Error('Usage: happier session set-title <session-id-or-prefix> <title> [--json]');
+    throw new Error(`Usage: ${formatCliCommand('session set-title <session-id-or-prefix> <title> [--json]')}`);
   }
 
   const credentials = await deps.readCredentialsFn();
@@ -23,7 +24,7 @@ export async function cmdSessionSetTitle(
       await printJsonEnvelope({ ok: false, kind: 'session_set_title', error: { code: 'not_authenticated' } });
       return;
     }
-    console.error(chalk.red('Error:'), 'Not authenticated. Run "happier auth login" first.');
+    console.error(chalk.red('Error:'), `Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
     process.exit(1);
   }
 

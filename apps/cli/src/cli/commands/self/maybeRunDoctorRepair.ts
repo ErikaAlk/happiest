@@ -1,5 +1,6 @@
 import { resolveBackgroundServiceRepairPlanForCurrentRuntime } from '@/diagnostics/backgroundServiceRepair/resolveBackgroundServiceRepairPlanForCurrentRuntime';
 import { resolveDaemonServiceCliRuntimeFromEnv } from '@/daemon/service/cli';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 import { handleServiceRepairCliCommand } from '../serviceRepair/handleServiceRepairCliCommand';
 
@@ -24,7 +25,7 @@ export async function maybeRunDoctorRepair(params: Readonly<{
 
   await handleServiceRepairCliCommand({
     argv: ['repair'],
-    commandPath: 'happier doctor',
+    commandPath: formatCliCommand('doctor'),
   });
   return true;
 }

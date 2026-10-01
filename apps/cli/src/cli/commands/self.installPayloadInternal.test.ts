@@ -109,7 +109,7 @@ describe('happier self __install-payload', () => {
         toVersion: '1.2.3',
         hadLegacyCurrentInstallWithoutVersionMarkers: false,
         argv: ['repair'],
-        commandPath: 'happier doctor',
+        commandPath: 'happiest doctor',
         forceNonInteractive: true,
       });
     } finally {

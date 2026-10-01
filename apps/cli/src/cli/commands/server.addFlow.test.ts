@@ -756,8 +756,8 @@ describe('happier server add guided flow', () => {
 
       const out = output.logs.join('\n');
       expect(out).toContain('Authenticate Happier against https://company.example.test');
-      expect(out).toContain('happier auth login');
-      expect(out).toContain('happier service restart');
+      expect(out).toContain('happiest auth login');
+      expect(out).toContain('happiest service restart');
     } finally {
       output.restore();
       restoreTty();

@@ -5,6 +5,7 @@ import { handleServiceRepairCliCommand } from './serviceRepair/handleServiceRepa
 
 import type { CommandContext } from '@/cli/commandRegistry';
 import { writeJsonStdout } from '@/cli/output/jsonEnvelope';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 export async function handleDoctorCliCommand(context: CommandContext): Promise<void> {
   const args = context.args;
@@ -12,7 +13,7 @@ export async function handleDoctorCliCommand(context: CommandContext): Promise<v
   if (args[1] === 'repair') {
     await handleServiceRepairCliCommand({
       argv: ['repair', ...args.slice(2)],
-      commandPath: 'happier doctor',
+      commandPath: formatCliCommand('doctor'),
     });
     return;
   }

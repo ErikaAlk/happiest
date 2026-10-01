@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import type { Credentials } from '@/persistence';
 import { readCommandPositionals } from '@/cli/commands/shared/argvFlags';
 import { wantsJson, printJsonEnvelope } from '@/cli/output/jsonEnvelope';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { createCliActionExecutorFromCredentials } from '@/session/actions/createCliActionExecutorFromCredentials';
 import { normalizeActionExecuteResult } from './shared/normalizeActionExecuteResult';
 import { tryHandleApprovalRequestCreated } from './shared/tryHandleApprovalRequestCreated';
@@ -14,7 +15,7 @@ export async function cmdSessionArchive(
   const json = wantsJson(argv);
   const [idOrPrefix = ''] = readCommandPositionals(argv, { startIndex: 1 });
   if (!idOrPrefix) {
-    throw new Error('Usage: happier session archive <session-id-or-prefix> [--json]');
+    throw new Error(`Usage: ${formatCliCommand('session archive <session-id-or-prefix> [--json]')}`);
   }
 
   const credentials = await deps.readCredentialsFn();
@@ -23,7 +24,7 @@ export async function cmdSessionArchive(
       await printJsonEnvelope({ ok: false, kind: 'session_archive', error: { code: 'not_authenticated' } });
       return;
     }
-    console.error(chalk.red('Error:'), 'Not authenticated. Run "happier auth login" first.');
+    console.error(chalk.red('Error:'), `Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
     process.exit(1);
   }
 

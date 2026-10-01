@@ -4,12 +4,13 @@ import { getActionSpec, serializeActionSpec } from '@happier-dev/protocol';
 
 import { wantsJson, printJsonEnvelope, writeJsonStdout } from '@/cli/output/jsonEnvelope';
 import { readCommandPositionals } from '@/cli/commands/shared/argvFlags';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 export async function cmdSessionActionsDescribe(argv: string[]): Promise<void> {
   const json = wantsJson(argv);
   const [id = ''] = readCommandPositionals(argv, { startIndex: 2 });
   if (!id) {
-    throw new Error('Usage: happier session actions describe <action-id> [--json]');
+    throw new Error(`Usage: ${formatCliCommand('session actions describe <action-id> [--json]')}`);
   }
 
   const spec = getActionSpec(id as any);

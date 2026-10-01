@@ -3,9 +3,10 @@ import chalk from 'chalk';
 import { handleAuthCommand } from '@/cli/commands/auth';
 
 import type { CommandContext } from '@/cli/commandRegistry';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 export async function handleLogoutCliCommand(_context: CommandContext): Promise<void> {
-  console.log(chalk.yellow('Note: "happier logout" is deprecated. Use "happier auth logout" instead.\n'));
+  console.log(chalk.yellow(`Note: "${formatCliCommand('logout')}" is deprecated. Use "${formatCliCommand('auth logout')}" instead.\n`));
   try {
     await handleAuthCommand(['logout']);
   } catch (error) {

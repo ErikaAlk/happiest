@@ -14,9 +14,9 @@ describe('happier mcp --help', () => {
 
       expect(readCredentials).not.toHaveBeenCalled();
       const output = logSpy.mock.calls.flat().join('\n');
-      expect(output).toContain('happier mcp');
-      expect(output).toContain('happier mcp serve');
-      expect(output).toContain('happier mcp servers list');
+      expect(output).toContain('happiest mcp');
+      expect(output).toContain('happiest mcp serve');
+      expect(output).toContain('happiest mcp servers list');
     } finally {
       logSpy.mockRestore();
       errorSpy.mockRestore();
@@ -33,9 +33,9 @@ describe('happier mcp --help', () => {
 
       expect(readCredentials).not.toHaveBeenCalled();
       const output = logSpy.mock.calls.flat().join('\n');
-      expect(output).toContain('happier mcp servers');
-      expect(output).toContain('happier mcp servers list');
-      expect(output).toContain('happier mcp servers test');
+      expect(output).toContain('happiest mcp servers');
+      expect(output).toContain('happiest mcp servers list');
+      expect(output).toContain('happiest mcp servers test');
     } finally {
       logSpy.mockRestore();
       errorSpy.mockRestore();
@@ -52,8 +52,8 @@ describe('happier mcp --help', () => {
 
       expect(readCredentials).not.toHaveBeenCalled();
       const output = logSpy.mock.calls.flat().join('\n');
-      expect(output).toContain('happier mcp servers');
-      expect(output).toContain('happier mcp servers list');
+      expect(output).toContain('happiest mcp servers');
+      expect(output).toContain('happiest mcp servers list');
     } finally {
       logSpy.mockRestore();
       errorSpy.mockRestore();

@@ -92,6 +92,7 @@ import { createScmConnectedAccountCredentialResolver } from './connectedServices
 import { resolveMachineRegistrationIdentity } from '@/daemon/machineIdentity/resolveMachineRegistrationIdentity';
 import { consumeMachineReplacementCandidateAfterRegistration } from '@/daemon/machineIdentity/machineReplacementCandidates';
 import { readSessionRuntimeActivityProjectionBoundary } from './session/runtimeActivityProjection';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 export {
   ConnectedServiceAuthGroupGenerationConflictError,
@@ -274,7 +275,7 @@ export class MachineContentPublicKeyMismatchError extends Error {
     super(
       `Machine registration rejected by server (reason=${reason}). ` +
         'This usually means your local encryption key does not match your current account credentials. ' +
-        'Try `happier auth logout` then `happier auth login`.',
+        `Try \`${formatCliCommand('auth logout')}\` then \`${formatCliCommand('auth login')}\`.`,
     );
     this.name = 'MachineContentPublicKeyMismatchError';
     this.machineId = machineId;

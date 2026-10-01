@@ -11,6 +11,10 @@
 
 import type { TailscaleStatusSnapshot } from '@happier-dev/cli-common/tailscale';
 
+import { resolveCliCommandName } from '@/cli/runtime/cliCommand';
+
+const cli = resolveCliCommandName();
+
 export type SetupRelaySelection =
   | Readonly<{ kind: 'cloud' }>
   | Readonly<{ kind: 'existing'; url: string }>
@@ -237,9 +241,9 @@ const RELAY_CHOICE_REQUIRED = [
   'Setup will not choose a relay for you — your account lives on the one you pick.',
   'Name it:',
   '',
-  '  happier setup --cloud --yes',
-  '  happier setup --relay https://relay.example.com --yes',
-  '  happier setup --this-computer --yes',
+  `  ${cli} setup --cloud --yes`,
+  `  ${cli} setup --relay https://relay.example.com --yes`,
+  `  ${cli} setup --this-computer --yes`,
 ].join('\n');
 
 /**
@@ -252,7 +256,7 @@ const RELAY_CHOICE_REQUIRED = [
 const SIGN_IN_REQUIRED = [
   'Setup needs you for the last step — signing in has to be approved on a device.',
   '',
-  '  happier auth login',
+  `  ${cli} auth login`,
 ].join('\n');
 
 export function buildSetupPlan(params: BuildSetupPlanParams): SetupPlan {
@@ -269,8 +273,8 @@ export function buildSetupPlan(params: BuildSetupPlanParams): SetupPlan {
           `The selected relay (${activeRelayUrl}) did not answer, so its stored sign-in could not be verified.`,
           'Your relay selection and credentials were kept unchanged.',
           '',
-          'Retry: `happier setup`',
-          'Choose another relay explicitly: `happier setup --cloud` or `happier setup --relay <url>`',
+          `Retry: \`${cli} setup\``,
+          `Choose another relay explicitly: \`${cli} setup --cloud\` or \`${cli} setup --relay <url>\``,
         ].join('\n'),
       },
     };
@@ -299,7 +303,7 @@ export function buildSetupPlan(params: BuildSetupPlanParams): SetupPlan {
         steps: [],
         stop: {
           reason: 'needs-interactive',
-          detail: 'This account is already selected, but this computer still needs to be registered. Run `happier auth login` in a terminal to finish.',
+          detail: `This account is already selected, but this computer still needs to be registered. Run \`${cli} auth login\` in a terminal to finish.`,
         },
       };
     }
@@ -329,11 +333,11 @@ export function buildSetupPlan(params: BuildSetupPlanParams): SetupPlan {
       stop: {
         reason: 'needs-interactive',
         detail: selection
-          ? 'Setup changes nothing unattended unless you ask it to. Run `happier setup --yes` to do the '
-            + 'steps that need no answer, then `happier auth login` to finish — signing in has to be '
+          ? `Setup changes nothing unattended unless you ask it to. Run \`${cli} setup --yes\` to do the `
+            + `steps that need no answer, then \`${cli} auth login\` to finish — signing in has to be `
             + 'approved on your phone or in a browser.'
-          : 'Setup needs a terminal to ask where your relay lives. Run `happier setup` directly, or name '
-            + 'the relay yourself: `happier setup --cloud --yes`.',
+          : `Setup needs a terminal to ask where your relay lives. Run \`${cli} setup\` directly, or name `
+            + `the relay yourself: \`${cli} setup --cloud --yes\`.`,
       },
     };
   }

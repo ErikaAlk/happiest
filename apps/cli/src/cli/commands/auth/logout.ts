@@ -10,6 +10,7 @@ import {
 import { configuration } from '@/configuration';
 import { stopDaemon } from '@/daemon/controlClient';
 import { stopAllDaemonsBestEffort } from '@/daemon/multiDaemon';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { clearServerScopedAuthStateInSettings } from './clearServerScopedAuthState';
 
 export async function handleAuthLogout(args: string[]): Promise<void> {
@@ -75,7 +76,7 @@ export async function handleAuthLogout(args: string[]): Promise<void> {
       }
 
       console.log(chalk.green('✓ Successfully logged out'));
-      console.log(chalk.gray('  Run "happier auth login" to authenticate again'));
+      console.log(chalk.gray(`  Run "${formatCliCommand('auth login')}" to authenticate again`));
     } catch (error) {
       throw new Error(`Failed to logout: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }

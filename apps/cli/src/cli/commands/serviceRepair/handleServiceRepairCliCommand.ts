@@ -11,6 +11,7 @@ import { bold, muted } from '@/ui/format/styles';
 import { configuration } from '@/configuration';
 import { writeJsonStdout } from '@/cli/output/jsonEnvelope';
 import { getServerProfile } from '@/server/serverProfiles';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 import { isInteractiveTerminal } from '../server/commandUtilities';
 import { assertRepairPlanSystemUserAvailable, resolveBackgroundServiceRepairSystemUser } from './repairSystemUser';
@@ -343,7 +344,7 @@ export async function handleServiceRepairCliCommand(params: Readonly<{
     if (unappliedFindings.length > 0) {
       console.log('');
       const noun = unappliedFindings.length === 1 ? 'finding needs' : 'findings need';
-      console.log(chalk.yellow(`${unappliedFindings.length} ${noun} interactive confirmation — run \`happier doctor repair\` to address ${unappliedFindings.length === 1 ? 'it' : 'them'}.`));
+      console.log(chalk.yellow(`${unappliedFindings.length} ${noun} interactive confirmation — run \`${formatCliCommand('doctor repair')}\` to address ${unappliedFindings.length === 1 ? 'it' : 'them'}.`));
     }
   }
 }

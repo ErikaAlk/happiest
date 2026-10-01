@@ -2,6 +2,7 @@ import chalk from 'chalk';
 
 import { hasFlag, readFlagValue } from '@/cli/commands/shared/argvFlags';
 import { printJsonEnvelope } from '@/cli/output/jsonEnvelope';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { readMcpServersSettingsFromAccountSettings } from '@/mcp/servers/readMcpServersSettingsFromAccountSettings';
 
 import { McpServersSettingsV1Schema } from '@happier-dev/protocol';
@@ -19,7 +20,7 @@ export async function cmdMcpServersBind(
       await printJsonEnvelope({ ok: false, kind: 'mcp_servers_bind', error: { code: 'not_authenticated' } }, { exitCode: 1 });
       return;
     }
-    console.error(chalk.red('Error:'), 'Not authenticated. Run "happier auth login" first.');
+    console.error(chalk.red('Error:'), `Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
     process.exitCode = 1;
     return;
   }
@@ -27,7 +28,7 @@ export async function cmdMcpServersBind(
   const serverRef = readFlagValue(argv, '--mcp-server') ?? readFlagValue(argv, '--server');
   const allMachines = hasFlag(argv, '--all-machines');
   if (!serverRef) {
-    throw new Error('Usage: happier mcp servers bind --mcp-server <name|id> --all-machines [--json]');
+    throw new Error(`Usage: ${formatCliCommand('mcp servers bind --mcp-server <name|id> --all-machines [--json]')}`);
   }
   if (!allMachines) throw new Error('Missing binding target (try --all-machines).');
 

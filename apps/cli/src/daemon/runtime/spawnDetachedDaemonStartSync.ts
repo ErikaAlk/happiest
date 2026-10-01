@@ -113,7 +113,7 @@ export async function spawnDetachedDaemonStartSync(
   };
 
   // Detached daemon is typically spawned via `node <entry> daemon start-sync`, so argv no longer encodes
-  // the shim name (`hprev`/`hdev`). Force the lane into the child environment so daemon state files are
+  // the ring's command name (`happiest-preview`/`happiest-dev`). Force the lane into the child environment so daemon state files are
   // scoped per public release channel.
   if (!String(env.HAPPIER_PUBLIC_RELEASE_CHANNEL ?? '').trim()) {
     env.HAPPIER_PUBLIC_RELEASE_CHANNEL = getReleaseRingCatalogEntry(configuration.publicReleaseRing).publicLabel;

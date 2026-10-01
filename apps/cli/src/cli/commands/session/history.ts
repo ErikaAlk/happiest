@@ -4,6 +4,7 @@ import type { Credentials } from '@/persistence';
 import { readIntFlagValue, readFlagValue, hasFlag, readCommandPositionals } from '@/cli/commands/shared/argvFlags';
 import { wantsJson, printJsonEnvelope, writeJsonStdout } from '@/cli/output/jsonEnvelope';
 import { createCliActionExecutorFromCredentials } from '@/session/actions/createCliActionExecutorFromCredentials';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { normalizeActionExecuteResult } from './shared/normalizeActionExecuteResult';
 import { tryHandleApprovalRequestCreated } from './shared/tryHandleApprovalRequestCreated';
 
@@ -18,7 +19,7 @@ export async function cmdSessionHistory(
     valueFlags: ['--limit', '--format'],
   });
   if (!idOrPrefix) {
-    throw new Error('Usage: happier session history <session-id-or-prefix> [--limit <n>] [--format <compact|raw>] [--json]');
+    throw new Error(`Usage: ${formatCliCommand('session history <session-id-or-prefix> [--limit <n>] [--format <compact|raw>] [--json]')}`);
   }
 
   const limitRaw = readIntFlagValue(argv, '--limit', { min: 1 });
@@ -36,7 +37,7 @@ export async function cmdSessionHistory(
       await printJsonEnvelope({ ok: false, kind: 'session_history', error: { code: 'not_authenticated' } });
       return;
     }
-    console.error(chalk.red('Error:'), 'Not authenticated. Run "happier auth login" first.');
+    console.error(chalk.red('Error:'), `Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
     process.exit(1);
   }
 

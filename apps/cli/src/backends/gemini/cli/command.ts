@@ -6,6 +6,7 @@ import { DEFAULT_GEMINI_MODEL, GEMINI_MODEL_ENV } from '@/backends/gemini/consta
 import { readGeminiLocalConfig, saveGeminiModelToConfig, saveGoogleCloudProjectToConfig } from '@/backends/gemini/utils/config';
 import { resolveGeminiConfigPaths } from '@/backends/gemini/utils/resolveGeminiConfigPaths';
 import { buildGeminiWorkspaceProjectGuidanceLines } from '@/backends/gemini/utils/buildGeminiWorkspaceProjectGuidance';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 import type { CommandContext } from '@/cli/commandRegistry';
 
@@ -128,7 +129,7 @@ export async function handleGeminiCliCommand(context: CommandContext): Promise<v
   }
 
   if (geminiSubcommand === 'project' && !args[2]) {
-    console.log('Usage: happier gemini project <command>');
+    console.log(`Usage: ${formatCliCommand('gemini project <command>')}`);
     console.log('');
     console.log('Commands:');
     console.log('  set <project-id>   Set Google Cloud Project ID');

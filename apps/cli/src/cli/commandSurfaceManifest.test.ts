@@ -28,7 +28,7 @@ describe('CLI command-surface manifest', () => {
 
     for (const entry of entries) {
       expect(entry.rootHelpLabel).toBeTypeOf('string');
-      expect(entry.rootHelpLabel).toMatch(/^happier\b/u);
+      expect(entry.rootHelpLabel).toMatch(/^happiest\b/u);
     }
   });
 
@@ -53,7 +53,7 @@ describe('CLI command-surface manifest', () => {
   it('lists the command surfaces the installers gate their post-install handoff on', () => {
     const help = buildRootHelpText();
     const installerGate = (subcommand: string): RegExp =>
-      new RegExp(String.raw`^\s*(happier\.exe|happier)\s+${subcommand}\b`, 'mu');
+      new RegExp(String.raw`^\s*(happiest\.exe|happiest)\s+${subcommand}\b`, 'mu');
 
     expect(help).toMatch(installerGate('setup'));
     expect(help).toMatch(installerGate('auth'));

@@ -2,6 +2,7 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 
 import { logger } from '@/ui/logger';
 import { buildProviderCliUnavailableMessage } from '@/runtime/managedTools/buildProviderCliUnavailableMessage';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 import { getCodexMcpCommand, getCodexVersionInfo } from './version';
 
@@ -29,7 +30,7 @@ export function createCodexTransport(params: {
             throw new Error(buildProviderCliUnavailableMessage({
                 agentId: 'codex',
                 resolvedCommand: params.codexCommand,
-                alternativeCommandHint: ['Alternatively, use Claude:', '  happier claude'].join('\n'),
+                alternativeCommandHint: ['Alternatively, use Claude:', `  ${formatCliCommand('claude')}`].join('\n'),
             }));
         }
 

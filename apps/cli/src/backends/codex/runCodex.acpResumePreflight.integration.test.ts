@@ -1190,7 +1190,7 @@ describe('runCodex CodexACP resume behavior', () => {
 
     expect(outcome).toBeInstanceOf(Error);
     expect((outcome as Error).message).toMatch(/another Codex process.*already writing/i);
-    expect((outcome as Error).message).toMatch(/start a new session in Happier.*happier attach/i);
+    expect((outcome as Error).message).toMatch(/start a new session in Happier.*happiest attach/i);
     expect((outcome as Error).message).not.toMatch(/ensure Codex app-server can run/i);
     expect(lastSessionClient?.sendSessionEvent).toHaveBeenCalledWith(expect.objectContaining({
       type: 'message',

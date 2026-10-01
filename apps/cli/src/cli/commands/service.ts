@@ -1,10 +1,10 @@
 import type { CommandContext } from '@/cli/commandRegistry';
-import { resolveInvokerName } from '@/cli/runtime/resolveInvokerName';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { runDaemonServiceCliCommand } from '@/daemon/service/cli';
 import { handleServiceRepairCliCommand } from './serviceRepair/handleServiceRepairCliCommand';
 
 export async function handleServiceCliCommand(context: CommandContext): Promise<void> {
-  const commandPath = `${resolveInvokerName() ?? 'happier'} service`;
+  const commandPath = formatCliCommand('service');
 
   if (context.args[1] === 'repair') {
     await handleServiceRepairCliCommand({

@@ -5,6 +5,7 @@ import { mapUnknownErrorToControlError } from '@/cli/control/controlErrorMapping
 import type { Credentials } from '@/persistence';
 import { readCredentials } from '@/persistence';
 import { wantsJson, printJsonEnvelope, writeJsonStdout } from '@/cli/output/jsonEnvelope';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { bootstrapAccountSettingsContext } from '@/settings/accountSettings/bootstrapAccountSettingsContext';
 import { initialMachineMetadata } from '@/daemon/machine/metadata';
 import { initializeBackendApiContext } from '@/agent/runtime/initializeBackendApiContext';
@@ -93,7 +94,7 @@ async function resolveToolsBaseContext(
   directory: string;
 }> {
   const credentials = await deps.readCredentials();
-  if (!credentials) throw new Error('Not authenticated. Run "happier auth login" first.');
+  if (!credentials) throw new Error(`Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
 
   const sessionId = options?.requireSessionId === true
     ? requireFlagValue(args, '--session-id')
@@ -307,7 +308,7 @@ export async function handleToolsCommand(args: string[], overrides?: Partial<Too
       return;
     }
 
-    throw new Error('Usage: happier tools <list|call> ...');
+    throw new Error(`Usage: ${formatCliCommand('tools <list|call> ...')}`);
   } catch (error) {
     if (!json) throw error;
     const mapped = mapUnknownErrorToControlError(error);

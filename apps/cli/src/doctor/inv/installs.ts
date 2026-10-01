@@ -2,7 +2,7 @@ import { basename, dirname, join } from 'node:path';
 import { readFile, realpath } from 'node:fs/promises';
 
 import { configuration } from '@/configuration';
-import { resolveInvokerName } from '@/cli/runtime/resolveInvokerName';
+import { resolveCliCommandName } from '@/cli/runtime/cliCommand';
 
 import {
   listInstalledVersionIdsNewestFirst,
@@ -162,7 +162,7 @@ async function readActiveInvocation(installations: readonly HappierInstallation[
   const activeInvocation: HappierActiveInvocation = {
     path,
     realPath: await resolveRealPath(path),
-    invokerName: resolveInvokerName(),
+    invokerName: resolveCliCommandName(),
     ring: toSnapshotRing(configuration.publicReleaseRing),
     version: String(configuration.currentCliVersion ?? '').trim() || null,
     installationId: null,

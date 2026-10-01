@@ -34,6 +34,7 @@ import {
 import { handleSelfMigrateCommand } from './self/handleSelfMigrateCommand';
 import { maybeRunVersionGatedRuntimeMigration } from './self/maybeRunVersionGatedRuntimeMigration';
 import { maybeRunDoctorRepair } from './self/maybeRunDoctorRepair';
+import { formatCliCommand, resolveCliCommandName } from '@/cli/runtime/cliCommand';
 import { resolveRunningCliPackageManagerOrigin } from '@/cli/runtime/update/cliUpdateFacts';
 import { reportUpdaterAdmission } from '@/cli/runtime/update/updaterAdmission';
 import {
@@ -50,14 +51,15 @@ import { resolveCliVersionFromBinary } from '@/daemon/service/resolveCliVersionF
 type SelfChannel = PublicReleaseRingId;
 
 function usage(): string {
+  const cli = resolveCliCommandName();
   return [
-    `${chalk.bold('happier self')} - Self update + update checks`,
+    `${chalk.bold(`${cli} self`)} - Self update + update checks`,
     '',
     `${chalk.bold('Usage:')}`,
-    `  happier self check [--preview|--dev|--channel=<preview|dev>] [--quiet]`,
-    `  happier self update [--preview|--dev|--channel=<preview|dev>] [--to <versionOrTag>]`,
-    `  happier self migrate [--yes] [--json]`,
-    `  happier self-update [--check] [--preview|--dev|--channel=<preview|dev>] [--to <versionOrTag>]`,
+    `  ${cli} self check [--preview|--dev|--channel=<preview|dev>] [--quiet]`,
+    `  ${cli} self update [--preview|--dev|--channel=<preview|dev>] [--to <versionOrTag>]`,
+    `  ${cli} self migrate [--yes] [--json]`,
+    `  ${cli} self-update [--check] [--preview|--dev|--channel=<preview|dev>] [--to <versionOrTag>]`,
     '',
     `${chalk.bold('Channels:')}`,
     `  stable  → npm dist-tag ${chalk.cyan('latest')}`,
@@ -467,7 +469,7 @@ async function cmdInternalInstallPayload(argv: string[], rawArgv: readonly strin
         toVersion: promotion.currentVersionId,
         hadLegacyCurrentInstallWithoutVersionMarkers: promotion.hadLegacyCurrentInstallWithoutVersionMarkers,
         argv: ['repair'],
-        commandPath: 'happier doctor',
+        commandPath: formatCliCommand('doctor'),
         // Install-payload promotion is spawned by installer scripts with no
         // controlling TTY — migration must run headlessly here.
         forceNonInteractive: true,

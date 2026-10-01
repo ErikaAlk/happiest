@@ -283,7 +283,7 @@ describe('happier setup — readiness', () => {
 
     expect(commandsRun()).toEqual([]);
     expect(output.text()).toContain('temporarily-unavailable.example.com');
-    expect(output.text()).toContain('happier setup --cloud');
+    expect(output.text()).toContain('happiest setup --cloud');
     expect(process.exitCode).toBe(1);
   });
 
@@ -308,7 +308,7 @@ describe('happier setup — readiness', () => {
     expect(multipleSelectionOptions.find((option) => option.id === 'codex')?.description).toContain('Happier-managed');
     expect(output.text()).toContain('Installed OpenAI Codex CLI');
     expect(output.text()).toContain('New session');
-    expect(output.text()).toContain('happier codex');
+    expect(output.text()).toContain('happiest codex');
     expect(output.text()).not.toContain('still need a coding agent');
   });
 
@@ -316,7 +316,7 @@ describe('happier setup — readiness', () => {
     await handleSetupCliCommand(context(['--cloud']));
 
     expect(multipleSelectionPromptCount).toBe(0);
-    expect(output.text()).toContain('happier claude');
+    expect(output.text()).toContain('happiest claude');
     expect(output.text()).toContain('Agent installation and sign-in are separate');
   });
 
@@ -426,7 +426,7 @@ describe('happier setup — unattended runs (--yes)', () => {
     await handleSetupCliCommand(context(['--cloud', '--yes']));
 
     expect(commandsRun()).toEqual(['server use cloud']);
-    expect(output.text()).toContain('happier auth login');
+    expect(output.text()).toContain('happiest auth login');
     // Setup did not finish, and the installer reads a zero exit as "you're ready".
     expect(process.exitCode).toBe(1);
   });
@@ -489,7 +489,7 @@ describe('happier setup — unattended runs (--yes)', () => {
     await handleSetupCliCommand(context(['--cloud', '--yes']));
 
     expect(commandsRun()).toEqual([]);
-    expect(output.text()).toContain('happier auth login');
+    expect(output.text()).toContain('happiest auth login');
     expect(process.exitCode).toBe(1);
   });
 });

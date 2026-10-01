@@ -37,6 +37,7 @@ import {
 } from '@happier-dev/cli-common/tailscale';
 import { readTailscaleStatusSnapshot } from '@/integrations/tailscale/tailscaleStatus';
 import { promptConfirmYesNo } from '@/terminal/prompts/promptConfirmYesNo';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { defaultNameFromUrl, defaultWebappUrlFromServerUrl } from '../server/commandUtilities';
 import { describeRelayBindSignupExposure } from './hostBindSignupNotice';
 import { resolveRelayHostReachableServerUrl } from './hostReachability';
@@ -542,7 +543,7 @@ export async function runRelayHostSubcommand(args: string[]): Promise<void> {
   const json = wantsJson(args);
   const op = String(args[0] ?? '').trim();
   if (!op) {
-    throw new Error('Usage: happier relay host <install|status|start|stop|restart|uninstall> [--ssh <user@host>] [--mode user|system] [--channel stable|preview|dev] [--env KEY=VALUE]... [--server-binary <path>] [--lan | --expose | --host <ip>] [--preserve-active-server] [--yes] [--json]');
+    throw new Error(`Usage: ${formatCliCommand('relay host <install|status|start|stop|restart|uninstall> [--ssh <user@host>] [--mode user|system] [--channel stable|preview|dev] [--env KEY=VALUE]... [--server-binary <path>] [--lan | --expose | --host <ip>] [--preserve-active-server] [--yes] [--json]')}`);
   }
 
   let rest = args.slice(1);
@@ -918,7 +919,7 @@ export async function runRelayHostSubcommand(args: string[]): Promise<void> {
       } else if (publish.kind === 'approvalNeeded') {
         console.log(chalk.yellow('  Your tailnet needs an admin to approve this before the address works:'));
         console.log(chalk.yellow(`    ${publish.approvalUrl}`));
-        console.log(chalk.gray('  Re-run `happier relay host install` once it is approved.'));
+        console.log(chalk.gray(`  Re-run \`${formatCliCommand('relay host install')}\` once it is approved.`));
       } else if (publish.kind === 'failed') {
         // The relay is installed by now; a Serve failure must not unwind it.
         console.log(chalk.yellow(`  Could not publish on your tailnet: ${publish.message}`));
@@ -949,7 +950,7 @@ export async function runRelayHostSubcommand(args: string[]): Promise<void> {
       }
       console.log(chalk.gray(`  Using ${reachable.url} as this relay's address.`));
       if (reachable.chosenBy === 'default') {
-        console.log(chalk.gray('  Run `happier server add` to use a different address.'));
+        console.log(chalk.gray(`  Run \`${formatCliCommand('server add')}\` to use a different address.`));
       }
     }
 

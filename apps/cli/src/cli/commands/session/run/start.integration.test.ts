@@ -359,7 +359,7 @@ describe('happier session run start (integration)', () => {
       expect(parsed.ok).toBe(false);
       expect(parsed.kind).toBe('session_run_start');
       expect(parsed.error?.code).toBe('invalid_arguments');
-      expect(parsed.error?.message).toBe('Usage: happier session run start <session-id-or-prefix-or-tag> --intent <review|plan|delegate|voice_agent|memory_hints> --backend <backend-target> [--instructions <text>] [--permission-mode <mode>] [--retention <ephemeral|resumable>] [--run-class <bounded|long_lived>] [--io-mode <request_response|streaming>] [--json]');
+      expect(parsed.error?.message).toBe('Usage: happiest session run start <session-id-or-prefix-or-tag> --intent <review|plan|delegate|voice_agent|memory_hints> --backend <backend-target> [--instructions <text>] [--permission-mode <mode>] [--retention <ephemeral|resumable>] [--run-class <bounded|long_lived>] [--io-mode <request_response|streaming>] [--json]');
     } finally {
       output.restore();
     }

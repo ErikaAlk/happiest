@@ -24,7 +24,7 @@ describe('runInstallCliCommand', () => {
       invokeProviderCliInstall: vi.fn(),
     });
 
-    expect(log).toHaveBeenCalledWith(expect.stringContaining('happier install provider <providerId>'));
+    expect(log).toHaveBeenCalledWith(expect.stringContaining('happiest install provider <providerId>'));
   });
 
   it('prints usage for provider help requests', async () => {
@@ -40,7 +40,7 @@ describe('runInstallCliCommand', () => {
     });
 
     expect(error).not.toHaveBeenCalled();
-    expect(log).toHaveBeenCalledWith(expect.stringContaining('happier install provider <providerId>'));
+    expect(log).toHaveBeenCalledWith(expect.stringContaining('happiest install provider <providerId>'));
   });
 
   it('invokes provider installs in dry-run mode and prints the plan', async () => {

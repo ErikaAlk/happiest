@@ -8,6 +8,7 @@ import { promptInput } from '@/terminal/prompts/promptInput';
 import { buildConnectedServiceCredentialRecord, type ConnectedServiceId } from '@happier-dev/protocol';
 
 import type { CommandContext } from '@/cli/commandRegistry';
+import { formatCliCommand, resolveCliCommandName } from '@/cli/runtime/cliCommand';
 import { buildConnectedAccountOauthCredentialRecord } from '@/daemon/connectedServices/descriptors/buildConnectedAccountCredentialRecord';
 import { githubConnectedAccountTarget } from '@/daemon/connectedServices/github/githubConnectedAccountTarget';
 import { parseConnectArgs, type ConnectParsedOptions } from './connect/parseConnectArgs';
@@ -48,7 +49,7 @@ export async function handleConnectCommand(args: string[]): Promise<void> {
       const hiddenTarget = targetById.get(normalized);
       if (hiddenTarget && hiddenTarget.status === 'experimental' && !includeExperimental) {
         console.error(chalk.yellow(`Connect target '${hiddenTarget.id}' is experimental and not enabled by default.`));
-        console.error(chalk.gray(`Run: happier connect --all ${hiddenTarget.id}`));
+        console.error(chalk.gray(`Run: ${formatCliCommand(`connect --all ${hiddenTarget.id}`)}`));
         process.exit(1);
       }
       console.error(chalk.red(`Unknown connect target: ${subcommand}`));
@@ -73,24 +74,25 @@ function showConnectHelp(targets: ReadonlyArray<CloudConnectTarget>, opts: Reado
     const targetLines = targets.length > 0
       ? targets.map((t) => formatTargetLine(t)).join('\n')
       : '  (no connect targets registered)';
+    const cli = resolveCliCommandName();
     console.log(`
-${chalk.bold('happier connect')} - Connect AI vendor subscriptions and API keys to your server
+${chalk.bold(`${cli} connect`)} - Connect AI vendor subscriptions and API keys to your server
 
 ${chalk.bold('Usage:')}
 ${targetLines}
-  happier connect status       Show connection status for all vendors
-  happier connect help         Show this help message
-  happier connect --all ...    Include experimental providers
-  happier connect <target> --profile <id>      Store under a specific profile (default: default)
-  happier connect <target> --paste             Headless mode: paste redirect URL
-  happier connect <target> --device            Use device-code auth (Codex)
-  happier connect codex --api-key              Store an OpenAI API key
-  happier connect claude --api-key             Store an Anthropic API key (not Claude subscription)
-  happier connect claude --setup-token         Store a Claude setup-token (default for claude)
-  happier connect claude --oauth               Store Claude subscription OAuth (advanced)
-  happier connect github --token               Store a GitHub access token
-  happier connect <target> --no-open           Do not attempt to open a browser
-  happier connect <target> --timeout <seconds> Override OAuth timeout
+  ${cli} connect status       Show connection status for all vendors
+  ${cli} connect help         Show this help message
+  ${cli} connect --all ...    Include experimental providers
+  ${cli} connect <target> --profile <id>      Store under a specific profile (default: default)
+  ${cli} connect <target> --paste             Headless mode: paste redirect URL
+  ${cli} connect <target> --device            Use device-code auth (Codex)
+  ${cli} connect codex --api-key              Store an OpenAI API key
+  ${cli} connect claude --api-key             Store an Anthropic API key (not Claude subscription)
+  ${cli} connect claude --setup-token         Store a Claude setup-token (default for claude)
+  ${cli} connect claude --oauth               Store Claude subscription OAuth (advanced)
+  ${cli} connect github --token               Store a GitHub access token
+  ${cli} connect <target> --no-open           Do not attempt to open a browser
+  ${cli} connect <target> --timeout <seconds> Override OAuth timeout
 
 ${chalk.bold('Description:')}
   The connect command allows you to securely store your connected-service credentials
@@ -98,11 +100,11 @@ ${chalk.bold('Description:')}
   without exposing credentials locally.
 
 ${chalk.bold('Examples:')}
-  happier connect ${targets[0]?.id ?? 'gemini'}
-  happier connect status
+  ${cli} connect ${targets[0]?.id ?? 'gemini'}
+  ${cli} connect status
 
-${chalk.bold('Notes:')} 
-  • You must be authenticated with Happier first (run 'happier auth login')
+${chalk.bold('Notes:')}
+  • You must be authenticated with Happier first (run '${formatCliCommand('auth login')}')
   • Credentials are encrypted and stored securely on your server
   • You can manage your stored keys at ${configuration.webappUrl}
   ${opts.includeExperimental ? '' : '• Some providers are experimental; use --all to show them'}
@@ -111,7 +113,7 @@ ${chalk.bold('Notes:')}
 
 function formatTargetLine(target: CloudConnectTarget): string {
   const statusSuffix = target.status === 'wired' ? '' : chalk.gray(' (experimental)');
-  return `  happier connect ${target.id.padEnd(12)} ${target.vendorDisplayName}${statusSuffix}`;
+  return `  ${formatCliCommand('connect')} ${target.id.padEnd(12)} ${target.vendorDisplayName}${statusSuffix}`;
 }
 
 async function handleConnectVendor(target: CloudConnectTarget, options: ConnectParsedOptions): Promise<void> {
@@ -121,7 +123,7 @@ async function handleConnectVendor(target: CloudConnectTarget, options: ConnectP
     const credentials = await readCredentials();
     if (!credentials) {
         console.log(chalk.yellow('⚠️  Not authenticated with Happier'));
-        console.log(chalk.gray('  Please run "happier auth login" first'));
+        console.log(chalk.gray(`  Please run "${formatCliCommand('auth login')}" first`));
         process.exit(1);
     }
 
@@ -202,7 +204,7 @@ async function handleConnectStatus(targets: ReadonlyArray<CloudConnectTarget>): 
     const credentials = await readCredentials();
     if (!credentials) {
         console.log(chalk.yellow('⚠️  Not authenticated with Happier'));
-        console.log(chalk.gray('  Please run "happier auth login" first'));
+        console.log(chalk.gray(`  Please run "${formatCliCommand('auth login')}" first`));
         process.exit(1);
     }
 
@@ -245,8 +247,8 @@ async function handleConnectStatus(targets: ReadonlyArray<CloudConnectTarget>): 
     }
 
     console.log('');
-    console.log(chalk.gray('To connect a vendor, run: happier connect <vendor>'));
-    console.log(chalk.gray('Example: happier connect gemini'));
+    console.log(chalk.gray(`To connect a vendor, run: ${formatCliCommand('connect <vendor>')}`));
+    console.log(chalk.gray(`Example: ${formatCliCommand('connect gemini')}`));
     console.log('');
 }
 

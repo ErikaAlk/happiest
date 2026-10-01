@@ -33,6 +33,7 @@ import {
   isLoopbackHttpServerUrl,
 } from '@/server/serverUrlClassification';
 import { createServerUrlComparableKey } from '@happier-dev/protocol';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { runServerSelectionBackgroundServiceFollowUp } from '../backgroundServiceFollowUp.js';
 
 export async function runServerSubcommand(subcommand: string, args: string[]): Promise<boolean> {
@@ -238,7 +239,7 @@ async function cmdAdd(args: string[]): Promise<void> {
     if (!name || !serverUrlRaw) {
       throw new Error(
         [
-          'Non-interactive mode: missing required arguments for `happier server add`.',
+          `Non-interactive mode: missing required arguments for \`${formatCliCommand('server add')}\`.`,
           'Provide: --name <name> --server-url <relay-url> [--local-server-url <url>] [--webapp-url <url>] [--use].',
           'Optional actions: --start-daemon, --install-service.',
         ].join(' '),
@@ -262,7 +263,7 @@ async function cmdAdd(args: string[]): Promise<void> {
           })).trim();
           if (!canonical) {
             throw new Error(
-              'Missing canonical relay URL. Provide a public HTTPS URL, or run `happier server add --local-server-url <url> --server-url <canonical>`.',
+              `Missing canonical relay URL. Provide a public HTTPS URL, or run \`${formatCliCommand('server add --local-server-url <url> --server-url <canonical>')}\`.`,
             );
           }
           serverUrlRaw = canonical;
@@ -357,7 +358,7 @@ async function cmdAdd(args: string[]): Promise<void> {
 
   if (shouldUse) reloadConfiguration();
   console.log(chalk.green(`✓ Saved relay profile: ${created.name} (${created.id})`));
-  const prefix = `happier --server ${created.id}`;
+  const prefix = formatCliCommand(`--server ${created.id}`);
   if (shouldUse) {
     console.log(chalk.gray(`  Active relay is now: ${created.serverUrl}`));
     if (created.localServerUrl && created.localServerUrl !== created.serverUrl) {

@@ -8,6 +8,7 @@ import { wantsJson, printJsonEnvelope, writeJsonStdout } from '@/cli/output/json
 import { resolveSessionEncryptionContextFromCredentials, resolveSessionStoredContentEncryptionMode } from '@/session/transport/encryption/sessionEncryptionContext';
 import { readCommandPositionals, readFlagValue } from '@/cli/commands/shared/argvFlags';
 import { resolveSessionIdOrPrefix } from '@/session/query/resolveSessionId';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 function splitCsv(value: string | null): string[] {
   if (!value) return [];
@@ -30,7 +31,7 @@ export async function cmdSessionReviewStart(
     ],
   });
   if (!idOrPrefix) {
-    throw new Error('Usage: happier session review start <session-id-or-prefix> --engines <id1,id2> [--instructions <text>] [--json]');
+    throw new Error(`Usage: ${formatCliCommand('session review start <session-id-or-prefix> --engines <id1,id2> [--instructions <text>] [--json]')}`);
   }
 
   const enginesRaw = readFlagValue(argv, '--engines') ?? readFlagValue(argv, '--engine');
@@ -44,7 +45,7 @@ export async function cmdSessionReviewStart(
   const permissionMode = readFlagValue(argv, '--permission-mode') ?? undefined;
 
   if (engineIds.length === 0) {
-    throw new Error('Usage: happier session review start <session-id> --engines <id1,id2> [--instructions <text>] [--json]');
+    throw new Error(`Usage: ${formatCliCommand('session review start <session-id> --engines <id1,id2> [--instructions <text>] [--json]')}`);
   }
 
   const base = (() => {
@@ -74,7 +75,7 @@ export async function cmdSessionReviewStart(
       await printJsonEnvelope({ ok: false, kind: 'session_review_start', error: { code: 'not_authenticated' } });
       return;
     }
-    console.error(chalk.red('Error:'), 'Not authenticated. Run "happier auth login" first.');
+    console.error(chalk.red('Error:'), `Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
     process.exit(1);
   }
 

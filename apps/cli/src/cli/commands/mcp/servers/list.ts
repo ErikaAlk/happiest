@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 
 import { printJsonEnvelope } from '@/cli/output/jsonEnvelope';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { readMcpServersSettingsFromAccountSettings } from '@/mcp/servers/readMcpServersSettingsFromAccountSettings';
 import { loadFreshMcpAccountSettingsContext } from '../loadFreshMcpAccountSettingsContext';
 
@@ -34,7 +35,7 @@ export async function cmdMcpServersList(
       await printJsonEnvelope({ ok: false, kind: 'mcp_servers_list', error: { code: 'not_authenticated' } }, { exitCode: 1 });
       return;
     }
-    console.error(chalk.red('Error:'), 'Not authenticated. Run "happier auth login" first.');
+    console.error(chalk.red('Error:'), `Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
     process.exitCode = 1;
     return;
   }

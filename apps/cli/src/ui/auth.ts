@@ -21,6 +21,7 @@ import { tailscaleServeHttpsUrlForInternalServerUrl } from '@/integrations/tails
 import { isLoopbackHttpServerUrl, isLoopbackServerHost } from '@/server/serverUrlClassification';
 import { buildServerUrlReachabilityHintLines } from '@/server/reachability/serverUrlReachabilityHint';
 import { decodeJwtPayload } from '@/cloud/decodeJwtPayload';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import {
     createTerminalPairingAuthentication,
     openTerminalProvisioningResponse,
@@ -558,7 +559,7 @@ async function waitForAuthentication(
         const waitExpired = (): boolean => waitDeadlineMs !== null && Date.now() >= waitDeadlineMs;
         const printWaitExpired = (): void => {
             print('\n\nStopped waiting for the sign-in to be approved.');
-            print('Run `happier auth login` again to create a new sign-in request.');
+            print(`Run \`${formatCliCommand('auth login')}\` again to create a new sign-in request.`);
         };
 
         let mode: 'status-claim' | 'legacy-post' = 'status-claim';
@@ -641,7 +642,7 @@ async function waitForAuthentication(
 
                     const status = statusRes.data?.status;
                     if (status === 'not_found') {
-                        print('\n\nAuthentication request expired. Please run `happier auth login` again.');
+                        print(`\n\nAuthentication request expired. Please run \`${formatCliCommand('auth login')}\` again.`);
                         return null;
                     }
 
@@ -674,8 +675,8 @@ async function waitForAuthentication(
                             if (code === 410 && (err === 'expired' || err === 'consumed')) {
                                 const message =
                                     err === 'consumed'
-                                        ? 'Authentication request was already claimed. Please run `happier auth login` again.'
-                                        : 'Authentication request expired. Please run `happier auth login` again.';
+                                        ? `Authentication request was already claimed. Please run \`${formatCliCommand('auth login')}\` again.`
+                                        : `Authentication request expired. Please run \`${formatCliCommand('auth login')}\` again.`;
                                 print(`\n\n${message}`);
                                 return null;
                             }

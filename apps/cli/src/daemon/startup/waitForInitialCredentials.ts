@@ -1,3 +1,5 @@
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
+
 export async function waitForInitialCredentials<TDaemonLockHandle>(opts: {
   isInteractive: boolean;
   waitForAuthEnabled: boolean;
@@ -28,7 +30,7 @@ export async function waitForInitialCredentials<TDaemonLockHandle>(opts: {
 
   if (!opts.waitForAuthEnabled) {
     opts.logger.debug('[AUTH] No credentials found');
-    opts.logger.debug('[DAEMON RUN] Non-interactive mode: refusing to start auth UI. Run: happier auth login');
+    opts.logger.debug(`[DAEMON RUN] Non-interactive mode: refusing to start auth UI. Run: ${formatCliCommand('auth login')}`);
     return { action: 'exit', exitCode: 1, daemonLockHandle: opts.daemonLockHandle };
   }
 

@@ -116,10 +116,10 @@ describe('auth pair-remote (ssh)', () => {
       const firstCall = spawnSyncMock.mock.calls[0] as any[];
       expect(firstCall[0]).toBe('ssh');
       expect(firstCall[1][0]).toBe('user@host');
-      expect(firstCall[1].join(' ')).toContain('happier auth request --json');
+      expect(firstCall[1].join(' ')).toContain('happiest auth request --json');
       expect(firstCall[1]).toEqual([
         'user@host',
-        'happier',
+        'happiest',
         'auth',
         'request',
         '--json',
@@ -133,10 +133,10 @@ describe('auth pair-remote (ssh)', () => {
       const secondCall = spawnSyncMock.mock.calls[1] as any[];
       expect(secondCall[0]).toBe('ssh');
       expect(secondCall[1][0]).toBe('user@host');
-      expect(secondCall[1].join(' ')).toContain(`happier auth wait --public-key ${remotePublicKey} --json`);
+      expect(secondCall[1].join(' ')).toContain(`happiest auth wait --public-key ${remotePublicKey} --json`);
       expect(secondCall[1]).toEqual([
         'user@host',
-        'happier',
+        'happiest',
         'auth',
         'wait',
         '--public-key',

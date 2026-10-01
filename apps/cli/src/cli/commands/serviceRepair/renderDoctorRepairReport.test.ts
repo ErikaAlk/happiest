@@ -11,15 +11,16 @@ import type {
 
 import { renderDoctorRepairReport } from './renderDoctorRepairReport';
 import { renderAuthentication } from './sections/renderAuthentication';
+import { renderCurrentCli } from './sections/renderCurrentCli';
 
 const cli: CurrentCliInfo = {
   releaseChannel: 'dev',
   ringId: 'publicdev',
   version: '0.12.3',
-  binaryPath: '/home/me/.happier/cli-dev/current/bin/happier',
-  shim: 'hdev',
-  invoker: 'hdev',
-  pathWinnerShim: 'happier',
+  binaryPath: '/home/me/.happiest/cli-dev/current/happiest-dev',
+  shim: 'happiest-dev',
+  invoker: 'happiest-dev',
+  pathWinnerShim: 'happiest',
   pathWinnerResolvesToThisBinary: true,
 };
 
@@ -217,6 +218,15 @@ describe('renderDoctorRepairReport — card layout', () => {
   });
 });
 
+describe('renderCurrentCli — PATH resolves to another install', () => {
+  it("names the command on PATH and this install's own command", () => {
+    const out = renderCurrentCli({ ...cli, pathWinnerResolvesToThisBinary: false }).join('\n');
+
+    expect(out).toContain('`happiest` on your PATH resolves to a different install');
+    expect(out).toContain('run this install with happiest-dev until PATH is fixed');
+  });
+});
+
 describe('renderDoctorRepairReport — authentication evidence', () => {
   it('does not call an unreachable active credential signed in', () => {
     const out = renderAuthentication(
@@ -229,7 +239,7 @@ describe('renderDoctorRepairReport — authentication evidence', () => {
         },
       ],
       true,
-      'hdev',
+      'happiest-dev',
     ).join('\n');
 
     expect(out).toContain('credential could not be verified');
@@ -250,7 +260,7 @@ describe('renderDoctorRepairReport — authentication evidence', () => {
         },
       ],
       true,
-      'hdev',
+      'happiest-dev',
     ).join('\n');
 
     expect(out).toContain(expected);
@@ -274,20 +284,20 @@ describe('renderDoctorRepairReport — authentication evidence', () => {
         },
       ],
       true,
-      'hdev',
+      'happiest-dev',
     ).join('\n');
 
     expect(out).toContain('no recorded sign-in');
-    expect(out).toContain('hdev auth login --server old-profile');
-    expect(out).not.toContain('hdev auth --server old-profile');
+    expect(out).toContain('happiest-dev auth login --server old-profile');
+    expect(out).not.toContain('happiest-dev auth --server old-profile');
   });
 
   it('offers an executable sign-in command when no profiles are configured', () => {
-    const out = renderAuthentication([], false, 'hdev').join('\n');
+    const out = renderAuthentication([], false, 'happiest-dev').join('\n');
 
-    // `happier auth` alone only prints help; the remedy must be the parsed
+    // `happiest auth` alone only prints help; the remedy must be the parsed
     // `auth login` form so the printed command actually runs.
-    expect(out).toContain('hdev auth login');
-    expect(out).not.toMatch(/^\s*hdev auth\s*$/m);
+    expect(out).toContain('happiest-dev auth login');
+    expect(out).not.toMatch(/^\s*happiest-dev auth\s*$/m);
   });
 });

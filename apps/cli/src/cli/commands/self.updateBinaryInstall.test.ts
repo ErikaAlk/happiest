@@ -98,7 +98,7 @@ describe('happier self update for binary installs', () => {
   });
 
   it('runs the one update transaction for the channel, with no restart when no service daemon runs', async () => {
-    const { logs } = await runSelfUpdate({ invokedPath: '/opt/happier/bin/happier', rawArgv: ['happier', 'self', 'update'] });
+    const { logs } = await runSelfUpdate({ invokedPath: '/opt/happiest/bin/happiest', rawArgv: ['happiest', 'self', 'update'] });
 
     expect(runManagedCliUpdateMock).toHaveBeenCalledTimes(1);
     const params = runManagedCliUpdateMock.mock.calls[0]![0];
@@ -106,41 +106,41 @@ describe('happier self update for binary installs', () => {
     expect(params.processEnv?.HAPPIEST_HOME_DIR).toBe(homeDir);
     // The Windows quiesce is a pre-activation step only on Windows.
     expect(params.beforeActivate === undefined).toBe(process.platform !== 'win32');
-    expect(logs).toContain('Updated happier to 9.9.10');
+    expect(logs).toContain('Updated happiest to 9.9.10');
     expect(maybeRunVersionGatedRuntimeMigrationMock).toHaveBeenCalledWith({
       fromVersion: '9.9.9',
       toVersion: '9.9.10',
       argv: ['repair'],
-      commandPath: 'happier doctor',
+      commandPath: 'happiest doctor',
     });
     expect(maybeRunDoctorRepairMock).toHaveBeenCalledWith({ migrationRan: false });
   });
 
   it('binds an exact --to version to the transaction', async () => {
-    await runSelfUpdate({ invokedPath: '/opt/happier/bin/happier', rawArgv: ['happier', 'self', 'update', '--to', 'v0.2.12'] });
+    await runSelfUpdate({ invokedPath: '/opt/happiest/bin/happiest', rawArgv: ['happiest', 'self', 'update', '--to', 'v0.2.12'] });
     expect(runManagedCliUpdateMock.mock.calls[0]![0]).toMatchObject({ channel: 'stable', targetVersion: '0.2.12' });
   });
 
-  it('defaults binary self update to the publicdev ring when invoked through hdev', async () => {
-    await runSelfUpdate({ invokedPath: '/opt/happier/bin/hdev', rawArgv: ['hdev', 'self', 'update'] });
+  it('defaults binary self update to the publicdev ring when invoked through happiest-dev', async () => {
+    await runSelfUpdate({ invokedPath: '/opt/happiest/bin/happiest-dev', rawArgv: ['happiest-dev', 'self', 'update'] });
     expect(runManagedCliUpdateMock.mock.calls[0]![0]).toMatchObject({ channel: 'publicdev' });
   });
 
-  it('uses the raw hdev invoker when the packaged process argv path is generic', async () => {
-    const { logs } = await runSelfUpdate({ invokedPath: 'self', rawArgv: ['hdev', 'self', 'update'] });
+  it('uses the raw happiest-dev invoker when the packaged process argv path is generic', async () => {
+    const { logs } = await runSelfUpdate({ invokedPath: 'self', rawArgv: ['happiest-dev', 'self', 'update'] });
     expect(runManagedCliUpdateMock.mock.calls[0]![0]).toMatchObject({ channel: 'publicdev' });
-    expect(logs).toContain('Updated hdev to');
+    expect(logs).toContain('Updated happiest-dev to');
   });
 
-  it('uses the persisted default channel for the unsuffixed happier invoker', async () => {
+  it('uses the persisted default channel for the unsuffixed happiest invoker', async () => {
     writeFileSync(join(homeDir, 'default-cli-release-channel.json'), `${JSON.stringify({ releaseChannel: 'publicdev' })}\n`, 'utf8');
-    const { logs } = await runSelfUpdate({ invokedPath: 'self', rawArgv: ['happier', 'self', 'update'] });
+    const { logs } = await runSelfUpdate({ invokedPath: 'self', rawArgv: ['happiest', 'self', 'update'] });
     expect(runManagedCliUpdateMock.mock.calls[0]![0]).toMatchObject({ channel: 'publicdev' });
-    expect(logs).toContain('Updated hdev to');
+    expect(logs).toContain('Updated happiest-dev to');
   });
 
   it('defaults binary self update to the publicdev ring when invoked from the managed cli-dev current path', async () => {
-    await runSelfUpdate({ invokedPath: '/Users/test/.happier/cli-dev/current/happier', rawArgv: ['hdev', 'self', 'update'] });
+    await runSelfUpdate({ invokedPath: '/Users/test/.happiest/cli-dev/current/happiest', rawArgv: ['happiest-dev', 'self', 'update'] });
     expect(runManagedCliUpdateMock.mock.calls[0]![0]).toMatchObject({ channel: 'publicdev' });
   });
 

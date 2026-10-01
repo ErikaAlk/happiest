@@ -3,18 +3,20 @@ import chalk from 'chalk';
 import { AGENT_IDS, getProviderCliRuntimeSpec, type AgentId } from '@happier-dev/agents';
 
 import type { CommandContext } from '@/cli/commandRegistry';
+import { resolveCliCommandName } from '@/cli/runtime/cliCommand';
 import type {
   invokeProviderCliInstall as invokeProviderCliInstallDefault,
 } from '@/runtime/managedTools/invokeProviderCliInstall';
 import type { runDoctorCommand as runDoctorCommandDefault } from '@/ui/doctor';
 
 function usage(): string {
+  const cli = resolveCliCommandName();
   return [
-    `${chalk.bold('happier install')} - Installation helpers`,
+    `${chalk.bold(`${cli} install`)} - Installation helpers`,
     '',
     `${chalk.bold('Usage:')}`,
-    '  happier install doctor',
-    '  happier install provider <providerId> [--dry-run] [--force]',
+    `  ${cli} install doctor`,
+    `  ${cli} install provider <providerId> [--dry-run] [--force]`,
     '',
   ].join('\n');
 }

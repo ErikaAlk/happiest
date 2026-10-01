@@ -1,5 +1,7 @@
 import { compareMachineHosts } from '@happier-dev/protocol';
 
+import { resolveCliCommandName } from '@/cli/runtime/cliCommand';
+
 import type { CliSessionAttachEligibility } from './evaluateCliSessionAttachEligibility';
 
 /**
@@ -91,6 +93,7 @@ export function explainAttachIneligibility(input: Readonly<{
   agentAttachStrategy: AgentAttachStrategyForExplainer;
 }>): AttachIneligibilityExplanation {
   const { eligibility } = input;
+  const cli = resolveCliCommandName();
 
   if (eligibility.reasonCode === 'archived' || eligibility.reasonCode === 'inactive') {
     return {
@@ -99,7 +102,7 @@ export function explainAttachIneligibility(input: Readonly<{
       fullReason: eligibility.reasonCode === 'archived'
         ? 'This session is archived and cannot be attached.'
         : 'This session is no longer active and cannot be attached.',
-      nextStepHint: 'Use `happier resume` to revive a stopped session.',
+      nextStepHint: `Use \`${cli} resume\` to revive a stopped session.`,
     };
   }
 
@@ -108,7 +111,7 @@ export function explainAttachIneligibility(input: Readonly<{
       category: 'metadata_unreadable',
       shortReason: 'metadata cannot be decrypted on this machine',
       fullReason: 'This CLI cannot decrypt this session\'s metadata on this machine.',
-      nextStepHint: 'Sign in again with the device that originally created the session, or run `happier auth pair-remote`.',
+      nextStepHint: `Sign in again with the device that originally created the session, or run \`${cli} auth pair-remote\`.`,
     };
   }
 
@@ -187,7 +190,7 @@ export function explainAttachIneligibility(input: Readonly<{
       fullReason: sessionHost
         ? `This session is running${remoteSuffix} and can't be attached from this computer.`
         : 'Session belongs to another machine and cannot be attached from this computer.',
-      nextStepHint: 'Switch to that machine, or use `happier session list --active` to see all running sessions.',
+      nextStepHint: `Switch to that machine, or use \`${cli} session list --active\` to see all running sessions.`,
     };
   }
 
@@ -201,7 +204,7 @@ export function explainAttachIneligibility(input: Readonly<{
         category: 'remote_machine',
         shortReason: `running on ${sessionHost}`,
         fullReason: `This session is running on ${sessionHost} and can't be attached from this computer.`,
-        nextStepHint: 'Switch to that machine, or use `happier session list --active` to see all running sessions.',
+        nextStepHint: `Switch to that machine, or use \`${cli} session list --active\` to see all running sessions.`,
       };
     }
   }
@@ -226,7 +229,7 @@ export function explainAttachIneligibility(input: Readonly<{
     category: 'no_local_state',
     shortReason: 'attachment state not available on this computer',
     fullReason: eligibility.reason ?? 'No local attachment state is available for this session on this computer.',
-    nextStepHint: 'Start the daemon with `happier daemon start` and retry, or attach from the original terminal.',
+    nextStepHint: `Start the daemon with \`${cli} daemon start\` and retry, or attach from the original terminal.`,
   };
 }
 

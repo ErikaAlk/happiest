@@ -95,7 +95,7 @@ describe('terminal auth wait bound', () => {
       expect(elapsedMs).toBeLessThan(2_000);
       const logs = output.text().toLowerCase();
       expect(logs).not.toContain('\r');
-      expect(logs).toContain('happier auth login');
+      expect(logs).toContain('happiest auth login');
       expect(logs).toContain('create a new sign-in request');
       expect(logs).not.toContain('approve it on your phone');
     } finally {

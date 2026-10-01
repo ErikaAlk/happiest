@@ -18,6 +18,7 @@ import { canUseInkSelector, runSessionActionSelector } from '@/ui/ink/runSession
 import { buildCliSessionRowModel } from '@/cli/output/session/buildCliSessionRowModel';
 import { buildResumeSelectionModel, formatResumeSelectionFooter } from '@/cli/commands/resumeInteractiveSelection';
 import { RESUME_COMMAND_USAGE } from '@/cli/commandSurfaceManifest';
+import { resolveCliCommandName } from '@/cli/runtime/cliCommand';
 import {
   overlayDirectConnectedServiceEnvironment,
   resolveDirectConnectedServiceEnvironment,
@@ -96,6 +97,7 @@ export async function handleResumeCommand(
     selectResumableSessionIdFn?: typeof selectResumableSessionId;
   }>,
 ): Promise<void> {
+  const cli = resolveCliCommandName();
   const hasHelpFlag = argv.some((arg) => {
     const trimmed = typeof arg === 'string' ? arg.trim() : '';
     return trimmed === '--help' || trimmed === '-h';
@@ -119,7 +121,7 @@ export async function handleResumeCommand(
   const credentials = await readCredentialsFn();
   if (!credentials) {
     console.error(chalk.yellow('⚠️  Not authenticated with Happier'));
-    console.error(chalk.gray('  Please run "happier auth login" first'));
+    console.error(chalk.gray(`  Please run "${cli} auth login" first`));
     process.exit(1);
   }
 
@@ -133,7 +135,7 @@ export async function handleResumeCommand(
     if (!canUseInkSelectorFn()) {
       console.error(chalk.red('Error:'), 'Interactive resume is not available (raw TTY mode not supported).');
       console.log('');
-      console.log('Hint: run `happier session list --resumable` and then `happier resume <session-id>`.');
+      console.log(`Hint: run \`${cli} session list --resumable\` and then \`${cli} resume <session-id>\`.`);
       process.exit(1);
     }
 
@@ -156,7 +158,7 @@ export async function handleResumeCommand(
   if (!sessionIdOrPrefix) {
     console.error(chalk.red('Error:'), 'Missing session ID.');
     console.log('');
-    console.log('Usage: happier resume <sessionId>');
+    console.log(`Usage: ${cli} resume <sessionId>`);
     process.exit(1);
   }
 

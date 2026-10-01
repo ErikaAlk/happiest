@@ -124,7 +124,7 @@ describe('handleServiceRepairCliCommand foreign-home integration', () => {
             try {
                 await handleServiceRepairCliCommand({
                     argv: ['repair', '--json'],
-                    commandPath: 'happier doctor',
+                    commandPath: 'happiest doctor',
                 });
 
                 const json = output.json<DoctorRepairJsonEnvelope>();

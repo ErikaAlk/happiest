@@ -54,6 +54,7 @@ import { writeConsoleLogBestEffort } from '@/utils/writeConsoleBestEffort';
 import { exponentialBackoffDelay } from '@/utils/time';
 import { logger } from '@/ui/logger';
 import { isAuthenticationError } from '@/api/client/httpStatusError';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 /**
  * Configuration for offline reconnection behavior.
@@ -205,7 +206,7 @@ export function startOfflineReconnection<TSession>(
             // 401 = auth token invalid, user needs to re-authenticate
             if (isAuthenticationError(e)) {
                 logger.debug('[OfflineReconnection] Authentication error, stopping retries');
-                config.onNotify('❌ Authentication failed. Please re-authenticate with `happier auth`.');
+                config.onNotify(`❌ Authentication failed. Please re-authenticate with \`${formatCliCommand('auth')}\`.`);
                 return; // Don't schedule retry - this is a permanent failure
             }
 
@@ -280,7 +281,7 @@ export const ERROR_DESCRIPTIONS: Record<string, string> = {
     EHOSTUNREACH: 'server host unreachable',
     ENETUNREACH: 'network unreachable',
     // HTTP errors
-    '401': 'authentication failed - run `happier auth`',
+    '401': `authentication failed - run \`${formatCliCommand('auth')}\``,
     '403': 'access forbidden',
     '404': 'endpoint not found, check server deployment',
     '500': 'server internal error',

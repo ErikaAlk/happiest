@@ -7,13 +7,13 @@ import {
 import { dirname, join } from 'node:path';
 
 import { configuration } from '@/configuration';
-import { resolveInvokerName } from '@/cli/runtime/resolveInvokerName';
+import { resolveCliCommandName } from '@/cli/runtime/cliCommand';
 import { resolveCliVersionFromBinary } from '@/daemon/service/resolveCliVersionFromBinary';
 import type { BackgroundServiceRepairPlan } from '@/diagnostics/backgroundServiceRepair';
 import { isLegacyChannelScopedDefaultService } from '@/diagnostics/backgroundServiceRepair/buildBackgroundServiceRepairPlan';
 import { resolveBackgroundServiceRepairPlanForCurrentRuntime } from '@/diagnostics/backgroundServiceRepair/resolveBackgroundServiceRepairPlanForCurrentRuntime';
 import type { DaemonServiceMode } from '@/daemon/service/plan';
-import { getFirstPartyComponentCatalogEntry } from '@happier-dev/cli-common/firstPartyRuntime';
+import { getFirstPartyComponentCatalogEntry, resolveManagedCliToolNameForRing } from '@happier-dev/cli-common/firstPartyRuntime';
 import type { DaemonServiceInventoryEntry } from '@/daemon/service/cli';
 import { resolveDaemonServiceCliRuntimeFromEnv, resolveDaemonServiceInventoryEntries } from '@/daemon/service/cli';
 import type { DoctorSnapshot } from '@/ui/doctorSnapshot';
@@ -155,15 +155,8 @@ function buildCurrentCliInfo(
   const version = installedVersion
     ?? (String(configuration.currentCliVersion ?? '').trim() || '(unknown)');
 
-  const shim: CurrentCliInfo['shim'] = releaseChannel === 'stable'
-    ? 'happier'
-    : releaseChannel === 'preview'
-      ? 'hprev'
-      : 'hdev';
-  // Prefer the actual invocation name (matches the binary the user ran) so
-  // repair copy can suggest commands the user can copy-paste verbatim.
-  // Fall back to the channel-derived shim, then the canonical `happier`.
-  const invoker = resolveInvokerName() ?? shim ?? 'happier';
+  const shim = resolveManagedCliToolNameForRing(ringId);
+  const invoker = resolveCliCommandName();
   return {
     releaseChannel,
     ringId,

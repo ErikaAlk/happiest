@@ -142,7 +142,7 @@ describe('handleServiceRepairCliCommand', () => {
 
     await expect(handleServiceRepairCliCommand({
       argv: ['repair', '--mode', 'system', '--yes'],
-      commandPath: 'happier service',
+      commandPath: 'happiest service',
     })).rejects.toThrow('Root privileges are required for system mode automatic startup repair');
 
     expect(applyBackgroundServiceRepairPlanMock).not.toHaveBeenCalled();
@@ -153,7 +153,7 @@ describe('handleServiceRepairCliCommand', () => {
 
     await expect(handleServiceRepairCliCommand({
       argv: ['repair', '--mode', 'system', '--yes', '--json'],
-      commandPath: 'happier service',
+      commandPath: 'happiest service',
     })).rejects.toThrow('Root privileges are required for system mode automatic startup repair');
 
     expect(applyBackgroundServiceRepairPlanMock).not.toHaveBeenCalled();
@@ -178,7 +178,7 @@ describe('handleServiceRepairCliCommand', () => {
 
     await expect(handleServiceRepairCliCommand({
       argv: ['repair', '--mode', 'system', '--yes'],
-      commandPath: 'happier service',
+      commandPath: 'happiest service',
     })).rejects.toThrow('System mode background services are only supported on Linux');
 
     expect(applyBackgroundServiceRepairPlanMock).not.toHaveBeenCalled();
@@ -212,7 +212,7 @@ describe('handleServiceRepairCliCommand', () => {
       try {
         await handleServiceRepairCliCommand({
           argv: ['repair', '--json'],
-          commandPath: 'happier service',
+          commandPath: 'happiest service',
         });
 
         // The legacy ownership-note `warning` string was retired — its info
@@ -262,7 +262,7 @@ describe('handleServiceRepairCliCommand', () => {
     try {
       await handleServiceRepairCliCommand({
         argv: ['repair', '--json'],
-        commandPath: 'happier doctor',
+        commandPath: 'happiest doctor',
       });
     } finally {
       output.restore();
@@ -303,7 +303,7 @@ describe('handleServiceRepairCliCommand', () => {
       try {
         await handleServiceRepairCliCommand({
           argv: ['repair', '--server', 'http://127.0.0.1:52753', '--json'],
-          commandPath: 'happier service',
+          commandPath: 'happiest service',
         });
 
         const json = output.json();
@@ -342,7 +342,7 @@ describe('handleServiceRepairCliCommand', () => {
     try {
       await handleServiceRepairCliCommand({
         argv: ['repair'],
-        commandPath: 'happier doctor',
+        commandPath: 'happiest doctor',
       });
 
       // New unified renderer: automatic-startup entries + manually-started daemons
@@ -387,7 +387,7 @@ describe('handleServiceRepairCliCommand', () => {
     try {
       await handleServiceRepairCliCommand({
         argv: ['repair', '--report-only'],
-        commandPath: 'happier doctor',
+        commandPath: 'happiest doctor',
       });
 
       expect(output.text()).toContain('Background services');
@@ -438,7 +438,7 @@ describe('handleServiceRepairCliCommand', () => {
     try {
       await handleServiceRepairCliCommand({
         argv: ['repair', '--json'],
-        commandPath: 'happier service',
+        commandPath: 'happiest service',
       });
     } finally {
       output.restore();
@@ -496,7 +496,7 @@ describe('handleServiceRepairCliCommand', () => {
 
     await expect(handleServiceRepairCliCommand({
       argv: ['repair', '--yes', '--json'],
-      commandPath: 'happier service',
+      commandPath: 'happiest service',
     })).rejects.toThrow('Root privileges are required to apply system mode automatic startup repair actions');
 
     expect(applyBackgroundServiceRepairPlanMock).not.toHaveBeenCalled();
@@ -560,7 +560,7 @@ describe('handleServiceRepairCliCommand', () => {
     try {
       await handleServiceRepairCliCommand({
         argv: ['repair', '--mode', 'system', '--json'],
-        commandPath: 'happier service',
+        commandPath: 'happiest service',
       });
     } finally {
       output.restore();
@@ -623,7 +623,7 @@ describe('handleServiceRepairCliCommand', () => {
 
     await expect(handleServiceRepairCliCommand({
       argv: ['repair', '--mode', 'system', '--yes', '--json'],
-      commandPath: 'happier service',
+      commandPath: 'happiest service',
     })).rejects.toThrow('System mode automatic startup repair requires --system-user (or SUDO_USER / HAPPIEST_DAEMON_SERVICE_SYSTEM_USER)');
 
     expect(applyBackgroundServiceRepairPlanMock).not.toHaveBeenCalled();
@@ -673,7 +673,7 @@ describe('handleServiceRepairCliCommand', () => {
     try {
       await handleServiceRepairCliCommand({
         argv: ['repair', '--mode', 'system', '--yes', '--json'],
-        commandPath: 'happier service',
+        commandPath: 'happiest service',
       });
     } finally {
       output.restore();

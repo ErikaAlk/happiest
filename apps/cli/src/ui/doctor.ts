@@ -30,6 +30,7 @@ import {
 import { productIdentity } from '@happier-dev/release-runtime/productIdentity'
 import { getReleaseRingCatalogEntry } from '@happier-dev/release-runtime/releaseRings'
 import { resolveDaemonStartupSourceServiceManagedState } from '@/daemon/ownership/daemonOwnershipMetadata'
+import { resolveCliCommandName } from '@/cli/runtime/cliCommand'
 
 export function maskValue(value: string): string;
 export function maskValue(value: string | undefined): string | undefined;
@@ -196,6 +197,7 @@ export async function runDoctorCommand(filter?: 'all' | 'daemon'): Promise<void>
     if (!filter) {
         filter = 'all';
     }
+    const cli = resolveCliCommandName();
 
     let snapshot: DoctorSnapshot | null = null;
     try {
@@ -362,9 +364,9 @@ export async function runDoctorCommand(filter?: 'all' | 'daemon'): Promise<void>
                     console.log(chalk.yellow('  Warning: Current CLI differs from the running daemon.'));
                     console.log(chalk.gray(
                         serviceManaged === true
-                            ? '  Use `happier doctor repair` if you want automatic startup to switch to this installation.'
+                            ? `  Use \`${cli} doctor repair\` if you want automatic startup to switch to this installation.`
                             : serviceManaged === false
-                                ? '  Use `happier daemon restart` if you want the manual start to switch to this installation.'
+                                ? `  Use \`${cli} daemon restart\` if you want the manual start to switch to this installation.`
                                 : '  Restart the running daemon before trying to switch this installation.',
                     ));
                 }
@@ -401,9 +403,9 @@ export async function runDoctorCommand(filter?: 'all' | 'daemon'): Promise<void>
                 console.log(chalk.yellow('  Warning: Current CLI differs from the running daemon.'));
                 console.log(chalk.gray(
                     resolveDaemonStartupSourceServiceManagedState(state.startupSource, state.serviceLabel) === true
-                        ? '  Use `happier doctor repair` if you want automatic startup to switch to this installation.'
+                        ? `  Use \`${cli} doctor repair\` if you want automatic startup to switch to this installation.`
                         : resolveDaemonStartupSourceServiceManagedState(state.startupSource, state.serviceLabel) === false
-                            ? '  Use `happier daemon restart` if you want the manual start to switch to this installation.'
+                            ? `  Use \`${cli} daemon restart\` if you want the manual start to switch to this installation.`
                             : '  Restart the running daemon before trying to switch this installation.',
                 ));
             }
@@ -474,7 +476,7 @@ export async function runDoctorCommand(filter?: 'all' | 'daemon'): Promise<void>
 
             if (allProcesses.length > 1) { // More than just current process
                 console.log(chalk.bold('\n💡 Process Management'));
-                console.log(chalk.gray('To clean up runaway processes: happier doctor clean'));
+                console.log(chalk.gray(`To clean up runaway processes: ${cli} doctor clean`));
             }
 
             const cleanupSummary = cleanupOwnershipSummary;

@@ -7,6 +7,7 @@ import { configuration } from '@/configuration';
 import { checkIfDaemonRunningAndCleanupStaleState } from '@/daemon/controlClient';
 import { printJsonEnvelope, wantsJson } from '@/cli/output/jsonEnvelope';
 import { applyServerSelectionFromArgs } from '@/server/serverSelection';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 export async function handleAuthStatus(argv: string[] = []): Promise<void> {
   const args = await applyServerSelectionFromArgs(argv);
@@ -26,7 +27,7 @@ export async function handleAuthStatus(argv: string[] = []): Promise<void> {
 
   if (!credentials) {
     console.log(chalk.red(`✗ Not authenticated on ${relayHost}`));
-    console.log(chalk.gray('  Run "happier auth login" to authenticate'));
+    console.log(chalk.gray(`  Run "${formatCliCommand('auth login')}" to authenticate`));
     return;
   }
 
@@ -38,7 +39,7 @@ export async function handleAuthStatus(argv: string[] = []): Promise<void> {
 
     console.log(chalk.red(`✗ Not authenticated on ${relayHost}`));
     console.log(chalk.gray('  Stored credentials were rejected by the selected relay'));
-    console.log(chalk.gray('  Run "happier auth login --force" to authenticate again'));
+    console.log(chalk.gray(`  Run "${formatCliCommand('auth login --force')}" to authenticate again`));
     return;
   }
 
@@ -100,7 +101,7 @@ export async function handleAuthStatus(argv: string[] = []): Promise<void> {
     console.log(chalk.gray(`  Host: ${os.hostname()}`));
   } else {
     console.log(chalk.yellow('⚠️  Machine not registered'));
-    console.log(chalk.gray('  Run "happier auth login --force" to fix this'));
+    console.log(chalk.gray(`  Run "${formatCliCommand('auth login --force')}" to fix this`));
   }
 
   console.log(chalk.gray(`\n  Data directory: ${configuration.happyHomeDir}`));

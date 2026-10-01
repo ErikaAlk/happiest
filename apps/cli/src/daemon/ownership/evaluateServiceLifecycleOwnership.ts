@@ -1,3 +1,4 @@
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import type { CurrentDaemonOwner, DaemonOwnerEvaluation } from '@/daemon/ownership/evaluateCurrentDaemonOwner';
 
 export type DaemonServiceLifecycleConflict =
@@ -70,7 +71,7 @@ export function renderDaemonServiceLifecycleOwnershipConflict(params: Readonly<{
       title: 'A manually started daemon is currently running for the selected relay.',
       lines: [
         ...buildOwnerDetails(owner),
-        `Use \`happier daemon stop\` before trying to ${actionDescription}.`,
+        `Use \`${formatCliCommand('daemon stop')}\` before trying to ${actionDescription}.`,
       ],
     };
   }
@@ -82,7 +83,7 @@ export function renderDaemonServiceLifecycleOwnershipConflict(params: Readonly<{
     title: 'Another background service is currently running for the selected relay.',
     lines: [
       ...buildOwnerDetails(owner),
-      `Use \`happier service stop\` or \`happier doctor repair\` before trying to ${actionDescription}.`,
+      `Use \`${formatCliCommand('service stop')}\` or \`${formatCliCommand('doctor repair')}\` before trying to ${actionDescription}.`,
     ],
   };
 }
@@ -106,7 +107,7 @@ export function renderDaemonServiceStopOwnershipNote(params: Readonly<{
       lines: [
         ...buildOwnerDetails(owner),
         'A different background service is currently running for the selected relay.',
-        'Use `happier service stop` from the currently owning installation, or run `happier service status` to inspect the active owner.',
+        `Use \`${formatCliCommand('service stop')}\` from the currently owning installation, or run \`${formatCliCommand('service status')}\` to inspect the active owner.`,
       ],
     };
   }
@@ -117,7 +118,7 @@ export function renderDaemonServiceStopOwnershipNote(params: Readonly<{
       lines: [
         ...buildOwnerDetails(owner),
         'A manually started daemon is currently running for the selected relay.',
-        'Use `happier daemon stop` if you also want to stop the current daemon.',
+        `Use \`${formatCliCommand('daemon stop')}\` if you also want to stop the current daemon.`,
       ],
     };
   }
@@ -150,7 +151,7 @@ export function renderDaemonServiceRepairOwnershipNote(params: Readonly<{
       lines: [
         ...buildOwnerDetails(owner),
         'A manually started daemon is currently running on this computer.',
-        'Use `happier daemon stop` or `happier daemon restart` if you also need to switch the running daemon to this installation.',
+        `Use \`${formatCliCommand('daemon stop')}\` or \`${formatCliCommand('daemon restart')}\` if you also need to switch the running daemon to this installation.`,
       ],
     };
   }

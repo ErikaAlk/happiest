@@ -1,3 +1,4 @@
+import { resolveCliCommandName } from '@/cli/runtime/cliCommand';
 import { formatReleaseChannel } from '@/ui/format/releaseChannel';
 import { cleanRelayRuntimeVersion, code, glyph, sectionHeader, severity } from '@/ui/format/styles';
 import type {
@@ -65,7 +66,7 @@ function cardFor(entry: LocalRelayEntry, findings: readonly RepairFinding[], inv
 export function renderLocalRelays(
   entries: readonly LocalRelayEntry[],
   findings: readonly RepairFinding[],
-  invoker: string = 'happier',
+  invoker: string = resolveCliCommandName(),
 ): string[] {
   if (entries.length === 0) return [];
   const lines: string[] = [sectionHeader(SECTION_LOCAL_RELAYS)];

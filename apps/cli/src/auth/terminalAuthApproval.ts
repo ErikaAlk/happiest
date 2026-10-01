@@ -4,6 +4,7 @@ import tweetnacl from 'tweetnacl';
 import { deriveAccountMachineKeyFromRecoverySecret } from '@happier-dev/protocol';
 
 import { configuration } from '@/configuration';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { readCredentials } from '@/persistence';
 
 function decodePublicKey(value: string): Uint8Array {
@@ -51,7 +52,7 @@ export async function approveTerminalAuthRequest(params: Readonly<{ publicKey: s
   const recipientPk = decodePublicKey(params.publicKey);
   const creds = await readCredentials();
   if (!creds) {
-    throw new Error('Not authenticated. Run `happier auth login` first.');
+    throw new Error(`Not authenticated. Run \`${formatCliCommand('auth login')}\` first.`);
   }
   const response = encryptForTerminal(recipientPk, buildApprovalPayload(creds));
 

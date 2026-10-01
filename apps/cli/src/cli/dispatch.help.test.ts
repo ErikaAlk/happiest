@@ -36,11 +36,11 @@ describe('dispatchCli root help', () => {
     });
 
     expect(defaultHandlerSpy).not.toHaveBeenCalled();
-    expect(output.lines).toContainEqual(expect.stringContaining('happier - AI CLI On the Go'));
-    expect(output.lines).toContainEqual(expect.stringContaining('happier codex'));
-    expect(output.lines).toContainEqual(expect.stringContaining('happier session'));
-    expect(output.lines).toContainEqual(expect.stringContaining('happier resume [<session-id-or-prefix>]'));
-    expect(output.lines.join('\n')).not.toMatch(/^\s*happier sessions(?:\s|$)/m);
+    expect(output.lines).toContainEqual(expect.stringContaining('happiest - AI CLI On the Go'));
+    expect(output.lines).toContainEqual(expect.stringContaining('happiest codex'));
+    expect(output.lines).toContainEqual(expect.stringContaining('happiest session'));
+    expect(output.lines).toContainEqual(expect.stringContaining('happiest resume [<session-id-or-prefix>]'));
+    expect(output.lines.join('\n')).not.toMatch(/^\s*happiest sessions(?:\s|$)/m);
     expect(output.lines).not.toContainEqual(expect.stringContaining('Claude Code Options'));
   });
 

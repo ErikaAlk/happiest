@@ -1,3 +1,5 @@
+import { resolveCliCommandName } from '@/cli/runtime/cliCommand';
+
 export type CliCommandSurfaceEntry = Readonly<{
   command: string | null;
   rootHelpLabel?: string;
@@ -6,99 +8,101 @@ export type CliCommandSurfaceEntry = Readonly<{
   allowTmux: boolean;
 }>;
 
-export const RESUME_COMMAND_USAGE = 'happier resume [<session-id-or-prefix>]';
+const cli = resolveCliCommandName();
+
+export const RESUME_COMMAND_USAGE = `${cli} resume [<session-id-or-prefix>]`;
 
 const COMMAND_SURFACE_MANIFEST: readonly CliCommandSurfaceEntry[] = [
   {
     command: null,
-    rootHelpLabel: 'happier [options]',
+    rootHelpLabel: `${cli} [options]`,
     rootHelpDescription: 'Start the default backend with mobile control',
     allowTmux: true,
   },
   {
     command: 'setup',
-    rootHelpLabel: 'happier setup',
+    rootHelpLabel: `${cli} setup`,
     rootHelpDescription: 'Connect this computer to your Happier account',
     rootHelpDetail: 'choose where your relay lives, then sign in',
     allowTmux: false,
   },
   {
     command: 'auth',
-    rootHelpLabel: 'happier auth',
+    rootHelpLabel: `${cli} auth`,
     rootHelpDescription: 'Manage authentication',
     allowTmux: false,
   },
   {
     command: 'automation',
-    rootHelpLabel: 'happier automation',
+    rootHelpLabel: `${cli} automation`,
     rootHelpDescription: 'Trigger and manage automations',
     allowTmux: false,
   },
   {
     command: 'mcp',
-    rootHelpLabel: 'happier mcp',
+    rootHelpLabel: `${cli} mcp`,
     rootHelpDescription: 'Expose the MCP server and manage MCP clients',
     allowTmux: false,
   },
   {
     command: 'codex',
-    rootHelpLabel: 'happier codex',
+    rootHelpLabel: `${cli} codex`,
     rootHelpDescription: 'Start Codex mode',
     allowTmux: true,
   },
   {
     command: 'opencode',
-    rootHelpLabel: 'happier opencode',
+    rootHelpLabel: `${cli} opencode`,
     rootHelpDescription: 'Start OpenCode mode (ACP)',
     allowTmux: true,
   },
   {
     command: 'gemini',
-    rootHelpLabel: 'happier gemini',
+    rootHelpLabel: `${cli} gemini`,
     rootHelpDescription: 'Start Gemini mode (ACP)',
     allowTmux: true,
   },
   {
     command: 'connect',
-    rootHelpLabel: 'happier connect',
+    rootHelpLabel: `${cli} connect`,
     rootHelpDescription: 'Connect AI vendor API keys',
     allowTmux: false,
   },
   {
     command: 'notify',
-    rootHelpLabel: 'happier notify',
+    rootHelpLabel: `${cli} notify`,
     rootHelpDescription: 'Send push notification',
     allowTmux: false,
   },
   {
     command: 'install',
-    rootHelpLabel: 'happier install',
+    rootHelpLabel: `${cli} install`,
     rootHelpDescription: 'Install provider CLIs and helpers',
     allowTmux: false,
   },
   {
     command: 'status',
-    rootHelpLabel: 'happier status',
+    rootHelpLabel: `${cli} status`,
     rootHelpDescription: 'Show system status and recommended repairs',
     allowTmux: false,
   },
   {
     command: 'service',
-    rootHelpLabel: 'happier service',
+    rootHelpLabel: `${cli} service`,
     rootHelpDescription: 'Manage automatic startup',
     rootHelpDetail: 'background services on this computer',
     allowTmux: false,
   },
   {
     command: 'daemon',
-    rootHelpLabel: 'happier daemon',
+    rootHelpLabel: `${cli} daemon`,
     rootHelpDescription: 'Manage the local daemon process',
     rootHelpDetail: 'started manually or via automatic startup',
     allowTmux: false,
   },
   {
     command: 'doctor',
-    rootHelpLabel: 'happier doctor',
+    rootHelpLabel: `${cli} doctor`,
     rootHelpDescription: 'System diagnostics & troubleshooting',
     allowTmux: false,
   },
@@ -125,7 +129,7 @@ const COMMAND_SURFACE_MANIFEST: readonly CliCommandSurfaceEntry[] = [
   {
     command: 'session',
     allowTmux: false,
-    rootHelpLabel: 'happier session',
+    rootHelpLabel: `${cli} session`,
     rootHelpDescription: 'Manage sessions and execution runs',
   },
   {

@@ -2,6 +2,8 @@ import { createRelayHostEngine } from '@happier-dev/cli-common/relayHost';
 import { resolveManagedCliReleaseChannelSync } from '@happier-dev/cli-common/firstPartyRuntime';
 import { getReleaseRingPublicLabel, type PublicReleaseRingId } from '@happier-dev/release-runtime/releaseRings';
 
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
+
 const LOCAL_RELAY_CHANNELS: readonly ('stable' | 'preview' | 'dev')[] = ['stable', 'preview', 'dev'];
 
 export type LocalRelayMatch = Readonly<{
@@ -115,7 +117,7 @@ export async function resolveLocalRelay(params: Readonly<{
  */
 export async function buildMissingLocalRelayError(channel: 'stable' | 'preview' | 'dev'): Promise<string> {
   const others = (await listAllInstalledLocalRelays()).filter((e) => e.channel !== channel);
-  const base = `No local relay installed on the ${channel} channel. Run \`happier relay host install --channel ${channel}\` first.`;
+  const base = `No local relay installed on the ${channel} channel. Run \`${formatCliCommand(`relay host install --channel ${channel}`)}\` first.`;
   if (others.length === 0) return base;
   const list = others.map((e) => `${e.channel} (${e.url})`).join(', ');
   return `${base}\n  Other installed relays: ${list}. Pass --local-channel <stable|preview|dev> to target one explicitly.`;

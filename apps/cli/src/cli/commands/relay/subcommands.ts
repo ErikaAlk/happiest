@@ -25,6 +25,7 @@ import { createServerUrlComparableKey } from '@happier-dev/protocol';
 
 import { resolveInstalledDaemonServiceInventoryForCurrentRelay } from '@/daemon/ownership/daemonServiceInventory';
 import { resolveDaemonServiceCliRuntimeFromEnv } from '@/daemon/service/cli';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 import { handleAuthCommand } from '../auth';
 import { handleDaemonCliCommand } from '../daemon';
@@ -130,7 +131,7 @@ async function cmdSet(args: string[], options: CmdSetOptions = {}): Promise<void
     || argvValue(resolvedArgs, '--relay-url')
     || firstPositionalArg(resolvedArgs);
   if (!serverUrlRaw) {
-    throw new Error('Usage: happier relay set <relay-url | --local> [--use] [--json] [--server-url <url>] [--webapp-url <url>] [--local-server-url <url>]');
+    throw new Error(`Usage: ${formatCliCommand('relay set <relay-url | --local> [--use] [--json] [--server-url <url>] [--webapp-url <url>] [--local-server-url <url>]')}`);
   }
 
   const serverUrl = normalizeUrlOrThrow(serverUrlRaw, 'relay url');

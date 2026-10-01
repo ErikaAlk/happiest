@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { resolveCliCommandName } from '@/cli/runtime/cliCommand';
 import type {
   BugReportDeploymentType,
   BugReportFrequency,
@@ -39,11 +40,12 @@ export type ParsedBugReportArgs = {
 };
 
 export function bugReportUsage(): string {
+  const cli = resolveCliCommandName();
   return [
-    `${chalk.bold('happier bug-report')} - Submit a structured bug report with optional diagnostics`,
+    `${chalk.bold(`${cli} bug-report`)} - Submit a structured bug report with optional diagnostics`,
     '',
     `${chalk.bold('Usage:')}`,
-    '  happier bug-report --title <title> --summary <text> [options]',
+    `  ${cli} bug-report --title <title> --summary <text> [options]`,
     '',
     `${chalk.bold('Required fields:')}`,
     '  --title <text>',

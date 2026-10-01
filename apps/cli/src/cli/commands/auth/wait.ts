@@ -7,6 +7,7 @@ import tweetnacl from 'tweetnacl';
 import { decodeBase64 } from '@/api/encryption';
 import { writeJsonStdout } from '@/cli/output/jsonEnvelope';
 import { configuration } from '@/configuration';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { readCredentials, writeCredentialsDataKey, writeCredentialsLegacy, type Credentials } from '@/persistence';
 import { applyServerSelectionFromArgs } from '@/server/serverSelection';
 import { ensureMachineIdForCredentials } from '@/ui/auth';
@@ -139,7 +140,7 @@ export async function handleAuthWait(argsRaw: string[]): Promise<void> {
     return;
   }
   if (pairingRequirement === 'v3' && !pairing) {
-    console.error(`${V3_REQUIRED_ERROR} Run \`happier auth request --json\` again.`);
+    console.error(`${V3_REQUIRED_ERROR} Run \`${formatCliCommand('auth request --json')}\` again.`);
     process.exit(1);
   }
 
@@ -152,7 +153,7 @@ export async function handleAuthWait(argsRaw: string[]): Promise<void> {
     });
     const status = statusRes?.data?.status;
     if (status === 'not_found') {
-      console.error('Authentication request expired. Run `happier auth request --json` again.');
+      console.error(`Authentication request expired. Run \`${formatCliCommand('auth request --json')}\` again.`);
       process.exit(1);
     }
 

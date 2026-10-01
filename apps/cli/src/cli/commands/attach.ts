@@ -35,6 +35,7 @@ import { hostname } from 'node:os';
 import { buildAttachSelectionModel, formatAttachIneligibilityFooter } from './attachInteractiveSelection';
 
 import type { CommandContext } from '@/cli/commandRegistry';
+import { formatCliCommand, resolveCliCommandName } from '@/cli/runtime/cliCommand';
 
 type AttachCommandDeps = Readonly<{
   readCredentialsFn?: () => Promise<Credentials | null>;
@@ -187,7 +188,7 @@ async function selectAttachableSessionId(params: Readonly<{
   return await runSessionActionSelector({
     title: 'Attach to a running session',
     actionVerb: 'attach',
-    footerHint: params.footerHint ?? 'Use `happier resume` for stopped sessions.',
+    footerHint: params.footerHint ?? `Use \`${formatCliCommand('resume')}\` for stopped sessions.`,
     rows: params.rows,
     onProbe: params.probeSessionIdFn,
   });
@@ -197,13 +198,14 @@ export async function handleAttachCommand(
   argv: string[],
   deps: AttachCommandDeps = {},
 ): Promise<void> {
+  const cli = resolveCliCommandName();
   const hasHelpFlag = argv.some((arg) => {
     const trimmed = typeof arg === 'string' ? arg.trim() : '';
     return trimmed === '--help' || trimmed === '-h';
   });
   if (hasHelpFlag) {
-    console.log('happier attach');
-    console.log('happier attach <session-id-or-prefix>');
+    console.log(`${cli} attach`);
+    console.log(`${cli} attach <session-id-or-prefix>`);
     console.log('');
     console.log('Attaches a terminal to a running session on this computer.');
     return;
@@ -237,13 +239,13 @@ export async function handleAttachCommand(
     if (!canUseInkSelectorFn()) {
       console.error(chalk.red('Error:'), 'Interactive attach is not available (raw TTY mode not supported).');
       console.log('');
-      console.log('Hint: run `happier session list --active` and then `happier attach <session-id>`.');
+      console.log(`Hint: run \`${cli} session list --active\` and then \`${cli} attach <session-id>\`.`);
       process.exit(1);
     }
 
     credentialsForInteractive = await (deps.readCredentialsFn ?? readCredentials)();
     if (!credentialsForInteractive) {
-      console.error(chalk.red('Error:'), 'Not authenticated. Run "happier auth login" first.');
+      console.error(chalk.red('Error:'), `Not authenticated. Run "${cli} auth login" first.`);
       process.exit(1);
     }
 
@@ -271,7 +273,7 @@ export async function handleAttachCommand(
       accountSettings,
     });
     const footerHint = formatAttachIneligibilityFooter(selectionModel.hint)
-      ?? 'Use `happier resume` for stopped sessions.';
+      ?? `Use \`${cli} resume\` for stopped sessions.`;
     const selected = await selectAttachableSessionIdFn({
       rows: selectionModel.rows,
       probeSessionIdFn: selectionModel.probeSessionIdFn,
@@ -286,7 +288,7 @@ export async function handleAttachCommand(
       // "running but unattachable from here" so the user sees the actual
       // cause. Today we only land here when 0 candidate rows survived.
       console.log('No active sessions on this machine.');
-      console.log('Hint: use `happier resume` for stopped sessions, or `happier session list --active` to see remote sessions.');
+      console.log(`Hint: use \`${cli} resume\` for stopped sessions, or \`${cli} session list --active\` to see remote sessions.`);
       return;
     }
     sessionIdOrPrefix = selected.sessionId;
@@ -295,7 +297,7 @@ export async function handleAttachCommand(
   if (!sessionIdOrPrefix) {
     console.error(chalk.red('Error:'), 'Missing session ID.');
     console.log('');
-    console.log('Usage: happier attach <sessionId>');
+    console.log(`Usage: ${cli} attach <sessionId>`);
     process.exit(1);
   }
 

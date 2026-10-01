@@ -4,6 +4,7 @@ import { DiffProcessor } from './utils/diffProcessor';
 import { randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { logger } from '@/ui/logger';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { resolveHasTTY } from '@/ui/tty/resolveHasTTY';
 import { Credentials } from '@/persistence';
 import type { Metadata } from '@/api/types';
@@ -268,7 +269,7 @@ function formatCodexResumeFailure(params: Readonly<{
         && cause instanceof Error
         && /\bthread\s+\S+\s+already has an active writer\b/i.test(cause.message);
     const guidance = activeWriter
-        ? 'Another Codex process is already writing to this thread. Happier cannot resume it through a separate app-server while that writer is active. Continue in the original Codex session. To share control of a new session, start a new session in Happier and run `happier attach` on the same machine.'
+        ? `Another Codex process is already writing to this thread. Happier cannot resume it through a separate app-server while that writer is active. Continue in the original Codex session. To share control of a new session, start a new session in Happier and run \`${formatCliCommand('attach')}\` on the same machine.`
         : `ensure Codex ${backendLabel} can run${localToRemote ? ' reliably' : ''} on this machine, then retry${localToRemote ? ' switching to remote' : ''}.`;
     const reason = formatErrorForUi(cause);
     return localToRemote

@@ -15,10 +15,11 @@ import {
   formatProtocolEnumUsage,
   parseProtocolEnumFlag,
 } from '@/cli/commands/shared/parseProtocolEnumFlag';
+import { formatCliCommand, resolveCliCommandName } from '@/cli/runtime/cliCommand';
 
 const EXECUTION_RUN_STATUS_USAGE = formatProtocolEnumUsage(ExecutionRunStatusSchema);
 
-export const SESSION_RUN_LIST_USAGE = `happier session run list <session-id-or-prefix-or-tag> [--backend <backend-target>] [--status <${EXECUTION_RUN_STATUS_USAGE}>] [--limit <count>] [--json]`;
+export const SESSION_RUN_LIST_USAGE = `${resolveCliCommandName()} session run list <session-id-or-prefix-or-tag> [--backend <backend-target>] [--status <${EXECUTION_RUN_STATUS_USAGE}>] [--limit <count>] [--json]`;
 
 export async function cmdSessionRunList(
   argv: string[],
@@ -49,7 +50,7 @@ export async function cmdSessionRunList(
       await printJsonEnvelope({ ok: false, kind: 'session_run_list', error: { code: 'not_authenticated' } });
       return;
     }
-    console.error(chalk.red('Error:'), 'Not authenticated. Run "happier auth login" first.');
+    console.error(chalk.red('Error:'), `Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
     process.exit(1);
   }
 

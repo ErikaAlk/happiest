@@ -1,5 +1,7 @@
 import chalk from 'chalk';
 
+import { resolveCliCommandName } from '@/cli/runtime/cliCommand';
+
 import { listRootHelpCommands } from './commandSurfaceManifest';
 
 const HELP_LABEL_WIDTH = 27;
@@ -9,9 +11,10 @@ function formatHelpEntry(label: string, description: string): string {
 }
 
 export function buildRootHelpText(): string {
+  const cli = resolveCliCommandName();
   const helpEntries = listRootHelpCommands();
   return `
-${chalk.bold('happier')} - AI CLI On the Go
+${chalk.bold(cli)} - AI CLI On the Go
 
 ${chalk.bold('Usage:')}
 ${helpEntries.map((entry) => {
@@ -23,22 +26,22 @@ ${helpEntries.map((entry) => {
   }).join('\n')}
 
 ${chalk.bold('Examples:')}
-  happier                    Start session
-  happier --refresh-settings  Force-refresh account settings before starting
-  happier --launch-profile <id-or-name> Start with a launch profile from your settings
-  happier --auth cs:<id>    Start with an exact Connected Services profile or pool
-  happier --auth native     Start with native provider authentication
-  happier --yolo             Start with bypassing permissions
-                              happier sugar for --dangerously-skip-permissions
-  happier --chrome           Enable Chrome browser access for this session
-  happier --no-chrome        Disable Chrome even if default is on
-  happier --js-runtime bun   Use bun instead of node to spawn JavaScript-backed CLIs
-  happier auth login --force Authenticate
-  happier profiles list      List available backend profiles
-  happier doctor             Run diagnostics
+  ${cli}                    Start session
+  ${cli} --refresh-settings  Force-refresh account settings before starting
+  ${cli} --launch-profile <id-or-name> Start with a launch profile from your settings
+  ${cli} --auth cs:<id>    Start with an exact Connected Services profile or pool
+  ${cli} --auth native     Start with native provider authentication
+  ${cli} --yolo             Start with bypassing permissions
+                              ${cli} sugar for --dangerously-skip-permissions
+  ${cli} --chrome           Enable Chrome browser access for this session
+  ${cli} --no-chrome        Disable Chrome even if default is on
+  ${cli} --js-runtime bun   Use bun instead of node to spawn JavaScript-backed CLIs
+  ${cli} auth login --force Authenticate
+  ${cli} profiles list      List available backend profiles
+  ${cli} doctor             Run diagnostics
 
 ${chalk.bold('Server selection (global flags; prefix-only; no persistence):')}
-  happier --server <name-or-id> ...
-  happier --server-url <url> [--webapp-url <url>] [--public-server-url <url>] ...
+  ${cli} --server <name-or-id> ...
+  ${cli} --server-url <url> [--webapp-url <url>] [--public-server-url <url>] ...
 `;
 }

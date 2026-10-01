@@ -308,7 +308,7 @@ describe('startOfflineReconnection', () => {
 
             expect(attemptCount).toBe(1);
             expect(onNotify).toHaveBeenCalledWith(
-                '❌ Authentication failed. Please re-authenticate with `happier auth`.'
+                '❌ Authentication failed. Please re-authenticate with `happiest auth`.'
             );
             expect(onReconnected).not.toHaveBeenCalled();
 
@@ -333,7 +333,7 @@ describe('startOfflineReconnection', () => {
             });
 
             expect(onNotify).toHaveBeenCalledWith(
-                '❌ Authentication failed. Please re-authenticate with `happier auth`.'
+                '❌ Authentication failed. Please re-authenticate with `happiest auth`.'
             );
             await Promise.resolve();
             expect(attemptCount).toBe(1);
@@ -427,7 +427,7 @@ describe('startOfflineReconnection', () => {
             });
 
             expect(onNotify).toHaveBeenCalledWith(
-                '❌ Authentication failed. Please re-authenticate with `happier auth`.'
+                '❌ Authentication failed. Please re-authenticate with `happiest auth`.'
             );
 
             handle.cancel();

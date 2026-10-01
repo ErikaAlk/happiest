@@ -2,6 +2,7 @@ import chalk from 'chalk';
 
 import { readFlagValue } from '@/cli/commands/shared/argvFlags';
 import { printJsonEnvelope } from '@/cli/output/jsonEnvelope';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { readMcpServersSettingsFromAccountSettings } from '@/mcp/servers/readMcpServersSettingsFromAccountSettings';
 
 import { McpServersSettingsV1Schema } from '@happier-dev/protocol';
@@ -20,7 +21,7 @@ export async function cmdMcpServersAdd(
       await printJsonEnvelope({ ok: false, kind: 'mcp_servers_add', error: { code: 'not_authenticated' } }, { exitCode: 1 });
       return;
     }
-    console.error(chalk.red('Error:'), 'Not authenticated. Run "happier auth login" first.');
+    console.error(chalk.red('Error:'), `Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
     process.exitCode = 1;
     return;
   }
@@ -30,7 +31,7 @@ export async function cmdMcpServersAdd(
   const command = readFlagValue(argv, '--command');
   const args = readRepeatedFlagValues(argv, '--arg');
 
-  if (!name) throw new Error('Usage: happier mcp servers add --name <name> --transport stdio --command <cmd> [--arg <arg>] [--json]');
+  if (!name) throw new Error(`Usage: ${formatCliCommand('mcp servers add --name <name> --transport stdio --command <cmd> [--arg <arg>] [--json]')}`);
   if (transport !== 'stdio') throw new Error('Only stdio transport is supported by this command currently.');
   if (!command) throw new Error('Missing --command');
 

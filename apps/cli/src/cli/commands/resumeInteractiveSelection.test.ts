@@ -202,7 +202,7 @@ describe('formatResumeSelectionFooter', () => {
   it('mentions running sessions and points the user to happier attach', () => {
     const text = formatResumeSelectionFooter({ ineligibleCount: 0, resumableCount: 1, activeRunningCount: 2 });
     expect(text).toMatch(/2 sessions running/i);
-    expect(text).toMatch(/happier attach/i);
+    expect(text).toMatch(/happiest attach/i);
   });
 
   it('mentions ineligible sessions when present', () => {

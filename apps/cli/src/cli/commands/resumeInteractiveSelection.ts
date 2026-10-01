@@ -2,6 +2,7 @@ import { compactHomePath } from '@/ui/format/styles';
 import type { AccountSettings } from '@happier-dev/protocol';
 
 import type { Credentials } from '@/persistence';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import type { CliSessionRowModel } from '@/cli/output/session/buildCliSessionRowModel';
 import { buildCliSessionRowModel } from '@/cli/output/session/buildCliSessionRowModel';
 import type { RawSessionListRow } from '@/session/transport/http/sessionsHttp';
@@ -84,7 +85,7 @@ function shortReasonForResume(category: ResumeIneligibilityCategory): string {
     case 'archived':
       return 'archived';
     case 'still_active':
-      return 'currently running — use happier attach';
+      return `currently running — use ${formatCliCommand('attach')}`;
     case 'vendor_resume_not_supported':
       return 'this agent does not support resume';
     case 'vendor_resume_id_missing':
@@ -105,7 +106,7 @@ function fullReasonForResume(category: ResumeIneligibilityCategory): string {
     case 'archived':
       return 'This session is archived and cannot be resumed.';
     case 'still_active':
-      return 'This session is currently running. Use `happier attach` to attach a terminal to it instead.';
+      return `This session is currently running. Use \`${formatCliCommand('attach')}\` to attach a terminal to it instead.`;
     case 'vendor_resume_not_supported':
       return 'This session\'s agent does not support resume from the CLI.';
     case 'vendor_resume_id_missing':
@@ -200,7 +201,7 @@ export function formatResumeSelectionFooter(hint: ResumeSelectionFooterHint): st
   const sessionWord = (n: number) => (n === 1 ? 'session' : 'sessions');
   const fragments: string[] = [];
   if (hint.activeRunningCount > 0) {
-    fragments.push(`${hint.activeRunningCount} ${sessionWord(hint.activeRunningCount)} running — use \`happier attach\` to attach a terminal.`);
+    fragments.push(`${hint.activeRunningCount} ${sessionWord(hint.activeRunningCount)} running — use \`${formatCliCommand('attach')}\` to attach a terminal.`);
   }
   if (hint.ineligibleCount > 0) {
     fragments.push(`${hint.ineligibleCount} ${sessionWord(hint.ineligibleCount)} can't be resumed (see reasons above).`);

@@ -51,6 +51,7 @@ import { resolveDaemonServiceCliRuntimeFromEnv } from '@/daemon/service/cli';
 
 import type { CommandContext } from '@/cli/commandRegistry';
 import { writeJsonStdout } from '@/cli/output/jsonEnvelope';
+import { formatCliCommand, resolveCliCommandName } from '@/cli/runtime/cliCommand';
 
 async function printDaemonJson(payload: unknown): Promise<void> {
   await writeJsonStdout(payload);
@@ -78,43 +79,44 @@ function shouldPrintDaemonHelp(args: readonly string[]): boolean {
 }
 
 function printDaemonHelp(): void {
+  const cli = resolveCliCommandName();
   console.log(`
-	${chalk.bold('happier daemon')} - Manage the local daemon
+	${chalk.bold(`${cli} daemon`)} - Manage the local daemon
 
 ${chalk.bold('Usage:')}
-  happier daemon start [--takeover]  Start the daemon (detached)
-  happier daemon restart [--takeover]  Restart the daemon (stop -> start)
-  happier daemon restart --restart-session-runners  Restart the daemon, preserve sessions, then restart tracked session runners on the current CLI
-  happier daemon restart-session-runners [--session-id <id>] [--dry-run] [--force-current-cli]  Restart eligible tracked session runners on the current CLI
-  happier daemon stop               Stop a manual daemon (sessions stay alive; use happier service stop for installed background services)
-  happier daemon stop --kill-sessions  Stop a manual daemon and its tracked sessions
-  happier daemon stop --all         Stop daemons for all configured relays
-  happier daemon restart [--takeover]  Restart the daemon
-  happier daemon restart --kill-sessions  Restart the daemon and its tracked sessions
-  happier daemon start-sync [--takeover]  Start the daemon synchronously
-  happier daemon status             Show daemon status
-  happier daemon status --all       Show daemon status for all configured relays
-  happier daemon list               List active sessions
-  happier daemon install            Enable automatic startup (legacy alias)
-  happier daemon uninstall          Disable automatic startup (legacy alias)
-	  happier service                   Manage automatic startup
-	  happier service list              List installed background services
-	  happier doctor repair             Preview or apply recommended automatic startup repair actions
-	  happier service repair            Legacy alias for doctor repair
-	  happier daemon service list       Legacy alias for service list
-	  happier daemon service repair     Legacy alias for service repair
+  ${cli} daemon start [--takeover]  Start the daemon (detached)
+  ${cli} daemon restart [--takeover]  Restart the daemon (stop -> start)
+  ${cli} daemon restart --restart-session-runners  Restart the daemon, preserve sessions, then restart tracked session runners on the current CLI
+  ${cli} daemon restart-session-runners [--session-id <id>] [--dry-run] [--force-current-cli]  Restart eligible tracked session runners on the current CLI
+  ${cli} daemon stop               Stop a manual daemon (sessions stay alive; use ${cli} service stop for installed background services)
+  ${cli} daemon stop --kill-sessions  Stop a manual daemon and its tracked sessions
+  ${cli} daemon stop --all         Stop daemons for all configured relays
+  ${cli} daemon restart [--takeover]  Restart the daemon
+  ${cli} daemon restart --kill-sessions  Restart the daemon and its tracked sessions
+  ${cli} daemon start-sync [--takeover]  Start the daemon synchronously
+  ${cli} daemon status             Show daemon status
+  ${cli} daemon status --all       Show daemon status for all configured relays
+  ${cli} daemon list               List active sessions
+  ${cli} daemon install            Enable automatic startup (legacy alias)
+  ${cli} daemon uninstall          Disable automatic startup (legacy alias)
+	  ${cli} service                   Manage automatic startup
+	  ${cli} service list              List installed background services
+	  ${cli} doctor repair             Preview or apply recommended automatic startup repair actions
+	  ${cli} service repair            Legacy alias for doctor repair
+	  ${cli} daemon service list       Legacy alias for service list
+	  ${cli} daemon service repair     Legacy alias for service repair
 
   Prefix with --server/--server-url to target a specific relay profile for this invocation.
-  Example: happier --server company service install
+  Example: ${cli} --server company service install
 
-  For installed background services, use happier service start|stop|restart.
+  For installed background services, use ${cli} service start|stop|restart.
 
   If you want to kill all happier related processes run
-  ${chalk.cyan('happier doctor clean')}
+  ${chalk.cyan(`${cli} doctor clean`)}
 
-${chalk.bold('Note:')} The daemon is the local Happier process on this computer. Automatic startup is provided by installed background services (\`happier service\`).
+${chalk.bold('Note:')} The daemon is the local Happier process on this computer. Automatic startup is provided by installed background services (\`${cli} service\`).
 
-${chalk.bold('To clean up runaway processes:')} Use ${chalk.cyan('happier doctor clean')}
+${chalk.bold('To clean up runaway processes:')} Use ${chalk.cyan(`${cli} doctor clean`)}
 `);
 }
 
@@ -179,7 +181,7 @@ export async function handleDaemonCliCommand(context: CommandContext): Promise<v
     if (args[2] === 'repair') {
       await handleServiceRepairCliCommand({
         argv: args.slice(2),
-        commandPath: 'happier doctor',
+        commandPath: formatCliCommand('doctor'),
       });
       return;
     }
@@ -535,7 +537,7 @@ export async function handleDaemonCliCommand(context: CommandContext): Promise<v
     const restartSessionRunners = args.includes('--restart-session-runners');
     const stopSessions = args.includes('--kill-sessions');
     if (restartSessionRunners && stopSessions) {
-      const message = '`happier daemon restart --restart-session-runners` cannot be combined with `--kill-sessions`.';
+      const message = `\`${formatCliCommand('daemon restart --restart-session-runners')}\` cannot be combined with \`--kill-sessions\`.`;
       if (jsonRequested) {
         await printDaemonJson({
           ok: false,
@@ -548,7 +550,7 @@ export async function handleDaemonCliCommand(context: CommandContext): Promise<v
       process.exit(1);
     }
     if (args.includes('--all')) {
-      const message = '`happier daemon restart --all` is not supported yet.';
+      const message = `\`${formatCliCommand('daemon restart --all')}\` is not supported yet.`;
       if (jsonRequested) {
         await printDaemonJson({
           ok: false,

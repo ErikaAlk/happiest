@@ -1,5 +1,6 @@
 import spawn from 'cross-spawn';
 import { createServerUrlComparableKey } from '@happier-dev/protocol';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { approveTerminalAuthRequest } from '@/auth/terminalAuthApproval';
 import { writeJsonStdout } from '@/cli/output/jsonEnvelope';
@@ -281,7 +282,8 @@ export async function handleAuthPairRemote(argsRaw: string[], deps: Partial<Pair
     json,
     deps: effectiveDeps,
   });
-  const remoteExecutable = remoteCommand.value?.trim() || 'happier';
+  // The remote host's release ring is unknown here; its stable command is the default.
+  const remoteExecutable = remoteCommand.value?.trim() || productIdentity.commandName;
   const remoteServerArgs = buildRemoteServerArgs(remoteSelection);
 
   if (!json) {
@@ -294,7 +296,7 @@ export async function handleAuthPairRemote(argsRaw: string[], deps: Partial<Pair
   assertRemoteRequestUsedExpectedRelay(request, remoteSelection);
   const publicKey = typeof request?.publicKey === 'string' ? request.publicKey : '';
   if (!publicKey) {
-    console.error('Remote `happier auth request --json` output did not include "publicKey".');
+    console.error(`Remote \`${remoteExecutable} auth request --json\` output did not include "publicKey".`);
     process.exit(1);
   }
 

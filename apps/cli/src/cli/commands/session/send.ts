@@ -8,6 +8,7 @@ import { wantsJson, printJsonEnvelope, writeJsonStdout } from '@/cli/output/json
 import { hasFlag, readCommandPositionals, readIntFlagValue, readFlagValue } from '@/cli/commands/shared/argvFlags';
 import { createCliActionExecutorFromCredentials } from '@/session/actions/createCliActionExecutorFromCredentials';
 import { tryHandleApprovalRequestCreated } from './shared/tryHandleApprovalRequestCreated';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 function parsePermissionIntentOrThrow(raw: string): PermissionIntent {
   const parsed = parsePermissionIntentAlias(raw);
@@ -40,7 +41,7 @@ export async function cmdSessionSend(
       : 300;
 
   if (!idOrPrefix || !message) {
-    throw new Error('Usage: happier session send <session-id-or-prefix> <message> [--permission-mode <mode>] [--model <model-id>] [--wait] [--timeout <seconds>] [--json]');
+    throw new Error(`Usage: ${formatCliCommand('session send <session-id-or-prefix> <message> [--permission-mode <mode>] [--model <model-id>] [--wait] [--timeout <seconds>] [--json]')}`);
   }
 
   const credentials = await deps.readCredentialsFn();
@@ -49,7 +50,7 @@ export async function cmdSessionSend(
       await printJsonEnvelope({ ok: false, kind: 'session_send', error: { code: 'not_authenticated' } });
       return;
     }
-    console.error(chalk.red('Error:'), 'Not authenticated. Run "happier auth login" first.');
+    console.error(chalk.red('Error:'), `Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
     process.exit(1);
   }
 

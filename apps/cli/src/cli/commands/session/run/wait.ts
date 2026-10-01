@@ -7,6 +7,7 @@ import { readCommandPositionals, readIntFlagValue } from '@/cli/commands/shared/
 import { createCliActionExecutorFromCredentials } from '@/session/actions/createCliActionExecutorFromCredentials';
 import { normalizeActionExecuteResult } from '@/cli/commands/session/shared/normalizeActionExecuteResult';
 import { resolveSessionTransportContext } from '@/session/services/resolveSessionTransportContext';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 export async function cmdSessionRunWait(
   argv: string[],
@@ -18,7 +19,7 @@ export async function cmdSessionRunWait(
     valueFlags: ['--timeout'],
   });
   if (!idOrPrefix || !runId) {
-    throw new Error('Usage: happier session run wait <session-id-or-prefix> <run-id> [--timeout <seconds>] [--json]');
+    throw new Error(`Usage: ${formatCliCommand('session run wait <session-id-or-prefix> <run-id> [--timeout <seconds>] [--json]')}`);
   }
 
   const timeoutSecondsRaw = readIntFlagValue(argv, '--timeout', { min: 1 });
@@ -33,7 +34,7 @@ export async function cmdSessionRunWait(
       await printJsonEnvelope({ ok: false, kind: 'session_run_wait', error: { code: 'not_authenticated' } });
       return;
     }
-    console.error(chalk.red('Error:'), 'Not authenticated. Run "happier auth login" first.');
+    console.error(chalk.red('Error:'), `Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
     process.exit(1);
   }
 

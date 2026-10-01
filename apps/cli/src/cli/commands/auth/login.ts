@@ -9,6 +9,7 @@ import { logger } from '@/ui/logger';
 import { applyServerSelectionFromArgs } from '@/server/serverSelection';
 import { configuration } from '@/configuration';
 import { isLoopbackServerHost } from '@/server/serverUrlClassification';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { reconcileDefaultFollowingBackgroundServicesAfterAuthentication } from '../backgroundServiceFollowUp';
 
 import { resolveAuthMethodFlag } from './methodFlag';
@@ -128,7 +129,7 @@ export async function handleAuthLogin(args: string[]): Promise<void> {
       console.log(chalk.green('✓ Already authenticated'));
       console.log(chalk.gray(`  Machine ID: ${readiness.machineId}`));
       console.log(chalk.gray(`  Host: ${os.hostname()}`));
-      console.log(chalk.gray(`  Use 'happier auth login --force' to re-authenticate`));
+      console.log(chalk.gray(`  Use '${formatCliCommand('auth login --force')}' to re-authenticate`));
       return;
     }
 

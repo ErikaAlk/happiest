@@ -5,6 +5,7 @@ import { SystemTaskExecutionError, type InteractiveSystemTaskKind } from '@happi
 import { spawnDetachedNode, type DetachedSpawnResult } from '@happier-dev/cli-common/update';
 import type { PublicReleaseRingId } from '@happier-dev/release-runtime/releaseRings';
 
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { readUpdaterAdmission, UPDATER_ADMISSION_FD_ENV } from '@/cli/runtime/update/updaterAdmission';
 
 export const CLI_UPDATE_SYSTEM_TASK_KIND = 'cli.update.v1';
@@ -93,7 +94,7 @@ export function createCliUpdateRemoteTaskKind(deps: Readonly<{
       if (!facts.canUpdateRemotely) {
         throw new SystemTaskExecutionError(
           'cli_remote_update_unsupported',
-          `This machine cannot update its Happier CLI remotely yet. On that machine, run: ${facts.updateCommand ?? 'happier self update'}`,
+          `This machine cannot update its Happier CLI remotely yet. On that machine, run: ${facts.updateCommand ?? formatCliCommand('self update')}`,
         );
       }
 
@@ -107,7 +108,7 @@ export function createCliUpdateRemoteTaskKind(deps: Readonly<{
         logPath,
         admissionFdEnvName: UPDATER_ADMISSION_FD_ENV,
       });
-      const fallback = facts.updateCommand ?? 'happier self update';
+      const fallback = facts.updateCommand ?? formatCliCommand('self update');
       if (!spawned.started || !spawned.admission) {
         throw new SystemTaskExecutionError('cli_update_start_failed', `The update could not be started on this machine. On that machine, run: ${fallback}`);
       }

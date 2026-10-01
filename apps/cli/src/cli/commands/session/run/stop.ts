@@ -8,6 +8,7 @@ import { readCommandPositionals } from '@/cli/commands/shared/argvFlags';
 import { createCliActionExecutorFromCredentials } from '@/session/actions/createCliActionExecutorFromCredentials';
 import { normalizeActionExecuteResult } from '@/cli/commands/session/shared/normalizeActionExecuteResult';
 import { resolveSessionTransportContext } from '@/session/services/resolveSessionTransportContext';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 export async function cmdSessionRunStop(
   argv: string[],
@@ -17,7 +18,7 @@ export async function cmdSessionRunStop(
   const [idOrPrefix = '', runId = ''] = readCommandPositionals(argv, { startIndex: 2 });
 
   if (!idOrPrefix || !runId) {
-    throw new Error('Usage: happier session run stop <session-id-or-prefix> <run-id> [--json]');
+    throw new Error(`Usage: ${formatCliCommand('session run stop <session-id-or-prefix> <run-id> [--json]')}`);
   }
 
   const credentials = await deps.readCredentialsFn();
@@ -26,7 +27,7 @@ export async function cmdSessionRunStop(
       await printJsonEnvelope({ ok: false, kind: 'session_run_stop', error: { code: 'not_authenticated' } });
       return;
     }
-    console.error(chalk.red('Error:'), 'Not authenticated. Run "happier auth login" first.');
+    console.error(chalk.red('Error:'), `Not authenticated. Run "${formatCliCommand('auth login')}" first.`);
     process.exit(1);
   }
 

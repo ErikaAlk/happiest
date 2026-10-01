@@ -20,6 +20,7 @@ import { isInteractiveTerminal } from '@/terminal/prompts/promptInput';
 import { promptSecret } from '@/terminal/prompts/promptSecret';
 import { configuration } from '@/configuration';
 import { buildRootHelpText } from '@/cli/buildRootHelpText';
+import { resolveCliCommandName } from '@/cli/runtime/cliCommand';
 import { requireJavaScriptRuntimeExecutable } from '@/runtime/js/requireJavaScriptRuntimeExecutable';
 import { requireProviderCliLaunchSpec } from '@/runtime/managedTools/requireProviderCliLaunchSpec';
 import { readProviderCliOverride } from '@/runtime/managedTools/providerCliResolution';
@@ -204,11 +205,12 @@ export async function handleClaudeCliCommand(context: CommandContext): Promise<v
   if (showHelp) {
     const providerHelpArgs = [...parsed.providerArgs, '--help'];
     const providerHelpCommand = `claude ${providerHelpArgs.join(' ')}`;
+    const cli = resolveCliCommandName();
     console.log(`${buildRootHelpText()}
 ${chalk.bold('Happier supports ALL Claude options!')}
-  Use any claude flag with happier as you would with claude. Our favorite:
+  Use any claude flag with ${cli} as you would with claude. Our favorite:
 
-  happier --resume
+  ${cli} --resume
 
 ${chalk.gray('─'.repeat(60))}
 ${chalk.bold.cyan(`Claude Code Options (from \`${providerHelpCommand}\`):`)}
