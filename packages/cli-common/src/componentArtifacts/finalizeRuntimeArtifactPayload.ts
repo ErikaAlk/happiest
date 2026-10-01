@@ -24,9 +24,9 @@ const AUDITED_DUPLICATE_PACKAGE_PAIRS = [
     duplicate: '@modelcontextprotocol/sdk/node_modules/express/node_modules/body-parser/node_modules/qs',
     survivor: '@modelcontextprotocol/sdk/node_modules/express/node_modules/qs',
   },
-  // Sharp 0.34.5's locked Darwin/Linux packages depend on libvips 1.2.4;
+  // Sharp 0.34.5's locked Linux packages depend on libvips 1.2.4;
   // Windows packages contain their own libraries and have no libvips package.
-  ...['darwin-arm64', 'darwin-x64', 'linux-arm64', 'linux-x64', 'linuxmusl-arm64', 'linuxmusl-x64'].map((target) => ({
+  ...['linux-arm64', 'linux-x64', 'linuxmusl-arm64', 'linuxmusl-x64'].map((target) => ({
     duplicate: `sharp/node_modules/@img/sharp-${target}/node_modules/@img/sharp-libvips-${target}`,
     survivor: `sharp/node_modules/@img/sharp-libvips-${target}`,
   })),
@@ -138,10 +138,7 @@ function resolveSharpTargetOptionalPackageNames(target: BinaryTarget): readonly 
         `sharp-libvips-linux-${target.arch}`,
         `sharp-libvips-linuxmusl-${target.arch}`,
       ]
-    : [
-        `sharp-${platform}-${target.arch}`,
-        ...(target.os === 'darwin' ? [`sharp-libvips-darwin-${target.arch}`] : []),
-      ];
+    : [`sharp-${platform}-${target.arch}`];
 }
 
 async function assertTargetOptionalPackages(params: Readonly<{

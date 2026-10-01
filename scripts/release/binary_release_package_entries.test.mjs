@@ -12,7 +12,7 @@ test('packageTargetBinary includes additional stage entries in archive', async (
   const buildTempDir = join(workspace, 'build');
   const outDir = join(workspace, 'out');
   const generatedSqliteDir = join(workspace, 'generated', 'sqlite-client');
-  const compiledPath = join(workspace, 'happier-server');
+  const compiledPath = join(workspace, 'happiest-server');
 
   await mkdir(buildTempDir, { recursive: true });
   await mkdir(outDir, { recursive: true });
@@ -22,10 +22,10 @@ test('packageTargetBinary includes additional stage entries in archive', async (
 
   try {
     const artifact = await packageTargetBinary({
-      product: 'happier-server',
+      product: 'happiest-server',
       version: '0.0.0-test',
       target: { os: 'linux', arch: 'x64', exeExt: '' },
-      executableName: 'happier-server',
+      executableName: 'happiest-server',
       buildTempDir,
       outDir,
       compiledPath,
@@ -43,7 +43,7 @@ test('packageTargetBinary includes additional stage entries in archive', async (
 
     const extractedIndex = join(
       extractDir,
-      'happier-server-v0.0.0-test-linux-x64',
+      'happiest-server-v0.0.0-test-linux-x64',
       'generated',
       'sqlite-client',
       'index.js',
@@ -61,7 +61,7 @@ test('packageTargetBinary excludes AppleDouble metadata files from archives', as
   const workspace = await mkdtemp(join(tmpdir(), 'binary-release-appledouble-'));
   const buildTempDir = join(workspace, 'build');
   const outDir = join(workspace, 'out');
-  const compiledPath = join(workspace, 'happier');
+  const compiledPath = join(workspace, 'happiest');
   const resourcesDir = join(workspace, 'resources');
   const appleDoublePath = join(resourcesDir, '._metadata');
   const regularResourcePath = join(resourcesDir, 'metadata.txt');
@@ -69,16 +69,16 @@ test('packageTargetBinary excludes AppleDouble metadata files from archives', as
   await mkdir(buildTempDir, { recursive: true });
   await mkdir(outDir, { recursive: true });
   await mkdir(resourcesDir, { recursive: true });
-  await writeFile(compiledPath, '#!/usr/bin/env bash\necho happier\n', 'utf-8');
+  await writeFile(compiledPath, '#!/usr/bin/env bash\necho happiest\n', 'utf-8');
   await writeFile(appleDoublePath, 'appledouble', 'utf-8');
   await writeFile(regularResourcePath, 'ok', 'utf-8');
 
   try {
     const artifact = await packageTargetBinary({
-      product: 'happier',
+      product: 'happiest',
       version: '0.0.0-test',
       target: { os: 'linux', arch: 'x64', exeExt: '' },
-      executableName: 'happier',
+      executableName: 'happiest',
       buildTempDir,
       outDir,
       compiledPath,
@@ -102,19 +102,19 @@ test('packageTargetBinary excludes AppleDouble metadata files from archives', as
 test('packagePreparedTargetBinary excludes AppleDouble metadata files from archives', async () => {
   const workspace = await mkdtemp(join(tmpdir(), 'binary-release-prepared-appledouble-'));
   const stageRoot = join(workspace, 'stage');
-  const stageDir = join(stageRoot, 'happier-v0.0.0-test-linux-x64');
+  const stageDir = join(stageRoot, 'happiest-v0.0.0-test-linux-x64');
   const outDir = join(workspace, 'out');
 
   await mkdir(join(stageDir, 'resources'), { recursive: true });
   await mkdir(outDir, { recursive: true });
-  await writeFile(join(stageDir, 'happier'), '#!/usr/bin/env bash\necho happier\n', 'utf-8');
-  await writeFile(join(stageDir, '._happier'), 'appledouble', 'utf-8');
+  await writeFile(join(stageDir, 'happiest'), '#!/usr/bin/env bash\necho happiest\n', 'utf-8');
+  await writeFile(join(stageDir, '._happiest'), 'appledouble', 'utf-8');
   await writeFile(join(stageDir, 'resources', 'metadata.txt'), 'ok', 'utf-8');
   await writeFile(join(stageDir, 'resources', '._metadata.txt'), 'appledouble', 'utf-8');
 
   try {
     const artifact = await packagePreparedTargetBinary({
-      product: 'happier',
+      product: 'happiest',
       version: '0.0.0-test',
       target: { os: 'linux', arch: 'x64', exeExt: '' },
       stageDir,
@@ -123,9 +123,9 @@ test('packagePreparedTargetBinary excludes AppleDouble metadata files from archi
 
     const listing = spawnSync('tar', ['-tzf', artifact.path], { encoding: 'utf-8' });
     assert.equal(listing.status, 0, listing.stderr);
-    assert.match(listing.stdout, /\/happier(?:\n|$)/);
+    assert.match(listing.stdout, /\/happiest(?:\n|$)/);
     assert.match(listing.stdout, /\/resources\/metadata\.txt(?:\n|$)/);
-    assert.doesNotMatch(listing.stdout, /\/\._happier(?:\n|$)/);
+    assert.doesNotMatch(listing.stdout, /\/\._happiest(?:\n|$)/);
     assert.doesNotMatch(listing.stdout, /\/resources\/\._metadata\.txt(?:\n|$)/);
   } finally {
     await rm(workspace, { recursive: true, force: true });
@@ -135,18 +135,18 @@ test('packagePreparedTargetBinary excludes AppleDouble metadata files from archi
 test('packagePreparedTargetBinary excludes nested @prisma/client node_modules (not needed at runtime, avoids tar flake)', async () => {
   const workspace = await mkdtemp(join(tmpdir(), 'binary-release-prisma-client-nodemodules-'));
   const stageRoot = join(workspace, 'stage');
-  const stageDir = join(stageRoot, 'happier-server-v0.0.0-test-linux-x64');
+  const stageDir = join(stageRoot, 'happiest-server-v0.0.0-test-linux-x64');
   const outDir = join(workspace, 'out');
 
   const prismaNested = join(stageDir, 'node_modules', '@prisma', 'client', 'node_modules');
   await mkdir(join(prismaNested, '.bin'), { recursive: true });
   await mkdir(outDir, { recursive: true });
-  await writeFile(join(stageDir, 'happier-server'), '#!/usr/bin/env bash\necho server\n', 'utf-8');
+  await writeFile(join(stageDir, 'happiest-server'), '#!/usr/bin/env bash\necho server\n', 'utf-8');
   await writeFile(join(prismaNested, '.bin', 'dummy'), 'ok', 'utf-8');
 
   try {
     const artifact = await packagePreparedTargetBinary({
-      product: 'happier-server',
+      product: 'happiest-server',
       version: '0.0.0-test',
       target: { os: 'linux', arch: 'x64', exeExt: '' },
       stageDir,
@@ -155,7 +155,7 @@ test('packagePreparedTargetBinary excludes nested @prisma/client node_modules (n
 
     const listing = spawnSync('tar', ['-tzf', artifact.path], { encoding: 'utf-8' });
     assert.equal(listing.status, 0, listing.stderr);
-    assert.match(listing.stdout, /\/happier-server(?:\n|$)/);
+    assert.match(listing.stdout, /\/happiest-server(?:\n|$)/);
     assert.doesNotMatch(listing.stdout, /\/node_modules\/@prisma\/client\/node_modules(?:\/|\n|$)/);
   } finally {
     await rm(workspace, { recursive: true, force: true });
@@ -165,20 +165,20 @@ test('packagePreparedTargetBinary excludes nested @prisma/client node_modules (n
 test('packagePreparedTargetBinary excludes nested node_modules/.bin shim directories from archives', async () => {
   const workspace = await mkdtemp(join(tmpdir(), 'binary-release-node-bin-'));
   const stageRoot = join(workspace, 'stage');
-  const stageDir = join(stageRoot, 'happier-v0.0.0-test-windows-x64');
+  const stageDir = join(stageRoot, 'happiest-v0.0.0-test-windows-x64');
   const outDir = join(workspace, 'out');
 
   const packageDir = join(stageDir, 'node_modules', 'fastify');
   const binDir = join(packageDir, 'node_modules', '.bin');
   await mkdir(binDir, { recursive: true });
   await mkdir(outDir, { recursive: true });
-  await writeFile(join(stageDir, 'happier.exe'), 'binary', 'utf-8');
+  await writeFile(join(stageDir, 'happiest.exe'), 'binary', 'utf-8');
   await writeFile(join(packageDir, 'package.json'), JSON.stringify({ name: 'fastify', version: '0.0.0-test' }), 'utf-8');
   await writeFile(join(binDir, 'pino'), 'shim', 'utf-8');
 
   try {
     const artifact = await packagePreparedTargetBinary({
-      product: 'happier',
+      product: 'happiest',
       version: '0.0.0-test',
       target: { os: 'windows', arch: 'x64', exeExt: '.exe' },
       stageDir,
@@ -197,7 +197,7 @@ test('packagePreparedTargetBinary excludes nested node_modules/.bin shim directo
 test('packagePreparedTargetBinary excludes target-incompatible package directories from archives', async () => {
   const workspace = await mkdtemp(join(tmpdir(), 'binary-release-platform-prune-'));
   const stageRoot = join(workspace, 'stage');
-  const stageDir = join(stageRoot, 'happier-v0.0.0-test-windows-x64');
+  const stageDir = join(stageRoot, 'happiest-v0.0.0-test-windows-x64');
   const outDir = join(workspace, 'out');
 
   const darwinSharpDir = join(stageDir, 'node_modules', '@img', 'sharp-darwin-arm64');
@@ -205,7 +205,7 @@ test('packagePreparedTargetBinary excludes target-incompatible package directori
   await mkdir(darwinSharpDir, { recursive: true });
   await mkdir(windowsSharpDir, { recursive: true });
   await mkdir(outDir, { recursive: true });
-  await writeFile(join(stageDir, 'happier.exe'), 'binary', 'utf-8');
+  await writeFile(join(stageDir, 'happiest.exe'), 'binary', 'utf-8');
   await writeFile(
     join(darwinSharpDir, 'package.json'),
     JSON.stringify({
@@ -231,7 +231,7 @@ test('packagePreparedTargetBinary excludes target-incompatible package directori
 
   try {
     const artifact = await packagePreparedTargetBinary({
-      product: 'happier',
+      product: 'happiest',
       version: '0.0.0-test',
       target: { os: 'windows', arch: 'x64', exeExt: '.exe' },
       stageDir,

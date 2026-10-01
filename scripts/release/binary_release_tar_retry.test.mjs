@@ -12,11 +12,11 @@ test('binary release packaging retries transient tar failures', async () => {
   const binDir = join(workspace, 'bin');
   const counterPath = join(workspace, 'tar-counter.txt');
 
-  const stageDir = join(stageRoot, 'happier-v0.0.0-test-linux-x64');
+  const stageDir = join(stageRoot, 'happiest-v0.0.0-test-linux-x64');
   await mkdir(stageDir, { recursive: true });
   await mkdir(outDir, { recursive: true });
   await mkdir(binDir, { recursive: true });
-  await writeFile(join(stageDir, 'happier'), 'hello\n', 'utf-8');
+  await writeFile(join(stageDir, 'happiest'), 'hello\n', 'utf-8');
 
   const systemTar = spawnSync('command', ['-v', 'tar'], { encoding: 'utf-8', shell: true });
   assert.equal(systemTar.status, 0, systemTar.stderr);
@@ -54,7 +54,7 @@ test('binary release packaging retries transient tar failures', async () => {
   try {
     const mod = await import(`../pipeline/release/lib/binary-release.mjs?cachebust=${Date.now()}`);
     const artifact = await mod.packagePreparedTargetBinary({
-      product: 'happier',
+      product: 'happiest',
       version: '0.0.0-test',
       target: { os: 'linux', arch: 'x64', exeExt: '' },
       stageDir,
@@ -64,7 +64,7 @@ test('binary release packaging retries transient tar failures', async () => {
     assert.ok(artifact?.path, 'expected packaged artifact path');
     const listing = spawnSync('tar', ['-tzf', artifact.path], { encoding: 'utf-8' });
     assert.equal(listing.status, 0, listing.stderr);
-    assert.match(listing.stdout, /\/happier(?:\n|$)/);
+    assert.match(listing.stdout, /\/happiest(?:\n|$)/);
   } finally {
     process.env.PATH = originalPath;
     await rm(workspace, { recursive: true, force: true });

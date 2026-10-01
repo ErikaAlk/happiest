@@ -4,6 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { parseArgs } from 'node:util';
 
 import { CLI_STACK_TARGETS, SERVER_TARGETS, resolveTargets } from '../release/lib/binary-release.mjs';
+import { getBinaryPublishProductSpec } from '../release/publishing/product-specs.mjs';
 
 function fail(message) {
   console.error(message);
@@ -47,9 +48,7 @@ function parseAssetsJson(value, name) {
  * @param {'cli' | 'stack' | 'server'} kind
  */
 function productForKind(kind) {
-  if (kind === 'cli') return 'happier';
-  if (kind === 'stack') return 'hstack';
-  return 'happier-server';
+  return getBinaryPublishProductSpec(kind === 'stack' ? 'hstack' : kind).manifestProduct;
 }
 
 /**

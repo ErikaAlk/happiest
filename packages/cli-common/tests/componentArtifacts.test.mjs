@@ -67,10 +67,10 @@ function writeLinuxX64SharpFixtures(repoRoot) {
   writeNodePackageFixture({ repoRoot, packageName: '@img/sharp-libvips-linux-x64' });
 }
 
-function writeDarwinArm64SharpFixtures(repoRoot) {
+function writeLinuxArm64SharpFixtures(repoRoot) {
   writeNodePackageFixture({ repoRoot, packageName: 'sharp' });
-  writeNodePackageFixture({ repoRoot, packageName: '@img/sharp-darwin-arm64' });
-  writeNodePackageFixture({ repoRoot, packageName: '@img/sharp-libvips-darwin-arm64' });
+  writeNodePackageFixture({ repoRoot, packageName: '@img/sharp-linux-arm64' });
+  writeNodePackageFixture({ repoRoot, packageName: '@img/sharp-libvips-linux-arm64' });
 }
 
 function writeCliToolUnpackFixture(repoRoot) {
@@ -152,10 +152,6 @@ function prismaEngineFileNameForFixture({ platform = 'linux', arch = 'x64' } = {
       return 'libquery_engine-debian-openssl-3.0.x.so.node';
     case 'linux-arm64':
       return 'libquery_engine-linux-arm64-openssl-3.0.x.so.node';
-    case 'darwin-x64':
-      return 'libquery_engine-darwin.dylib.node';
-    case 'darwin-arm64':
-      return 'libquery_engine-darwin-arm64.dylib.node';
     case 'windows-x64':
       return 'query_engine-windows.dll.node';
     default:
@@ -191,8 +187,6 @@ function writeServerMigrationClosureFixture({ repoRoot, platform = 'linux', arch
   const schemaEngineNames = {
     'linux-x64': 'schema-engine-debian-openssl-3.0.x',
     'linux-arm64': 'schema-engine-linux-arm64-openssl-3.0.x',
-    'darwin-x64': 'schema-engine-darwin',
-    'darwin-arm64': 'schema-engine-darwin-arm64',
     'windows-x64': 'schema-engine-windows.exe',
   };
   const targetKey = `${platform}-${arch}`;
@@ -243,21 +237,43 @@ test('resolveCurrentBinaryTarget maps the current platform to a supported binary
   });
 });
 
+test('binary targets cover Linux and Windows only, with no macOS target', async () => {
+  const artifacts = await import('../dist/componentArtifacts/index.js');
+  const expected = ['linux-x64', 'linux-arm64', 'windows-x64'];
+
+  assert.deepEqual(artifacts.CLI_BINARY_TARGETS.map((target) => `${target.os}-${target.arch}`), expected);
+  assert.deepEqual(artifacts.SERVER_BINARY_TARGETS.map((target) => `${target.os}-${target.arch}`), expected);
+  assert.throws(
+    () => artifacts.resolveCurrentBinaryTarget({
+      availableTargets: artifacts.CLI_BINARY_TARGETS,
+      platform: 'darwin',
+      arch: 'arm64',
+    }),
+    /unsupported binary target/,
+  );
+  assert.throws(
+    () => artifacts.resolveCliToolsPlatformDir({ bunTarget: 'bun-darwin-arm64', os: 'darwin', arch: 'arm64', exeExt: '' }),
+    /unsupported CLI tools binary target/,
+  );
+});
+
 test('resolvePrismaSchemaEngineTarget covers every released server binary target', async () => {
   const artifacts = await import('../dist/componentArtifacts/index.js');
   assert.deepEqual(
     artifacts.SERVER_BINARY_TARGETS.map((target) => [
       `${target.os}-${target.arch}`,
       artifacts.resolvePrismaSchemaEngineTarget(target),
-      artifacts.resolveExecutableName({ baseName: 'happier-server-migrate', target }),
+      artifacts.resolveExecutableName({ baseName: 'happiest-server-migrate', target }),
     ]),
     [
-      ['linux-x64', { binaryTarget: 'debian-openssl-3.0.x', fileName: 'schema-engine-debian-openssl-3.0.x' }, 'happier-server-migrate'],
-      ['linux-arm64', { binaryTarget: 'linux-arm64-openssl-3.0.x', fileName: 'schema-engine-linux-arm64-openssl-3.0.x' }, 'happier-server-migrate'],
-      ['darwin-x64', { binaryTarget: 'darwin', fileName: 'schema-engine-darwin' }, 'happier-server-migrate'],
-      ['darwin-arm64', { binaryTarget: 'darwin-arm64', fileName: 'schema-engine-darwin-arm64' }, 'happier-server-migrate'],
-      ['windows-x64', { binaryTarget: 'windows', fileName: 'schema-engine-windows.exe' }, 'happier-server-migrate.exe'],
+      ['linux-x64', { binaryTarget: 'debian-openssl-3.0.x', fileName: 'schema-engine-debian-openssl-3.0.x' }, 'happiest-server-migrate'],
+      ['linux-arm64', { binaryTarget: 'linux-arm64-openssl-3.0.x', fileName: 'schema-engine-linux-arm64-openssl-3.0.x' }, 'happiest-server-migrate'],
+      ['windows-x64', { binaryTarget: 'windows', fileName: 'schema-engine-windows.exe' }, 'happiest-server-migrate.exe'],
     ],
+  );
+  assert.throws(
+    () => artifacts.resolvePrismaSchemaEngineTarget({ bunTarget: 'bun-darwin-arm64', os: 'darwin', arch: 'arm64', exeExt: '' }),
+    /unsupported Prisma schema engine target: darwin-arm64/,
   );
 });
 
@@ -1306,7 +1322,7 @@ test('buildServerBinaryArtifactPayload stages sharp native runtime sidecars for 
   const tempRoot = mkdtempSync(join(tmpdir(), 'component-artifacts-server-sharp-'));
   try {
     const repoRoot = join(tempRoot, 'repo');
-    writeServerMigrationClosureFixture({ repoRoot, platform: 'darwin', arch: 'arm64' });
+    writeServerMigrationClosureFixture({ repoRoot, platform: 'linux', arch: 'arm64' });
     const payloadDir = join(tempRoot, 'payload');
     const serverSourcesDir = join(repoRoot, 'apps', 'server', 'sources');
     const uiDistDir = join(repoRoot, 'apps', 'ui', 'dist');
@@ -1328,7 +1344,7 @@ test('buildServerBinaryArtifactPayload stages sharp native runtime sidecars for 
       sqliteClientDir,
       postgresClientDir,
       providers: ['sqlite'],
-      platform: 'darwin',
+      platform: 'linux',
       arch: 'arm64',
     });
 
@@ -1347,32 +1363,32 @@ test('buildServerBinaryArtifactPayload stages sharp native runtime sidecars for 
           semver: '^7.7.3',
         },
         optionalDependencies: {
-          '@img/sharp-darwin-arm64': '0.34.5',
-          '@img/sharp-libvips-darwin-arm64': '1.2.4',
+          '@img/sharp-linux-arm64': '0.34.5',
+          '@img/sharp-libvips-linux-arm64': '1.2.4',
           '@img/sharp-linux-x64': '0.34.5',
         },
       },
-      files: { 'lib/index.js': 'module.exports = require("@img/sharp-darwin-arm64");\n' },
+      files: { 'lib/index.js': 'module.exports = require("@img/sharp-linux-arm64");\n' },
     });
     writeNodePackageFixture({ repoRoot, packageName: '@img/colour' });
     writeNodePackageFixture({ repoRoot, packageName: 'detect-libc' });
     writeNodePackageFixture({ repoRoot, packageName: 'semver' });
     writeNodePackageFixture({
       repoRoot,
-      packageName: '@img/sharp-darwin-arm64',
+      packageName: '@img/sharp-linux-arm64',
       packageJson: {
-        os: ['darwin'],
+        os: ['linux'],
         cpu: ['arm64'],
         optionalDependencies: {
-          '@img/sharp-libvips-darwin-arm64': '1.2.4',
+          '@img/sharp-libvips-linux-arm64': '1.2.4',
         },
       },
     });
     writeNodePackageFixture({
       repoRoot,
-      packageName: '@img/sharp-libvips-darwin-arm64',
+      packageName: '@img/sharp-libvips-linux-arm64',
       packageJson: {
-        os: ['darwin'],
+        os: ['linux'],
         cpu: ['arm64'],
       },
     });
@@ -1395,14 +1411,14 @@ test('buildServerBinaryArtifactPayload stages sharp native runtime sidecars for 
       compilePrismaBinary: compilePrismaBinaryFixture,
       target: artifacts.resolveCurrentBinaryTarget({
         availableTargets: artifacts.SERVER_BINARY_TARGETS,
-        platform: 'darwin',
+        platform: 'linux',
         arch: 'arm64',
       }),
       commandProbe: () => true,
       runCommand: () => {},
       compileBinary: async ({ outfile, externals, buildRunnerEntrypoint }) => {
         compileCalls.push({ outfile, externals, buildRunnerEntrypoint });
-        writeFileSync(outfile, '#!/bin/sh\necho happier-server\n', 'utf8');
+        writeFileSync(outfile, '#!/bin/sh\necho happiest-server\n', 'utf8');
       },
     });
 
@@ -1411,15 +1427,15 @@ test('buildServerBinaryArtifactPayload stages sharp native runtime sidecars for 
       compileCalls[0]?.buildRunnerEntrypoint,
       join(repoRoot, 'packages', 'cli-common', 'scripts', 'buildServerBunBinary.mjs'),
     );
-    assert.equal(readFileSync(join(payloadDir, 'node_modules', 'sharp', 'lib', 'index.js'), 'utf8'), 'module.exports = require("@img/sharp-darwin-arm64");\n');
+    assert.equal(readFileSync(join(payloadDir, 'node_modules', 'sharp', 'lib', 'index.js'), 'utf8'), 'module.exports = require("@img/sharp-linux-arm64");\n');
     assert.equal(readFileSync(join(payloadDir, 'node_modules', '@img', 'colour', 'index.js'), 'utf8'), 'module.exports = {};\n');
     assert.equal(readFileSync(join(payloadDir, 'node_modules', 'detect-libc', 'index.js'), 'utf8'), 'module.exports = {};\n');
     assert.equal(readFileSync(join(payloadDir, 'node_modules', 'semver', 'index.js'), 'utf8'), 'module.exports = {};\n');
-    assert.equal(readFileSync(join(payloadDir, 'node_modules', '@img', 'sharp-darwin-arm64', 'index.js'), 'utf8'), 'module.exports = {};\n');
-    assert.equal(readFileSync(join(payloadDir, 'node_modules', '@img', 'sharp-libvips-darwin-arm64', 'index.js'), 'utf8'), 'module.exports = {};\n');
+    assert.equal(readFileSync(join(payloadDir, 'node_modules', '@img', 'sharp-linux-arm64', 'index.js'), 'utf8'), 'module.exports = {};\n');
+    assert.equal(readFileSync(join(payloadDir, 'node_modules', '@img', 'sharp-libvips-linux-arm64', 'index.js'), 'utf8'), 'module.exports = {};\n');
     assert.equal(existsSync(join(payloadDir, 'node_modules', '@img', 'sharp-linux-x64')), false);
 
-    rmSync(join(repoRoot, 'node_modules', '@img', 'sharp-libvips-darwin-arm64'), { recursive: true, force: true });
+    rmSync(join(repoRoot, 'node_modules', '@img', 'sharp-libvips-linux-arm64'), { recursive: true, force: true });
     await assert.rejects(
       artifacts.buildServerBinaryArtifactPayload({
         repoRoot,
@@ -1429,26 +1445,26 @@ test('buildServerBinaryArtifactPayload stages sharp native runtime sidecars for 
         compilePrismaBinary: compilePrismaBinaryFixture,
         target: artifacts.resolveCurrentBinaryTarget({
           availableTargets: artifacts.SERVER_BINARY_TARGETS,
-          platform: 'darwin',
+          platform: 'linux',
           arch: 'arm64',
         }),
         commandProbe: () => true,
         runCommand: () => {},
-        compileBinary: async ({ outfile }) => writeFileSync(outfile, '#!/bin/sh\necho happier-server\n', 'utf8'),
+        compileBinary: async ({ outfile }) => writeFileSync(outfile, '#!/bin/sh\necho happiest-server\n', 'utf8'),
       }),
-      /missing runtime package @img\/sharp-libvips-darwin-arm64/u,
+      /missing runtime package @img\/sharp-libvips-linux-arm64/u,
     );
   } finally {
     rmSync(tempRoot, { recursive: true, force: true });
   }
 });
 
-test('buildServerBinaryArtifactPayload fails darwin artifacts without the darwin Prisma engine', async () => {
-  const tempRoot = mkdtempSync(join(tmpdir(), 'component-artifacts-server-darwin-engine-'));
+test('buildServerBinaryArtifactPayload fails artifacts without the target Prisma engine', async () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'component-artifacts-server-engine-'));
   try {
     const repoRoot = join(tempRoot, 'repo');
-    writeServerMigrationClosureFixture({ repoRoot, platform: 'darwin', arch: 'arm64' });
-    writeDarwinArm64SharpFixtures(repoRoot);
+    writeServerMigrationClosureFixture({ repoRoot, platform: 'linux', arch: 'arm64' });
+    writeLinuxArm64SharpFixtures(repoRoot);
     const payloadDir = join(tempRoot, 'payload');
     const serverSourcesDir = join(repoRoot, 'apps', 'server', 'sources');
     const uiDistDir = join(repoRoot, 'apps', 'ui', 'dist');
@@ -1467,14 +1483,14 @@ test('buildServerBinaryArtifactPayload fails darwin artifacts without the darwin
     writeFileSync(join(serverSourcesDir, 'main.light.ts'), 'export {};\n', 'utf8');
     writeFileSync(join(uiDistDir, 'index.html'), '<html>ui</html>\n', 'utf8');
     writeFileSync(join(sqliteClientDir, 'schema.prisma'), '// sqlite\n', 'utf8');
-    writeFileSync(join(sqliteClientDir, 'libquery_engine-linux-arm64-openssl-3.0.x.so.node'), 'wrong-platform\n', 'utf8');
+    writeFileSync(join(sqliteClientDir, 'libquery_engine-debian-openssl-3.0.x.so.node'), 'wrong-platform\n', 'utf8');
     writeFileSync(join(sqliteMigrationsDir, 'migration.sql'), '-- sql\n', 'utf8');
     writeServerPrismaEngineFixtures({
       sqliteClientDir: null,
       mysqlClientDir: null,
       postgresClientDir,
       providers: [],
-      platform: 'darwin',
+      platform: 'linux',
       arch: 'arm64',
     });
     writeFileSync(join(prismaClientPackageDir, 'index.js'), 'module.exports = { PrismaClient: class PrismaClient {} };\n', 'utf8');
@@ -1489,16 +1505,16 @@ test('buildServerBinaryArtifactPayload fails darwin artifacts without the darwin
         compilePrismaBinary: compilePrismaBinaryFixture,
         target: artifacts.resolveCurrentBinaryTarget({
           availableTargets: artifacts.SERVER_BINARY_TARGETS,
-          platform: 'darwin',
+          platform: 'linux',
           arch: 'arm64',
         }),
         commandProbe: () => true,
         runCommand: () => {},
         compileBinary: async ({ outfile }) => {
-          writeFileSync(outfile, '#!/bin/sh\necho happier-server\n', 'utf8');
+          writeFileSync(outfile, '#!/bin/sh\necho happiest-server\n', 'utf8');
         },
       }),
-      /missing sqlite Prisma query engine for darwin-arm64/i,
+      /missing sqlite Prisma query engine for linux-arm64/i,
     );
   } finally {
     rmSync(tempRoot, { recursive: true, force: true });

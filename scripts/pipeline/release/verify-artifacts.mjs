@@ -11,7 +11,11 @@ import { resolveReleaseAssetBundle } from '@happier-dev/release-runtime/assets';
 import { lookupSha256 } from '@happier-dev/release-runtime/checksums';
 import { verifyMinisign } from '@happier-dev/release-runtime/minisign';
 import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
-import { extractReleasePayloadRootFromArchive, getFirstPartyComponentCatalogEntry } from '@happier-dev/cli-common/firstPartyRuntime';
+import {
+  extractReleasePayloadRootFromArchive,
+  getFirstPartyComponentCatalogEntry,
+  listFirstPartyComponentCatalogEntries,
+} from '@happier-dev/cli-common/firstPartyRuntime';
 
 import { fileSha256 } from './lib/release-files.mjs';
 import { isBinaryReleaseArtifactFilename, parseArtifactFilename } from './lib/manifests.mjs';
@@ -20,7 +24,14 @@ import { shouldSmokeTestReleaseArtifact } from './publishing/artifact-smoke-comp
 import { CLI_OPTIONAL_COMPONENT_PRODUCTS } from './publishing/product-specs.mjs';
 import { terminateProcessTreeByPid } from '../../testing/process/processTree.mjs';
 
-const CLI_EXECUTABLE_BASE_NAME = getFirstPartyComponentCatalogEntry('happier-cli').executableBaseName;
+const CLI_CATALOG_ENTRY = getFirstPartyComponentCatalogEntry('happier-cli');
+const CLI_EXECUTABLE_BASE_NAME = CLI_CATALOG_ENTRY.executableBaseName;
+// The daemon runtime payload ships inside the CLI archive, so only the CLI entry owns that product name.
+const COMPONENT_BY_RELEASE_PRODUCT = new Map(
+  listFirstPartyComponentCatalogEntries()
+    .filter((entry) => entry.id !== 'happier-daemon')
+    .map((entry) => [entry.releaseProductName, entry]),
+);
 const DEFAULT_BINARY_SMOKE_TIMEOUT_MS = 20_000;
 const DEFAULT_SERVER_BINARY_SMOKE_TIMEOUT_MS = 15_000;
 
@@ -432,8 +443,11 @@ export async function smokeTestArchive({ archivePath, execute = true }) {
     const root = await extractReleasePayloadRootFromArchive({
       archivePath, archiveName: basename(archivePath), extractDir: join(scratch, 'extract'),
     });
-    const component = getFirstPartyComponentCatalogEntry(artifact.product === 'happier' ? 'happier-cli' : artifact.product);
-    const memoryRuntime = artifact.product === 'happier-memory-runtime';
+    const component = COMPONENT_BY_RELEASE_PRODUCT.get(artifact.product);
+    if (!component) {
+      throw new Error(`[release] no first-party component ships in ${artifact.product} archives: ${archivePath}`);
+    }
+    const memoryRuntime = component.id === 'happier-memory-runtime';
     const candidate = memoryRuntime
       ? component.nodeEntrypointRelativePath
       : `${component.binaryRelativePath}${artifact.os === 'windows' ? '.exe' : ''}`;
@@ -480,7 +494,7 @@ export async function smokeTestArchive({ archivePath, execute = true }) {
     if (serverBinary) {
       throw new Error(`[release] server binary exited before the smoke window for ${archivePath}`);
     }
-    if (artifact?.product === 'happier') {
+    if (component.id === CLI_CATALOG_ENTRY.id) {
       const actualVersion = String(result.stdout ?? '').trim();
       if (actualVersion !== artifact.version) {
         throw new Error(
@@ -564,7 +578,7 @@ async function main() {
       if (expected !== entry.sha256) throw new Error(`[release] component checksum mismatch for ${entry.name}`);
     }
     const compatible = shouldSmokeTestReleaseArtifact({ archiveName: entry.name });
-    const requiresCliVersionAttestation = compatible && artifact.product === 'happier';
+    const requiresCliVersionAttestation = compatible && artifact.product === CLI_CATALOG_ENTRY.releaseProductName;
     await smokeTestArchive({ archivePath: join(artifactsDir, entry.name), execute: compatible && (!skipOptionalSmoke || requiresCliVersionAttestation) });
     verifiedArchives.push(entry.name);
     if (requiresCliVersionAttestation) {

@@ -19,15 +19,17 @@ import {
   maybeSignFile,
   writeChecksumsFile,
 } from './lib/binary-release.mjs';
+import { getBinaryPublishProductSpec } from './publishing/product-specs.mjs';
 
 async function main() {
   const repoRoot = resolveRepoRoot();
   const { kv } = parseArgs(process.argv.slice(2));
 
+  const productSpec = getBinaryPublishProductSpec('server');
   const channel = normalizeChannel(kv.get('--channel'));
   const version = String(kv.get('--version') ?? '').trim()
-    || readVersionFromPackageJson(join(repoRoot, 'apps', 'server', 'package.json'));
-  const outDir = join(repoRoot, 'dist', 'release-assets', 'server');
+    || readVersionFromPackageJson(join(repoRoot, productSpec.packageJsonPath));
+  const outDir = join(repoRoot, productSpec.artifactsDir);
   // IMPORTANT: build scripts are invoked by multiple integration tests in parallel.
   // Never share a single temp directory across invocations, or concurrent builds will race on rm/mkdir.
   const tempBaseDir = join(repoRoot, 'dist', 'release-assets', '.tmp-server-binaries');
@@ -59,7 +61,7 @@ async function main() {
 
   const artifacts = [];
   for (const target of targets) {
-    const stageDir = join(tempDir, `happier-server-v${version}-${target.os}-${target.arch}`);
+    const stageDir = join(tempDir, `${productSpec.manifestProduct}-v${version}-${target.os}-${target.arch}`);
     await buildServerBinaryArtifactPayload({
       repoRoot,
       payloadDir: stageDir,
@@ -70,7 +72,7 @@ async function main() {
       buildDbProviders,
     });
     const artifact = await packagePreparedTargetBinary({
-      product: 'happier-server',
+      product: productSpec.manifestProduct,
       version,
       target,
       stageDir,
@@ -80,21 +82,21 @@ async function main() {
   }
 
   const checksumsPath = await writeChecksumsFile({
-    product: 'happier-server',
+    product: productSpec.checksumProductStem,
     version,
     artifacts,
     outDir,
   });
   const signaturePath = await maybeSignFile({
     path: checksumsPath,
-    trustedComment: `happier-server ${version} ${channel}`,
+    trustedComment: `${productSpec.manifestProduct} ${version} ${channel}`,
   });
 
   // Best-effort cleanup to avoid unbounded temp build directories.
   await rm(tempDir, { recursive: true, force: true });
 
   const output = {
-    product: 'happier-server',
+    product: productSpec.manifestProduct,
     channel,
     version,
     outDir,

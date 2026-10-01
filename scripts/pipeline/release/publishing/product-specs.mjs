@@ -1,5 +1,12 @@
 // @ts-check
 
+// This module is loaded before workspace dependencies are installed (release version allocation and
+// the credentialed finalizer), so it cannot import `@happier-dev/*` packages. Its product names,
+// titles and targets repeat the values owned by the first-party component catalog
+// (`releaseProductName`), `productIdentity.productName` and cli-common's `CLI_BINARY_TARGETS` /
+// `SERVER_BINARY_TARGETS`; scripts/release/publish_binary_product_specs.contract.test.mjs checks
+// every one of them against those owners.
+
 /**
  * @typedef {{
  *   id: 'cli' | 'hstack' | 'server';
@@ -10,7 +17,7 @@
  *   patchPackageVersionOnRolling: boolean;
  *   buildScriptPath: string;
  *   artifactsDir: string;
- *   manifestProduct: 'happier' | 'hstack' | 'happier-server';
+ *   manifestProduct: string;
  *   manifestOutDir: string;
  *   checksumProductStem: string;
  *   rollingTagPrefix: string;
@@ -18,24 +25,39 @@
  *   releaseTitleBase: string;
  *   rollingNotesSubject: string;
  *   versionNotesSubject: string;
- *   notarizationEvidenceSuffix: 'cli' | 'hstack' | 'server';
  *   artifactTargets: ReadonlyArray<Readonly<{ os: string; arch: string }>>;
  *   optionalComponentProducts?: readonly string[];
+ *   repoAssetPaths: readonly string[];
  * }} BinaryPublishProductSpec
  */
-
-export const BINARY_PUBLISH_TARGETS = Object.freeze([
-  Object.freeze({ os: 'linux', arch: 'x64' }),
-  Object.freeze({ os: 'linux', arch: 'arm64' }),
-  Object.freeze({ os: 'darwin', arch: 'x64' }),
-  Object.freeze({ os: 'darwin', arch: 'arm64' }),
-  Object.freeze({ os: 'windows', arch: 'x64' }),
-]);
 
 /** @type {ReadonlyArray<BinaryPublishProductSpec['id']>} */
 export const BINARY_PUBLISH_PRODUCT_IDS = Object.freeze(['cli', 'hstack', 'server']);
 
-export const CLI_OPTIONAL_COMPONENT_PRODUCTS = Object.freeze(['happier-memory-runtime', 'happier-difftastic']);
+/**
+ * CLI components built into their own archives next to the base CLI archive: the component id
+ * drives the build, the product name names the archive and its checksum envelope.
+ */
+export const CLI_OPTIONAL_COMPONENTS = Object.freeze([
+  Object.freeze({ componentId: 'happier-memory-runtime', product: 'happiest-memory-runtime' }),
+  Object.freeze({ componentId: 'happier-difftastic', product: 'happiest-difftastic' }),
+]);
+
+export const CLI_OPTIONAL_COMPONENT_PRODUCTS = Object.freeze(CLI_OPTIONAL_COMPONENTS.map(({ product }) => product));
+
+const PUBLISH_TARGETS = Object.freeze([
+  Object.freeze({ os: 'linux', arch: 'x64' }),
+  Object.freeze({ os: 'linux', arch: 'arm64' }),
+  Object.freeze({ os: 'windows', arch: 'x64' }),
+]);
+
+/** Installer scripts and the signing public key, published verbatim with every CLI release. */
+const CLI_REPO_ASSET_PATHS = Object.freeze([
+  'scripts/release/installers/install.sh',
+  'scripts/release/installers/install.ps1',
+  'scripts/release/installers/install-server.sh',
+  'scripts/release/installers/happier-release.pub',
+]);
 
 /** @type {Readonly<Record<BinaryPublishProductSpec['id'], Readonly<BinaryPublishProductSpec>>>} */
 const PRODUCT_SPECS = Object.freeze({
@@ -48,17 +70,17 @@ const PRODUCT_SPECS = Object.freeze({
     patchPackageVersionOnRolling: true,
     buildScriptPath: 'scripts/pipeline/release/build-cli-binaries.mjs',
     artifactsDir: 'dist/release-assets/cli',
-    manifestProduct: 'happier',
+    manifestProduct: 'happiest',
     manifestOutDir: 'dist/release-assets/cli/manifests',
-    checksumProductStem: 'happier',
+    checksumProductStem: 'happiest',
     rollingTagPrefix: 'cli',
     versionTagPrefix: 'cli-v',
-    releaseTitleBase: 'Happier CLI',
+    releaseTitleBase: 'Happiest CLI',
     rollingNotesSubject: 'CLI binaries',
     versionNotesSubject: 'CLI',
-    notarizationEvidenceSuffix: 'cli',
-    artifactTargets: BINARY_PUBLISH_TARGETS,
+    artifactTargets: PUBLISH_TARGETS,
     optionalComponentProducts: CLI_OPTIONAL_COMPONENT_PRODUCTS,
+    repoAssetPaths: CLI_REPO_ASSET_PATHS,
   }),
   hstack: Object.freeze({
     id: 'hstack',
@@ -74,11 +96,11 @@ const PRODUCT_SPECS = Object.freeze({
     checksumProductStem: 'hstack',
     rollingTagPrefix: 'stack',
     versionTagPrefix: 'stack-v',
-    releaseTitleBase: 'Happier Stack',
+    releaseTitleBase: 'Happiest Stack',
     rollingNotesSubject: 'hstack binaries',
     versionNotesSubject: 'hstack',
-    notarizationEvidenceSuffix: 'hstack',
-    artifactTargets: BINARY_PUBLISH_TARGETS,
+    artifactTargets: PUBLISH_TARGETS,
+    repoAssetPaths: Object.freeze([]),
   }),
   server: Object.freeze({
     id: 'server',
@@ -89,16 +111,16 @@ const PRODUCT_SPECS = Object.freeze({
     patchPackageVersionOnRolling: false,
     buildScriptPath: 'scripts/pipeline/release/build-server-binaries.mjs',
     artifactsDir: 'dist/release-assets/server',
-    manifestProduct: 'happier-server',
+    manifestProduct: 'happiest-server',
     manifestOutDir: 'dist/release-assets/server/manifests',
-    checksumProductStem: 'happier-server',
+    checksumProductStem: 'happiest-server',
     rollingTagPrefix: 'server',
     versionTagPrefix: 'server-v',
-    releaseTitleBase: 'Happier Server',
+    releaseTitleBase: 'Happiest Server',
     rollingNotesSubject: 'server runtime release',
     versionNotesSubject: 'Server runtime',
-    notarizationEvidenceSuffix: 'server',
-    artifactTargets: BINARY_PUBLISH_TARGETS,
+    artifactTargets: PUBLISH_TARGETS,
+    repoAssetPaths: Object.freeze([]),
   }),
 });
 

@@ -9,11 +9,17 @@ test('resolveTargets returns all targets when filter is empty', () => {
 });
 
 test('resolveTargets supports comma separated os-arch filters', () => {
-  const targets = resolveTargets({ availableTargets: CLI_STACK_TARGETS, requested: 'linux-x64,darwin-arm64' });
+  const targets = resolveTargets({ availableTargets: CLI_STACK_TARGETS, requested: 'linux-x64,windows-x64' });
   assert.deepEqual(
     targets.map((target) => `${target.os}-${target.arch}`),
-    ['linux-x64', 'darwin-arm64']
+    ['linux-x64', 'windows-x64']
   );
+});
+
+test('resolveTargets rejects macOS targets because no macOS build is published', () => {
+  assert.throws(() => {
+    resolveTargets({ availableTargets: CLI_STACK_TARGETS, requested: 'darwin-arm64' });
+  }, /unknown target/);
 });
 
 test('resolveTargets throws for unknown requested targets', () => {
@@ -22,14 +28,12 @@ test('resolveTargets throws for unknown requested targets', () => {
   }, /unknown target/);
 });
 
-test('SERVER_TARGETS covers linux/darwin/windows defaults', () => {
+test('SERVER_TARGETS covers the linux and windows defaults only', () => {
   const targets = resolveTargets({ availableTargets: SERVER_TARGETS, requested: '' });
-  const set = new Set(targets.map((t) => `${t.os}-${t.arch}`));
-  assert.ok(set.has('linux-x64'));
-  assert.ok(set.has('linux-arm64'));
-  assert.ok(set.has('darwin-x64'));
-  assert.ok(set.has('darwin-arm64'));
-  assert.ok(set.has('windows-x64'));
+  assert.deepEqual(
+    targets.map((t) => `${t.os}-${t.arch}`),
+    ['linux-x64', 'linux-arm64', 'windows-x64'],
+  );
 });
 
 test('linux-x64 binaries use baseline bun target (avoid SIGILL on older CPUs)', () => {

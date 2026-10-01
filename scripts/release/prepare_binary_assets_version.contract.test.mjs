@@ -12,7 +12,7 @@ async function writeScript(path, source) {
 }
 
 test('CLI asset preparation builds preview artifacts with the requested version and restores package.json', async () => {
-  const repoRoot = await mkdtemp(join(tmpdir(), 'happier-prepare-cli-assets-version-'));
+  const repoRoot = await mkdtemp(join(tmpdir(), 'happiest-prepare-cli-assets-version-'));
   const packageJsonPath = join(repoRoot, 'apps', 'cli', 'package.json');
   const observedVersionPath = join(repoRoot, 'observed-build-version.txt');
   const requestedVersion = '1.2.3-preview.45';
@@ -32,9 +32,9 @@ test('CLI asset preparation builds preview artifacts with the requested version 
         `await writeFile(${JSON.stringify(observedVersionPath)}, String(packageJson.version), 'utf8');`,
         "const artifactsDir = join(root, 'dist', 'release-assets', 'cli');",
         'await mkdir(artifactsDir, { recursive: true });',
-        "await writeFile(join(artifactsDir, `happier-v${version}-linux-x64.tar.gz`), 'fixture', 'utf8');",
-        "await writeFile(join(artifactsDir, `checksums-happier-v${version}.txt`), 'fixture', 'utf8');",
-        "await writeFile(join(artifactsDir, `checksums-happier-v${version}.txt.minisig`), 'fixture', 'utf8');",
+        "await writeFile(join(artifactsDir, `happiest-v${version}-linux-x64.tar.gz`), 'fixture', 'utf8');",
+        "await writeFile(join(artifactsDir, `checksums-happiest-v${version}.txt`), 'fixture', 'utf8');",
+        "await writeFile(join(artifactsDir, `checksums-happiest-v${version}.txt.minisig`), 'fixture', 'utf8');",
       ].join('\n'),
     );
     await writeScript(
@@ -44,8 +44,8 @@ test('CLI asset preparation builds preview artifacts with the requested version 
         "import { join } from 'node:path';",
         "const outDir = process.argv[process.argv.indexOf('--out-dir') + 1];",
         "const channel = process.argv[process.argv.indexOf('--channel') + 1];",
-        "await mkdir(join(outDir, 'v1', 'happier', channel), { recursive: true });",
-        "await writeFile(join(outDir, 'v1', 'happier', channel, 'latest.json'), '{}', 'utf8');",
+        "await mkdir(join(outDir, 'v1', 'happiest', channel), { recursive: true });",
+        "await writeFile(join(outDir, 'v1', 'happiest', channel, 'latest.json'), '{}', 'utf8');",
       ].join('\n'),
     );
     await writeScript(

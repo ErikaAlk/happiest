@@ -23,13 +23,13 @@ test('artifact verification target helper resolves cli paths from product metada
 
   assert.deepEqual(target, {
     artifactsDir: resolve(repoRoot, 'dist/release-assets/cli'),
-    checksumsPath: resolve(repoRoot, 'dist/release-assets/cli/checksums-happier-v1.2.3-preview.4.txt'),
+    checksumsPath: resolve(repoRoot, 'dist/release-assets/cli/checksums-happiest-v1.2.3-preview.4.txt'),
     publicKeyPath: resolve(repoRoot, 'scripts/release/installers/happier-release.pub'),
     skipSmoke: false,
     preflightPaths: [
-      resolve(repoRoot, 'dist/release-assets/cli/checksums-happier-v1.2.3-preview.4.txt'),
-      resolve(repoRoot, 'dist/release-assets/cli/checksums-happier-v1.2.3-preview.4.txt.minisig'),
-      resolve(repoRoot, 'dist/release-assets/cli/manifests/v1/happier/preview/latest.json'),
+      resolve(repoRoot, 'dist/release-assets/cli/checksums-happiest-v1.2.3-preview.4.txt'),
+      resolve(repoRoot, 'dist/release-assets/cli/checksums-happiest-v1.2.3-preview.4.txt.minisig'),
+      resolve(repoRoot, 'dist/release-assets/cli/manifests/v1/happiest/preview/latest.json'),
     ],
   });
 });
@@ -53,7 +53,7 @@ test('artifact verification target helper resolves server execution through the 
       '--artifacts-dir',
       resolve(repoRoot, 'dist/release-assets/server'),
       '--checksums',
-      resolve(repoRoot, 'dist/release-assets/server/checksums-happier-server-v2.0.0-dev.7.txt'),
+      resolve(repoRoot, 'dist/release-assets/server/checksums-happiest-server-v2.0.0-dev.7.txt'),
       '--public-key',
       resolve(repoRoot, 'scripts/release/installers/happier-release.pub'),
       '--skip-smoke',

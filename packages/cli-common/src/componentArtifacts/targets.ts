@@ -8,16 +8,12 @@ export type BinaryTarget = {
 export const CLI_BINARY_TARGETS: BinaryTarget[] = [
   { bunTarget: 'bun-linux-x64-baseline', os: 'linux', arch: 'x64', exeExt: '' },
   { bunTarget: 'bun-linux-arm64', os: 'linux', arch: 'arm64', exeExt: '' },
-  { bunTarget: 'bun-darwin-x64', os: 'darwin', arch: 'x64', exeExt: '' },
-  { bunTarget: 'bun-darwin-arm64', os: 'darwin', arch: 'arm64', exeExt: '' },
   { bunTarget: 'bun-windows-x64', os: 'windows', arch: 'x64', exeExt: '.exe' },
 ];
 
 export const SERVER_BINARY_TARGETS: BinaryTarget[] = [
   { bunTarget: 'bun-linux-x64-baseline', os: 'linux', arch: 'x64', exeExt: '' },
   { bunTarget: 'bun-linux-arm64', os: 'linux', arch: 'arm64', exeExt: '' },
-  { bunTarget: 'bun-darwin-x64', os: 'darwin', arch: 'x64', exeExt: '' },
-  { bunTarget: 'bun-darwin-arm64', os: 'darwin', arch: 'arm64', exeExt: '' },
   { bunTarget: 'bun-windows-x64', os: 'windows', arch: 'x64', exeExt: '.exe' },
 ];
 
@@ -52,8 +48,6 @@ export function resolveExecutableName({ baseName, target }: { baseName: string; 
 export function resolveCliToolsPlatformDir(target: BinaryTarget): string {
   const targetKey = `${target.arch}-${target.os}`;
   switch (targetKey) {
-    case 'arm64-darwin':
-    case 'x64-darwin':
     case 'arm64-linux':
     case 'x64-linux':
       return targetKey;

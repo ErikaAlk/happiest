@@ -9,10 +9,13 @@ import { join } from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 export { extractBundledHsetup } from '../../pipeline/tauri/linux-desktop-hsetup.mjs';
 
 const VERSION_RE_SOURCE = '\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?';
-const CLI_CHECKSUMS_RE = new RegExp(`^checksums-happier-v(${VERSION_RE_SOURCE})\\.txt$`, 'u');
+const CLI_ASSET_STEM = productIdentity.commandName;
+const CLI_CHECKSUMS_RE = new RegExp(`^checksums-${CLI_ASSET_STEM}-v(${VERSION_RE_SOURCE})\\.txt$`, 'u');
 const DESKTOP_DEB_SHA_RE = new RegExp(`^happier-ui-desktop-linux-x86_64-v(${VERSION_RE_SOURCE})\\.deb\\.sha256$`, 'u');
 
 /** @param {string} path */
@@ -28,11 +31,11 @@ export function sha256File(path) {
 export function resolveCliReleaseAssetNames({ names, os = 'linux', arch = 'x64' }) {
   const versions = [...new Set(names.map((name) => CLI_CHECKSUMS_RE.exec(name)?.[1]).filter(Boolean))];
   if (versions.length !== 1) {
-    throw new Error(`expected exactly one checksums-happier-v<version>.txt, found ${versions.length ? versions.join(', ') : 'none'}`);
+    throw new Error(`expected exactly one checksums-${CLI_ASSET_STEM}-v<version>.txt, found ${versions.length ? versions.join(', ') : 'none'}`);
   }
   const version = /** @type {string} */ (versions[0]);
-  const checksums = `checksums-happier-v${version}.txt`;
-  const required = [checksums, `${checksums}.minisig`, `happier-v${version}-${os}-${arch}.tar.gz`];
+  const checksums = `checksums-${CLI_ASSET_STEM}-v${version}.txt`;
+  const required = [checksums, `${checksums}.minisig`, `${CLI_ASSET_STEM}-v${version}-${os}-${arch}.tar.gz`];
   const missing = required.filter((name) => !names.includes(name));
   if (missing.length > 0) throw new Error(`CLI release assets are missing: ${missing.join(', ')}`);
   return { version, checksums, signature: `${checksums}.minisig`, archive: required[2] };
@@ -151,11 +154,11 @@ export async function downloadPinnedDesktopDeb({ repo, tag, destDir, token }) {
 export async function downloadPinnedCliAssets({ repo, tag, destDir, token }) {
   const version = /^cli-v(.+)$/u.exec(tag)?.[1];
   if (!version) throw new Error(`CLI baseline must be an immutable cli-v<version> tag (got ${tag})`);
-  const checksums = `checksums-happier-v${version}.txt`;
+  const checksums = `checksums-${CLI_ASSET_STEM}-v${version}.txt`;
   await downloadReleaseAssets({
     repo,
     tag,
-    names: [checksums, `${checksums}.minisig`, `happier-v${version}-linux-x64.tar.gz`],
+    names: [checksums, `${checksums}.minisig`, `${CLI_ASSET_STEM}-v${version}-linux-x64.tar.gz`],
     destDir,
     token,
   });

@@ -483,7 +483,7 @@ if [[ "$mode" == "local" ]]; then
     echo "[npm-e2e-smoke] building local happiest-server binary for remote server smoke (${server_target})..."
     node "$repo_root/scripts/pipeline/release/build-server-binaries.mjs" --channel=stable --targets="$server_target" --server-component=happier-server >/dev/null
 
-    server_artifact="$(ls -t "$repo_root"/dist/release-assets/server/happier-server-v*-"${server_target}".tar.gz 2>/dev/null | head -n 1 || true)"
+    server_artifact="$(ls -t "$repo_root"/dist/release-assets/server/happiest-server-v*-"${server_target}".tar.gz 2>/dev/null | head -n 1 || true)"
     if [[ -z "$server_artifact" || ! -f "$server_artifact" ]]; then
       echo "[npm-e2e-smoke] failed to locate local server artifact for target ${server_target}" >&2
       exit 1

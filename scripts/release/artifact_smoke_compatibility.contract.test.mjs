@@ -8,18 +8,18 @@ import {
 test('artifact smoke eligibility accepts archives that match the current runner target', () => {
   assert.deepEqual(
     resolveReleaseArtifactSmokeEligibility({
-      archiveName: 'happier-v1.2.3-preview.4-linux-x64.tar.gz',
+      archiveName: 'happiest-v1.2.3-preview.4-linux-x64.tar.gz',
       runner: { platform: 'linux', arch: 'x64' },
     }),
     {
       eligible: true,
       reason: 'compatible-target',
       target: {
-        product: 'happier',
+        product: 'happiest',
         version: '1.2.3-preview.4',
         os: 'linux',
         arch: 'x64',
-        filename: 'happier-v1.2.3-preview.4-linux-x64.tar.gz',
+        filename: 'happiest-v1.2.3-preview.4-linux-x64.tar.gz',
       },
       runnerTarget: { os: 'linux', arch: 'x64' },
     },
@@ -29,18 +29,18 @@ test('artifact smoke eligibility accepts archives that match the current runner 
 test('artifact smoke eligibility skips archives whose architecture does not match the runner', () => {
   assert.deepEqual(
     resolveReleaseArtifactSmokeEligibility({
-      archiveName: 'happier-v1.2.3-preview.4-linux-arm64.tar.gz',
+      archiveName: 'happiest-v1.2.3-preview.4-linux-arm64.tar.gz',
       runner: { platform: 'linux', arch: 'x64' },
     }),
     {
       eligible: false,
       reason: 'target-mismatch',
       target: {
-        product: 'happier',
+        product: 'happiest',
         version: '1.2.3-preview.4',
         os: 'linux',
         arch: 'arm64',
-        filename: 'happier-v1.2.3-preview.4-linux-arm64.tar.gz',
+        filename: 'happiest-v1.2.3-preview.4-linux-arm64.tar.gz',
       },
       runnerTarget: { os: 'linux', arch: 'x64' },
     },
@@ -84,7 +84,7 @@ test('artifact smoke eligibility skips non-binary tarballs that do not encode a 
 });
 
 test('component archives are smoke eligible only on their native target', () => {
-  for (const product of ['happier-memory-runtime', 'happier-difftastic']) {
+  for (const product of ['happiest-memory-runtime', 'happiest-difftastic']) {
     assert.equal(resolveReleaseArtifactSmokeEligibility({
       archiveName: `${product}-v1.2.3-linux-x64.tar.gz`,
       runner: { platform: 'linux', arch: 'x64' },

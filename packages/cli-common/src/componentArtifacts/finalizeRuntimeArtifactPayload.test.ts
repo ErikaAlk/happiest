@@ -268,10 +268,7 @@ describe('finalizeRuntimeArtifactPayload native target projection', () => {
           `sharp-linux-${target.arch}`,
           `sharp-linuxmusl-${target.arch}`,
         ]
-      : [
-          ...(target.os === 'darwin' ? [`sharp-libvips-darwin-${target.arch}`] : []),
-          `sharp-${platform}-${target.arch}`,
-        ];
+      : [`sharp-${platform}-${target.arch}`];
     expect(await readdir(join(root, sharpRoot))).toEqual(['colour', ...expectedSharp].sort());
     expect(await readdir(join(root, claudeRoot))).toEqual(['sdk']);
     await expect(readFile(join(root, 'node_modules/@anthropic-ai/claude-agent-sdk/sdk.mjs'), 'utf8'))
@@ -321,7 +318,7 @@ describe('finalizeRuntimeArtifactPayload native target projection', () => {
         survivor: 'node_modules/@modelcontextprotocol/sdk/node_modules/express/node_modules/qs',
         packageName: 'qs',
       },
-      ...(target.os === 'linux' ? ['linux', 'linuxmusl'] : target.os === 'darwin' ? ['darwin'] : []).map((platform) => ({
+      ...(target.os === 'linux' ? ['linux', 'linuxmusl'] : []).map((platform) => ({
         duplicate: `node_modules/sharp/node_modules/@img/sharp-${platform}-${target.arch}/node_modules/@img/sharp-libvips-${platform}-${target.arch}`,
         survivor: `node_modules/sharp/node_modules/@img/sharp-libvips-${platform}-${target.arch}`,
         packageName: `@img/sharp-libvips-${platform}-${target.arch}`,
@@ -331,7 +328,7 @@ describe('finalizeRuntimeArtifactPayload native target projection', () => {
       await putPackage(root, pair.survivor, pair.packageName, marker);
       await putPackage(root, pair.duplicate, pair.packageName, marker);
     }
-    for (const platform of target.os === 'linux' ? ['linux', 'linuxmusl'] : [target.os === 'windows' ? 'win32' : 'darwin']) {
+    for (const platform of target.os === 'linux' ? ['linux', 'linuxmusl'] : ['win32']) {
       await put(root, `node_modules/sharp/node_modules/@img/sharp-${platform}-${target.arch}/package.json`, '{}');
     }
 
@@ -470,7 +467,7 @@ describe('finalizeRuntimeArtifactPayload native target projection', () => {
     {
       packageRoot: 'node_modules/sharp',
       installedPackage: 'node_modules/sharp/node_modules/@img/sharp-linux-arm64',
-      expectedMissing: '@img/sharp-darwin-arm64',
+      expectedMissing: '@img/sharp-win32-x64',
     },
   ])('rejects an incomplete cross-target closure for $packageRoot', async ({ packageRoot, installedPackage, expectedMissing }) => {
     const root = await fixtureRoot();
@@ -479,7 +476,7 @@ describe('finalizeRuntimeArtifactPayload native target projection', () => {
     await put(root, 'happiest-runtime/index.mjs');
 
     await expect(finalizeRuntimeArtifactPayload(root, {
-      os: 'darwin', arch: 'arm64', bunTarget: 'bun-darwin-arm64', exeExt: '',
+      os: 'windows', arch: 'x64', bunTarget: 'bun-windows-x64', exeExt: '.exe',
     })).rejects.toThrow(expectedMissing);
   });
 
@@ -492,31 +489,31 @@ describe('finalizeRuntimeArtifactPayload native target projection', () => {
     await put(root, `${packageRoot}/bin/napi-v3/linux/arm64/onnxruntime_binding.node`);
     // A target directory or a different N-API binding cannot satisfy the
     // installed 1.21.0 loader's fixed napi-v3 require path.
-    await put(root, `${packageRoot}/bin/napi-v3/darwin/arm64/libonnxruntime.1.21.0.dylib`);
-    await put(root, `${packageRoot}/bin/napi-v6/darwin/arm64/onnxruntime_binding.node`);
+    await put(root, `${packageRoot}/bin/napi-v3/win32/x64/onnxruntime.dll`);
+    await put(root, `${packageRoot}/bin/napi-v6/win32/x64/onnxruntime_binding.node`);
 
     await expect(finalizeRuntimeArtifactPayload(root, {
-      os: 'darwin', arch: 'arm64', bunTarget: 'bun-darwin-arm64', exeExt: '',
-    })).rejects.toThrow('bin/napi-v3/darwin/arm64/onnxruntime_binding.node');
+      os: 'windows', arch: 'x64', bunTarget: 'bun-windows-x64', exeExt: '.exe',
+    })).rejects.toThrow('bin/napi-v3/win32/x64/onnxruntime_binding.node');
   });
 
   it.skipIf(process.platform === 'win32')('repairs the retained prebuild helper mode in a cross-target payload', async () => {
     const root = await fixtureRoot();
-    const path = 'node_modules/node-pty/prebuilds/darwin-arm64/spawn-helper';
+    const path = 'node_modules/node-pty/prebuilds/linux-arm64/spawn-helper';
     await put(root, path, '#!/bin/sh\nexit 0\n');
     await chmod(join(root, path), 0o644);
 
-    await finalizeRuntimeArtifactPayload(root, { os: 'darwin', arch: 'arm64', bunTarget: 'bun-darwin-arm64', exeExt: '' });
+    await finalizeRuntimeArtifactPayload(root, { os: 'linux', arch: 'arm64', bunTarget: 'bun-linux-arm64', exeExt: '' });
 
     expect((await stat(join(root, path))).mode & 0o777).toBe(0o755);
   });
 
   it('does not prune native assets when no artifact target is requested', async () => {
     const root = await fixtureRoot();
-    await put(root, 'node_modules/node-pty/prebuilds/darwin-arm64/pty.node');
+    await put(root, 'node_modules/node-pty/prebuilds/linux-arm64/pty.node');
     await put(root, 'node_modules/node-pty/prebuilds/win32-x64/pty.node');
     await finalizeRuntimeArtifactPayload(root);
-    expect(await readdir(join(root, 'node_modules/node-pty/prebuilds'))).toEqual(['darwin-arm64', 'win32-x64']);
+    expect(await readdir(join(root, 'node_modules/node-pty/prebuilds'))).toEqual(['linux-arm64', 'win32-x64']);
   });
 
   it.skipIf(process.platform === 'win32')('removes package-manager bin links before checking surviving links', async () => {
@@ -532,10 +529,10 @@ describe('finalizeRuntimeArtifactPayload native target projection', () => {
     const outside = await fixtureRoot();
     await put(outside, 'helper', '#!/bin/sh\nexit 0\n');
     await chmod(join(outside, 'helper'), 0o644);
-    const prebuild = join(root, 'node_modules/node-pty/prebuilds/darwin-arm64');
+    const prebuild = join(root, 'node_modules/node-pty/prebuilds/linux-arm64');
     await mkdir(prebuild, { recursive: true });
     await symlink(join(outside, 'helper'), join(prebuild, 'spawn-helper'));
-    await expect(finalizeRuntimeArtifactPayload(root, { os: 'darwin', arch: 'arm64', bunTarget: 'bun-darwin-arm64', exeExt: '' }))
+    await expect(finalizeRuntimeArtifactPayload(root, { os: 'linux', arch: 'arm64', bunTarget: 'bun-linux-arm64', exeExt: '' }))
       .rejects.toThrow('runtime payload symlink escapes');
     expect((await stat(join(outside, 'helper'))).mode & 0o777).toBe(0o644);
   });

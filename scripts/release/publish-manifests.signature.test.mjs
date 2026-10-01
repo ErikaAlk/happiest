@@ -18,12 +18,12 @@ async function withTempDir(run) {
   }
 }
 
-function runPublishManifests({ artifactsDir, outDir }) {
+function runPublishManifests({ artifactsDir, outDir, product = 'happiest' }) {
   return spawnSync(
     process.execPath,
     [
       publishManifestsPath,
-      '--product=happier',
+      `--product=${product}`,
       '--channel=stable',
       '--version=1.2.3',
       `--artifacts-dir=${artifactsDir}`,
@@ -41,10 +41,10 @@ test('publish-manifests fails when minisign signature asset is missing', async (
     const artifactsDir = join(dir, 'artifacts');
     const outDir = join(dir, 'out');
     await mkdir(artifactsDir, { recursive: true });
-    await writeFile(join(artifactsDir, 'happier-v1.2.3-linux-x64.tar.gz'), 'archive', 'utf-8');
+    await writeFile(join(artifactsDir, 'happiest-v1.2.3-linux-x64.tar.gz'), 'archive', 'utf-8');
     await writeFile(
-      join(artifactsDir, 'checksums-happier-v1.2.3.txt'),
-      'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  happier-v1.2.3-linux-x64.tar.gz\n',
+      join(artifactsDir, 'checksums-happiest-v1.2.3.txt'),
+      'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  happiest-v1.2.3-linux-x64.tar.gz\n',
       'utf-8'
     );
 
@@ -60,24 +60,37 @@ test('publish-manifests emits signature URL when minisign asset exists', async (
     const artifactsDir = join(dir, 'artifacts');
     const outDir = join(dir, 'out');
     await mkdir(artifactsDir, { recursive: true });
-    await writeFile(join(artifactsDir, 'happier-v1.2.3-linux-x64.tar.gz'), 'archive', 'utf-8');
+    await writeFile(join(artifactsDir, 'happiest-v1.2.3-linux-x64.tar.gz'), 'archive', 'utf-8');
     await writeFile(
-      join(artifactsDir, 'checksums-happier-v1.2.3.txt'),
-      'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  happier-v1.2.3-linux-x64.tar.gz\n',
+      join(artifactsDir, 'checksums-happiest-v1.2.3.txt'),
+      'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  happiest-v1.2.3-linux-x64.tar.gz\n',
       'utf-8'
     );
-    await writeFile(join(artifactsDir, 'checksums-happier-v1.2.3.txt.minisig'), 'signature', 'utf-8');
+    await writeFile(join(artifactsDir, 'checksums-happiest-v1.2.3.txt.minisig'), 'signature', 'utf-8');
 
     const result = runPublishManifests({ artifactsDir, outDir });
     assert.equal(result.status, 0, result.stderr);
 
     const latest = JSON.parse(
-      await readFile(join(outDir, 'v1', 'happier', 'stable', 'latest.json'), 'utf-8')
+      await readFile(join(outDir, 'v1', 'happiest', 'stable', 'latest.json'), 'utf-8')
     );
     assert.equal(latest.records.length, 1);
     assert.equal(
       latest.records[0].signature,
-      'https://example.com/downloads/cli-stable/checksums-happier-v1.2.3.txt.minisig'
+      'https://example.com/downloads/cli-stable/checksums-happiest-v1.2.3.txt.minisig'
     );
+  });
+});
+
+test('publish-manifests rejects the upstream product name', async () => {
+  await withTempDir(async (dir) => {
+    const artifactsDir = join(dir, 'artifacts');
+    const outDir = join(dir, 'out');
+    await mkdir(artifactsDir, { recursive: true });
+    await writeFile(join(artifactsDir, 'happier-v1.2.3-linux-x64.tar.gz'), 'archive', 'utf-8');
+
+    const result = runPublishManifests({ artifactsDir, outDir, product: 'happier' });
+    assert.notEqual(result.status, 0);
+    assert.match(`${result.stdout ?? ''}\n${result.stderr ?? ''}`, /no artifacts found for product "happier"/);
   });
 });

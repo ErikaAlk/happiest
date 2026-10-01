@@ -10,6 +10,7 @@ import { normalizePublicReleaseChannel } from '../lib/public-release-rings.mjs';
 import { writeChecksumsFile } from '../lib/release-files.mjs';
 import { resolveArtifactVerifyExecution, resolveArtifactVerifyTarget } from './artifact-verify-target.mjs';
 import { getBinaryPublishProductSpec } from './product-specs.mjs';
+import { stageRepoReleaseAssets } from './repo-release-assets.mjs';
 import { finalizeServerRuntimeCandidate } from './server-runtime-candidate.mjs';
 import { maybeSignFile } from '../lib/minisign-signing.mjs';
 
@@ -84,8 +85,9 @@ export async function ensureCleanBinaryArtifactsDir(repoRoot, productSpec, opts)
 
 /**
  * Canonical admission and signing owner for a complete native artifact matrix.
- * Darwin notarization records and optional component envelopes are release assets
- * covered by the primary checksum/minisign envelope.
+ * The product's repository assets (installers, public key) and optional component envelopes are
+ * release assets covered by the primary checksum/minisign envelope. Repository assets are always
+ * taken from `params.repoRoot`, never from the prepared directory.
  */
 export async function finalizePreparedBinaryArtifacts(params) {
   const artifactsDir = path.resolve(params.artifactsDir);
@@ -134,6 +136,11 @@ export async function finalizePreparedBinaryArtifacts(params) {
     }
   }
 
+  const repoAssets = await stageRepoReleaseAssets({
+    repoRoot: params.repoRoot,
+    artifactsDir,
+    productSpec: params.productSpec,
+  });
   const expectedArtifacts = products.flatMap((product) => targets.map((target) => ({
     ...target,
     name: `${product}-v${version}-${target.os}-${target.arch}.tar.gz`,
@@ -156,28 +163,7 @@ export async function finalizePreparedBinaryArtifacts(params) {
     }
   }
 
-  const evidenceSuffix = params.productSpec.notarizationEvidenceSuffix;
-  const evidenceSuffixes = [evidenceSuffix, ...componentProducts];
-  const expectedEvidenceNames = evidenceSuffixes.flatMap((suffix) => [
-    `darwin-arm64.${suffix}.json`,
-    `darwin-x64.${suffix}.json`,
-  ]).sort();
-  const evidenceNames = preparedNames
-    .filter((name) => evidenceSuffixes.some((suffix) => name.endsWith(`.${suffix}.json`)))
-    .sort();
-  const missingEvidenceNames = expectedEvidenceNames.filter((name) => !evidenceNames.includes(name));
-  if (missingEvidenceNames.length > 0) {
-    throw new Error(
-      `missing prepared Darwin notarization evidence for ${params.productSpec.id} ${version}: ${missingEvidenceNames.join(', ')}`,
-    );
-  }
-  if (
-    evidenceNames.length !== expectedEvidenceNames.length
-    || evidenceNames.some((name, index) => name !== expectedEvidenceNames[index])
-  ) {
-    throw new Error(`unexpected prepared evidence set for ${params.productSpec.id} ${version}`);
-  }
-  const admittedNames = new Set([...expectedNames, ...expectedEvidenceNames, ...expectedManifestNames]);
+  const admittedNames = new Set([...expectedNames, ...repoAssets.map(({ name }) => name), ...expectedManifestNames]);
   const unexpectedNames = preparedNames.filter((name) => !admittedNames.has(name));
   if (unexpectedNames.length > 0) {
     throw new Error(
@@ -192,12 +178,7 @@ export async function finalizePreparedBinaryArtifacts(params) {
       os: artifact.os,
       arch: artifact.arch,
     })),
-    ...evidenceNames.map((name) => ({
-      name,
-      path: path.join(artifactsDir, name),
-      os: 'darwin',
-      arch: name.includes('arm64') ? 'arm64' : 'x64',
-    })),
+    ...repoAssets,
     ...expectedManifestNames.map((name) => ({
       name,
       path: path.join(artifactsDir, name),
@@ -216,8 +197,7 @@ export async function finalizePreparedBinaryArtifacts(params) {
     const componentChecksumsPath = await writeChecksums({
       product,
       version,
-      artifacts: artifacts.filter((artifact) => artifact.name.startsWith(`${product}-v`)
-        || artifact.name.endsWith(`.${product}.json`)),
+      artifacts: artifacts.filter((artifact) => artifact.name.startsWith(`${product}-v`)),
       outDir: artifactsDir,
     });
     const componentSignaturePath = await signFile({
@@ -306,6 +286,7 @@ export async function prepareBinaryReleaseAssets(params) {
       } else if (!opts.dryRun || params.finalizePrepared) {
         await (params.finalizePrepared ?? finalizePreparedBinaryArtifacts)({
           artifactsDir: withinRepo(repoRoot, productSpec.artifactsDir),
+          repoRoot,
           productSpec,
           channel,
           version,
@@ -330,7 +311,7 @@ export async function prepareBinaryReleaseAssets(params) {
           version,
           authorizedSha: String(params.authorizedSha ?? ''),
           sign: async (checksumsPath) => {
-            await maybeSignFile({ path: checksumsPath, trustedComment: `happier-server ${version} ${channel}` });
+            await maybeSignFile({ path: checksumsPath, trustedComment: `${productSpec.manifestProduct} ${version} ${channel}` });
           },
         });
       }
@@ -373,6 +354,7 @@ export async function prepareBinaryReleaseAssets(params) {
         const manifestsRoot = withinRepo(repoRoot, productSpec.manifestOutDir);
         await (params.finalizePrepared ?? finalizePreparedBinaryArtifacts)({
           artifactsDir: withinRepo(repoRoot, productSpec.artifactsDir),
+          repoRoot,
           manifestsRoot,
           manifestsDir: path.join(manifestsRoot, 'v1', productSpec.manifestProduct, channel),
           productSpec,
@@ -464,6 +446,7 @@ export async function prepareBinaryAssetsMain(options = {}) {
     if (!artifactsDir) throw new Error('--artifacts-dir is required with --finalize-prepared-only');
     await (options.finalizePrepared ?? finalizePreparedBinaryArtifacts)({
       artifactsDir: path.resolve(repoRoot, artifactsDir),
+      repoRoot,
       productSpec: getBinaryPublishProductSpec(String(values.product ?? '')),
       channel: String(values.channel ?? ''),
       version: String(values.version ?? ''),

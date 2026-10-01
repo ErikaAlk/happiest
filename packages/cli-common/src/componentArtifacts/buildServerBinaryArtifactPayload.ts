@@ -16,10 +16,6 @@ function resolvePrismaEngineFileNameForTarget(target: BinaryTarget): string {
       return 'libquery_engine-debian-openssl-3.0.x.so.node';
     case 'linux-arm64':
       return 'libquery_engine-linux-arm64-openssl-3.0.x.so.node';
-    case 'darwin-x64':
-      return 'libquery_engine-darwin.dylib.node';
-    case 'darwin-arm64':
-      return 'libquery_engine-darwin-arm64.dylib.node';
     case 'windows-x64':
       return 'query_engine-windows.dll.node';
     default:

@@ -6,7 +6,7 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 
 import { normalizeChannel, parseArgs } from './lib/release-arguments.mjs';
-import { buildManifestRecord, parseArtifactFilename } from './lib/manifests.mjs';
+import { BINARY_RELEASE_PRODUCT_NAMES, buildManifestRecord, parseArtifactFilename } from './lib/manifests.mjs';
 
 function parseChecksums(raw) {
   const map = new Map();
@@ -42,7 +42,7 @@ async function main() {
   const { kv } = parseArgs(process.argv.slice(2));
   const product = String(kv.get('--product') ?? '').trim();
   if (!product) {
-    throw new Error('[release] --product is required (happier|hstack|happier-server)');
+    throw new Error(`[release] --product is required (${BINARY_RELEASE_PRODUCT_NAMES.join('|')})`);
   }
   const channel = normalizeChannel(kv.get('--channel'));
   const artifactsDir = resolve(String(kv.get('--artifacts-dir') ?? '').trim() || join(process.cwd(), 'dist', 'release-assets'));

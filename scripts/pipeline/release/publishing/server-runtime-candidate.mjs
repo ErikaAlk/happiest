@@ -5,13 +5,9 @@ import { createReadStream } from 'node:fs';
 import { copyFile, lstat, mkdir, readdir, rm, writeFile } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 
-const SERVER_RUNTIME_TARGETS = Object.freeze([
-  Object.freeze({ os: 'darwin', arch: 'arm64' }),
-  Object.freeze({ os: 'darwin', arch: 'x64' }),
-  Object.freeze({ os: 'linux', arch: 'arm64' }),
-  Object.freeze({ os: 'linux', arch: 'x64' }),
-  Object.freeze({ os: 'windows', arch: 'x64' }),
-]);
+import { getBinaryPublishProductSpec } from './product-specs.mjs';
+
+const SERVER_SPEC = getBinaryPublishProductSpec('server');
 
 export const SERVER_RUNTIME_CANDIDATE_MAX_FILE_BYTES = 512 * 1024 * 1024;
 export const SERVER_RUNTIME_CANDIDATE_MAX_AGGREGATE_BYTES = 2 * 1024 * 1024 * 1024;
@@ -25,8 +21,8 @@ function assertVersion(version) {
 }
 
 function expectedNames(version) {
-  return SERVER_RUNTIME_TARGETS
-    .map(({ os, arch }) => `happier-server-v${version}-${os}-${arch}.tar.gz`)
+  return SERVER_SPEC.artifactTargets
+    .map(({ os, arch }) => `${SERVER_SPEC.manifestProduct}-v${version}-${os}-${arch}.tar.gz`)
     .sort();
 }
 
@@ -123,7 +119,7 @@ export async function finalizeServerRuntimeCandidate(params) {
     await copyFile(artifact.path, join(outDir, basename(artifact.name)));
   }
   const checksums = `${inspected.artifacts.map((artifact) => `${artifact.sha256}  ${artifact.name}`).join('\n')}\n`;
-  const checksumsPath = join(outDir, `checksums-happier-server-v${inspected.version}.txt`);
+  const checksumsPath = join(outDir, `checksums-${SERVER_SPEC.checksumProductStem}-v${inspected.version}.txt`);
   await writeFile(checksumsPath, checksums, { encoding: 'utf8', mode: 0o600 });
   await params.sign(checksumsPath);
   const signaturePath = `${checksumsPath}.minisig`;

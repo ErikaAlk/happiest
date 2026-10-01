@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, readdir, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -17,23 +17,41 @@ import { inspectImmutableReleaseCandidate } from '../lib/immutable-release-candi
 const CLI_TARGETS = [
   ['linux', 'x64'],
   ['linux', 'arm64'],
-  ['darwin', 'x64'],
-  ['darwin', 'arm64'],
   ['windows', 'x64'],
 ];
+
+const REPO_ASSET_NAMES = ['install.sh', 'install.ps1', 'install-server.sh', 'happier-release.pub'];
 
 // Existing generic envelope cases use only the base product; the complete CLI matrix is exercised below.
 function getBinaryPublishProductSpec(product) {
   return { ...getCompleteBinaryPublishProductSpec(product), optionalComponentProducts: [] };
 }
 
+async function createRepoRoot() {
+  const repoRoot = await mkdtemp(join(tmpdir(), 'happiest-prebuilt-repo-'));
+  const installersDir = join(repoRoot, 'scripts', 'release', 'installers');
+  await mkdir(installersDir, { recursive: true });
+  for (const name of REPO_ASSET_NAMES) {
+    await writeFile(join(installersDir, name), `repository source of ${name}\n`, 'utf8');
+  }
+  return repoRoot;
+}
+
+async function writeCliArchives(artifactsDir, version, targets = CLI_TARGETS) {
+  for (const [os, arch] of targets) {
+    const name = `happiest-v${version}-${os}-${arch}.tar.gz`;
+    await writeFile(join(artifactsDir, name), `${os}-${arch}\n`, 'utf8');
+  }
+}
+
 test('CLI publication requires complete optional matrices and seals each beneath the CLI envelope', async () => {
-  const artifactsDir = await mkdtemp(join(tmpdir(), 'happier-optional-publication-'));
+  const artifactsDir = await mkdtemp(join(tmpdir(), 'happiest-optional-publication-'));
+  const repoRoot = await createRepoRoot();
   const version = '1.2.3-preview.4';
-  const products = ['happier-memory-runtime', 'happier-difftastic'];
+  const products = ['happiest-memory-runtime', 'happiest-difftastic'];
   const writes = [];
   const finalize = (extra = {}) => finalizePreparedBinaryArtifacts({
-    artifactsDir, version, channel: 'preview', productSpec: getCompleteBinaryPublishProductSpec('cli'),
+    artifactsDir, repoRoot, version, channel: 'preview', productSpec: getCompleteBinaryPublishProductSpec('cli'),
     writeChecksums: async (input) => {
       writes.push(input);
       return writeChecksumsFile(input);
@@ -46,85 +64,67 @@ test('CLI publication requires complete optional matrices and seals each beneath
   });
   try {
     await writeCliArchives(artifactsDir, version);
-    await writeCliEvidence(artifactsDir);
     for (const product of products) {
       for (const [os, arch] of CLI_TARGETS) {
         await writeFile(join(artifactsDir, `${product}-v${version}-${os}-${arch}.tar.gz`), 'component');
       }
-      await writeProductEvidence(artifactsDir, product);
     }
-    const missing = join(artifactsDir, `happier-difftastic-v${version}-windows-x64.tar.gz`);
+    const missing = join(artifactsDir, `happiest-difftastic-v${version}-windows-x64.tar.gz`);
     await rm(missing);
-    await assert.rejects(finalize(), /missing prepared artifact.*happier-difftastic/);
+    await assert.rejects(finalize(), /missing prepared artifact.*happiest-difftastic/);
     assert.equal(writes.length, 0);
     await writeFile(missing, 'component');
-    const missingEvidence = join(artifactsDir, 'darwin-arm64.happier-memory-runtime.json');
-    await rm(missingEvidence);
-    await assert.rejects(finalize(), /missing prepared Darwin notarization evidence.*happier-memory-runtime/);
-    await writeFile(missingEvidence, '{}');
     const result = await finalize();
-    assert.deepEqual(writes.map(({ product }) => product), [...products, 'happier']);
+    assert.deepEqual(writes.map(({ product }) => product), [...products, 'happiest']);
     for (const product of products) {
       const component = writes.find((entry) => entry.product === product);
-      assert.equal(component.artifacts.length, 7);
+      assert.equal(component.artifacts.length, CLI_TARGETS.length);
       for (const suffix of ['', '.minisig']) {
         assert.ok(result.artifacts.some(({ name }) => name === `checksums-${product}-v${version}.txt${suffix}`));
       }
     }
-    assert.equal(result.artifacts.length, 25);
+    // 9 archives, 4 repository assets, and 2 envelope files for each of the 2 optional components.
+    assert.equal(result.artifacts.length, 9 + REPO_ASSET_NAMES.length + 4);
     const candidate = await inspectImmutableReleaseCandidate({ directory: artifactsDir, sourceTag: `cli-v${version}` });
-    assert.equal(candidate.assetNames.length, 25);
+    assert.equal(candidate.assetNames.length, 9 + REPO_ASSET_NAMES.length + 4);
+    for (const name of REPO_ASSET_NAMES) {
+      assert.ok(candidate.assetNames.includes(name), `${name} must be covered by the signed CLI envelope`);
+    }
 
     const manifestsRoot = join(artifactsDir, 'manifests');
-    const manifestsDir = join(manifestsRoot, 'v1', 'happier', 'preview');
+    const manifestsDir = join(manifestsRoot, 'v1', 'happiest', 'preview');
     await mkdir(manifestsDir, { recursive: true });
     for (const name of [...CLI_TARGETS.map(([os, arch]) => `${os}-${arch}.json`), 'latest.json']) {
       await writeFile(join(manifestsDir, name), '{}');
     }
     const withManifests = await finalize({ manifestsRoot, manifestsDir });
-    assert.equal(withManifests.artifacts.length, 31);
+    assert.equal(withManifests.artifacts.length, 9 + REPO_ASSET_NAMES.length + 4 + CLI_TARGETS.length + 1);
     const finalized = await inspectImmutableReleaseCandidate({ directory: artifactsDir, sourceTag: `cli-v${version}` });
-    assert.equal(finalized.assetNames.length, 31);
+    assert.equal(finalized.assetNames.length, 9 + REPO_ASSET_NAMES.length + 4 + CLI_TARGETS.length + 1);
   } finally {
     await rm(artifactsDir, { recursive: true, force: true });
+    await rm(repoRoot, { recursive: true, force: true });
   }
 });
 
-async function writeCliArchives(artifactsDir, version, targets = CLI_TARGETS) {
-  for (const [os, arch] of targets) {
-    const name = `happier-v${version}-${os}-${arch}.tar.gz`;
-    await writeFile(join(artifactsDir, name), `${os}-${arch}\n`, 'utf8');
-  }
-}
-
-async function writeCliEvidence(artifactsDir) {
-  await writeFile(join(artifactsDir, 'darwin-x64.cli.json'), '{"target":"darwin-x64"}\n', 'utf8');
-  await writeFile(join(artifactsDir, 'darwin-arm64.cli.json'), '{"target":"darwin-arm64"}\n', 'utf8');
-}
-
-async function writeProductEvidence(artifactsDir, suffix) {
-  await writeFile(join(artifactsDir, `darwin-x64.${suffix}.json`), '{"target":"darwin-x64"}\n', 'utf8');
-  await writeFile(join(artifactsDir, `darwin-arm64.${suffix}.json`), '{"target":"darwin-arm64"}\n', 'utf8');
-}
-
-test('finalizePreparedBinaryArtifacts signs one complete native CLI artifact matrix', async () => {
-  const artifactsDir = await mkdtemp(join(tmpdir(), 'happier-prebuilt-cli-'));
+test('finalizePreparedBinaryArtifacts signs one complete native CLI artifact matrix with the installer assets', async () => {
+  const artifactsDir = await mkdtemp(join(tmpdir(), 'happiest-prebuilt-cli-'));
+  const repoRoot = await createRepoRoot();
   const version = '1.2.3-preview.4';
   try {
     await writeCliArchives(artifactsDir, version);
-    await writeCliEvidence(artifactsDir);
     const writes = [];
     const signs = [];
 
     const result = await finalizePreparedBinaryArtifacts({
       artifactsDir,
+      repoRoot,
       productSpec: getBinaryPublishProductSpec('cli'),
       channel: 'preview',
       version,
-      targets: CLI_TARGETS.map(([os, arch]) => ({ os, arch })),
       writeChecksums: async (input) => {
         writes.push(input);
-        return join(artifactsDir, `checksums-happier-v${version}.txt`);
+        return join(artifactsDir, `checksums-happiest-v${version}.txt`);
       },
       signFile: async (input) => {
         signs.push(input);
@@ -133,31 +133,34 @@ test('finalizePreparedBinaryArtifacts signs one complete native CLI artifact mat
     });
 
     assert.deepEqual(
-      writes[0].artifacts.map((artifact) => [artifact.os, artifact.arch, artifact.name]),
+      writes[0].artifacts.map((artifact) => artifact.name),
       [
-        ...CLI_TARGETS.map(([os, arch]) => [os, arch, `happier-v${version}-${os}-${arch}.tar.gz`]),
-        ['darwin', 'arm64', 'darwin-arm64.cli.json'],
-        ['darwin', 'x64', 'darwin-x64.cli.json'],
+        ...CLI_TARGETS.map(([os, arch]) => `happiest-v${version}-${os}-${arch}.tar.gz`),
+        ...REPO_ASSET_NAMES,
       ],
     );
     assert.deepEqual(signs, [{
-      path: join(artifactsDir, `checksums-happier-v${version}.txt`),
-      trustedComment: `happier ${version} preview`,
+      path: join(artifactsDir, `checksums-happiest-v${version}.txt`),
+      trustedComment: `happiest ${version} preview`,
     }]);
-    assert.equal(result.artifacts.length, CLI_TARGETS.length + 2);
-    assert.equal(result.signaturePath, join(artifactsDir, `checksums-happier-v${version}.txt.minisig`));
+    assert.equal(result.artifacts.length, CLI_TARGETS.length + REPO_ASSET_NAMES.length);
+    assert.equal(result.signaturePath, join(artifactsDir, `checksums-happiest-v${version}.txt.minisig`));
+    for (const name of REPO_ASSET_NAMES) {
+      assert.equal(await readFile(join(artifactsDir, name), 'utf8'), `repository source of ${name}\n`);
+    }
   } finally {
     await rm(artifactsDir, { recursive: true, force: true });
+    await rm(repoRoot, { recursive: true, force: true });
   }
 });
 
 test('finalizePreparedBinaryArtifacts flattens generated channel manifests into the signed release envelope', async () => {
-  const artifactsDir = await mkdtemp(join(tmpdir(), 'happier-prebuilt-cli-manifests-'));
-  const manifestsDir = join(artifactsDir, 'manifests', 'v1', 'happier', 'preview');
+  const artifactsDir = await mkdtemp(join(tmpdir(), 'happiest-prebuilt-cli-manifests-'));
+  const repoRoot = await createRepoRoot();
+  const manifestsDir = join(artifactsDir, 'manifests', 'v1', 'happiest', 'preview');
   const version = '1.2.3-preview.4';
   try {
     await writeCliArchives(artifactsDir, version);
-    await writeCliEvidence(artifactsDir);
     await mkdir(manifestsDir, { recursive: true });
     const manifestNames = [
       ...CLI_TARGETS.map(([os, arch]) => `${os}-${arch}.json`),
@@ -170,15 +173,15 @@ test('finalizePreparedBinaryArtifacts flattens generated channel manifests into 
 
     await finalizePreparedBinaryArtifacts({
       artifactsDir,
+      repoRoot,
       manifestsDir,
       manifestsRoot: join(artifactsDir, 'manifests'),
       productSpec: getBinaryPublishProductSpec('cli'),
       channel: 'preview',
       version,
-      targets: CLI_TARGETS.map(([os, arch]) => ({ os, arch })),
       writeChecksums: async (input) => {
         writes.push(input);
-        return join(artifactsDir, `checksums-happier-v${version}.txt`);
+        return join(artifactsDir, `checksums-happiest-v${version}.txt`);
       },
       signFile: async ({ path }) => `${path}.minisig`,
     });
@@ -186,90 +189,83 @@ test('finalizePreparedBinaryArtifacts flattens generated channel manifests into 
     assert.deepEqual(
       writes[0].artifacts.map((artifact) => artifact.name).sort(),
       [
-        ...CLI_TARGETS.map(([os, arch]) => `happier-v${version}-${os}-${arch}.tar.gz`),
-        'darwin-arm64.cli.json',
-        'darwin-x64.cli.json',
+        ...CLI_TARGETS.map(([os, arch]) => `happiest-v${version}-${os}-${arch}.tar.gz`),
+        ...REPO_ASSET_NAMES,
         ...manifestNames,
       ].sort(),
     );
     assert.deepEqual(
       (await readdir(artifactsDir)).filter((name) => name.endsWith('.json')).sort(),
-      ['darwin-arm64.cli.json', 'darwin-x64.cli.json', ...manifestNames].sort(),
+      [...manifestNames].sort(),
     );
     assert.equal((await readdir(artifactsDir)).includes('manifests'), false);
   } finally {
     await rm(artifactsDir, { recursive: true, force: true });
+    await rm(repoRoot, { recursive: true, force: true });
   }
 });
 
-test('finalizePreparedBinaryArtifacts refuses publication without both Darwin notarization evidence records', async () => {
-  const artifactsDir = await mkdtemp(join(tmpdir(), 'happier-prebuilt-cli-missing-evidence-'));
+test('finalizePreparedBinaryArtifacts refuses publication when a repository installer source is missing', async () => {
+  const artifactsDir = await mkdtemp(join(tmpdir(), 'happiest-prebuilt-cli-missing-installer-'));
+  const repoRoot = await createRepoRoot();
   const version = '1.2.3-preview.4';
   try {
     await writeCliArchives(artifactsDir, version);
+    await rm(join(repoRoot, 'scripts', 'release', 'installers', 'install.ps1'));
     await assert.rejects(
       finalizePreparedBinaryArtifacts({
         artifactsDir,
+        repoRoot,
         productSpec: getBinaryPublishProductSpec('cli'),
         channel: 'preview',
         version,
-        targets: CLI_TARGETS.map(([os, arch]) => ({ os, arch })),
         writeChecksums: async () => {
-          throw new Error('must not checksum an unsigned Darwin matrix');
+          throw new Error('must not checksum a release without its installers');
         },
         signFile: async () => {
-          throw new Error('must not sign an unsigned Darwin matrix');
+          throw new Error('must not sign a release without its installers');
         },
       }),
-      /missing prepared Darwin notarization evidence/iu,
+      /install\.ps1/u,
     );
   } finally {
     await rm(artifactsDir, { recursive: true, force: true });
+    await rm(repoRoot, { recursive: true, force: true });
   }
 });
 
-test('finalizePreparedBinaryArtifacts signs the complete CLI candidate envelope including notarization evidence', async () => {
-  const artifactsDir = await mkdtemp(join(tmpdir(), 'happier-prebuilt-cli-evidence-'));
+test('finalizePreparedBinaryArtifacts publishes the repository installer bytes instead of candidate-supplied files', async () => {
+  const artifactsDir = await mkdtemp(join(tmpdir(), 'happiest-prebuilt-cli-tampered-installer-'));
+  const repoRoot = await createRepoRoot();
   const version = '1.2.3-dev.4';
   try {
     await writeCliArchives(artifactsDir, version);
-    await writeCliEvidence(artifactsDir);
-    const writes = [];
+    await writeFile(join(artifactsDir, 'install.sh'), 'candidate-supplied installer\n', 'utf8');
 
     await finalizePreparedBinaryArtifacts({
       artifactsDir,
+      repoRoot,
       productSpec: getBinaryPublishProductSpec('cli'),
       channel: 'dev',
       version,
-      targets: CLI_TARGETS.map(([os, arch]) => ({ os, arch })),
-      writeChecksums: async (input) => {
-        writes.push(input);
-        return join(artifactsDir, `checksums-happier-v${version}.txt`);
-      },
+      writeChecksums: async () => join(artifactsDir, `checksums-happiest-v${version}.txt`),
       signFile: async ({ path }) => `${path}.minisig`,
     });
 
-    assert.deepEqual(
-      writes[0].artifacts.map((artifact) => artifact.name).sort(),
-      [
-        ...CLI_TARGETS.map(([os, arch]) => `happier-v${version}-${os}-${arch}.tar.gz`),
-        'darwin-arm64.cli.json',
-        'darwin-x64.cli.json',
-      ].sort(),
-    );
+    assert.equal(await readFile(join(artifactsDir, 'install.sh'), 'utf8'), 'repository source of install.sh\n');
   } finally {
     await rm(artifactsDir, { recursive: true, force: true });
+    await rm(repoRoot, { recursive: true, force: true });
   }
 });
 
-for (const { productId, manifestProduct, suffix } of [
-  { productId: 'hstack', manifestProduct: 'hstack', suffix: 'hstack' },
-  { productId: 'server', manifestProduct: 'happier-server', suffix: 'server' },
+for (const { productId, manifestProduct } of [
+  { productId: 'hstack', manifestProduct: 'hstack' },
+  { productId: 'server', manifestProduct: 'happiest-server' },
 ]) {
-  test(`finalizePreparedBinaryArtifacts signs the complete ${productId} envelope including Darwin notarization evidence`, async () => {
-    const artifactsDir = await mkdtemp(join(tmpdir(), `happier-prebuilt-${productId}-evidence-`));
+  test(`finalizePreparedBinaryArtifacts signs the complete ${productId} envelope without extra assets`, async () => {
+    const artifactsDir = await mkdtemp(join(tmpdir(), `happiest-prebuilt-${productId}-`));
     const version = '1.2.3-dev.4';
-    const targets = CLI_TARGETS.map(([os, arch]) => ({ os, arch }));
     try {
       for (const [os, arch] of CLI_TARGETS) {
         await writeFile(
@@ -278,7 +274,6 @@ for (const { productId, manifestProduct, suffix } of [
           'utf8',
         );
       }
-      await writeProductEvidence(artifactsDir, suffix);
       const writes = [];
 
       await finalizePreparedBinaryArtifacts({
@@ -286,7 +281,6 @@ for (const { productId, manifestProduct, suffix } of [
         productSpec: getBinaryPublishProductSpec(productId),
         channel: 'dev',
         version,
-        targets,
         writeChecksums: async (input) => {
           writes.push(input);
           return join(artifactsDir, `checksums-${manifestProduct}-v${version}.txt`);
@@ -296,11 +290,7 @@ for (const { productId, manifestProduct, suffix } of [
 
       assert.deepEqual(
         writes[0].artifacts.map((artifact) => artifact.name).sort(),
-        [
-          ...CLI_TARGETS.map(([os, arch]) => `${manifestProduct}-v${version}-${os}-${arch}.tar.gz`),
-          `darwin-arm64.${suffix}.json`,
-          `darwin-x64.${suffix}.json`,
-        ].sort(),
+        CLI_TARGETS.map(([os, arch]) => `${manifestProduct}-v${version}-${os}-${arch}.tar.gz`).sort(),
       );
     } finally {
       await rm(artifactsDir, { recursive: true, force: true });
@@ -309,7 +299,8 @@ for (const { productId, manifestProduct, suffix } of [
 }
 
 test('finalizePreparedBinaryArtifacts fails closed when one native CLI target is missing', async () => {
-  const artifactsDir = await mkdtemp(join(tmpdir(), 'happier-prebuilt-cli-missing-'));
+  const artifactsDir = await mkdtemp(join(tmpdir(), 'happiest-prebuilt-cli-missing-'));
+  const repoRoot = await createRepoRoot();
   const version = '1.2.3-preview.4';
   try {
     await writeCliArchives(artifactsDir, version, CLI_TARGETS.slice(0, -1));
@@ -317,10 +308,10 @@ test('finalizePreparedBinaryArtifacts fails closed when one native CLI target is
     await assert.rejects(
       finalizePreparedBinaryArtifacts({
         artifactsDir,
+        repoRoot,
         productSpec: getBinaryPublishProductSpec('cli'),
         channel: 'preview',
         version,
-        targets: CLI_TARGETS.map(([os, arch]) => ({ os, arch })),
         writeChecksums: async () => {
           throw new Error('must not write checksums for an incomplete matrix');
         },
@@ -332,23 +323,55 @@ test('finalizePreparedBinaryArtifacts fails closed when one native CLI target is
     );
   } finally {
     await rm(artifactsDir, { recursive: true, force: true });
+    await rm(repoRoot, { recursive: true, force: true });
   }
 });
 
-test('finalizePreparedBinaryArtifacts rejects stale archives before signing', async () => {
-  const artifactsDir = await mkdtemp(join(tmpdir(), 'happier-prebuilt-cli-stale-'));
+test('finalizePreparedBinaryArtifacts rejects a macOS archive because no macOS build is published', async () => {
+  const artifactsDir = await mkdtemp(join(tmpdir(), 'happiest-prebuilt-cli-darwin-'));
+  const repoRoot = await createRepoRoot();
   const version = '1.2.3-preview.4';
   try {
     await writeCliArchives(artifactsDir, version);
-    await writeFile(join(artifactsDir, 'happier-v1.2.3-preview.3-linux-x64.tar.gz'), 'stale\n', 'utf8');
+    await writeFile(join(artifactsDir, `happiest-v${version}-darwin-arm64.tar.gz`), 'darwin\n', 'utf8');
 
     await assert.rejects(
       finalizePreparedBinaryArtifacts({
         artifactsDir,
+        repoRoot,
         productSpec: getBinaryPublishProductSpec('cli'),
         channel: 'preview',
         version,
-        targets: CLI_TARGETS.map(([os, arch]) => ({ os, arch })),
+        writeChecksums: async () => {
+          throw new Error('must not write checksums when a macOS archive is present');
+        },
+        signFile: async () => {
+          throw new Error('must not sign when a macOS archive is present');
+        },
+      }),
+      /unexpected prepared artifact.*darwin-arm64/iu,
+    );
+  } finally {
+    await rm(artifactsDir, { recursive: true, force: true });
+    await rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test('finalizePreparedBinaryArtifacts rejects stale archives before signing', async () => {
+  const artifactsDir = await mkdtemp(join(tmpdir(), 'happiest-prebuilt-cli-stale-'));
+  const repoRoot = await createRepoRoot();
+  const version = '1.2.3-preview.4';
+  try {
+    await writeCliArchives(artifactsDir, version);
+    await writeFile(join(artifactsDir, 'happiest-v1.2.3-preview.3-linux-x64.tar.gz'), 'stale\n', 'utf8');
+
+    await assert.rejects(
+      finalizePreparedBinaryArtifacts({
+        artifactsDir,
+        repoRoot,
+        productSpec: getBinaryPublishProductSpec('cli'),
+        channel: 'preview',
+        version,
         writeChecksums: async () => {
           throw new Error('must not write checksums when stale artifacts are present');
         },
@@ -360,24 +383,25 @@ test('finalizePreparedBinaryArtifacts rejects stale archives before signing', as
     );
   } finally {
     await rm(artifactsDir, { recursive: true, force: true });
+    await rm(repoRoot, { recursive: true, force: true });
   }
 });
 
 test('finalizePreparedBinaryArtifacts rejects files outside the exact publication envelope', async () => {
-  const artifactsDir = await mkdtemp(join(tmpdir(), 'happier-prebuilt-cli-extra-'));
+  const artifactsDir = await mkdtemp(join(tmpdir(), 'happiest-prebuilt-cli-extra-'));
+  const repoRoot = await createRepoRoot();
   const version = '1.2.3-preview.4';
   try {
     await writeCliArchives(artifactsDir, version);
-    await writeCliEvidence(artifactsDir);
     await writeFile(join(artifactsDir, 'unreviewed-release-note.txt'), 'unexpected\n', 'utf8');
 
     await assert.rejects(
       finalizePreparedBinaryArtifacts({
         artifactsDir,
+        repoRoot,
         productSpec: getBinaryPublishProductSpec('cli'),
         channel: 'preview',
         version,
-        targets: CLI_TARGETS.map(([os, arch]) => ({ os, arch })),
         writeChecksums: async () => {
           throw new Error('must not checksum files outside the admitted publication envelope');
         },
@@ -389,11 +413,12 @@ test('finalizePreparedBinaryArtifacts rejects files outside the exact publicatio
     );
   } finally {
     await rm(artifactsDir, { recursive: true, force: true });
+    await rm(repoRoot, { recursive: true, force: true });
   }
 });
 
 test('prepareBinaryReleaseAssets consumes a prepared matrix without rebuilding it', async () => {
-  const repoRoot = await mkdtemp(join(tmpdir(), 'happier-prepare-prebuilt-cli-'));
+  const repoRoot = await mkdtemp(join(tmpdir(), 'happiest-prepare-prebuilt-cli-'));
   const finalized = [];
   const logs = [];
   const originalLog = console.log;
@@ -419,7 +444,7 @@ test('prepareBinaryReleaseAssets consumes a prepared matrix without rebuilding i
     assert.equal(finalized[0].version, '1.2.3-preview.4');
     assert.equal(finalized[0].channel, 'preview');
     assert.equal(finalized[0].manifestsDir, undefined);
-    assert.match(finalized[1].manifestsDir, /manifests[/\\]v1[/\\]happier[/\\]preview$/u);
+    assert.match(finalized[1].manifestsDir, /manifests[/\\]v1[/\\]happiest[/\\]preview$/u);
     assert.equal(
       logs.some((line) => line.includes('build-cli-binaries.mjs')),
       false,
@@ -432,7 +457,7 @@ test('prepareBinaryReleaseAssets consumes a prepared matrix without rebuilding i
 });
 
 test('prepareBinaryReleaseAssets publishes an already-finalized candidate envelope without re-signing or rebuilding', async () => {
-  const repoRoot = await mkdtemp(join(tmpdir(), 'happier-prepare-finalized-cli-'));
+  const repoRoot = await mkdtemp(join(tmpdir(), 'happiest-prepare-finalized-cli-'));
   const logs = [];
   const originalLog = console.log;
   console.log = (...args) => {
@@ -473,7 +498,7 @@ test('prepareBinaryReleaseAssets publishes an already-finalized candidate envelo
 test('prepare-binary-assets exposes the existing complete-matrix finalizer without publishing', async () => {
   const calls = [];
   await prepareBinaryAssetsMain({
-    cwd: '/workspace/happier',
+    cwd: '/workspace/happiest',
     argv: [
       '--finalize-prepared-only',
       '--product',
@@ -490,15 +515,15 @@ test('prepare-binary-assets exposes the existing complete-matrix finalizer witho
       return {
         artifacts: [],
         checksumsPath:
-          '/workspace/happier/dist/candidate-native-matrix/checksums-happier-v1.2.3-dev.4.txt',
+          '/workspace/happiest/dist/candidate-native-matrix/checksums-happiest-v1.2.3-dev.4.txt',
         signaturePath:
-          '/workspace/happier/dist/candidate-native-matrix/checksums-happier-v1.2.3-dev.4.txt.minisig',
+          '/workspace/happiest/dist/candidate-native-matrix/checksums-happiest-v1.2.3-dev.4.txt.minisig',
       };
     },
   });
 
   assert.equal(calls.length, 1);
-  assert.equal(calls[0].artifactsDir, '/workspace/happier/dist/candidate-native-matrix');
+  assert.equal(calls[0].artifactsDir, '/workspace/happiest/dist/candidate-native-matrix');
   assert.equal(calls[0].productSpec.id, 'cli');
   assert.equal(calls[0].channel, 'dev');
   assert.equal(calls[0].version, '1.2.3-dev.4');

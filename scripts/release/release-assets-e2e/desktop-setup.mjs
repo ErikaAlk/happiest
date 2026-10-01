@@ -18,6 +18,8 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 import {
   createFeedTlsMaterial,
   downloadPinnedCliAssets,
@@ -260,7 +262,7 @@ async function main() {
   writeFileSync(join(feedDir, 'current'), 'new\n');
   writeFileSync(join(feedDir, 'requests.log'), '');
   execFileSync('tar', ['-xzf', join(feedDir, 'stages', 'new', newCli.archive), '-C', approverDir]);
-  const approverCli = `/opt/approver-cli/happier-v${newCli.version}-linux-x64/happiest`;
+  const approverCli = `/opt/approver-cli/${newCli.archive.replace(/\.tar\.gz$/u, '')}/${productIdentity.commandName}`;
   const authorizedKeys = join(workDir, 'authorized_keys');
   writeFileSync(authorizedKeys, '');
   const envFile = join(workDir, 'compose.env');

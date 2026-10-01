@@ -264,12 +264,12 @@ async function main() {
   }
 
   const tag = `ui-web-${resolveRollingReleaseTagSuffix(channel)}`;
-  const title = `Happier UI Web Bundle ${resolveRollingReleaseLabel(channel)}`;
+  const title = `Happiest UI Web Bundle ${resolveRollingReleaseLabel(channel)}`;
   const prerelease = resolveRollingPrerelease(channel);
   const notesBase = `Rolling ${releaseRing.publicLabel} UI web bundle release.`;
   const notes = withCurrentVersionLine(notesBase, uiVersion);
   const versionTag = `ui-web-v${uiVersion}`;
-  const versionTitle = `Happier UI Web Bundle v${uiVersion}`;
+  const versionTitle = `Happiest UI Web Bundle v${uiVersion}`;
   const versionNotes = `UI web bundle ${releaseRing.publicLabel} build v${uiVersion}.`;
   const targetSha = phase === 'promote-rolling'
     ? authorizedSha

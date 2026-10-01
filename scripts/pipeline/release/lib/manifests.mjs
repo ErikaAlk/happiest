@@ -3,19 +3,15 @@ import { BINARY_PUBLISH_PRODUCT_IDS, CLI_OPTIONAL_COMPONENT_PRODUCTS, getBinaryP
 
 export const MANIFEST_SCHEMA_VERSION = 'v1';
 
-const PRODUCT_NAMES = new Set(['happier', 'hstack', 'happier-server']);
+export const BINARY_RELEASE_PRODUCT_NAMES = Object.freeze(
+  BINARY_PUBLISH_PRODUCT_IDS.map((product) => getBinaryPublishProductSpec(product).manifestProduct),
+);
+const PRODUCT_NAMES = new Set(BINARY_RELEASE_PRODUCT_NAMES);
 const ARTIFACT_FILENAME = new RegExp(`^(${[...PRODUCT_NAMES, ...CLI_OPTIONAL_COMPONENT_PRODUCTS].join('|')})-v(.+)-([a-z]+)-(x64|arm64)\\.tar\\.gz$`);
-const RELEASE_METADATA_FILENAMES = new Set(BINARY_PUBLISH_PRODUCT_IDS.flatMap((product) => {
-  const spec = getBinaryPublishProductSpec(product);
-  const evidenceSuffixes = [spec.notarizationEvidenceSuffix, ...(spec.optionalComponentProducts ?? [])];
-  return [
-    'latest.json',
-    ...spec.artifactTargets.map(({ os, arch }) => `${os}-${arch}.json`),
-    ...spec.artifactTargets.filter(({ os }) => os === 'darwin').flatMap(({ os, arch }) => (
-      evidenceSuffixes.map((suffix) => `${os}-${arch}.${suffix}.json`)
-    )),
-  ];
-}));
+const RELEASE_METADATA_FILENAMES = new Set(BINARY_PUBLISH_PRODUCT_IDS.flatMap((product) => [
+  'latest.json',
+  ...getBinaryPublishProductSpec(product).artifactTargets.map(({ os, arch }) => `${os}-${arch}.json`),
+]));
 const RELEASE_CHANNELS = new Set(
   listPublicReleaseChannels()
     .map((entry) => entry.manifestChannel)
@@ -40,7 +36,7 @@ export function isBinaryReleaseArtifactFilename(name) {
 export function assertValidProduct(product) {
   const value = String(product ?? '').trim();
   if (!PRODUCT_NAMES.has(value)) {
-    throw new Error(`[release] invalid product "${value}" (expected happier|hstack|happier-server)`);
+    throw new Error(`[release] invalid product "${value}" (expected ${BINARY_RELEASE_PRODUCT_NAMES.join('|')})`);
   }
   return value;
 }

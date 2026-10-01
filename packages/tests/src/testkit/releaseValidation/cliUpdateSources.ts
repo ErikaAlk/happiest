@@ -130,7 +130,7 @@ export function resolveCliUpdatePublishedReleasePlan(
     }
 
     const releaseOs = platform === 'win32' ? 'windows' : platform;
-    if ((releaseOs !== 'linux' && releaseOs !== 'darwin' && releaseOs !== 'windows') || (arch !== 'x64' && arch !== 'arm64')) {
+    if ((releaseOs !== 'linux' && releaseOs !== 'windows') || (arch !== 'x64' && arch !== 'arm64')) {
         throw new Error(`Unsupported cli-update release target: ${platform}-${arch}`);
     }
     if (releaseOs === 'windows' && arch !== 'x64') {
@@ -146,9 +146,9 @@ export function resolveCliUpdatePublishedReleasePlan(
     return {
         ...published,
         installRootName,
-        archivePattern: `happier-v${versionPattern}-${releaseOs}-${arch}.tar.gz`,
-        checksumsPattern: `checksums-happier-v${versionPattern}.txt`,
-        signaturePattern: `checksums-happier-v${versionPattern}.txt.minisig`,
+        archivePattern: `${productIdentity.commandName}-v${versionPattern}-${releaseOs}-${arch}.tar.gz`,
+        checksumsPattern: `checksums-${productIdentity.commandName}-v${versionPattern}.txt`,
+        signaturePattern: `checksums-${productIdentity.commandName}-v${versionPattern}.txt.minisig`,
     };
 }
 

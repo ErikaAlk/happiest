@@ -4,18 +4,29 @@ import { appendFile, lstat, readFile, readdir } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { pathToFileURL } from 'node:url';
-import { CLI_OPTIONAL_COMPONENT_PRODUCTS } from '../publishing/product-specs.mjs';
+import { CLI_OPTIONAL_COMPONENT_PRODUCTS, getBinaryPublishProductSpec } from '../publishing/product-specs.mjs';
 
 const SAFE_SEGMENT = /^[A-Za-z0-9][A-Za-z0-9._+-]*$/;
+
+/** @param {'cli' | 'hstack' | 'server'} id @param {readonly string[]} aliases */
+function binaryProductSpec(id, aliases) {
+  const spec = getBinaryPublishProductSpec(id);
+  return Object.freeze({
+    product: id,
+    aliases: Object.freeze(aliases),
+    tagPrefix: spec.versionTagPrefix,
+    checksumProduct: spec.checksumProductStem,
+  });
+}
 
 /** @type {readonly Readonly<{ product: string; aliases: readonly string[]; tagPrefix: string; checksumProduct: string }>[] } */
 const PRODUCT_SPECS = Object.freeze([
   Object.freeze({ product: 'ui-desktop', aliases: Object.freeze(['ui-desktop']), tagPrefix: 'ui-desktop-v', checksumProduct: 'happier-ui-desktop' }),
   Object.freeze({ product: 'ui-mobile', aliases: Object.freeze(['ui-mobile']), tagPrefix: 'ui-mobile-v', checksumProduct: 'happier-ui-mobile' }),
   Object.freeze({ product: 'ui-web', aliases: Object.freeze(['ui-web']), tagPrefix: 'ui-web-v', checksumProduct: 'happier-ui-web' }),
-  Object.freeze({ product: 'hstack', aliases: Object.freeze(['hstack', 'stack']), tagPrefix: 'stack-v', checksumProduct: 'hstack' }),
-  Object.freeze({ product: 'server', aliases: Object.freeze(['server']), tagPrefix: 'server-v', checksumProduct: 'happier-server' }),
-  Object.freeze({ product: 'cli', aliases: Object.freeze(['cli']), tagPrefix: 'cli-v', checksumProduct: 'happier' }),
+  binaryProductSpec('hstack', ['hstack', 'stack']),
+  binaryProductSpec('server', ['server']),
+  binaryProductSpec('cli', ['cli']),
 ]);
 
 function fail(message) {

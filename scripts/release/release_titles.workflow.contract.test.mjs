@@ -16,15 +16,18 @@ async function loadFile(rel) {
   return readFile(join(repoRoot, rel), 'utf8');
 }
 
-test('GitHub release titles are prefixed with Happier', async () => {
+test('GitHub release titles of the web bundle and binaries are prefixed with Happiest', async () => {
   const publishUiWeb = await loadFile('scripts/pipeline/release/publish-ui-web.mjs');
-  assert.match(publishUiWeb, /Happier UI Web Bundle/);
+  assert.match(publishUiWeb, /`Happiest UI Web Bundle \$\{resolveRollingReleaseLabel\(channel\)\}`/);
+  assert.match(publishUiWeb, /`Happiest UI Web Bundle v\$\{uiVersion\}`/);
 
-  assert.equal(getBinaryPublishProductSpec('server').releaseTitleBase, 'Happier Server');
+  assert.equal(getBinaryPublishProductSpec('server').releaseTitleBase, 'Happiest Server');
 
-  assert.equal(getBinaryPublishProductSpec('cli').releaseTitleBase, 'Happier CLI');
-  assert.equal(getBinaryPublishProductSpec('hstack').releaseTitleBase, 'Happier Stack');
+  assert.equal(getBinaryPublishProductSpec('cli').releaseTitleBase, 'Happiest CLI');
+  assert.equal(getBinaryPublishProductSpec('hstack').releaseTitleBase, 'Happiest Stack');
+});
 
+test('desktop release titles keep the desktop app name', async () => {
   const buildTauri = await loadWorkflow('build-tauri.yml');
   assert.match(buildTauri, /title: Happier UI Desktop Dev/);
   assert.match(buildTauri, /title: Happier UI Desktop Preview/);

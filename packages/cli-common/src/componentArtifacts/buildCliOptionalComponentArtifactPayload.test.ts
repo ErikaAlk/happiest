@@ -67,14 +67,14 @@ it('produces an independently resolvable target-specific memory runtime, preserv
   const payloadDir = join(root, 'payload');
   await artifacts.buildCliOptionalComponentArtifactPayload({
     repoRoot: root, payloadDir, componentId: 'happier-memory-runtime',
-    target: { os: 'darwin', arch: 'arm64', bunTarget: 'bun-darwin-arm64', exeExt: '' },
+    target: { os: 'linux', arch: 'arm64', bunTarget: 'bun-linux-arm64', exeExt: '' },
   });
   const transformers = join(payloadDir, 'node_modules/@huggingface/transformers');
   expect(await readFile(join(transformers, 'dist/transformers.node.mjs'), 'utf8')).toContain('pipeline');
   expect(await readFile(join(transformers, 'LICENSE'), 'utf8')).toBe('transformers license');
   const onnx = join(transformers, 'node_modules/onnxruntime-node');
-  expect(await readdir(join(onnx, 'bin/napi-v3'))).toEqual(['darwin']);
-  expect(await readdir(join(onnx, 'bin/napi-v3/darwin'))).toEqual(['arm64']);
-  expect(await readFile(join(onnx, 'bin/napi-v3/darwin/arm64/libonnxruntime.so'), 'utf8')).toBe('provider library');
+  expect(await readdir(join(onnx, 'bin/napi-v3'))).toEqual(['linux']);
+  expect(await readdir(join(onnx, 'bin/napi-v3/linux'))).toEqual(['arm64']);
+  expect(await readFile(join(onnx, 'bin/napi-v3/linux/arm64/libonnxruntime.so'), 'utf8')).toBe('provider library');
   expect(await readFile(join(onnx, 'LICENSE'), 'utf8')).toBe('onnx license');
 });

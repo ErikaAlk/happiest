@@ -228,7 +228,7 @@ describe('buildCliBinaryArtifactPayload bundled workspace sync', () => {
         await buildCliBinaryArtifactPayload({
             repoRoot,
             payloadDir,
-            target: { os: 'darwin', arch: 'arm64', bunTarget: 'bun-darwin-arm64', exeExt: '' },
+            target: { os: 'linux', arch: 'x64', bunTarget: 'bun-linux-x64-baseline', exeExt: '' },
             releaseVersion: '0.2.10-dev.61',
             ensureWorkspacePackagesBuiltByName: async (_root, packageNames) => ({
                 ok: true,
@@ -252,7 +252,7 @@ describe('buildCliBinaryArtifactPayload bundled workspace sync', () => {
 
         expect(buildVersions).toEqual(['0.2.10-dev.61']);
         expect(compileObservedContents).toEqual([currentSourceContent]);
-        expect(await readdir(join(payloadDir, 'node_modules', 'node-pty', 'prebuilds'))).toEqual(['darwin-arm64']);
+        expect(await readdir(join(payloadDir, 'node_modules', 'node-pty', 'prebuilds'))).toEqual(['linux-x64']);
         await expect(readFile(join(payloadDir, 'node_modules', '@huggingface', 'transformers', 'index.js'), 'utf8'))
             .rejects.toMatchObject({ code: 'ENOENT' });
         await expect(readFile(join(payloadDir, 'tools', 'unpacked', 'difft'), 'utf8'))

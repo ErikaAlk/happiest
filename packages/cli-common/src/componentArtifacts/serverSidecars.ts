@@ -33,10 +33,6 @@ export function resolvePrismaSchemaEngineTarget(target: BinaryTarget): { binaryT
       return { binaryTarget: 'debian-openssl-3.0.x', fileName: 'schema-engine-debian-openssl-3.0.x' };
     case 'linux-arm64':
       return { binaryTarget: 'linux-arm64-openssl-3.0.x', fileName: 'schema-engine-linux-arm64-openssl-3.0.x' };
-    case 'darwin-x64':
-      return { binaryTarget: 'darwin', fileName: 'schema-engine-darwin' };
-    case 'darwin-arm64':
-      return { binaryTarget: 'darwin-arm64', fileName: 'schema-engine-darwin-arm64' };
     case 'windows-x64':
       return { binaryTarget: 'windows', fileName: 'schema-engine-windows.exe' };
     default:

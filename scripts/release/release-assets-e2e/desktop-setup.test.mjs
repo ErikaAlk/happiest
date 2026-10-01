@@ -32,20 +32,20 @@ test('stages exactly one platform bundle and refuses a torn archive', () => with
   mkdirSync(source);
   const archive = Buffer.from('archive-bytes');
   const sha = createHash('sha256').update(archive).digest('hex');
-  writeFileSync(join(source, 'happier-v0.2.13-linux-x64.tar.gz'), archive);
-  writeFileSync(join(source, 'happier-v0.2.13-linux-arm64.tar.gz'), 'other');
-  writeFileSync(join(source, 'checksums-happier-v0.2.13.txt'), `${sha}  happier-v0.2.13-linux-x64.tar.gz\n`);
-  writeFileSync(join(source, 'checksums-happier-v0.2.13.txt.minisig'), 'sig');
+  writeFileSync(join(source, 'happiest-v0.2.13-linux-x64.tar.gz'), archive);
+  writeFileSync(join(source, 'happiest-v0.2.13-linux-arm64.tar.gz'), 'other');
+  writeFileSync(join(source, 'checksums-happiest-v0.2.13.txt'), `${sha}  happiest-v0.2.13-linux-x64.tar.gz\n`);
+  writeFileSync(join(source, 'checksums-happiest-v0.2.13.txt.minisig'), 'sig');
 
   const bundle = stageCliReleaseAssets({ sourceDir: source, stageDir: join(dir, 'stage') });
   assert.equal(bundle.version, '0.2.13');
   assert.deepEqual(readdirSync(join(dir, 'stage')).sort(), [
-    'checksums-happier-v0.2.13.txt',
-    'checksums-happier-v0.2.13.txt.minisig',
-    'happier-v0.2.13-linux-x64.tar.gz',
+    'checksums-happiest-v0.2.13.txt',
+    'checksums-happiest-v0.2.13.txt.minisig',
+    'happiest-v0.2.13-linux-x64.tar.gz',
   ]);
 
-  writeFileSync(join(source, 'happier-v0.2.13-linux-x64.tar.gz'), 'torn');
+  writeFileSync(join(source, 'happiest-v0.2.13-linux-x64.tar.gz'), 'torn');
   assert.throws(() => stageCliReleaseAssets({ sourceDir: source, stageDir: join(dir, 'stage2') }), /does not match/);
 }));
 
@@ -191,7 +191,7 @@ test('a desktop-only release pins the rolling channel CLI once to its immutable 
   globalThis.fetch = async (url) => {
     requested.push(String(url));
     const assets = String(url).endsWith('/cli-stable')
-      ? [{ name: 'happier-v0.2.13-linux-x64.tar.gz' }, { name: 'checksums-happier-v0.2.13.txt' }, { name: 'checksums-happier-v0.2.13.txt.minisig' }]
+      ? [{ name: 'happiest-v0.2.13-linux-x64.tar.gz' }, { name: 'checksums-happiest-v0.2.13.txt' }, { name: 'checksums-happiest-v0.2.13.txt.minisig' }]
       : [{ name: 'README.md' }];
     return new Response(JSON.stringify({ assets }), { status: 200 });
   };

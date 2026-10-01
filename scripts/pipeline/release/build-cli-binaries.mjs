@@ -21,7 +21,8 @@ import {
   maybeSignFile,
   writeChecksumsFile,
 } from './lib/binary-release.mjs';
-import { CLI_OPTIONAL_COMPONENT_PRODUCTS } from './publishing/product-specs.mjs';
+import { CLI_OPTIONAL_COMPONENTS, getBinaryPublishProductSpec } from './publishing/product-specs.mjs';
+import { stageRepoReleaseAssets } from './publishing/repo-release-assets.mjs';
 
 export function resolveReleaseTempCleanupTimeoutMs(env = process.env) {
   const raw = String(env.HAPPIER_RELEASE_TEMP_CLEANUP_TIMEOUT_MS ?? '').trim();
@@ -57,10 +58,11 @@ async function main() {
   const repoRoot = resolveRepoRoot();
   const { kv } = parseArgs(process.argv.slice(2));
 
+  const productSpec = getBinaryPublishProductSpec('cli');
   const channel = normalizeChannel(kv.get('--channel'));
   const version = String(kv.get('--version') ?? '').trim()
-    || readVersionFromPackageJson(join(repoRoot, 'apps', 'cli', 'package.json'));
-  const outDir = join(repoRoot, 'dist', 'release-assets', 'cli');
+    || readVersionFromPackageJson(join(repoRoot, productSpec.packageJsonPath));
+  const outDir = join(repoRoot, productSpec.artifactsDir);
   // IMPORTANT: build scripts are invoked by multiple integration tests in parallel.
   // Never share a single temp directory across invocations, or concurrent builds will race on rm/mkdir.
   const tempBaseDir = join(repoRoot, 'dist', 'release-assets', '.tmp-cli-binaries');
@@ -77,7 +79,7 @@ async function main() {
 
   const artifacts = [];
   for (const target of targets) {
-    const stageDir = join(tempDir, `happier-v${version}-${target.os}-${target.arch}`);
+    const stageDir = join(tempDir, `${productSpec.manifestProduct}-v${version}-${target.os}-${target.arch}`);
     await buildCliBinaryArtifactPayload({
       repoRoot,
       payloadDir: stageDir,
@@ -86,23 +88,23 @@ async function main() {
       releaseVersion: version,
     });
     const artifact = await packagePreparedTargetBinary({
-      product: 'happier',
+      product: productSpec.manifestProduct,
       version,
       target,
       stageDir,
       outDir,
     });
     artifacts.push(artifact);
-    for (const componentId of CLI_OPTIONAL_COMPONENT_PRODUCTS) {
-      const componentStageDir = join(tempDir, `${componentId}-v${version}-${target.os}-${target.arch}`);
+    for (const { componentId, product } of CLI_OPTIONAL_COMPONENTS) {
+      const componentStageDir = join(tempDir, `${product}-v${version}-${target.os}-${target.arch}`);
       await buildCliOptionalComponentArtifactPayload({ repoRoot, payloadDir: componentStageDir, target, componentId });
       artifacts.push(await packagePreparedTargetBinary({
-        product: componentId, version, target, stageDir: componentStageDir, outDir,
+        product, version, target, stageDir: componentStageDir, outDir,
       }));
     }
   }
 
-  for (const product of CLI_OPTIONAL_COMPONENT_PRODUCTS) {
+  for (const { product } of CLI_OPTIONAL_COMPONENTS) {
     const componentChecksums = await writeChecksumsFile({
       product, version, artifacts: artifacts.filter((artifact) => artifact.name.startsWith(`${product}-v`)), outDir,
     });
@@ -112,22 +114,24 @@ async function main() {
     }
   }
 
+  artifacts.push(...await stageRepoReleaseAssets({ repoRoot, artifactsDir: outDir, productSpec }));
+
   const checksumsPath = await writeChecksumsFile({
-    product: 'happier',
+    product: productSpec.checksumProductStem,
     version,
     artifacts,
     outDir,
   });
   const signaturePath = await maybeSignFile({
     path: checksumsPath,
-    trustedComment: `happier ${version} ${channel}`,
+    trustedComment: `${productSpec.manifestProduct} ${version} ${channel}`,
   });
 
   // Best-effort cleanup to avoid unbounded temp build directories.
   await cleanupTempDirBestEffort({ tempDir });
 
   const output = {
-    product: 'happier',
+    product: productSpec.manifestProduct,
     channel,
     version,
     outDir,

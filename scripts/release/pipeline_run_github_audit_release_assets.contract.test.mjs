@@ -27,9 +27,9 @@ test('pipeline run exposes github-audit-release-assets', async () => {
     'linux-x64',
     '--assets-json',
     JSON.stringify([
-      'happier-v1.2.3-preview.123.2-linux-x64.tar.gz',
-      'checksums-happier-v1.2.3-preview.123.2.txt',
-      'checksums-happier-v1.2.3-preview.123.2.txt.minisig',
+      'happiest-v1.2.3-preview.123.2-linux-x64.tar.gz',
+      'checksums-happiest-v1.2.3-preview.123.2.txt',
+      'checksums-happiest-v1.2.3-preview.123.2.txt.minisig',
     ]),
   ]);
 

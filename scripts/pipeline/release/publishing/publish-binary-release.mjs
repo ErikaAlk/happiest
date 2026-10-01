@@ -146,7 +146,6 @@ async function computePublishVersion(productSpec, channel, baseVersion, opts) {
       channel,
       baseVersion,
       explicitVersion: opts.explicitVersion,
-      publishSurface: 'github',
       dryRun: opts.dryRun,
       env: process.env,
     })
@@ -327,7 +326,7 @@ export async function publishBinaryReleaseMain(options = {}) {
       run(opts, process.execPath, [
         'scripts/pipeline/release/verify-artifacts.mjs',
         '--artifacts-dir', candidateDir,
-        '--checksums', path.join(candidateDir, `checksums-happier-server-v${version}.txt`),
+        '--checksums', path.join(candidateDir, `checksums-${productSpec.checksumProductStem}-v${version}.txt`),
       ], { cwd: repoRoot });
       for (const name of await readdir(candidateDir)) {
         if (!name.endsWith('.tar.gz')) await rm(path.join(candidateDir, name), { recursive: true, force: true });

@@ -245,14 +245,10 @@ test('authorized prepared-artifact finalization does not load build-only CLI Com
   for (const [os, arch] of [
     ['linux', 'x64'],
     ['linux', 'arm64'],
-    ['darwin', 'x64'],
-    ['darwin', 'arm64'],
     ['windows', 'x64'],
   ]) {
-    writeFileSync(join(artifactsDir, `happier-server-v${version}-${os}-${arch}.tar.gz`), `${os}-${arch}\n`);
+    writeFileSync(join(artifactsDir, `happiest-server-v${version}-${os}-${arch}.tar.gz`), `${os}-${arch}\n`);
   }
-  writeFileSync(join(artifactsDir, 'darwin-arm64.server.json'), '{}\n');
-  writeFileSync(join(artifactsDir, 'darwin-x64.server.json'), '{}\n');
   writeFileSync(
     loaderPath,
     [

@@ -31,7 +31,7 @@ async function sha256(path) {
 }
 
 // Real signed archive fixtures exercise the same envelope consumed by acquisition.
-async function createComponentFixture({ product = 'happier-difftastic', foreign = false, files } = {}) {
+async function createComponentFixture({ product = 'happiest-difftastic', foreign = false, files } = {}) {
   const workspace = await mkdtemp(join(tmpdir(), 'happier-verify-component-'));
   const artifactsDir = join(workspace, 'artifacts');
   const os = foreign ? (process.platform === 'linux' ? 'windows' : 'linux') : normalizeArchivePlatform(process.platform);
@@ -213,7 +213,7 @@ test('verify-artifacts accepts signed component envelopes and foreign layouts wi
   } finally { await rm(fixture.workspace, { recursive: true, force: true }); }
 });
 
-for (const product of ['happier', 'happier-memory-runtime', 'happier-difftastic']) {
+for (const product of ['happiest', 'happiest-memory-runtime', 'happiest-difftastic']) {
   test(`verify-artifacts applies canonical traversal validation to foreign ${product} archives even with --skip-smoke`, async () => {
     const fixture = await createComponentFixture({ product, foreign: true });
     try {
@@ -277,7 +277,7 @@ test('verify-artifacts rejects a timed-out difftastic version smoke even when it
 });
 
 test('verify-artifacts imports the native memory runtime instead of accepting an unopened module', async () => {
-  const fixture = await createComponentFixture({ product: 'happier-memory-runtime', files: { 'node_modules/@huggingface/transformers/dist/transformers.node.mjs': 'throw new Error("memory smoke reached");' } });
+  const fixture = await createComponentFixture({ product: 'happiest-memory-runtime', files: { 'node_modules/@huggingface/transformers/dist/transformers.node.mjs': 'throw new Error("memory smoke reached");' } });
   try {
     assert.throws(() => fixture.run(), /memory smoke reached/);
   } finally { await rm(fixture.workspace, { recursive: true, force: true }); }
@@ -285,7 +285,7 @@ test('verify-artifacts imports the native memory runtime instead of accepting an
 
 test('verify-artifacts exercises the Transformers ONNX tensor boundary with remote models disabled', async () => {
   // Third-party module fixture distinguishes import-only smoke from the ONNX value boundary.
-  const fixture = await createComponentFixture({ product: 'happier-memory-runtime', files: {
+  const fixture = await createComponentFixture({ product: 'happiest-memory-runtime', files: {
     'node_modules/@huggingface/transformers/dist/transformers.node.mjs': `
       export const env = { allowRemoteModels: true };
       export class Tensor {
@@ -303,7 +303,7 @@ test('verify-artifacts exercises the Transformers ONNX tensor boundary with remo
 
 test('verify-artifacts requires explicit checksums when component envelopes coexist', async () => {
   const artifactsDir = await mkdtemp(join(tmpdir(), 'happier-verify-envelopes-'));
-  const primaryPath = join(artifactsDir, 'checksums-happier-v1.2.3.txt');
+  const primaryPath = join(artifactsDir, 'checksums-happiest-v1.2.3.txt');
   const run = (args = []) => execFileSync(process.execPath, [
     verifyArtifactsPath, '--artifacts-dir', artifactsDir, '--skip-smoke', ...args,
   ], { cwd: repoRoot, encoding: 'utf8', stdio: 'pipe' });
@@ -313,8 +313,8 @@ test('verify-artifacts requires explicit checksums when component envelopes coex
     const checksums = `${await sha256(metadataPath)}  metadata.json\n`;
     await writeFile(primaryPath, checksums);
     assert.equal(JSON.parse(run()).checksumsPath, primaryPath);
-    await writeFile(join(artifactsDir, 'checksums-happier-difftastic-v1.2.3.txt'), checksums);
-    await writeFile(join(artifactsDir, 'checksums-happier-memory-runtime-v1.2.3.txt'), checksums);
+    await writeFile(join(artifactsDir, 'checksums-happiest-difftastic-v1.2.3.txt'), checksums);
+    await writeFile(join(artifactsDir, 'checksums-happiest-memory-runtime-v1.2.3.txt'), checksums);
     assert.throws(() => run(), /multiple checksums.*--checksums/i);
     const explicit = JSON.parse(run(['--checksums', primaryPath]));
     assert.equal(explicit.checksumsPath, primaryPath);
@@ -326,7 +326,7 @@ test('verify-artifacts requires explicit checksums when component envelopes coex
 
 test('verify-artifacts enforces required signatures only when requested', async () => {
   const artifactsDir = await mkdtemp(join(tmpdir(), 'happier-verify-signature-'));
-  const checksumsPath = join(artifactsDir, 'checksums-happier-v1.2.3.txt');
+  const checksumsPath = join(artifactsDir, 'checksums-happiest-v1.2.3.txt');
   const run = (args = []) => execFileSync(process.execPath, [
     verifyArtifactsPath, '--artifacts-dir', artifactsDir, '--checksums', checksumsPath, '--skip-smoke', ...args,
   ], { cwd: repoRoot, encoding: 'utf8', stdio: 'pipe' });
@@ -341,9 +341,9 @@ test('verify-artifacts enforces required signatures only when requested', async 
   }
 });
 
-test('verify-artifacts strictly covers native products, evidence, and manifests while excluding control files', async () => {
+test('verify-artifacts strictly covers native products and manifests while excluding control files', async () => {
   const artifactsDir = await mkdtemp(join(tmpdir(), 'happier-verify-complete-'));
-  const checksumsPath = join(artifactsDir, 'checksums-happier-v1.2.3.txt');
+  const checksumsPath = join(artifactsDir, 'checksums-happiest-v1.2.3.txt');
   const run = (args = []) => execFileSync(process.execPath, [
     verifyArtifactsPath, '--artifacts-dir', artifactsDir, '--checksums', checksumsPath, '--skip-smoke', ...args,
   ], { cwd: repoRoot, encoding: 'utf8', stdio: 'pipe' });
@@ -352,16 +352,15 @@ test('verify-artifacts strictly covers native products, evidence, and manifests 
     await writeFile(metadataPath, '{}');
     const initialChecksums = `${await sha256(metadataPath)}  metadata.json\n`;
     await writeFile(checksumsPath, initialChecksums);
-    for (const name of ['control.json', 'checksums-happier-difftastic-v1.2.3.txt', 'checksums-happier-difftastic-v1.2.3.txt.minisig']) {
+    for (const name of ['control.json', 'checksums-happiest-difftastic-v1.2.3.txt', 'checksums-happiest-difftastic-v1.2.3.txt.minisig']) {
       await writeFile(join(artifactsDir, name), 'control');
     }
     assert.equal(JSON.parse(run(['--require-all-artifacts-checksummed'])).ok, true);
     const otherOs = process.platform === 'linux' ? 'windows' : 'linux';
     const artifactNames = [
-      ...['happier', 'happier-memory-runtime', 'happier-difftastic'].map((product) => `${product}-v1.2.3-${otherOs}-x64.tar.gz`),
-      'darwin-arm64.cli.json',
-      'darwin-x64.happier-memory-runtime.json',
-      'darwin-x64.json',
+      ...['happiest', 'happiest-memory-runtime', 'happiest-difftastic'].map((product) => `${product}-v1.2.3-${otherOs}-x64.tar.gz`),
+      'linux-arm64.json',
+      'windows-x64.json',
       'latest.json',
     ];
     for (const name of artifactNames) {
@@ -388,11 +387,11 @@ test('verify-artifacts smoke-runs packaged server binaries with isolated startup
     const stageRoot = join(workspace, 'stage');
     const archivePlatform = normalizeArchivePlatform(process.platform);
     const archiveArch = normalizeArchiveArch(process.arch);
-    const archiveStem = `happier-server-v0.0.0-test-${archivePlatform}-${archiveArch}`;
+    const archiveStem = `happiest-server-v0.0.0-test-${archivePlatform}-${archiveArch}`;
     const stageDir = join(stageRoot, archiveStem);
     const markerPath = join(workspace, 'server-smoke-marker.txt');
     const archivePath = join(artifactsDir, `${archiveStem}.tar.gz`);
-    const checksumsPath = join(artifactsDir, 'checksums-happier-server-v0.0.0-test.txt');
+    const checksumsPath = join(artifactsDir, 'checksums-happiest-server-v0.0.0-test.txt');
 
     await mkdir(stageDir, { recursive: true });
     await mkdir(artifactsDir, { recursive: true });
@@ -463,10 +462,10 @@ test('verify-artifacts rejects a packaged server binary that exits before the sm
     const stageRoot = join(workspace, 'stage');
     const archivePlatform = normalizeArchivePlatform(process.platform);
     const archiveArch = normalizeArchiveArch(process.arch);
-    const archiveStem = `happier-server-v0.0.0-early-exit-${archivePlatform}-${archiveArch}`;
+    const archiveStem = `happiest-server-v0.0.0-early-exit-${archivePlatform}-${archiveArch}`;
     const stageDir = join(stageRoot, archiveStem);
     const archivePath = join(artifactsDir, `${archiveStem}.tar.gz`);
-    const checksumsPath = join(artifactsDir, 'checksums-happier-server-v0.0.0-early-exit.txt');
+    const checksumsPath = join(artifactsDir, 'checksums-happiest-server-v0.0.0-early-exit.txt');
 
     await mkdir(stageDir, { recursive: true });
     await mkdir(artifactsDir, { recursive: true });
@@ -521,11 +520,11 @@ test('verify-artifacts selects the packaged binary instead of a sibling sidecar 
     const stageRoot = join(workspace, 'stage');
     const archivePlatform = normalizeArchivePlatform(process.platform);
     const archiveArch = normalizeArchiveArch(process.arch);
-    const archiveStem = `happier-server-v0.0.0-layout-${archivePlatform}-${archiveArch}`;
+    const archiveStem = `happiest-server-v0.0.0-layout-${archivePlatform}-${archiveArch}`;
     const stageDir = join(stageRoot, archiveStem);
     const markerPath = join(workspace, 'selected-binary.txt');
     const archivePath = join(artifactsDir, `${archiveStem}.tar.gz`);
-    const checksumsPath = join(artifactsDir, 'checksums-happier-server-v0.0.0-layout.txt');
+    const checksumsPath = join(artifactsDir, 'checksums-happiest-server-v0.0.0-layout.txt');
 
     await mkdir(join(stageDir, 'generated', 'sqlite-client'), { recursive: true });
     await mkdir(artifactsDir, { recursive: true });
@@ -581,10 +580,10 @@ test('verify-artifacts includes stdout in smoke failures when stderr is empty', 
     const stageRoot = join(workspace, 'stage');
     const archivePlatform = normalizeArchivePlatform(process.platform);
     const archiveArch = normalizeArchiveArch(process.arch);
-    const archiveStem = `happier-v0.0.0-test-${archivePlatform}-${archiveArch}`;
+    const archiveStem = `happiest-v0.0.0-test-${archivePlatform}-${archiveArch}`;
     const stageDir = join(stageRoot, archiveStem);
     const archivePath = join(artifactsDir, `${archiveStem}.tar.gz`);
-    const checksumsPath = join(artifactsDir, 'checksums-happier-v0.0.0-test.txt');
+    const checksumsPath = join(artifactsDir, 'checksums-happiest-v0.0.0-test.txt');
 
     await mkdir(stageDir, { recursive: true });
     await mkdir(artifactsDir, { recursive: true });
@@ -630,10 +629,10 @@ test('verify-artifacts rejects a CLI version mismatch even when optional smoke t
     const archiveArch = normalizeArchiveArch(process.arch);
     const expectedVersion = '1.2.3';
     const embeddedVersion = '1.2.3-preview.99';
-    const archiveStem = `happier-v${expectedVersion}-${archivePlatform}-${archiveArch}`;
+    const archiveStem = `happiest-v${expectedVersion}-${archivePlatform}-${archiveArch}`;
     const stageDir = join(stageRoot, archiveStem);
     const archivePath = join(artifactsDir, `${archiveStem}.tar.gz`);
-    const checksumsPath = join(artifactsDir, `checksums-happier-v${expectedVersion}.txt`);
+    const checksumsPath = join(artifactsDir, `checksums-happiest-v${expectedVersion}.txt`);
 
     await mkdir(stageDir, { recursive: true });
     await mkdir(artifactsDir, { recursive: true });
@@ -674,7 +673,7 @@ test('verify-artifacts rejects a CLI version mismatch even when optional smoke t
 test('verify-artifacts exercises the isolated runtime payload of a native base CLI', async () => {
   const version = '1.2.3';
   const fixture = await createComponentFixture({
-    product: 'happier',
+    product: 'happiest',
     files: createBaseCliRuntimeSmokeFixtureFiles(version),
   });
   try {
@@ -708,7 +707,7 @@ test('verify-artifacts exercises the isolated runtime payload of a native base C
 
 test('verify-artifacts rejects a native CLI whose version works but help fails', async () => {
   const fixture = await createComponentFixture({
-    product: 'happier',
+    product: 'happiest',
     files: {
       ...createBaseCliRuntimeSmokeFixtureFiles('1.2.3'),
       happiest: `#!/usr/bin/env bash
@@ -732,7 +731,7 @@ printf '1.2.3\\n'
 
 test('verify-artifacts rejects Claude SDK native fallback packages left in a base CLI projection', async () => {
   const fixture = await createComponentFixture({
-    product: 'happier',
+    product: 'happiest',
     files: {
       ...createBaseCliRuntimeSmokeFixtureFiles('1.2.3'),
       'node_modules/@anthropic-ai/claude-agent-sdk/node_modules/@anthropic-ai/claude-agent-sdk-linux-x64/package.json': '{}',
@@ -755,7 +754,7 @@ test('verify-artifacts rejects Windows PTY inputs left in a native non-Windows b
   skip: process.platform === 'win32',
 }, async () => {
   const fixture = await createComponentFixture({
-    product: 'happier',
+    product: 'happiest',
     files: {
       ...createBaseCliRuntimeSmokeFixtureFiles('1.2.3'),
       'node_modules/node-pty/third_party/conpty/win10-x64/conpty.node': 'unused Windows PTY input',
@@ -782,10 +781,10 @@ test('verify-artifacts rejects a CLI that times out before its version can be at
     const archivePlatform = normalizeArchivePlatform(process.platform);
     const archiveArch = normalizeArchiveArch(process.arch);
     const version = '1.2.3';
-    const archiveStem = `happier-v${version}-${archivePlatform}-${archiveArch}`;
+    const archiveStem = `happiest-v${version}-${archivePlatform}-${archiveArch}`;
     const stageDir = join(stageRoot, archiveStem);
     const archivePath = join(artifactsDir, `${archiveStem}.tar.gz`);
-    const checksumsPath = join(artifactsDir, `checksums-happier-v${version}.txt`);
+    const checksumsPath = join(artifactsDir, `checksums-happiest-v${version}.txt`);
 
     await mkdir(stageDir, { recursive: true });
     await mkdir(artifactsDir, { recursive: true });
@@ -840,10 +839,10 @@ test('verify-artifacts hard-times-out packaged server binaries that ignore SIGTE
     const stageRoot = join(workspace, 'stage');
     const archivePlatform = normalizeArchivePlatform(process.platform);
     const archiveArch = normalizeArchiveArch(process.arch);
-    const archiveStem = `happier-server-v0.0.0-timeout-${archivePlatform}-${archiveArch}`;
+    const archiveStem = `happiest-server-v0.0.0-timeout-${archivePlatform}-${archiveArch}`;
     const stageDir = join(stageRoot, archiveStem);
     const archivePath = join(artifactsDir, `${archiveStem}.tar.gz`);
-    const checksumsPath = join(artifactsDir, 'checksums-happier-server-v0.0.0-timeout.txt');
+    const checksumsPath = join(artifactsDir, 'checksums-happiest-server-v0.0.0-timeout.txt');
 
     await mkdir(stageDir, { recursive: true });
     await mkdir(artifactsDir, { recursive: true });
