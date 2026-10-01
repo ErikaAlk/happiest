@@ -48,6 +48,29 @@ test('apps/ui Tauri channel configs install beside upstream Happier under the pr
   }
 });
 
+test('apps/ui Tauri channel configs verify updates with the product updater key', async () => {
+  const scriptsDir = dirname(fileURLToPath(import.meta.url));
+  const packageRoot = dirname(scriptsDir);
+
+  const pubkeys = new Set();
+  for (const configName of ['tauri.conf.json', 'tauri.preview.conf.json', 'tauri.publicdev.conf.json']) {
+    const config = JSON.parse(await readFile(join(packageRoot, 'src-tauri', configName), 'utf-8'));
+    pubkeys.add(config?.plugins?.updater?.pubkey);
+  }
+  assert.equal(pubkeys.size, 1, 'every channel verifies updates with the same key');
+
+  const [encoded] = pubkeys;
+  const [comment, key] = Buffer.from(encoded, 'base64').toString('utf8').trim().split('\n');
+  const commentKeyId = /^untrusted comment: minisign public key: ([0-9A-F]{16})$/u.exec(comment)?.[1];
+  const keyBytes = Buffer.from(key, 'base64');
+  assert.equal(keyBytes.length, 42, 'an Ed25519 minisign public key is 42 bytes');
+  assert.equal(keyBytes.subarray(0, 2).toString('latin1'), 'Ed');
+  // minisign prints the little-endian key ID most significant byte first.
+  assert.equal(Buffer.from(keyBytes.subarray(2, 10)).reverse().toString('hex').toUpperCase(), commentKeyId);
+  // Upstream Happier's updater key; Happiest releases are signed with the fork's own key.
+  assert.notEqual(commentKeyId, 'ABE96218F3B0F1EF');
+});
+
 test('apps/ui Tauri channel configs leave HTML5 file drag-and-drop available to the frontend', async () => {
   const scriptsDir = dirname(fileURLToPath(import.meta.url));
   const packageRoot = dirname(scriptsDir);
