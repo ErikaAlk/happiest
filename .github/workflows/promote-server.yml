@@ -129,10 +129,6 @@ jobs:
           persist-credentials: false
       - name: Authorize release actor
         uses: ./.github/actions/release-actor-guard
-        with:
-          team_slug: release-admins
-          app_id: ${{ secrets.RELEASE_BOT_APP_ID }}
-          private_key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
 
   resolve_source:
     needs: [release_actor_guard]
@@ -416,6 +412,8 @@ jobs:
   publish_runtime_release:
     if: inputs.publish_runtime_release == true
     needs: [resolve_source, finalize_source]
+    permissions:
+      contents: write
     uses: ./.github/workflows/publish-server-runtime.yml
     with:
       channel: ${{ inputs.environment == 'production' && 'stable' || 'preview' }}

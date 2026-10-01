@@ -145,10 +145,6 @@ jobs:
           persist-credentials: false
       - name: Authorize release actor
         uses: ./.github/actions/release-actor-guard
-        with:
-          team_slug: release-admins
-          app_id: ${{ secrets.RELEASE_BOT_APP_ID }}
-          private_key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
 
   trusted_ref_guard:
     runs-on: ubuntu-latest

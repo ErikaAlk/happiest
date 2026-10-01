@@ -25,7 +25,7 @@ test('tests workflow defaults installer smoke to the dev lane on non-main branch
   assert.match(raw, /--ref "\$\{INSTALLERS_REF\}"|--ref "\$env:INSTALLERS_REF"/, 'tests.yml should pass the resolved installer ref into release-validate');
   assert.match(raw, /--release-channel "\$\{INSTALLERS_RELEASE_CHANNEL\}"|--release-channel "\$env:INSTALLERS_RELEASE_CHANNEL"/, 'tests.yml should pass the resolved installer release channel into release-validate');
   const expectedChannel = "${{ inputs.select_jobs_explicitly && inputs.installers_channel || ((github.event_name == 'push' && github.ref_name == 'main') || (github.event_name == 'pull_request' && github.base_ref == 'main')) && 'stable' || 'dev' }}";
-  for (const jobName of ['installers-smoke-linux', 'installers-smoke-macos', 'installers-smoke-windows']) {
+  for (const jobName of ['installers-smoke-linux', 'installers-smoke-windows']) {
     assert.equal(
       workflow.jobs[jobName].env.INSTALLERS_CHANNEL,
       expectedChannel,

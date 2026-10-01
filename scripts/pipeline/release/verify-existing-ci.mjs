@@ -28,7 +28,7 @@ const CLASSIFIED_CI_LANE_GROUPS = Object.freeze({
   run_ui_e2e: ['ui-e2e'],
   run_server_db_contract: ['server-db-contract'],
   run_release_contracts: ['release-contracts'],
-  run_installers_smoke: ['installers-smoke-linux', 'installers-smoke-macos', 'installers-smoke-windows'],
+  run_installers_smoke: ['installers-smoke-linux', 'installers-smoke-windows'],
   run_binary_smoke: ['binary-smoke'],
   run_cli_daemon_e2e: ['cli-daemon-e2e'],
   run_e2e_core: ['e2e-core'],

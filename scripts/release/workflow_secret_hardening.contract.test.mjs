@@ -83,9 +83,6 @@ test('every persistent self-hosted job waits for trusted workflow admission', as
 
 test('release workflows scope shared signing/publishing secrets to release-shared environment', async () => {
   const checks = [
-    ['release-npm.yml', 'publish-cli', 'release-shared'],
-    ['release-npm.yml', 'publish-stack', 'release-shared'],
-    ['release-npm.yml', 'publish-server-runner', 'release-shared'],
     ['promote-ui.yml', 'promote', 'release-shared'],
     ['promote-server.yml', 'apply_bump', 'release-shared'],
     ['promote-server.yml', 'promote_deploy_ref', 'release-shared'],
@@ -186,7 +183,6 @@ test('release workflow keeps provider checks outside the compact manual release 
 test('manual secret-bearing workflows enforce trusted refs', async () => {
   const files = [
     'release.yml',
-    'release-npm.yml',
     'promote-ui.yml',
     'promote-server.yml',
     'promote-website.yml',
@@ -231,7 +227,6 @@ test('release actor credentials are unavailable until secret-free workflow-ref a
     'publish-server-runtime.yml',
     'publish-ui-mobile-dev.yml',
     'publish-ui-web.yml',
-    'release-npm.yml',
     'release.yml',
     'tests-dispatch.yml',
     'tests.yml',
@@ -299,7 +294,6 @@ test('secret-bearing workflows require release-admin actor guard before privileg
   const guardJob = 'release_actor_guard';
   const expectedWiring = [
     ['release.yml', 'ci'],
-    ['release-npm.yml', 'release'],
     ['promote-ui.yml', 'promote'],
     ['promote-server.yml', 'promote_deploy_ref'],
     ['promote-website.yml', 'promote'],
@@ -333,15 +327,10 @@ test('secret-bearing workflows require release-admin actor guard before privileg
       guardStep,
       `${file} '${guardJob}' should use the composite release-actor-guard action`
     );
-    assert.match(
-      String(guardStep?.with?.app_id ?? ''),
-      /secrets\.RELEASE_BOT_APP_ID/,
-      `${file} '${guardJob}' should pass RELEASE_BOT_APP_ID to the guard action`
-    );
-    assert.match(
-      String(guardStep?.with?.private_key ?? ''),
-      /secrets\.RELEASE_BOT_PRIVATE_KEY/,
-      `${file} '${guardJob}' should pass RELEASE_BOT_PRIVATE_KEY to the guard action`
+    assert.doesNotMatch(
+      JSON.stringify(guardStep?.with ?? {}),
+      /secrets\./,
+      `${file} '${guardJob}' should authorize with the workflow token and pass no secrets to the guard action`
     );
 
     const job = parsed?.jobs?.[jobName];

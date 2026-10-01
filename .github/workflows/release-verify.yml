@@ -225,7 +225,6 @@ jobs:
       run_session_continuity: ${{ steps.profile.outputs.run_session_continuity }}
       run_release_assets_docker: ${{ steps.profile.outputs.run_release_assets_docker }}
       run_self_host_systemd: ${{ steps.profile.outputs.run_self_host_systemd }}
-      run_self_host_launchd: ${{ steps.profile.outputs.run_self_host_launchd }}
       run_self_host_schtasks: ${{ steps.profile.outputs.run_self_host_schtasks }}
       run_self_host_daemon: ${{ steps.profile.outputs.run_self_host_daemon }}
     steps:
@@ -305,6 +304,5 @@ jobs:
       relay_upgrade_to_source: ${{ inputs.candidate_server_version != '' && 'published-tag' || 'local-build' }}
       relay_upgrade_to_ref: ${{ inputs.candidate_server_version != '' && format('server-v{0}', inputs.candidate_server_version) || '.' }}
       run_self_host_systemd: ${{ fromJSON(needs.resolve_validation_profile.outputs.run_self_host_systemd) }}
-      run_self_host_launchd: ${{ fromJSON(needs.resolve_validation_profile.outputs.run_self_host_launchd) }}
       run_self_host_schtasks: ${{ fromJSON(needs.resolve_validation_profile.outputs.run_self_host_schtasks) }}
       run_self_host_daemon: ${{ fromJSON(needs.resolve_validation_profile.outputs.run_self_host_daemon) }}

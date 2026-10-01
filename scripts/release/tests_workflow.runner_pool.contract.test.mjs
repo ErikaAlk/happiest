@@ -4,10 +4,11 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 import YAML from 'yaml';
 
-const repoRoot = new URL('../..', import.meta.url).pathname;
+const repoRoot = fileURLToPath(new URL('../..', import.meta.url));
 
 function loadWorkflow(name) {
   return YAML.parse(readFileSync(join(repoRoot, '.github', 'workflows', name), 'utf8'), { prettyErrors: true });
@@ -214,7 +215,6 @@ test('manual test dispatch can opt approved non-secret Linux lanes into Blacksmi
   }
   assert.equal(tests.jobs.release_actor_guard['runs-on'], 'ubuntu-latest');
   assert.equal(tests.jobs.providers['runs-on'], 'ubuntu-latest');
-  assert.equal(tests.jobs['installers-smoke-macos']['runs-on'], 'macos-latest');
   assert.equal(tests.jobs['installers-smoke-windows']['runs-on'], 'windows-latest');
   assert.equal(tests.on.workflow_call.inputs.run_wsrepl_lima, undefined, 'arbitrary reusable callers must not select a persistent runner');
   assert.equal(tests.jobs['ui-e2e-wsrepl-lima'], undefined, 'persistent WSREPL execution belongs to the actor-authorized manual dispatcher');

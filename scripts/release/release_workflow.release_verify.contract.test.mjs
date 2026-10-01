@@ -55,7 +55,7 @@ test('release workflow verifies immutable candidates before promoting preview or
   for (const job of ['promote_hstack_binaries', 'promote_cli_binaries', 'promote_server_runtime', 'promote_ui_web']) {
     assert.ok(workflow.jobs.release_verify.needs.includes(job));
   }
-  for (const optionalJob of ['deploy_ui', 'deploy_website', 'deploy_docs', 'publish_docker', 'publish_npm']) {
+  for (const optionalJob of ['deploy_ui', 'deploy_website', 'deploy_docs', 'publish_docker']) {
     assert.ok(!workflow.jobs.release_verify.needs.includes(optionalJob), `${optionalJob} must not delay core release signoff`);
   }
   assert.match(JSON.stringify(workflow.jobs.release_verify.steps), /Verify rolling references bind the candidate SHA/);
@@ -191,7 +191,6 @@ test('release workflow derives validation, notes, and terminal status from the e
     'promote_ui_web',
     'promote_cli_binaries',
     'promote_hstack_binaries',
-    'publish_npm',
   ]) {
     assert.match(
       raw,
@@ -251,7 +250,8 @@ test('server releases admit the focused MySQL contract and stable platform evide
   assert.equal(platformGate.with.checkout_sha, '${{ needs.plan.outputs.source_sha }}');
   assert.equal(platformGate.with.select_jobs_explicitly, true);
   assert.equal(platformGate.with.run_self_host_systemd, true);
-  assert.equal(platformGate.with.run_self_host_launchd, true);
+  assert.equal(platformGate.with.run_self_host_launchd, undefined);
+  assert.equal(platformGate.with.run_mobile_e2e_ios, undefined);
   assert.equal(platformGate.with.run_self_host_schtasks, true);
   assert.equal(platformGate.with.run_self_host_daemon, true);
 

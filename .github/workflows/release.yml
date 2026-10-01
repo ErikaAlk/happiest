@@ -263,10 +263,6 @@ jobs:
           persist-credentials: false
       - name: Authorize release actor
         uses: ./.github/actions/release-actor-guard
-        with:
-          team_slug: release-admins
-          app_id: ${{ secrets.RELEASE_BOT_APP_ID }}
-          private_key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
 
   release_preflight:
     name: Release preflight (inputs + exact source)
@@ -503,10 +499,6 @@ jobs:
       publish_docker_needed: ${{ needs.resolve_resume.outputs.docker_requested == 'true' || inputs.force_deploy == true || steps.bump_plan.outputs.publish_server == 'true' || steps.bump_plan.outputs.publish_cli == 'true' || steps.plan.outputs.changed_ui == 'true' || steps.plan.outputs.changed_server == 'true' || steps.plan.outputs.changed_cli == 'true' || steps.plan.outputs.changed_shared == 'true' }}
       publish_docker_relay_needed: ${{ needs.resolve_resume.outputs.docker_requested == 'true' || inputs.force_deploy == true || steps.bump_plan.outputs.publish_server == 'true' || steps.plan.outputs.changed_ui == 'true' || steps.plan.outputs.changed_server == 'true' || steps.plan.outputs.changed_shared == 'true' }}
       publish_docker_dev_box_needed: ${{ needs.resolve_resume.outputs.docker_requested == 'true' || inputs.force_deploy == true || steps.bump_plan.outputs.publish_cli == 'true' || steps.plan.outputs.changed_cli == 'true' || steps.plan.outputs.changed_shared == 'true' }}
-      publish_npm_needed: ${{ needs.resolve_resume.outputs.npm_requested == 'true' || steps.bump_plan.outputs.publish_cli == 'true' || steps.bump_plan.outputs.publish_stack == 'true' || steps.bump_plan.outputs.publish_server == 'true' }}
-      npm_publish_cli_needed: ${{ needs.resolve_resume.outputs.npm_publish_cli_requested == 'true' || steps.bump_plan.outputs.publish_cli == 'true' }}
-      npm_publish_stack_needed: ${{ needs.resolve_resume.outputs.npm_publish_stack_requested == 'true' || steps.bump_plan.outputs.publish_stack == 'true' }}
-      npm_publish_server_needed: ${{ needs.resolve_resume.outputs.npm_publish_server_requested == 'true' || steps.bump_plan.outputs.publish_server == 'true' }}
       validation_profile: ${{ needs.release_preflight.outputs.validation_profile }}
       checks_profile: ${{ needs.release_preflight.outputs.checks_profile }}
       compatibility_analysis_required: ${{ steps.plan.outputs.compatibility_analysis_required }}
@@ -581,7 +573,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          git fetch origin main dev preview --prune --tags
+          git fetch origin main dev --prune --tags
 
           plan_head_sha="$(git rev-parse HEAD)"
 
@@ -725,7 +717,6 @@ jobs:
       select_jobs_explicitly: true
       run_ui_e2e: false
       run_mobile_e2e_android: false
-      run_mobile_e2e_ios: false
       run_ui: false
       run_server: false
       run_server_db_contract: false
@@ -745,7 +736,6 @@ jobs:
       run_session_continuity: false
       run_release_assets_docker: false
       run_self_host_systemd: true
-      run_self_host_launchd: true
       run_self_host_schtasks: true
       run_self_host_daemon: true
 
@@ -1342,28 +1332,6 @@ jobs:
       allow_cross_promote: true
       run_build: true
 
-  publish_npm:
-    if: always() && needs.resolve_resume.result == 'success' && needs.resolve_resume.outputs.npm_complete != 'true' && needs.plan.result == 'success' && needs.verify_release_candidates.result == 'success' && inputs.dry_run != true && needs.plan.outputs.publish_npm_needed == 'true' && ((inputs.environment == 'production' && needs.promote_main.result == 'success') || (inputs.environment == 'preview' && needs.promote_preview.result == 'success'))
-    needs: [resolve_resume, plan, promote_preview, promote_main, prepare_release_candidate, publish_cli_binaries, publish_hstack_binaries, publish_server_runtime, verify_release_candidates]
-    permissions:
-      contents: write
-      id-token: write
-    uses: ./.github/workflows/release-npm.yml
-    secrets: inherit
-    with:
-      publish_cli: ${{ needs.plan.outputs.npm_publish_cli_needed == 'true' }}
-      publish_stack: ${{ needs.plan.outputs.npm_publish_stack_needed == 'true' }}
-      publish_server: ${{ needs.plan.outputs.npm_publish_server_needed == 'true' }}
-      cli_version: ${{ needs.publish_cli_binaries.outputs.version }}
-      stack_version: ${{ needs.publish_hstack_binaries.outputs.version }}
-      server_version: ${{ needs.publish_server_runtime.outputs.version }}
-      channel: ${{ inputs.environment }}
-      source_ref: ${{ needs.prepare_release_candidate.outputs.source_sha }}
-      authorized_sha: ${{ needs.prepare_release_candidate.outputs.source_sha }}
-      npm_tag: ${{ inputs.environment == 'production' && 'latest' || 'next' }}
-      run_tests: false
-      release_message: ${{ needs.prepare_release_candidate.outputs.release_notes_github_markdown }}
-
   release_verify:
     name: Verify promoted release references
     needs: [resolve_resume, plan, deploy_plan, prepare_release_candidate, verify_release_candidates, promote_cli_binaries, promote_hstack_binaries, promote_server_runtime, promote_ui_web, deploy_server]
@@ -1440,82 +1408,6 @@ jobs:
         run: |
           echo 'The server deployment was accepted, but this environment has no canonical API version URL configured; loaded-runtime identity remains unobserved.' >> "$GITHUB_STEP_SUMMARY"
 
-  publish_homebrew_tap:
-    name: Publish the Homebrew formula to the tap
-    # Renders Formula/happier.rb from the verified stable cli-v<version> release (real asset URLs,
-    # sha256 from its signed checksums) and commits it to the tap through the release bot app.
-    # A no-op until the tap exists: set the repository variable HOMEBREW_TAP_REPO_NAME (e.g.
-    # `homebrew-tap`) only after the tap repo is created and the release bot app is installed on it.
-    # The desktop cask lives in homebrew/cask, where BrewTestBot's autobump owns version bumps.
-    # A resumed release whose CLI promotion the origin run already verified skips
-    # promote_cli_binaries; the resume owner's completion and version stand in for it.
-    needs: [resolve_resume, publish_cli_binaries, promote_cli_binaries, release_verify]
-    if: >-
-      always() &&
-      inputs.environment == 'production' &&
-      inputs.dry_run != true &&
-      vars.HOMEBREW_TAP_REPO_NAME != '' &&
-      needs.release_verify.result == 'success' &&
-      (needs.promote_cli_binaries.result == 'success' || needs.resolve_resume.outputs.cli_rolling_complete == 'true') &&
-      (needs.publish_cli_binaries.outputs.version || needs.resolve_resume.outputs.cli_version) != ''
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout trusted workflow control bytes
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          repository: ${{ job.workflow_repository }}
-          ref: ${{ job.workflow_sha }}
-          fetch-depth: 1
-          persist-credentials: false
-      - name: Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: 22.x
-      - name: Render the formula from the published release
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          CLI_VERSION: ${{ needs.publish_cli_binaries.outputs.version || needs.resolve_resume.outputs.cli_version }}
-        run: |
-          set -euo pipefail
-          node scripts/pipeline/release/render-homebrew-packages.mjs \
-            --cli-version "$CLI_VERSION" \
-            --repo "$GITHUB_REPOSITORY" \
-            --out-dir "$RUNNER_TEMP/homebrew"
-      - name: Create GitHub App token for the tap
-        id: tap_token
-        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547
-        with:
-          app-id: ${{ secrets.RELEASE_BOT_APP_ID }}
-          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ vars.HOMEBREW_TAP_REPO_NAME }}
-          permission-contents: write
-      - name: Commit Formula/happier.rb when it changed
-        env:
-          GH_TOKEN: ${{ steps.tap_token.outputs.token }}
-          TAP_REPO: ${{ github.repository_owner }}/${{ vars.HOMEBREW_TAP_REPO_NAME }}
-          CLI_VERSION: ${{ needs.publish_cli_binaries.outputs.version || needs.resolve_resume.outputs.cli_version }}
-        run: |
-          set -euo pipefail
-          rendered="$RUNNER_TEMP/homebrew/Formula/happier.rb"
-          path="Formula/happier.rb"
-          current_sha=""
-          if gh api "repos/$TAP_REPO/contents/$path" > "$RUNNER_TEMP/tap-current.json" 2>/dev/null; then
-            current_sha="$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).sha)' "$RUNNER_TEMP/tap-current.json")"
-            node -e 'const f=require("fs");const j=JSON.parse(f.readFileSync(process.argv[1],"utf8"));f.writeFileSync(process.argv[2],Buffer.from(j.content,"base64"))' \
-              "$RUNNER_TEMP/tap-current.json" "$RUNNER_TEMP/tap-current.rb"
-            if cmp -s "$RUNNER_TEMP/tap-current.rb" "$rendered"; then
-              echo "The tap already carries happier $CLI_VERSION." >> "$GITHUB_STEP_SUMMARY"
-              exit 0
-            fi
-          fi
-          args=(-X PUT "repos/$TAP_REPO/contents/$path" -f "message=happier $CLI_VERSION" -f "content=$(base64 -w0 "$rendered")")
-          if [ -n "$current_sha" ]; then args+=(-f "sha=$current_sha"); fi
-          gh api "${args[@]}" --jq '.commit.html_url' | tee -a "$GITHUB_STEP_SUMMARY"
-
   advance_release_issues:
     name: Advance issues to the released channel
     if: ${{ inputs.combined_preview_production != true && needs.release_verify.result == 'success' && needs.snapshot_release_issues.outputs.eligible == 'true' }}
@@ -1569,7 +1461,7 @@ jobs:
   release_status:
     name: Project terminal release status
     if: ${{ always() && inputs.dry_run != true }}
-    needs: [resolve_resume, plan, deploy_plan, prepare_release_candidate, publish_cli_binaries, publish_hstack_binaries, publish_server_runtime, publish_ui_web, verify_release_candidates, verify_resume_candidates, promote_cli_binaries, promote_hstack_binaries, promote_server_runtime, promote_ui_web, deploy_ui, deploy_server, deploy_website, deploy_docs, publish_docker, publish_npm, release_verify, advance_release_issues, sync_dev]
+    needs: [resolve_resume, plan, deploy_plan, prepare_release_candidate, publish_cli_binaries, publish_hstack_binaries, publish_server_runtime, publish_ui_web, verify_release_candidates, verify_resume_candidates, promote_cli_binaries, promote_hstack_binaries, promote_server_runtime, promote_ui_web, deploy_ui, deploy_server, deploy_website, deploy_docs, publish_docker, release_verify, advance_release_issues, sync_dev]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -1618,19 +1510,14 @@ jobs:
           REQUEST_DEPLOY_WEBSITE: ${{ needs.resolve_resume.outputs.deploy_website_requested == 'true' || needs.deploy_plan.outputs.deploy_website_requested == 'true' }}
           REQUEST_DEPLOY_DOCS: ${{ needs.resolve_resume.outputs.deploy_docs_requested == 'true' || needs.deploy_plan.outputs.deploy_docs_requested == 'true' }}
           REQUEST_DOCKER: ${{ needs.resolve_resume.outputs.docker_requested == 'true' || needs.plan.outputs.publish_docker_needed == 'true' }}
-          REQUEST_NPM: ${{ needs.resolve_resume.outputs.npm_requested == 'true' || needs.plan.outputs.publish_npm_needed == 'true' }}
           DEPLOY_UI_WEB: ${{ needs.resolve_resume.outputs.deploy_ui_web_requested == 'true' || needs.deploy_plan.outputs.deploy_ui_web == 'true' }}
           DEPLOY_UI_EXPO_ACTION: ${{ needs.deploy_plan.outputs.deploy_ui_expo_action || needs.resolve_resume.outputs.deploy_ui_expo_action || 'none' }}
           DEPLOY_UI_DESKTOP_MODE: ${{ needs.deploy_plan.outputs.deploy_ui_desktop_mode || needs.resolve_resume.outputs.deploy_ui_desktop_mode || 'none' }}
-          NPM_PUBLISH_CLI: ${{ needs.resolve_resume.outputs.npm_publish_cli_requested == 'true' || needs.plan.outputs.npm_publish_cli_needed == 'true' }}
-          NPM_PUBLISH_STACK: ${{ needs.resolve_resume.outputs.npm_publish_stack_requested == 'true' || needs.plan.outputs.npm_publish_stack_needed == 'true' }}
-          NPM_PUBLISH_SERVER: ${{ needs.resolve_resume.outputs.npm_publish_server_requested == 'true' || needs.plan.outputs.npm_publish_server_needed == 'true' }}
           DEPLOY_UI_RESUME_COMPLETE: ${{ needs.deploy_plan.outputs.deploy_ui_resume_complete }}
           DEPLOY_SERVER_RESUME_COMPLETE: ${{ needs.resolve_resume.outputs.deploy_server_complete }}
           DEPLOY_WEBSITE_RESUME_COMPLETE: ${{ needs.resolve_resume.outputs.deploy_website_complete }}
           DEPLOY_DOCS_RESUME_COMPLETE: ${{ needs.resolve_resume.outputs.deploy_docs_complete }}
           DOCKER_RESUME_COMPLETE: ${{ needs.resolve_resume.outputs.docker_complete }}
-          NPM_RESUME_COMPLETE: ${{ needs.resolve_resume.outputs.npm_complete }}
           CLI_ROLLING_RESUME_COMPLETE: ${{ needs.resolve_resume.outputs.cli_rolling_complete }}
           STACK_ROLLING_RESUME_COMPLETE: ${{ needs.resolve_resume.outputs.stack_rolling_complete }}
           SERVER_ROLLING_RESUME_COMPLETE: ${{ needs.resolve_resume.outputs.server_rolling_complete }}
@@ -1646,7 +1533,6 @@ jobs:
           DEPLOY_WEBSITE_RESULT: ${{ needs.deploy_website.result }}
           DEPLOY_DOCS_RESULT: ${{ needs.deploy_docs.result }}
           DOCKER_RESULT: ${{ needs.publish_docker.result }}
-          NPM_RESULT: ${{ needs.publish_npm.result }}
           RELEASE_VERIFY_RESULT: ${{ needs.release_verify.result }}
         run: |
           set -euo pipefail

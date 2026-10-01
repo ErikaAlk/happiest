@@ -51,7 +51,6 @@ test('release workflow only promotes and publishes the exact prepared candidate 
   );
 
   assert.match(raw, /source_ref:\s*\$\{\{ needs\.prepare_release_candidate\.outputs\.source_sha \}\}/);
-  assert.match(raw, /publish_npm:[\s\S]*?source_ref:\s*\$\{\{ needs\.prepare_release_candidate\.outputs\.source_sha \}\}/);
   assert.match(raw, /deploy_ui:[\s\S]*?bump:\s*none/);
   assert.match(
     raw,
@@ -116,7 +115,7 @@ test('release workflow accepts the public validation profile and routes its auto
   assert.equal(candidateVerifier?.with?.run_installers_smoke, undefined);
 });
 
-test('release workflow fans a versioned Stack target through immutable publication, grouped verification, promotion, npm, and core signoff', async () => {
+test('release workflow fans a versioned Stack target through immutable publication, grouped verification, promotion, and core signoff', async () => {
   const [raw, verifierRaw] = await Promise.all([
     loadWorkflow('release.yml'),
     loadWorkflow('release-verify.yml'),
@@ -125,7 +124,6 @@ test('release workflow fans a versioned Stack target through immutable publicati
   const publisher = jobs.publish_hstack_binaries;
   const candidateVerifier = jobs.verify_release_candidates;
   const promoter = jobs.promote_hstack_binaries;
-  const npm = jobs.publish_npm;
   const finalVerifier = jobs.release_verify;
   const verifierInputs = parse(verifierRaw)?.on?.workflow_call?.inputs ?? {};
 
@@ -143,15 +141,6 @@ test('release workflow fans a versioned Stack target through immutable publicati
   assert.ok(promoter?.needs?.includes('publish_hstack_binaries'));
   assert.match(String(promoter?.if ?? ''), /needs\.verify_release_candidates\.result == 'success'/);
   assert.match(String(promoter?.with?.retry_version ?? ''), /needs\.publish_hstack_binaries\.outputs\.version/);
-
-  assert.match(String(npm?.if ?? ''), /needs\.plan\.outputs\.publish_npm_needed == 'true'/);
-  assert.match(String(npm?.with?.publish_stack ?? ''), /needs\.plan\.outputs\.npm_publish_stack_needed == 'true'/);
-  assert.ok(npm?.needs?.includes('publish_cli_binaries'));
-  assert.ok(npm?.needs?.includes('publish_hstack_binaries'));
-  assert.ok(npm?.needs?.includes('publish_server_runtime'));
-  assert.equal(npm?.with?.cli_version, '${{ needs.publish_cli_binaries.outputs.version }}');
-  assert.equal(npm?.with?.stack_version, '${{ needs.publish_hstack_binaries.outputs.version }}');
-  assert.equal(npm?.with?.server_version, '${{ needs.publish_server_runtime.outputs.version }}');
 
   assert.equal(finalVerifier?.needs?.includes('publish_hstack_binaries'), false);
   assert.ok(finalVerifier?.needs?.includes('verify_release_candidates'));
@@ -223,111 +212,17 @@ test('release workflow delegates deploy plan computation to pipeline script', as
 
 test('release workflows do not embed invalid JS escaping in node -p/-e snippets', async () => {
   const release = await loadWorkflow('release.yml');
-  const releaseNpm = await loadWorkflow('release-npm.yml');
   const promoteServer = await loadWorkflow('promote-server.yml');
 
   // These sequences produce broken JavaScript (backslashes are passed literally to Node).
-  for (const raw of [release, releaseNpm, promoteServer]) {
+  for (const raw of [release, promoteServer]) {
     assert.doesNotMatch(raw, /require\(\\"/, 'do not use require(\\") style escaping in workflows');
     assert.doesNotMatch(raw, /require\(\\"node:fs\\"/, 'do not escape quotes inside node -e single-quoted strings');
   }
 });
 
-test('release-npm resolves source ref from channel and checks out resolved source', async () => {
-  const raw = await loadWorkflow('release-npm.yml');
-
-  assert.match(raw, /workflow_dispatch:[\s\S]*?inputs:[\s\S]*?source_ref:/);
-  assert.match(raw, /workflow_call:[\s\S]*?inputs:[\s\S]*?source_ref:/);
-
-  assert.match(raw, /if \[ "\$src" = "auto" \]; then[\s\S]*?if \[ "\$channel" = "preview" \]; then[\s\S]*?src="preview"[\s\S]*?src="main"/);
-  assert.match(raw, /ref:\s*\$\{\{ steps\.resolve_source\.outputs\.ref \}\}/);
-});
-
-test('release-npm embeds build feature policy defaults by channel', async () => {
-  const raw = await loadWorkflow('release-npm.yml');
-  assert.match(
-    raw,
-    /HAPPIER_EMBEDDED_POLICY_ENV:\s*\$\{\{\s*inputs\.channel\s*==\s*'production'\s*&&\s*'production'\s*\|\|\s*'preview'\s*\}\}/,
-    'npm publishing should set HAPPIER_EMBEDDED_POLICY_ENV to production for production channel releases',
-  );
-});
-
-test('release-npm is compatible with npm trusted publishing (OIDC)', async () => {
-  const raw = await loadWorkflow('release-npm.yml');
-
-  assert.match(raw, /node scripts\/pipeline\/npm\/publish-tarball\.mjs/, 'trusted release control should invoke the canonical npm tarball publisher directly');
-  assert.match(raw, /trusted-control\/scripts\/pipeline\/npm\/release-packages\.mjs/, 'release-npm should prepare packs with trusted workflow-control code');
-  assert.match(raw, /--repo-root "\$GITHUB_WORKSPACE"/, 'trusted npm control must operate on the exact candidate checkout');
-  assert.doesNotMatch(raw, /npm pack --ignore-scripts --json/, 'release-npm should not embed npm pack json parsing boilerplate (use release-packages.mjs)');
-  assert.doesNotMatch(raw, /npm install --global npm@11/, 'release-npm should avoid global npm installs (use pinned npm via npx inside the pipeline)');
-  assert.doesNotMatch(raw, /NPM_TOKEN is required for npm publish\./);
-});
-
-test('release-npm installs Sapling before cli integration tests', async () => {
-  const raw = await loadWorkflow('release-npm.yml');
-
-  assert.match(
-    raw,
-    /release:[\s\S]*?runs-on:\s*ubuntu-22\.04/,
-    'release-npm should pin ubuntu-22.04 because the Sapling installer is Ubuntu 22.04 specific',
-  );
-  assert.doesNotMatch(
-    raw,
-    /MINISIGN_|bootstrap-minisign|release-prepare-binary-assets/,
-    'npm candidate packing must not cross the binary-signing trust boundary',
-  );
-  assert.match(
-    raw,
-    /- name: Install Sapling[\s\S]*?if:\s*inputs\.publish_cli && inputs\.run_tests[\s\S]*?bash scripts\/ci\/install_sapling_ubuntu22\.sh/,
-    'release-npm should install Sapling in the cli test lane before running sapling integration tests',
-  );
-  assert.match(raw, /- name: Run cli tests[\s\S]*?yarn --cwd apps\/cli test:integration/);
-});
-
-test('release-npm derives unique preview prerelease versions from base versions', async () => {
-  const raw = await loadWorkflow('release-npm.yml');
-
-  assert.doesNotMatch(raw, /version_bump_cli/);
-  assert.doesNotMatch(raw, /version_bump_stack/);
-  assert.doesNotMatch(raw, /function bumpBase\(base, bump\)/);
-  assert.match(raw, /node scripts\/pipeline\/run\.mjs npm-set-preview-versions/);
-  assert.doesNotMatch(raw, /function setPreviewVersion\(pkgPath\)/);
-  assert.doesNotMatch(raw, /\$\{base\}-preview\.\$\{run\}\.\$\{attempt\}/);
-  assert.match(raw, /publish_server/, 'release-npm should expose publish_server for server runner publishing');
-
-  // Server runner package is canonicalized under packages/relay-server.
-  assert.doesNotMatch(raw, /packages\/server\//, 'release-npm must not reference removed packages/server');
-  assert.match(raw, /dir="packages\/relay-server"/);
-  assert.match(raw, /SERVER_RUNNER_DIR:\s*\$\{\{ steps\.server_runner\.outputs\.dir \}\}/);
-  assert.match(raw, /SERVER_RUNNER_DIR:\s*\$\{\{ steps\.server_runner\.outputs\.dir \}\}[\s\S]*?yarn --cwd "\$\{SERVER_RUNNER_DIR\}" test/);
-  assert.match(raw, /trusted-control\/scripts\/pipeline\/npm\/release-packages\.mjs[\s\S]*?--server-runner-dir "\$\{SERVER_RUNNER_DIR\}"/);
-
-  const script = await loadFile('scripts/pipeline/npm/set-preview-versions.mjs');
-  assert.match(script, /resolveRollingPublishVersion/);
-  assert.doesNotMatch(script, /GITHUB_RUN_NUMBER/);
-});
-
-test('release-npm reuses caller-bound candidate versions instead of allocating replacements', async () => {
-  const workflow = parse(await loadWorkflow('release-npm.yml'));
-  const inputs = workflow?.on?.workflow_call?.inputs ?? {};
-  for (const name of ['cli_version', 'stack_version', 'server_version']) {
-    assert.equal(inputs[name]?.required, false);
-    assert.equal(inputs[name]?.default, '');
-    assert.equal(inputs[name]?.type, 'string');
-  }
-
-  const metadata = workflow?.jobs?.release?.steps?.find((step) => step.name === 'Release metadata');
-  assert.equal(metadata?.env?.INPUT_CLI_VERSION, '${{ inputs.cli_version }}');
-  assert.equal(metadata?.env?.INPUT_STACK_VERSION, '${{ inputs.stack_version }}');
-  assert.equal(metadata?.env?.INPUT_SERVER_VERSION, '${{ inputs.server_version }}');
-  assert.match(metadata?.run ?? '', /--cli-version "\$\{INPUT_CLI_VERSION\}"/);
-  assert.match(metadata?.run ?? '', /--stack-version "\$\{INPUT_STACK_VERSION\}"/);
-  assert.match(metadata?.run ?? '', /--server-version "\$\{INPUT_SERVER_VERSION\}"/);
-});
-
 test('final release workflows only consume already-materialized version bumps', async () => {
   const orchestrator = await loadWorkflow('release.yml');
-  const releaseNpm = await loadWorkflow('release-npm.yml');
   const workflow = parse(orchestrator);
 
   assert.equal(
@@ -341,18 +236,6 @@ test('final release workflows only consume already-materialized version bumps', 
   assert.doesNotMatch(orchestrator, /--bump-stack "\$BUMP_STACK"/);
   assert.doesNotMatch(orchestrator, /node scripts\/release\/bump-version\.mjs --component stack/, 'release.yml should delegate version bumps to the pipeline script');
   assert.doesNotMatch(orchestrator, /BUMP="\$\{\{ needs\.plan\.outputs\.bump_stack \}\}" node - <<'NODE'/);
-
-  // The final release consumes an already committed source, so release-npm must not create its own version bumps.
-  assert.doesNotMatch(releaseNpm, /bump-version\.mjs --component cli/, 'release-npm should not bump cli on main');
-  assert.doesNotMatch(releaseNpm, /bump-version\.mjs --component stack/, 'release-npm should not bump stack on main');
-  assert.doesNotMatch(releaseNpm, /npm version "\$\{\{ inputs\.version_bump_stack \}\}"/, 'release-npm must not use npm version for stack bumps');
-});
-
-test('release-npm does not manage deploy/* branches (deploy is for server/web apps)', async () => {
-  const raw = await loadWorkflow('release-npm.yml');
-  assert.doesNotMatch(raw, /update_deploy_branch:/, 'release-npm should not expose update_deploy_branch input');
-  assert.doesNotMatch(raw, /deploy\/\$\{\{\s*inputs\.channel\s*\}\}\/cli/, 'release-npm should not promote deploy/<channel>/cli');
-  assert.doesNotMatch(raw, /deploy\/\$\{\{\s*inputs\.channel\s*\}\}\/stack/, 'release-npm should not promote deploy/<channel>/stack');
 });
 
 test('publish-github-release delegates release creation + asset upload to the pipeline script', async () => {

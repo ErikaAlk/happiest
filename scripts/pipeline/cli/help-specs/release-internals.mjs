@@ -66,22 +66,22 @@ export const COMMAND_HELP_RELEASE_INTERNALS = {
   },
 
   'release-bump-versions-dev': {
-    summary: 'Bump selected component versions and push a commit to a branch (CI helper).',
+    summary: 'Bump the product and/or website version and push a commit to a branch (CI helper).',
     usage:
-      'node scripts/pipeline/run.mjs release-bump-versions-dev [--bump-app <bump>] [--bump-server <bump>] [--push-branch <branch>] [--dry-run]',
+      'node scripts/pipeline/run.mjs release-bump-versions-dev [--bump-product <bump>] [--bump-website <bump>] [--push-branch <branch>] [--dry-run]',
     options: [
-      '--bump-app <none|patch|minor|major> (default: none).',
-      '--bump-server <none|patch|minor|major> (default: none).',
+      '--bump-product <none|patch|minor|major> (default: none).',
       '--bump-website <none|patch|minor|major> (default: none).',
-      '--bump-cli <none|patch|minor|major> (default: none).',
-      '--bump-stack <none|patch|minor|major> (default: none).',
       '--push-branch <branch>            (default: dev).',
       '--commit-message <text>           Optional.',
       '--dry-run',
     ],
-    bullets: ['Preparation helper only. Final release workflows require already-materialized version/changelog updates and never invoke this command.'],
+    bullets: [
+      'The product has one version shared by the UI, desktop app, CLI, server runtime and runner package, and hstack.',
+      'Preparation helper only. Final release workflows require already-materialized version/changelog updates and never invoke this command.',
+    ],
     examples: [
-      'node scripts/pipeline/run.mjs release-bump-versions-dev --bump-cli patch --bump-stack patch --push-branch dev --dry-run',
+      'node scripts/pipeline/run.mjs release-bump-versions-dev --bump-product patch --push-branch dev --dry-run',
     ],
   },
 
@@ -106,14 +106,14 @@ export const COMMAND_HELP_RELEASE_INTERNALS = {
   'release-validate': {
     summary: 'Resolve a release-validation request and dispatch it to the unified validation runner.',
     usage:
-      'node scripts/pipeline/run.mjs release-validate --suite <suite> [--platform <linux|darwin|win32>] ([--source <kind> --ref <value>] | [--from-source <kind> --from-ref <value> --to-source <kind> --to-ref <value>] | [--product <id> --version <ver>]) [--dry-run]',
+      'node scripts/pipeline/run.mjs release-validate --suite <suite> [--platform <linux|win32>] ([--source <kind> --ref <value>] | [--from-source <kind> --from-ref <value> --to-source <kind> --to-ref <value>] | [--product <id> --version <ver>]) [--dry-run]',
     options: [
       '--secrets-source <auto|env|keychain>  Wrapper flag.',
       '--keychain-service <name>         Wrapper flag (default: happier/pipeline).',
       '--keychain-account <name>         Wrapper flag.',
       '--dry-run                         Wrapper flag.',
       '--suite <suite>                   Script flag; installers-smoke|binary-smoke|artifact-verify|docker-release-assets|cli-update|daemon-continuity|session-continuity.',
-      '--platform <linux|darwin|win32>   Script flag; defaults to the current runner platform.',
+      '--platform <linux|win32>          Script flag; defaults to the current runner platform.',
       '--source <kind>                   Script flag; suite-dependent source kind.',
       '--ref <value>                     Script flag paired with --source.',
       '--from-source <kind>              Script flag for update/upgrade suites.',
@@ -141,14 +141,14 @@ export const COMMAND_HELP_RELEASE_INTERNALS = {
       'node scripts/pipeline/run.mjs release-validate --suite installers-smoke --platform linux --source published-channel --ref preview --dry-run',
       'node scripts/pipeline/run.mjs release-validate --suite installers-smoke --platform linux --source local-build --ref . --release-channel preview --dry-run',
       'node scripts/pipeline/run.mjs release-validate --suite artifact-verify --platform linux --product cli --version 1.2.3-preview.4 --release-channel preview --skip-smoke --dry-run',
-      'node scripts/pipeline/run.mjs release-validate --suite cli-update --platform darwin --from-source published-tag --from-ref cli-preview --to-source local-build --to-ref HEAD --dry-run',
+      'node scripts/pipeline/run.mjs release-validate --suite cli-update --platform linux --from-source published-tag --from-ref cli-preview --to-source local-build --to-ref HEAD --dry-run',
     ],
   },
 
   'release-bump-version': {
-    summary: 'Bump a single component version in-place (advanced helper).',
+    summary: 'Bump the product or website version in-place (advanced helper).',
     usage:
-      'node scripts/pipeline/run.mjs release-bump-version --component <app|cli|server|website|stack> --bump <none|patch|minor|major>',
+      'node scripts/pipeline/run.mjs release-bump-version --component <product|website> --bump <none|patch|minor|major>',
     options: [
       '--deploy-environment <env>        Wrapper flag (default: production).',
       '--secrets-source <auto|env|keychain>  Wrapper flag.',
@@ -158,8 +158,8 @@ export const COMMAND_HELP_RELEASE_INTERNALS = {
       '--component <name>                Script flag (required).',
       '--bump <kind>                     Script flag (required).',
     ],
-    bullets: ['Updates app version across Expo + Tauri config when component=app.'],
-    examples: ['node scripts/pipeline/run.mjs release-bump-version --component cli --bump patch'],
+    bullets: ['component=product moves every product package and the Tauri config to one new version and refuses to run when they differ.'],
+    examples: ['node scripts/pipeline/run.mjs release-bump-version --component product --bump patch'],
   },
 
   'release-build-cli-binaries': {
@@ -198,7 +198,7 @@ export const COMMAND_HELP_RELEASE_INTERNALS = {
       '--externals <csv>                 Script flag.',
     ],
     bullets: ['Requires bun + minisign (for signatures).'],
-    examples: ['node scripts/pipeline/run.mjs release-build-hstack-binaries --channel preview --targets darwin-arm64'],
+    examples: ['node scripts/pipeline/run.mjs release-build-hstack-binaries --channel preview --targets linux-x64'],
   },
 
   'release-build-server-binaries': {
@@ -241,14 +241,14 @@ export const COMMAND_HELP_RELEASE_INTERNALS = {
     ],
     bullets: ['Use this from workflows that need release assets prepared without publishing GitHub releases.'],
     examples: [
-      'node scripts/pipeline/run.mjs release-prepare-binary-assets --product cli --channel preview --version 1.2.3-preview.4 --assets-base-url https://github.com/happier-dev/happier/releases/download/cli-preview --commit-sha HEAD --skip-smoke',
+      'node scripts/pipeline/run.mjs release-prepare-binary-assets --product cli --channel preview --version 1.2.3-preview.4 --assets-base-url https://github.com/ErikaAlk/happiest/releases/download/cli-preview --commit-sha HEAD --skip-smoke',
     ],
   },
 
   'release-publish-manifests': {
     summary: 'Generate “latest.json” manifest(s) for a product/channel (advanced helper).',
     usage:
-      `node scripts/pipeline/run.mjs release-publish-manifests --product <happier|hstack|happier-server> --channel <${publicReleaseChannelChoices}> --assets-base-url <url> [--artifacts-dir <dir>]`,
+      `node scripts/pipeline/run.mjs release-publish-manifests --product <happiest|hstack|happiest-server> --channel <${publicReleaseChannelChoices}> --assets-base-url <url> [--artifacts-dir <dir>]`,
     options: [
       '--deploy-environment <env>        Wrapper flag (default: production).',
       '--secrets-source <auto|env|keychain>  Wrapper flag.',
@@ -270,7 +270,7 @@ export const COMMAND_HELP_RELEASE_INTERNALS = {
     ],
     bullets: ['Manifests are consumed by installer scripts and self-host tooling.'],
     examples: [
-      'node scripts/pipeline/run.mjs release-publish-manifests --product happier --channel preview --assets-base-url https://github.com/happier-dev/happier/releases/download/cli-preview',
+      'node scripts/pipeline/run.mjs release-publish-manifests --product happiest --channel preview --assets-base-url https://github.com/ErikaAlk/happiest/releases/download/cli-preview',
     ],
   },
 

@@ -101,19 +101,14 @@ jobs:
           persist-credentials: false
       - name: Authorize release actor
         uses: ./.github/actions/release-actor-guard
-        with:
-          team_slug: release-admins
-          app_id: ${{ secrets.RELEASE_BOT_APP_ID }}
-          private_key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
 
   publish:
     needs: [release_actor_guard]
     runs-on: ubuntu-latest
     timeout-minutes: 120
     environment: release-shared
-    env:
-      RELEASE_BOT_APP_ID: ${{ secrets.RELEASE_BOT_APP_ID }}
-      RELEASE_BOT_PRIVATE_KEY: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+    permissions:
+      contents: write
     steps:
       - name: Checkout trusted workflow control bytes
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -191,26 +186,12 @@ jobs:
             require_safe_dist_path assets_artifact_path "$INPUT_ASSETS_ARTIFACT_PATH"
           fi
 
-      - name: Create GitHub App token (release bot)
-        id: app_token
-        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547
-        if: ${{ env.RELEASE_BOT_APP_ID != '' && env.RELEASE_BOT_PRIVATE_KEY != '' }}
-        with:
-          app-id: ${{ env.RELEASE_BOT_APP_ID }}
-          private-key: ${{ env.RELEASE_BOT_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ github.event.repository.name }}
-          permission-contents: write
-
-      - name: Configure git remote auth (release bot)
-        if: ${{ steps.app_token.outcome == 'success' && steps.app_token.outputs.token != '' }}
+      - name: Configure git remote auth
         env:
-          TOKEN: ${{ steps.app_token.outputs.token }}
+          TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           git remote set-url origin "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          # Ensure we aren't still using GITHUB_TOKEN credentials from checkout.
-          git config --local --unset-all http.https://github.com/.extraheader 2>/dev/null || true
 
       - name: Download release assets artifact
         if: ${{ inputs.assets_artifact != '' }}
@@ -221,7 +202,7 @@ jobs:
 
       - name: Publish GitHub release (pipeline)
         env:
-          GH_TOKEN: ${{ (steps.app_token.outputs.token != '' && steps.app_token.outputs.token) || github.token }}
+          GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           INPUT_TAG: ${{ inputs.tag }}
           INPUT_TITLE: ${{ inputs.title }}

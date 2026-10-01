@@ -10,8 +10,7 @@ const repoRoot = resolve(here, '..', '..');
 test('tests workflow gates installer smoke on existing release tags (bootstrap-friendly)', async () => {
   const raw = await readFile(join(repoRoot, '.github', 'workflows', 'tests.yml'), 'utf8');
   const installerJobs = [
-    /installers-smoke-linux:[\s\S]*?installers-smoke-macos:/,
-    /installers-smoke-macos:[\s\S]*?installers-smoke-windows:/,
+    /installers-smoke-linux:[\s\S]*?installers-smoke-windows:/,
     /installers-smoke-windows:[\s\S]*?binary-smoke:/,
   ].map((pattern) => {
     const match = raw.match(pattern);

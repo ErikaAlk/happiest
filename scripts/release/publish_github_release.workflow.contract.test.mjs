@@ -13,32 +13,22 @@ async function loadWorkflow(name) {
   return { raw, parsed: parse(raw) };
 }
 
-test('publish-github-release uses release bot GitHub App token for rolling tag updates', async () => {
+test('publish-github-release updates rolling tags with the workflow token and an explicit contents write grant', async () => {
   const { raw, parsed } = await loadWorkflow('publish-github-release.yml');
   const publishJob = parsed?.jobs?.publish;
   assert.ok(publishJob, 'publish job should exist');
-  assert.equal(
-    publishJob?.env?.RELEASE_BOT_APP_ID,
-    '${{ secrets.RELEASE_BOT_APP_ID }}',
-    'publish job must expose RELEASE_BOT_APP_ID via env for conditional app token creation',
-  );
-  assert.equal(
-    publishJob?.env?.RELEASE_BOT_PRIVATE_KEY,
-    '${{ secrets.RELEASE_BOT_PRIVATE_KEY }}',
-    'publish job must expose RELEASE_BOT_PRIVATE_KEY via env for conditional app token creation',
-  );
+  assert.doesNotMatch(raw, /create-github-app-token|RELEASE_BOT_/, 'publish-github-release has no GitHub App');
+  assert.deepEqual(publishJob.permissions, { contents: 'write' });
 
-  assert.match(raw, /actions\/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547/, 'publish-github-release must pin actions/create-github-app-token to the reviewed commit');
+  const remoteAuth = publishJob.steps.find((step) => step.name === 'Configure git remote auth');
+  assert.equal(remoteAuth?.env?.TOKEN, '${{ github.token }}', 'tag pushes authenticate with the workflow token');
+  const publish = publishJob.steps.find((step) => step.name === 'Publish GitHub release (pipeline)');
+  assert.equal(publish?.env?.GH_TOKEN, '${{ github.token }}');
   assert.match(raw, /node scripts\/pipeline\/run\.mjs github-publish-release/, 'publish-github-release must delegate to pipeline script');
   assert.match(
     raw,
     /persist-credentials:\s*false/,
-    'publish-github-release must not persist GITHUB_TOKEN git credentials when using the release bot token',
-  );
-  assert.match(
-    raw,
-    /unset-all http\.https:\/\/github\.com\/\.extraheader/,
-    'publish-github-release must clear checkout-provided auth headers before tag pushes',
+    'publish-github-release must not persist checkout git credentials next to the explicit remote auth',
   );
 });
 

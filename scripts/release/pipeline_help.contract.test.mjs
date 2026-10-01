@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -40,18 +40,35 @@ test('pipeline CLI supports help <command>', async () => {
   assert.match(out, /--environment/);
 });
 
-test('pipeline CLI supports help for npm-release', async () => {
-  const out = execFileSync(process.execPath, [pipelineCli, 'help', 'npm-release'], {
+test('pipeline CLI no longer offers npm publishing commands', async () => {
+  const overview = execFileSync(process.execPath, [pipelineCli, '--help'], {
     cwd: repoRoot,
     env: { ...process.env },
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
     timeout: 30_000,
   });
+  assert.doesNotMatch(overview, /\bnpm-(release|publish|set-preview-versions)\b/);
 
-  assert.match(out, /\bnpm-release\b/);
-  assert.match(out, /--channel/);
-  assert.match(out, /--publish-cli/);
+  for (const command of ['npm-release', 'npm-publish', 'npm-set-preview-versions']) {
+    const help = execFileSync(process.execPath, [pipelineCli, 'help', command], {
+      cwd: repoRoot,
+      env: { ...process.env },
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+      timeout: 30_000,
+    });
+    assert.match(help, /^Unknown command:/m, `${command} must not have a help entry`);
+
+    const run = spawnSync(process.execPath, [pipelineCli, command, '--dry-run'], {
+      cwd: repoRoot,
+      env: { ...process.env },
+      encoding: 'utf8',
+      timeout: 30_000,
+    });
+    assert.notEqual(run.status, 0, `${command} must be rejected`);
+    assert.match(run.stderr, new RegExp(`Unsupported subcommand: ${command}`));
+  }
 });
 
 test('pipeline CLI supports help for checks', async () => {

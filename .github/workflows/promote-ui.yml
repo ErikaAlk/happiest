@@ -172,10 +172,6 @@ jobs:
           persist-credentials: false
       - name: Authorize release actor
         uses: ./.github/actions/release-actor-guard
-        with:
-          team_slug: release-admins
-          app_id: ${{ secrets.RELEASE_BOT_APP_ID }}
-          private_key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
 
   resolve_source:
     needs: [release_actor_guard]
@@ -301,7 +297,7 @@ jobs:
           BUMP: ${{ inputs.bump }}
         run: |
           set -euo pipefail
-          out="$(node "$GITHUB_WORKSPACE/scripts/pipeline/release/bump-version.mjs" --component app --bump "$BUMP")"
+          out="$(node "$GITHUB_WORKSPACE/scripts/pipeline/release/bump-version.mjs" --component product --bump "$BUMP")"
           if [ "$out" = SKIP ]; then
             echo "skipped=true" >> "$GITHUB_OUTPUT"
           else

@@ -153,10 +153,6 @@ jobs:
           node-version: 22.x
       - name: Authorize release actor
         uses: ./.github/actions/release-actor-guard
-        with:
-          team_slug: release-admins
-          app_id: ${{ secrets.RELEASE_BOT_APP_ID }}
-          private_key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
       - name: Re-verify reusable immutable UI-web candidate
         id: resume
         if: ${{ inputs.resume_version != '' && inputs.retry_version == '' }}
@@ -479,20 +475,10 @@ jobs:
             --ui-dir "$GITHUB_WORKSPACE/apps/ui" \
             --dist-dir "$bundle_dir"
 
-      - name: Create GitHub App token
-        id: app_token
-        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547
-        with:
-          app-id: ${{ secrets.RELEASE_BOT_APP_ID }}
-          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ github.event.repository.name }}
-          permission-contents: write
-
       - name: Publish UI web bundle (pipeline)
         id: publish
         env:
-          GH_TOKEN: ${{ steps.app_token.outputs.token }}
+          GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           MINISIGN_SECRET_KEY: ${{ secrets.MINISIGN_SECRET_KEY }}
           MINISIGN_PASSPHRASE: ${{ secrets.MINISIGN_PASSPHRASE }}
@@ -527,7 +513,7 @@ jobs:
     timeout-minutes: 60
     environment: release-shared
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Enforce stable publishing gate
         if: ${{ inputs.channel == 'stable' && inputs.allow_stable != true }}
@@ -552,20 +538,11 @@ jobs:
           npm_config_production: 'false'
           HAPPIER_INSTALL_SCOPE: protocol,agents,release-runtime,cli-common
           HAPPIER_UI_VENDOR_WEB_ASSETS: '0'
-      - name: Create narrowly scoped publish token
-        id: app_token
-        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547
-        with:
-          app-id: ${{ secrets.RELEASE_BOT_APP_ID }}
-          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ github.event.repository.name }}
-          permission-contents: write
       - name: Install minisign for immutable bundle verification
         uses: ./.github/actions/bootstrap-minisign
       - name: Re-promote exact verified immutable release bytes
         env:
-          GH_TOKEN: ${{ steps.app_token.outputs.token }}
+          GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           RETRY_VERSION: ${{ inputs.retry_version }}
           AUTHORIZED_SHA: ${{ inputs.authorized_sha }}

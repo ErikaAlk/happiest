@@ -121,16 +121,14 @@ jobs:
           persist-credentials: false
       - name: Authorize release actor
         uses: ./.github/actions/release-actor-guard
-        with:
-          team_slug: release-admins
-          app_id: ${{ secrets.RELEASE_BOT_APP_ID }}
-          private_key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
 
   promote:
     needs: [release_actor_guard]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: release-shared
+    permissions:
+      contents: write
     steps:
       - name: Checkout trusted workflow control bytes
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -237,19 +235,9 @@ jobs:
               ;;
           esac
 
-      - name: Create GitHub App token
-        id: app_token
-        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547
-        with:
-          app-id: ${{ secrets.RELEASE_BOT_APP_ID }}
-          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ github.event.repository.name }}
-          permission-contents: write
-
       - name: Promote branch (pipeline)
         env:
-          GH_TOKEN: ${{ steps.app_token.outputs.token }}
+          GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           INPUT_SOURCE: ${{ inputs.source }}
           INPUT_SOURCE_SHA: ${{ inputs.source_sha }}

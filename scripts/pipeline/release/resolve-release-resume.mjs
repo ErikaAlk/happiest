@@ -22,7 +22,6 @@ const RESUMABLE_REQUESTED_SURFACES = new Map([
   ['deploy_ui', 'deployUi'],
   ['deploy_website', 'deployWebsite'],
   ['docker', 'docker'],
-  ['npm', 'npm'],
 ]);
 const RESUMABLE_VERIFIED_SURFACES = new Map([
   ['cli_rolling_release', 'cliRolling'],
@@ -248,9 +247,9 @@ export function resolveReleaseResume(input) {
 
   /** @type {Record<'cli' | 'stack' | 'server' | 'ui-web', string>} */
   const versions = { cli: '', stack: '', server: '', 'ui-web': '' };
-  /** @type {Record<'deployDocs' | 'deployServer' | 'deployUi' | 'deployWebsite' | 'docker' | 'npm', boolean>} */
-  const requested = { deployDocs: false, deployServer: false, deployUi: false, deployWebsite: false, docker: false, npm: false };
-  /** @type {Record<'cliRolling' | 'deployDocs' | 'deployServer' | 'deployUi' | 'deployWebsite' | 'docker' | 'npm' | 'serverRolling' | 'stackRolling' | 'uiWebRolling', boolean>} */
+  /** @type {Record<'deployDocs' | 'deployServer' | 'deployUi' | 'deployWebsite' | 'docker', boolean>} */
+  const requested = { deployDocs: false, deployServer: false, deployUi: false, deployWebsite: false, docker: false };
+  /** @type {Record<'cliRolling' | 'deployDocs' | 'deployServer' | 'deployUi' | 'deployWebsite' | 'docker' | 'serverRolling' | 'stackRolling' | 'uiWebRolling', boolean>} */
   const completed = {
     cliRolling: false,
     deployDocs: false,
@@ -258,14 +257,12 @@ export function resolveReleaseResume(input) {
     deployUi: false,
     deployWebsite: false,
     docker: false,
-    npm: false,
     serverRolling: false,
     stackRolling: false,
     uiWebRolling: false,
   };
   const resumeInputs = {
     deployUi: { deployWeb: false, expoAction: 'none', desktopMode: 'none' },
-    npm: { publishCli: false, publishStack: false, publishServer: false },
   };
   const seenRequestedSurfaces = new Set();
   for (const [index, rawSurface] of status.surfaces.entries()) {
@@ -295,7 +292,7 @@ export function resolveReleaseResume(input) {
     }
     const requestKey = RESUMABLE_REQUESTED_SURFACES.get(surfaceId);
     if (requestKey) {
-      const typedRequestKey = /** @type {'deployDocs' | 'deployServer' | 'deployUi' | 'deployWebsite' | 'docker' | 'npm'} */ (requestKey);
+      const typedRequestKey = /** @type {'deployDocs' | 'deployServer' | 'deployUi' | 'deployWebsite' | 'docker'} */ (requestKey);
       if (seenRequestedSurfaces.has(surfaceId)) {
         throw new Error(`[release] duplicate resumable requested surface: ${surfaceId}`);
       }
@@ -317,24 +314,6 @@ export function resolveReleaseResume(input) {
           };
         } catch (error) {
           throw new Error(`[release] cannot reconstruct requested deploy_ui intent: ${error instanceof Error ? error.message : String(error)}`);
-        }
-      }
-      if (surface.requested && surfaceId === 'npm') {
-        try {
-          const identity = asRecord(surface.identity, 'requested npm identity');
-          if (requiredSha(identity.sourceSha, 'requested npm source SHA') !== statusSourceSha) {
-            throw new Error('requested npm source SHA does not match the release');
-          }
-          resumeInputs.npm = {
-            publishCli: requiredBoolean(identity.publishCli, 'requested npm publishCli'),
-            publishStack: requiredBoolean(identity.publishStack, 'requested npm publishStack'),
-            publishServer: requiredBoolean(identity.publishServer, 'requested npm publishServer'),
-          };
-          if (!resumeInputs.npm.publishCli && !resumeInputs.npm.publishStack && !resumeInputs.npm.publishServer) {
-            throw new Error('no package was selected');
-          }
-        } catch (error) {
-          throw new Error(`[release] cannot reconstruct requested npm intent: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
       if (surface.requested && surface.state === 'published' && surface.result === 'accepted') {
@@ -480,13 +459,11 @@ export async function main(argv = process.argv.slice(2)) {
       deploy_ui_requested: resolved.requested.deployUi,
       deploy_website_requested: resolved.requested.deployWebsite,
       docker_requested: resolved.requested.docker,
-      npm_requested: resolved.requested.npm,
       deploy_docs_complete: resolved.completed.deployDocs,
       deploy_server_complete: resolved.completed.deployServer,
       deploy_ui_complete: resolved.completed.deployUi,
       deploy_website_complete: resolved.completed.deployWebsite,
       docker_complete: resolved.completed.docker,
-      npm_complete: resolved.completed.npm,
       cli_rolling_complete: resolved.completed.cliRolling,
       stack_rolling_complete: resolved.completed.stackRolling,
       server_rolling_complete: resolved.completed.serverRolling,
@@ -494,9 +471,6 @@ export async function main(argv = process.argv.slice(2)) {
       deploy_ui_web_requested: resolved.resumeInputs?.deployUi.deployWeb ?? false,
       deploy_ui_expo_action: resolved.resumeInputs?.deployUi.expoAction ?? 'none',
       deploy_ui_desktop_mode: resolved.resumeInputs?.deployUi.desktopMode ?? 'none',
-      npm_publish_cli_requested: resolved.resumeInputs?.npm.publishCli ?? false,
-      npm_publish_stack_requested: resolved.resumeInputs?.npm.publishStack ?? false,
-      npm_publish_server_requested: resolved.resumeInputs?.npm.publishServer ?? false,
     });
     return resolved;
   }

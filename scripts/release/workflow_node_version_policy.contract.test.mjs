@@ -58,7 +58,6 @@ test('release and extended validation workflows use canonical Corepack and depen
     'build-ui-mobile-local.yml',
     'extended-db-tests.yml',
     'promote-docs.yml',
-    'release-npm.yml',
     'promote-ui.yml',
     'promote-server.yml',
     'promote-website.yml',
@@ -145,7 +144,6 @@ test('every workflow runner job declares a positive timeout bound', async () => 
     'promote-docs.yml': { deploy_cloudflare: 60 },
     'promote-website.yml': { deploy_cloudflare: 60 },
     'publish-docker.yml': { publish: 120 },
-    'release-npm.yml': { release: 120 },
     'tests-dispatch.yml': {
       resolve: 10,
       release_actor_guard: 15,

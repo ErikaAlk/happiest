@@ -27,39 +27,6 @@ export class HappierPipeline {
   }
 
   /**
-   * Publishes a prebuilt npm tarball using the shared pipeline script.
-   *
-   * This is designed for non-interactive publishing:
-   * - Pass `npmToken` from CI (env://NPM_TOKEN) or from local secret managers.
-   * - Provide the tarball path relative to the mounted repo directory.
-   */
-  @func()
-  async npmPublishTarball(
-    repo: Directory,
-    channel: string,
-    tarballPath: string,
-    npmToken: Secret,
-    dryRun: boolean = false,
-  ): Promise<string> {
-    return dag
-      .container()
-      .from("node:22-bookworm-slim")
-      .withMountedDirectory("/repo", repo)
-      .withWorkdir("/repo")
-      .withSecretVariable("NODE_AUTH_TOKEN", npmToken)
-      .withExec([
-        "node",
-        "scripts/pipeline/npm/publish-tarball.mjs",
-        "--channel",
-        channel,
-        "--tarball",
-        tarballPath,
-        ...(dryRun ? ["--dry-run"] : []),
-      ])
-      .stdout()
-  }
-
-  /**
    * Builds Happier UI Mobile Android artifacts using a Linux container (no local Android SDK required).
    *
    * This is intended for local macOS development where installing Java/Android SDK is undesirable.

@@ -24,14 +24,19 @@ test('publish-server-runtime workflow exists and does not manage deploy branches
   assert.doesNotMatch(raw, /Promote source ref to deploy branch/i);
 });
 
-test('publish-server-runtime workflow publishes rolling server-preview tag via release bot', async () => {
+test('publish-server-runtime workflow publishes the rolling tag with the workflow token', async () => {
   const raw = await loadWorkflow('publish-server-runtime.yml');
+  const workflow = YAML.parse(raw);
 
-  assert.match(raw, /actions\/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547/);
-  assert.match(raw, /RELEASE_BOT_APP_ID/);
-  assert.match(raw, /RELEASE_BOT_PRIVATE_KEY/);
-
-  assert.match(raw, /node scripts\/pipeline\/release\/publish-server-runtime\.mjs/);
+  assert.doesNotMatch(raw, /create-github-app-token|RELEASE_BOT_/);
+  for (const jobName of ['finalize_publish', 'promote_existing', 'promote_existing_fresh_runner_retry']) {
+    const job = workflow.jobs[jobName];
+    assert.deepEqual(job.permissions, { contents: 'write' }, `${jobName} declares its write scope`);
+    const writers = job.steps.filter((step) => step.env?.GH_TOKEN);
+    assert.equal(writers.length, 1, `${jobName} has one writer step`);
+    assert.equal(writers[0].env.GH_TOKEN, '${{ github.token }}');
+    assert.match(writers[0].run, /node scripts\/pipeline\/release\/publish-server-runtime\.mjs/);
+  }
 });
 
 test('publish-server-runtime supports dev and resolves auto source_ref from the selected channel', async () => {
@@ -71,7 +76,6 @@ test('publish-server-runtime isolates unprivileged candidate bytes from trusted 
   const raw = await loadWorkflow('publish-server-runtime.yml');
   const workflow = YAML.parse(raw);
   const candidate = JSON.stringify(workflow.jobs.build_candidate);
-  const darwin = JSON.stringify(workflow.jobs.finalize_darwin);
   const finalize = JSON.stringify(workflow.jobs.finalize_publish);
 
   assert.equal(workflow.jobs.build_candidate.permissions.contents, 'read');
@@ -79,12 +83,8 @@ test('publish-server-runtime isolates unprivileged candidate bytes from trusted 
   assert.match(candidate, /job\.workflow_repository/);
   assert.match(candidate, /--phase\s+build-candidate/);
   assert.match(candidate, /actions\/upload-artifact@/);
-  assert.doesNotMatch(candidate, /MINISIGN_SECRET_KEY|RELEASE_BOT_PRIVATE_KEY|create-github-app-token|environment:/);
-
-  assert.match(darwin, /job\.workflow_sha/);
-  assert.match(darwin, /setup-apple-codesigning/);
-  assert.doesNotMatch(darwin, /Checkout exact authorized candidate/);
-  assert.doesNotMatch(darwin, /"uses":"\.\/\.github\/actions\/install-yarn-dependencies"[^}]*candidate/);
+  assert.doesNotMatch(candidate, /MINISIGN_SECRET_KEY|github\.token|GH_TOKEN|environment:/);
+  assert.equal(workflow.jobs.finalize_darwin, undefined);
 
   assert.match(finalize, /job\.workflow_repository/);
   assert.match(finalize, /job\.workflow_sha/);
@@ -95,11 +95,10 @@ test('publish-server-runtime isolates unprivileged candidate bytes from trusted 
 
   const finalizerSteps = workflow.jobs.finalize_publish.steps;
   const installIndex = finalizerSteps.findIndex((step) => step.uses === './.github/actions/install-yarn-dependencies');
-  const tokenIndex = finalizerSteps.findIndex((step) => step.uses?.startsWith('actions/create-github-app-token@'));
   const publishIndex = finalizerSteps.findIndex((step) => step.run?.includes('publish-server-runtime.mjs'));
   assert.ok(installIndex >= 0, 'trusted finalizer dependencies must be installed for artifact verification');
-  assert.ok(tokenIndex > installIndex, 'trusted dependencies must install before the publish token exists');
-  assert.ok(publishIndex > tokenIndex, 'publication must consume the scoped publish token');
+  assert.ok(publishIndex > installIndex, 'trusted dependencies must install before the publishing step receives the workflow token');
+  assert.equal(finalizerSteps[publishIndex].env.GH_TOKEN, '${{ github.token }}');
   assert.match(finalizerSteps[installIndex].with.args, /--frozen-lockfile/);
 });
 
@@ -143,12 +142,16 @@ test('workflow never interpolates raw inputs into shell and validates adversaria
   assert.match(JSON.stringify(workflow.jobs.release_actor_guard), /AUTHORIZED_SHA/);
 });
 
-test('workflow serializes each called-repository channel and keeps automatic tokens read-only', async () => {
+test('workflow serializes each called-repository channel and grants write only to the publishing jobs', async () => {
   const workflow = YAML.parse(await loadWorkflow('publish-server-runtime.yml'));
   assert.doesNotMatch(workflow.concurrency.group, /github\.ref/);
   assert.match(workflow.concurrency.group, /github\.repository/);
+  assert.deepEqual(workflow.permissions, { contents: 'read' });
   assert.equal(workflow.jobs.build_candidate.permissions.contents, 'read');
-  assert.equal(workflow.jobs.finalize_publish.permissions.contents, 'read');
+  const writers = Object.entries(workflow.jobs)
+    .filter(([, job]) => job.permissions?.contents === 'write')
+    .map(([name]) => name);
+  assert.deepEqual(writers, ['finalize_publish', 'promote_existing', 'promote_existing_fresh_runner_retry']);
 });
 
 test('first secret-free guard rejects every noncanonical workflow channel alias before serialization', async () => {

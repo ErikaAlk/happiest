@@ -28,12 +28,18 @@ test('publish-ui-web workflow exists and is a dedicated rolling release publishe
   assert.doesNotMatch(raw, /deploy\//, 'ui web bundle publishing must not manage deploy/* branches');
 });
 
-test('publish-ui-web uses release bot GitHub App token for rolling tag updates', async () => {
+test('publish-ui-web updates rolling tags with the workflow token and an explicit contents write grant', async () => {
   const raw = await loadWorkflow('publish-ui-web.yml');
+  const jobs = YAML.parse(raw).jobs;
 
-  assert.match(raw, /actions\/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547/);
-  assert.match(raw, /RELEASE_BOT_APP_ID/);
-  assert.match(raw, /RELEASE_BOT_PRIVATE_KEY/);
+  assert.doesNotMatch(raw, /create-github-app-token|RELEASE_BOT_/);
+  for (const jobName of ['publish', 'promote_existing']) {
+    assert.deepEqual(jobs[jobName].permissions, { contents: 'write' }, `${jobName} declares its write scope`);
+    const writers = jobs[jobName].steps.filter((step) => step.env?.GH_TOKEN);
+    assert.equal(writers.length, 1, `${jobName} has one writer step`);
+    assert.equal(writers[0].env.GH_TOKEN, '${{ github.token }}');
+    assert.match(writers[0].run, /node scripts\/pipeline\/release\/publish-ui-web\.mjs/);
+  }
 });
 
 test('publish-ui-web supports dev and resolves auto source_ref from the selected channel', async () => {

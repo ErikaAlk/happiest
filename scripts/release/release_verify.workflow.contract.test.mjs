@@ -70,7 +70,6 @@ test('release-verify resolves one public profile with explicit suite refinements
     'run_session_continuity',
     'run_release_assets_docker',
     'run_self_host_systemd',
-    'run_self_host_launchd',
     'run_self_host_schtasks',
     'run_self_host_daemon',
   ]) {
@@ -96,6 +95,7 @@ test('release-verify resolves one public profile with explicit suite refinements
   assert.match(resolver.run, /--risk-relay-upgrade/);
   // desktop-setup gates the desktop build in build-tauri.yml; release verification never runs it.
   assert.equal(workflow.jobs.verify.with.run_desktop_setup, undefined);
+  assert.equal(workflow.jobs.verify.with.run_self_host_launchd, undefined, 'macOS service validation is not part of the fork release');
 
   assert.equal(
     workflow.jobs.verify.with.checkout_sha,

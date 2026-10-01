@@ -62,7 +62,7 @@ export const COMMAND_HELP_CHECKS = {
       '--skip-build <bool>               true|false (default: false).',
       '--dry-run',
     ],
-    bullets: ['Useful before publishing npm packages or CLI binaries.'],
+    bullets: ['Useful before publishing CLI binaries.'],
     examples: ['node scripts/pipeline/run.mjs smoke-cli --skip-build false'],
   },
 };

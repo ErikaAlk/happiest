@@ -63,7 +63,6 @@ test('reusable tests calls make their run flags authoritative regardless of the 
     ['cli', 'run_cli'],
     ['stack', 'run_stack'],
     ['release-contracts', 'run_release_contracts'],
-    ['installers-smoke-macos', 'run_installers_smoke'],
     ['installers-smoke-linux', 'run_installers_smoke'],
     ['installers-smoke-windows', 'run_installers_smoke'],
     ['binary-smoke', 'run_binary_smoke'],
@@ -90,7 +89,6 @@ test('reusable tests calls make their run flags authoritative regardless of the 
 
   for (const [jobName, inputName] of [
     ['mobile-e2e-android', 'run_mobile_e2e_android'],
-    ['mobile-e2e-ios', 'run_mobile_e2e_ios'],
     ['release-assets-docker', 'run_release_assets_docker'],
     ['e2e-core-slow', 'run_e2e_core_slow'],
     ['providers', 'run_providers'],
@@ -106,7 +104,7 @@ test('reusable tests calls make their run flags authoritative regardless of the 
   assert.equal(testsWorkflow.on.workflow_call.inputs.run_wsrepl_lima, undefined);
   assert.equal(testsWorkflow.jobs['ui-e2e-wsrepl-lima'], undefined);
 
-  for (const jobName of ['installers-smoke-linux', 'installers-smoke-macos', 'installers-smoke-windows']) {
+  for (const jobName of ['installers-smoke-linux', 'installers-smoke-windows']) {
     const env = testsWorkflow.jobs[jobName].env;
     for (const key of ['INSTALLERS_CHANNEL', 'INSTALLERS_SOURCE', 'INSTALLERS_REF', 'INSTALLERS_RELEASE_CHANNEL']) {
       assert.match(env[key], /inputs\.select_jobs_explicitly/);

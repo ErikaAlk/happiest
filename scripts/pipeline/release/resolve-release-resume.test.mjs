@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 import {
   inspectReleaseResumeOrigin,
@@ -15,7 +16,7 @@ const SOURCE_SHA = 'a'.repeat(40);
 const DIGEST = `sha256:${'b'.repeat(64)}`;
 const REPOSITORY = 'happier-dev/happier';
 const RUN_ID = 31495263783;
-const STANDARD_OPTIONAL_SURFACE_IDS = ['deploy_ui', 'deploy_server', 'deploy_website', 'deploy_docs', 'docker', 'npm'];
+const STANDARD_OPTIONAL_SURFACE_IDS = ['deploy_ui', 'deploy_server', 'deploy_website', 'deploy_docs', 'docker'];
 
 function originRun(overrides = {}) {
   return {
@@ -109,15 +110,6 @@ function standardOptionalSurfaces(requested) {
         desktopMode: 'none',
       },
     } : {}),
-    ...(requested && id === 'npm' ? {
-      identity: {
-        sourceSha: SOURCE_SHA,
-        verified: false,
-        publishCli: true,
-        publishStack: false,
-        publishServer: false,
-      },
-    } : {}),
   }));
 }
 
@@ -154,7 +146,7 @@ test('resume artifact download preserves binary bytes and fails on digest mismat
   // GitHub's process boundary is faked; the downloader and digest policy remain real.
   fs.writeFileSync(path.join(root, 'gh'), `#!/usr/bin/env node\nprocess.stdout.write(Buffer.from(${JSON.stringify([...bytes])}));process.exitCode=Number(process.env.FAKE_GH_EXIT || 0);\n`, { mode: 0o755 });
   const download = (digest, exit = '0') => spawnSync(process.execPath, [
-    new URL('./resolve-release-resume.mjs', import.meta.url).pathname, '--mode', 'download',
+    fileURLToPath(new URL('./resolve-release-resume.mjs', import.meta.url)), '--mode', 'download',
     '--expected-repository', REPOSITORY, '--artifact-id', '1234', '--artifact-digest', digest, '--archive-path', archivePath,
   ], { env: { ...process.env, PATH: `${root}${path.delimiter}${process.env.PATH}`, FAKE_GH_EXIT: exit }, encoding: 'utf8' });
   const digest = `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
@@ -217,7 +209,6 @@ test('resume resolution reuses only successful verified immutable candidates', (
       deployUi: false,
       deployWebsite: false,
       docker: false,
-      npm: false,
     },
     completed: {
       cliRolling: false,
@@ -228,7 +219,6 @@ test('resume resolution reuses only successful verified immutable candidates', (
       docker: false,
       serverRolling: false,
       stackRolling: false,
-      npm: false,
       uiWebRolling: false,
     },
   });
@@ -301,7 +291,6 @@ test('release resume preserves originally requested optional publication surface
     deployUi: true,
     deployWebsite: true,
     docker: true,
-    npm: true,
   });
 });
 
@@ -340,7 +329,6 @@ test('release resume preserves exact completed downstream publications without r
     docker: true,
     serverRolling: false,
     stackRolling: false,
-    npm: true,
     uiWebRolling: false,
   });
 });

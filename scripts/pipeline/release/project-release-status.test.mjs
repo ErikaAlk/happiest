@@ -70,6 +70,20 @@ test('standard status keeps unrequested surfaces out of failure admission', () =
   assert.equal(status.terminal, 'complete');
 });
 
+test('standard status has no npm surface because releases do not publish npm packages', () => {
+  const status = projectReleaseStatus('standard', {
+    RELEASE_RUN: '43',
+    RELEASE_RUN_URL: 'https://github.com/ErikaAlk/happiest/actions/runs/43',
+    RELEASE_RUN_NAME: 'RELEASE — Publish (rel_abcdefgh)',
+    RELEASE_CHANNEL: 'stable',
+    SOURCE_SHA: 'b'.repeat(40),
+    CANDIDATE_RESULT: 'success',
+    IMMUTABLE_VERIFICATION_RESULT: 'success',
+    RELEASE_VERIFY_RESULT: 'success',
+  });
+  assert.equal(status.surfaces.some((surface) => surface.id === 'npm'), false);
+});
+
 test('standard status keeps a requested skipped Docker publication visible as partial', () => {
   const status = projectReleaseStatus('standard', {
     RELEASE_RUN: '44',

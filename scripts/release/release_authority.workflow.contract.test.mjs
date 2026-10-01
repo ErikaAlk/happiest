@@ -3,9 +3,10 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
 
-const repoRoot = resolve(new URL('../..', import.meta.url).pathname);
+const repoRoot = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 
 function workflow(name) {
   return YAML.parse(readFileSync(resolve(repoRoot, '.github/workflows', name), 'utf8'));
@@ -78,7 +79,6 @@ test('every GitHub App token reachable from full or nightly release declares rep
 
 test('previously broad release-path tokens use the minimum current-repository contents permission', () => {
   const expected = new Map([
-    ['promote-branch.yml/promote/Create GitHub App token', 'write'],
     ['promote-ui.yml/promote/Create GitHub App token', 'write'],
     ['promote-website.yml/promote/Create GitHub App token', 'write'],
     ['promote-docs.yml/promote/Create GitHub App token', 'write'],
@@ -110,19 +110,6 @@ test('previously broad release-path tokens use the minimum current-repository co
     }
   }
   assert.deepEqual(observed, new Set(expected.keys()));
-});
-
-test('npm publication does not own CLI GitHub immutable or rolling releases', () => {
-  const parsed = workflow('release-npm.yml');
-  const mirrorJobs = Object.entries(parsed.jobs).filter(([, job]) =>
-    job?.uses === './.github/workflows/publish-github-release.yml',
-  );
-  assert.deepEqual(
-    mirrorJobs,
-    [],
-    'release-npm must publish npm packages only; CLI GitHub tags/assets belong to publish-cli-binaries',
-  );
-  assert.ok(parsed.jobs['publish-cli'], 'npm CLI package publication must remain active');
 });
 
 test('signed rolling publishers serialize one repository/product/channel writer across workflow refs', () => {
@@ -248,7 +235,7 @@ for (const [workflowName, leafScript] of [
     if (workflowName === 'publish-ui-web.yml') {
       assert.equal(parsed.jobs.publish.if, "${{ inputs.retry_version == '' && inputs.resume_version == '' }}");
     } else {
-      for (const jobName of ['prepare', 'build_candidate', 'finalize_darwin', 'finalize_publish']) {
+      for (const jobName of ['prepare', 'build_candidate', 'finalize_publish']) {
         assert.equal(
           parsed.jobs[jobName].if,
           "${{ inputs.retry_version == '' && inputs.resume_version == '' }}",

@@ -516,52 +516,6 @@ jobs:
             packages/tests/.project/logs/e2e/mobile-maestro
           if-no-files-found: ignore
 
-  mobile-e2e-ios:
-    # Native E2E is intentionally opt-in for now (not a PR check).
-    if: ${{ inputs.select_jobs_explicitly && inputs.run_mobile_e2e_ios }}
-    name: Mobile E2E (Maestro) (ios) (opt-in)
-    runs-on: macos-latest
-    timeout-minutes: 45
-    steps:
-      - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-
-      - name: Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: 22.x
-          cache: yarn
-          cache-dependency-path: yarn.lock
-
-      - name: Enable Corepack
-        uses: ./.github/actions/enable-corepack-yarn
-
-      - name: Install dependencies
-        env:
-          YARN_PRODUCTION: "false"
-          npm_config_production: "false"
-          HAPPIER_INSTALL_SCOPE: "ui,protocol,agents,tests"
-          HAPPIER_UI_VENDOR_WEB_ASSETS: "0"
-        uses: ./.github/actions/install-yarn-dependencies
-        with:
-          args: --frozen-lockfile
-
-      - name: Install Maestro
-        run: |
-          bash scripts/ci/install_maestro.sh
-
-      - name: Run Mobile E2E (ios)
-        run: yarn -s test:e2e:mobile:ios
-
-      - name: Upload Mobile E2E artifacts (Maestro)
-        if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: mobile-e2e-maestro-ios-artifacts
-          path: |
-            packages/tests/.project/logs/e2e/mobile-maestro
-          if-no-files-found: ignore
-
   ui-unit:
     if: ${{ (inputs.select_jobs_explicitly && inputs.run_ui) || (!inputs.select_jobs_explicitly && needs.ci_plan.outputs.run_ui == 'true') }}
     needs: [ci_plan, trusted_ref_guard]
@@ -1202,57 +1156,6 @@ jobs:
             --ref "${INSTALLERS_REF}" \
             --release-channel "${INSTALLERS_RELEASE_CHANNEL}"
 
-  installers-smoke-macos:
-    if: ${{ (inputs.select_jobs_explicitly && inputs.run_installers_smoke) || (!inputs.select_jobs_explicitly && needs.ci_plan.outputs.run_installers_smoke == 'true') }}
-    needs: [ci_plan]
-    name: Installer Smoke (macOS)
-    runs-on: macos-latest
-    timeout-minutes: 25
-    env:
-      INSTALLERS_CHANNEL: ${{ inputs.select_jobs_explicitly && inputs.installers_channel || ((github.event_name == 'push' && github.ref_name == 'main') || (github.event_name == 'pull_request' && github.base_ref == 'main')) && 'stable' || 'dev' }}
-      INSTALLERS_SOURCE: ${{ inputs.select_jobs_explicitly && inputs.installers_source || ((github.event_name == 'push' && github.ref_name == 'main') || (github.event_name == 'pull_request' && github.base_ref == 'main')) && 'published-channel' || 'local-build' }}
-      INSTALLERS_REF: ${{ inputs.select_jobs_explicitly && (inputs.installers_ref != '' && inputs.installers_ref || inputs.installers_channel) || ((github.event_name == 'push' && github.ref_name == 'main') || (github.event_name == 'pull_request' && github.base_ref == 'main')) && 'stable' || '.' }}
-      INSTALLERS_RELEASE_CHANNEL: ${{ inputs.select_jobs_explicitly && inputs.installers_channel || ((github.event_name == 'push' && github.ref_name == 'main') || (github.event_name == 'pull_request' && github.base_ref == 'main')) && 'stable' || 'dev' }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-
-      - name: Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: 22.x
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
-        with:
-          bun-version: 1.4.2
-
-      - name: Enable Corepack
-        uses: ./.github/actions/enable-corepack-yarn
-
-      - name: Install dependencies
-        env:
-          YARN_PRODUCTION: "false"
-          npm_config_production: "false"
-        uses: ./.github/actions/install-yarn-dependencies
-        with:
-          args: --frozen-lockfile --ignore-engines
-
-      - name: Prepare release validation workspaces
-        run: node scripts/workspaces/ensureWorkspacePackagesBuiltCli.mjs @happier-dev/cli-common @happier-dev/release-runtime
-
-      - name: Run unified installer smoke
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          node scripts/pipeline/run.mjs release-validate \
-            --suite installers-smoke \
-            --platform darwin \
-            --source "${INSTALLERS_SOURCE}" \
-            --ref "${INSTALLERS_REF}" \
-            --release-channel "${INSTALLERS_RELEASE_CHANNEL}"
-
   installers-smoke-windows:
     if: ${{ (inputs.select_jobs_explicitly && inputs.run_installers_smoke) || (!inputs.select_jobs_explicitly && needs.ci_plan.outputs.run_installers_smoke == 'true') }}
     needs: [ci_plan]
@@ -1758,56 +1661,6 @@ jobs:
           set -euo pipefail
           node --test apps/stack/scripts/self_host_systemd.real.integration.test.mjs
 
-  self-host-launchd-e2e:
-    if: ${{ inputs.select_jobs_explicitly && inputs.run_self_host_launchd }}
-    needs: [trusted_ref_guard]
-    name: Self-Host E2E (macOS launchd)
-    runs-on: macos-latest
-    timeout-minutes: 120
-    steps:
-      - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          ref: ${{ inputs.checkout_sha != '' && inputs.checkout_sha || github.sha }}
-          fetch-depth: 1
-          persist-credentials: false
-
-      - name: Verify exact requested checkout SHA
-        if: ${{ inputs.checkout_sha != '' }}
-        env:
-          CHECKOUT_SHA: ${{ inputs.checkout_sha }}
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$CHECKOUT_SHA"
-
-      - name: Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: 22.x
-          cache: yarn
-          cache-dependency-path: yarn.lock
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
-        with:
-          bun-version: 1.4.2
-
-      - name: Enable Corepack
-        uses: ./.github/actions/enable-corepack-yarn
-
-      - name: Install dependencies
-        env:
-          YARN_PRODUCTION: "false"
-          npm_config_production: "false"
-        uses: ./.github/actions/install-yarn-dependencies
-        with:
-          args: --frozen-lockfile --ignore-engines
-
-      - name: Run real launchd self-host E2E
-        run: |
-          set -euo pipefail
-          node --test apps/stack/scripts/self_host_launchd.real.integration.test.mjs
-
   self-host-schtasks-e2e:
     if: ${{ inputs.select_jobs_explicitly && inputs.run_self_host_schtasks }}
     needs: [trusted_ref_guard]
@@ -1861,11 +1714,7 @@ jobs:
     if: ${{ inputs.select_jobs_explicitly && inputs.run_self_host_daemon }}
     needs: [trusted_ref_guard]
     name: Self-Host + Daemon E2E
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
       - name: Checkout
@@ -2429,10 +2278,6 @@ jobs:
           persist-credentials: false
       - name: Authorize release actor
         uses: ./.github/actions/release-actor-guard
-        with:
-          team_slug: release-admins
-          app_id: ${{ secrets.RELEASE_BOT_APP_ID }}
-          private_key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
 
   providers:
     needs: [release_actor_guard]
@@ -2645,7 +2490,7 @@ jobs:
   ci_summary:
     name: CI result summary (all lanes)
     if: always()
-    needs: [ci_plan, ui-e2e, mobile-e2e-android, mobile-e2e-ios, ui-unit, ui-integration, ui, shared-packages-unit, server, server-db-contract, cli, stack, release-contracts, installers-smoke-linux, installers-smoke-macos, installers-smoke-windows, binary-smoke, build-smoke, cli-update-continuity, daemon-continuity, session-continuity, release-assets-docker, self-host-systemd-e2e, self-host-launchd-e2e, self-host-schtasks-e2e, self-host-daemon-e2e, typecheck, cli-daemon-e2e, e2e-core, e2e-core-slow, trusted_ref_guard, release_actor_guard, providers, stress]
+    needs: [ci_plan, ui-e2e, mobile-e2e-android, ui-unit, ui-integration, ui, shared-packages-unit, server, server-db-contract, cli, stack, release-contracts, installers-smoke-linux, installers-smoke-windows, binary-smoke, build-smoke, cli-update-continuity, daemon-continuity, session-continuity, release-assets-docker, self-host-systemd-e2e, self-host-schtasks-e2e, self-host-daemon-e2e, typecheck, cli-daemon-e2e, e2e-core, e2e-core-slow, trusted_ref_guard, release_actor_guard, providers, stress]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -2657,7 +2502,6 @@ jobs:
           SELECT_JOBS_EXPLICITLY: ${{ inputs.select_jobs_explicitly }}
           REQUEST_RUN_UI_E2E: ${{ inputs.run_ui_e2e }}
           REQUEST_RUN_MOBILE_E2E_ANDROID: ${{ inputs.run_mobile_e2e_android }}
-          REQUEST_RUN_MOBILE_E2E_IOS: ${{ inputs.run_mobile_e2e_ios }}
           REQUEST_RUN_UI: ${{ inputs.run_ui }}
           REQUEST_RUN_SHARED_PACKAGES: ${{ inputs.run_shared_packages }}
           REQUEST_RUN_SERVER: ${{ inputs.run_server }}
@@ -2673,7 +2517,6 @@ jobs:
           REQUEST_RUN_SESSION_CONTINUITY: ${{ inputs.run_session_continuity }}
           REQUEST_RUN_RELEASE_ASSETS_DOCKER: ${{ inputs.run_release_assets_docker }}
           REQUEST_RUN_SELF_HOST_SYSTEMD: ${{ inputs.run_self_host_systemd }}
-          REQUEST_RUN_SELF_HOST_LAUNCHD: ${{ inputs.run_self_host_launchd }}
           REQUEST_RUN_SELF_HOST_SCHTASKS: ${{ inputs.run_self_host_schtasks }}
           REQUEST_RUN_SELF_HOST_DAEMON: ${{ inputs.run_self_host_daemon }}
           REQUEST_RUN_TYPECHECK: ${{ inputs.run_typecheck }}
@@ -2699,7 +2542,6 @@ jobs:
           const requestedLaneGroups = {
             REQUEST_RUN_UI_E2E: ['ui-e2e'],
             REQUEST_RUN_MOBILE_E2E_ANDROID: ['mobile-e2e-android'],
-            REQUEST_RUN_MOBILE_E2E_IOS: ['mobile-e2e-ios'],
             REQUEST_RUN_UI: ['ui-unit', 'ui-integration', 'ui'],
             REQUEST_RUN_SHARED_PACKAGES: ['shared-packages-unit'],
             REQUEST_RUN_SERVER: ['server'],
@@ -2707,7 +2549,7 @@ jobs:
             REQUEST_RUN_CLI: ['cli'],
             REQUEST_RUN_STACK: ['stack'],
             REQUEST_RUN_RELEASE_CONTRACTS: ['release-contracts'],
-            REQUEST_RUN_INSTALLERS_SMOKE: ['installers-smoke-linux', 'installers-smoke-macos', 'installers-smoke-windows'],
+            REQUEST_RUN_INSTALLERS_SMOKE: ['installers-smoke-linux', 'installers-smoke-windows'],
             REQUEST_RUN_BINARY_SMOKE: ['binary-smoke'],
             REQUEST_RUN_BUILD_SMOKE: ['build-smoke'],
             REQUEST_RUN_CLI_UPDATE_CONTINUITY: ['cli-update-continuity'],
@@ -2715,7 +2557,6 @@ jobs:
             REQUEST_RUN_SESSION_CONTINUITY: ['session-continuity'],
             REQUEST_RUN_RELEASE_ASSETS_DOCKER: ['release-assets-docker'],
             REQUEST_RUN_SELF_HOST_SYSTEMD: ['self-host-systemd-e2e'],
-            REQUEST_RUN_SELF_HOST_LAUNCHD: ['self-host-launchd-e2e'],
             REQUEST_RUN_SELF_HOST_SCHTASKS: ['self-host-schtasks-e2e'],
             REQUEST_RUN_SELF_HOST_DAEMON: ['self-host-daemon-e2e'],
             REQUEST_RUN_TYPECHECK: ['typecheck'],
@@ -2734,7 +2575,7 @@ jobs:
             run_ui_e2e: ['ui-e2e'],
             run_server_db_contract: ['server-db-contract'],
             run_release_contracts: ['release-contracts'],
-            run_installers_smoke: ['installers-smoke-linux', 'installers-smoke-macos', 'installers-smoke-windows'],
+            run_installers_smoke: ['installers-smoke-linux', 'installers-smoke-windows'],
             run_binary_smoke: ['binary-smoke'],
             run_build_smoke: ['build-smoke'],
             run_cli_daemon_e2e: ['cli-daemon-e2e'],

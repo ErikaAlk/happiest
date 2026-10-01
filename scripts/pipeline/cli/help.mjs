@@ -72,7 +72,6 @@ export function renderPipelineHelp(opts) {
     ...indent(
       [
         `${style.bold('release')}                ${COMMAND_HELP.release.summary}`,
-        `${style.bold('npm-release')}            ${COMMAND_HELP['npm-release'].summary}`,
         `${style.bold('deploy')}                 ${COMMAND_HELP.deploy.summary}`,
         `${style.bold('promote-deploy-branch')}  ${COMMAND_HELP['promote-deploy-branch'].summary}`,
         `${style.bold('checks')}                 ${COMMAND_HELP.checks.summary}`,

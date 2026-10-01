@@ -159,6 +159,30 @@ test('rejects CI evidence whose classifier-selected lane is not successful', () 
   );
 });
 
+test('admits classifier-selected installer smoke evidence from the Linux and Windows lanes alone', () => {
+  const classifierOutputs = Object.fromEntries([
+    'run_ui', 'run_server', 'run_cli', 'run_stack', 'run_ui_e2e', 'run_server_db_contract',
+    'run_release_contracts', 'run_installers_smoke', 'run_binary_smoke', 'run_cli_daemon_e2e',
+    'run_e2e_core', 'run_typecheck',
+  ].map((key) => [key, key === 'run_installers_smoke' ? 'true' : 'false']));
+  const summary = {
+    schemaVersion: 1,
+    runId: '42',
+    sourceSha: sha,
+    workflow: 'CI — Tests',
+    lanes: [
+      { id: 'ci_plan', result: 'success', conclusion: null, outputs: classifierOutputs },
+      { id: 'trusted_ref_guard', result: 'success', conclusion: null, outputs: {} },
+      { id: 'installers-smoke-linux', result: 'success', conclusion: null, outputs: {} },
+      { id: 'installers-smoke-windows', result: 'success', conclusion: null, outputs: {} },
+    ],
+    failures: [],
+  };
+  assert.doesNotThrow(
+    () => validateCiLaneSummary(summary, { runId: '42', sourceSha: sha, requiredLanes: ['ci_plan', 'trusted_ref_guard'] }),
+  );
+});
+
 test('rejects mismatched, failed, malformed, or skipped required CI evidence', () => {
   const base = {
     schemaVersion: 1,

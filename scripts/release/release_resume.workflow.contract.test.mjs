@@ -2,9 +2,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
 
-const repoRoot = resolve(new URL('../..', import.meta.url).pathname);
+const repoRoot = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 
 function workflow(name) {
   return YAML.parse(readFileSync(resolve(repoRoot, '.github/workflows', name), 'utf8'));
@@ -40,13 +41,11 @@ test('one trusted reusable workflow resolves prior release candidates by exact r
     'deploy_website_requested',
     'deploy_docs_requested',
     'docker_requested',
-    'npm_requested',
     'deploy_ui_complete',
     'deploy_server_complete',
     'deploy_website_complete',
     'deploy_docs_complete',
     'docker_complete',
-    'npm_complete',
   ]) {
     assert.ok(parsed.on.workflow_call.outputs[output], `missing resume output ${output}`);
   }
@@ -63,9 +62,9 @@ test('one trusted reusable workflow resolves prior release candidates by exact r
 });
 
 for (const [name, buildJobs] of [
-  ['publish-cli-binaries.yml', ['prepare', 'build_candidate', 'finalize_darwin', 'finalize_publish']],
-  ['publish-hstack-binaries.yml', ['prepare', 'build_candidate', 'finalize_darwin', 'finalize_publish']],
-  ['publish-server-runtime.yml', ['build_candidate', 'finalize_darwin', 'finalize_publish']],
+  ['publish-cli-binaries.yml', ['prepare', 'build_candidate', 'finalize_publish']],
+  ['publish-hstack-binaries.yml', ['prepare', 'build_candidate', 'finalize_publish']],
+  ['publish-server-runtime.yml', ['build_candidate', 'finalize_publish']],
   ['publish-ui-web.yml', ['prepare', 'build_candidate', 'publish']],
 ]) {
   test(`${name} reuses a verified immutable candidate without rebuilding or promoting it`, () => {
@@ -187,15 +186,7 @@ test('full release resume binds the prior run to the same operation and authoriz
     assert.match(String(parsed.jobs[jobName].if), new RegExp(`needs\\.resolve_resume\\.outputs\\.${outputName.replace('_requested', '_complete')} != 'true'`));
     assert.match(String(statusProjection.env[requestEnv]), new RegExp(`needs\\.resolve_resume\\.outputs\\.${outputName} == 'true'`));
   }
-  assert.match(String(statusProjection.env.REQUEST_NPM), /needs\.resolve_resume\.outputs\.npm_requested == 'true'/);
-  assert.match(String(parsed.jobs.publish_npm.if), /needs\.resolve_resume\.outputs\.npm_complete != 'true'/);
-  assert.ok(needs(parsed.jobs.publish_npm).includes('publish_cli_binaries'));
-  assert.ok(needs(parsed.jobs.publish_npm).includes('publish_hstack_binaries'));
-  assert.ok(needs(parsed.jobs.publish_npm).includes('publish_server_runtime'));
-  assert.equal(parsed.jobs.publish_npm.with.cli_version, '${{ needs.publish_cli_binaries.outputs.version }}');
-  assert.equal(parsed.jobs.publish_npm.with.stack_version, '${{ needs.publish_hstack_binaries.outputs.version }}');
-  assert.equal(parsed.jobs.publish_npm.with.server_version, '${{ needs.publish_server_runtime.outputs.version }}');
-  for (const name of ['DEPLOY_SERVER_RESUME_COMPLETE', 'DEPLOY_WEBSITE_RESUME_COMPLETE', 'DEPLOY_DOCS_RESUME_COMPLETE', 'DOCKER_RESUME_COMPLETE', 'NPM_RESUME_COMPLETE']) {
+  for (const name of ['DEPLOY_SERVER_RESUME_COMPLETE', 'DEPLOY_WEBSITE_RESUME_COMPLETE', 'DEPLOY_DOCS_RESUME_COMPLETE', 'DOCKER_RESUME_COMPLETE']) {
     assert.match(String(statusProjection.env[name]), /needs\.resolve_resume\.outputs\./, `${name} must preserve accepted resume evidence`);
   }
   assert.match(String(statusProjection.env.DEPLOY_UI_RESUME_COMPLETE), /needs\.deploy_plan\.outputs\.deploy_ui_resume_complete/);
