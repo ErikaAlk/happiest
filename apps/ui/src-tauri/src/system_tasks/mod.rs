@@ -576,6 +576,9 @@ mod tests {
         ENV_LOCK.get_or_init(|| Mutex::new(()))
     }
 
+    /// The variable `resolve_home_dir` reads first on this platform.
+    const HOME_ENV_VAR: &str = if cfg!(windows) { "USERPROFILE" } else { "HOME" };
+
     fn create_temp_dir(prefix: &str) -> PathBuf {
         let unique = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -783,15 +786,15 @@ mod tests {
         let log_path = log_dir.join("daemon.log");
         fs::write(&log_path, "log").expect("log file should write");
 
-        let previous_home = std::env::var_os("HOME");
-        std::env::set_var("HOME", &home_dir);
+        let previous_home = std::env::var_os(HOME_ENV_VAR);
+        std::env::set_var(HOME_ENV_VAR, &home_dir);
 
         let normalized = super::normalize_system_task_log_path(&log_path.display().to_string())
             .expect("allowed log path should normalize");
 
         match previous_home {
-            Some(value) => std::env::set_var("HOME", value),
-            None => std::env::remove_var("HOME"),
+            Some(value) => std::env::set_var(HOME_ENV_VAR, value),
+            None => std::env::remove_var(HOME_ENV_VAR),
         }
 
         assert_eq!(
@@ -811,15 +814,15 @@ mod tests {
         let outside_path = temp_dir.join("outside.log");
         fs::write(&outside_path, "log").expect("outside log file should write");
 
-        let previous_home = std::env::var_os("HOME");
-        std::env::set_var("HOME", &home_dir);
+        let previous_home = std::env::var_os(HOME_ENV_VAR);
+        std::env::set_var(HOME_ENV_VAR, &home_dir);
 
         let error = super::normalize_system_task_log_path(&outside_path.display().to_string())
             .expect_err("outside log path should be rejected");
 
         match previous_home {
-            Some(value) => std::env::set_var("HOME", value),
-            None => std::env::remove_var("HOME"),
+            Some(value) => std::env::set_var(HOME_ENV_VAR, value),
+            None => std::env::remove_var(HOME_ENV_VAR),
         }
 
         assert!(error.contains("outside the allowed root"));
