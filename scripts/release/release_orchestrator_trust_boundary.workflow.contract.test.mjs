@@ -139,7 +139,7 @@ test('trusted bump orchestrator never executes a candidate-local bump script', a
     await mkdir(dirname(candidateScript), { recursive: true });
     await writeFile(candidateScript, `import { writeFileSync } from 'node:fs'; writeFileSync(${JSON.stringify(marker)}, 'executed');\n`);
 
-    execFileSync(process.execPath, [trustedScript, '--bump-cli', 'patch'], {
+    execFileSync(process.execPath, [trustedScript, '--bump-product', 'patch'], {
       cwd: candidateRoot,
       stdio: 'pipe',
     });

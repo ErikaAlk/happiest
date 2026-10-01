@@ -67,11 +67,8 @@ function main() {
   const repoRoot = path.resolve(process.cwd());
   const { values } = parseArgs({
     options: {
-      'bump-app': { type: 'string', default: 'none' },
-      'bump-server': { type: 'string', default: 'none' },
+      'bump-product': { type: 'string', default: 'none' },
       'bump-website': { type: 'string', default: 'none' },
-      'bump-cli': { type: 'string', default: 'none' },
-      'bump-stack': { type: 'string', default: 'none' },
       'push-branch': { type: 'string', default: 'dev' },
       'commit-message': { type: 'string', default: '' },
       'git-user-name': { type: 'string', default: 'github-actions[bot]' },
@@ -82,27 +79,21 @@ function main() {
     allowPositionals: false,
   });
 
-  const bumpApp = String(values['bump-app'] ?? '').trim() || 'none';
-  const bumpServer = String(values['bump-server'] ?? '').trim() || 'none';
+  const bumpProduct = String(values['bump-product'] ?? '').trim() || 'none';
   const bumpWebsite = String(values['bump-website'] ?? '').trim() || 'none';
-  const bumpCli = String(values['bump-cli'] ?? '').trim() || 'none';
-  const bumpStack = String(values['bump-stack'] ?? '').trim() || 'none';
   const pushBranch = String(values['push-branch'] ?? '').trim() || 'dev';
   const dryRun = values['dry-run'] === true;
   const opts = { dryRun };
 
-  validateBump(bumpApp, '--bump-app');
-  validateBump(bumpServer, '--bump-server');
+  validateBump(bumpProduct, '--bump-product');
   validateBump(bumpWebsite, '--bump-website');
-  validateBump(bumpCli, '--bump-cli');
-  validateBump(bumpStack, '--bump-stack');
 
   /** @type {string[]} */
   const bumped = [];
 
   const bumpVersionScript = fileURLToPath(new URL('./bump-version.mjs', import.meta.url));
   /**
-   * @param {'app'|'server'|'website'|'cli'|'stack'} component
+   * @param {'product'|'website'} component
    * @param {string} bump
    */
   const maybeBump = (component, bump) => {
@@ -111,11 +102,8 @@ function main() {
     bumped.push(component);
   };
 
-  maybeBump('app', bumpApp);
-  maybeBump('server', bumpServer);
+  maybeBump('product', bumpProduct);
   maybeBump('website', bumpWebsite);
-  maybeBump('cli', bumpCli);
-  maybeBump('stack', bumpStack);
 
   const githubOutput = String(values['github-output'] ?? '').trim();
   if (bumped.length === 0) {

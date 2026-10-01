@@ -7,19 +7,13 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..', '..');
 
-test('bump-versions-dev script delegates to bump-version and prints git steps in dry-run', async () => {
+test('bump-versions-dev script bumps the single product version and prints git steps in dry-run', async () => {
   const out = execFileSync(
     process.execPath,
     [
       resolve(repoRoot, 'scripts', 'pipeline', 'release', 'bump-versions-dev.mjs'),
-      '--bump-app',
+      '--bump-product',
       'patch',
-      '--bump-cli',
-      'none',
-      '--bump-stack',
-      'minor',
-      '--bump-server',
-      'none',
       '--bump-website',
       'none',
       '--dry-run',
@@ -27,8 +21,8 @@ test('bump-versions-dev script delegates to bump-version and prints git steps in
     { cwd: repoRoot, env: process.env, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30_000 },
   );
 
-  assert.match(out, /scripts\/pipeline\/release\/bump-version\.mjs --component app --bump patch/);
-  assert.match(out, /scripts\/pipeline\/release\/bump-version\.mjs --component stack --bump minor/);
+  assert.match(out, /scripts[\\/]pipeline[\\/]release[\\/]bump-version\.mjs --component product --bump patch/);
+  assert.doesNotMatch(out, /--component (app|cli|server|stack)\b/);
   assert.match(out, /\bgit config user\.name\b/);
   assert.match(out, /\bgit add\b/);
   assert.match(out, /\bgit commit -m\b/);

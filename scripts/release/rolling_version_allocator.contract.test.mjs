@@ -56,7 +56,7 @@ test('exact finalized candidate versions reject non-canonical and wrong-channel 
   }), /Invalid version/);
 });
 
-test('rolling version allocation uses the max published GitHub or npm version for a product channel', async () => {
+test('rolling version allocation follows the GitHub releases of this repository and never the npm registry', async () => {
   const { resolveRollingPublishVersion } = await import('../pipeline/release/lib/rolling-version-allocation.mjs');
 
   const result = await resolveRollingPublishVersion({
@@ -79,49 +79,7 @@ test('rolling version allocation uses the max published GitHub or npm version fo
     },
   });
 
-  assert.equal(result.version, '0.2.6-dev.1778098336');
-});
-
-test('single-surface rolling version allocation catches up to the other published surface', async () => {
-  const { resolveRollingPublishVersion } = await import('../pipeline/release/lib/rolling-version-allocation.mjs');
-
-  const result = await resolveRollingPublishVersion({
-    repoRoot,
-    productId: 'cli',
-    channel: 'publicdev',
-    baseVersion: '0.2.6',
-    publishSurface: 'github',
-    env: {
-      ...process.env,
-      HAPPIER_RELEASE_PUBLISHED_VERSIONS_JSON: JSON.stringify({
-        github: { cli: ['0.2.6-dev.125.1'] },
-        npm: { '@happier-dev/cli': ['0.2.6-dev.126.1'] },
-      }),
-    },
-  });
-
-  assert.equal(result.version, '0.2.6-dev.126.1');
-});
-
-test('single-surface rolling version allocation catches up when only the legacy retry segment is behind', async () => {
-  const { resolveRollingPublishVersion } = await import('../pipeline/release/lib/rolling-version-allocation.mjs');
-
-  const result = await resolveRollingPublishVersion({
-    repoRoot,
-    productId: 'cli',
-    channel: 'publicdev',
-    baseVersion: '0.2.6',
-    publishSurface: 'github',
-    env: {
-      ...process.env,
-      HAPPIER_RELEASE_PUBLISHED_VERSIONS_JSON: JSON.stringify({
-        github: { cli: ['0.2.6-dev.126'] },
-        npm: { '@happier-dev/cli': ['0.2.6-dev.126.1'] },
-      }),
-    },
-  });
-
-  assert.equal(result.version, '0.2.6-dev.126.1');
+  assert.equal(result.version, '0.2.6-dev.126');
 });
 
 test('new base rolling version allocation starts with a single sequence number', async () => {
@@ -134,7 +92,7 @@ test('new base rolling version allocation starts with a single sequence number',
     baseVersion: '0.2.7',
     env: {
       ...process.env,
-      HAPPIER_RELEASE_PUBLISHED_VERSIONS_JSON: JSON.stringify({ github: {}, npm: {} }),
+      HAPPIER_RELEASE_PUBLISHED_VERSIONS_JSON: JSON.stringify({ github: {} }),
     },
   });
 
@@ -150,12 +108,10 @@ test('explicit single-sequence rolling versions are accepted', async () => {
     channel: 'publicdev',
     baseVersion: '0.2.6',
     explicitVersion: '0.2.6-dev.127',
-    publishSurface: 'github',
     env: {
       ...process.env,
       HAPPIER_RELEASE_PUBLISHED_VERSIONS_JSON: JSON.stringify({
-        github: { cli: ['0.2.6-dev.125.1'] },
-        npm: { '@happier-dev/cli': ['0.2.6-dev.126.1'] },
+        github: { cli: ['0.2.6-dev.126.1'] },
       }),
     },
   });
@@ -174,12 +130,10 @@ test('same-version rolling recovery is explicit and does not allocate a replacem
     channel: 'preview',
     baseVersion: '0.2.6',
     explicitVersion: '0.2.6-preview.127',
-    publishSurface: 'github',
     env: {
       ...process.env,
       HAPPIER_RELEASE_PUBLISHED_VERSIONS_JSON: JSON.stringify({
         github: { server: ['server-v0.2.6-preview.127'] },
-        npm: {},
       }),
     },
   };
@@ -190,29 +144,6 @@ test('same-version rolling recovery is explicit and does not allocate a replacem
   );
   const recovery = await resolveRollingRecoveryVersion(options);
   assert.equal(recovery.version, '0.2.6-preview.127');
-});
-
-test('pack preparation may reconstruct the exact published npm version for an idempotent integrity check', async () => {
-  const { resolveRollingPublishVersion } = await import('../pipeline/release/lib/rolling-version-allocation.mjs');
-  const result = await resolveRollingPublishVersion({
-    repoRoot,
-    productId: 'cli',
-    channel: 'preview',
-    baseVersion: '0.2.11',
-    explicitVersion: '0.2.11-preview.2',
-    publishSurface: 'npm',
-    allowExistingExactVersion: true,
-    env: {
-      ...process.env,
-      HAPPIER_RELEASE_PUBLISHED_VERSIONS_JSON: JSON.stringify({
-        github: {},
-        npm: { '@happier-dev/cli': ['0.2.11-preview.2'] },
-      }),
-    },
-  });
-
-  assert.equal(result.version, '0.2.11-preview.2');
-  assert.equal(result.previousVersion, '0.2.11-preview.2');
 });
 
 test('preview recovery derives its base from the latest immutable GitHub Release after control advances', async () => {
@@ -228,7 +159,6 @@ test('preview recovery derives its base from the latest immutable GitHub Release
       ...process.env,
       HAPPIER_RELEASE_PUBLISHED_VERSIONS_JSON: JSON.stringify({
         github: { cli: ['cli-v0.2.1-preview.127'] },
-        npm: {},
       }),
     },
   });
@@ -249,7 +179,6 @@ test('stable recovery derives its base from the latest immutable GitHub Release 
       ...process.env,
       HAPPIER_RELEASE_PUBLISHED_VERSIONS_JSON: JSON.stringify({
         github: { cli: ['cli-v0.2.1'] },
-        npm: {},
       }),
     },
   });
@@ -266,7 +195,6 @@ test('recovery rejects older, wrong-channel, and wrong-product immutable version
         cli: ['cli-v0.2.0-preview.99', 'cli-v0.2.1-preview.127', 'cli-v0.2.1'],
         hstack: ['stack-v0.2.1-preview.127'],
       },
-      npm: {},
     }),
   };
 
@@ -316,7 +244,7 @@ test('stable version allocation ignores an empty explicit version override', asy
     explicitVersion: '',
     env: {
       ...process.env,
-      HAPPIER_RELEASE_PUBLISHED_VERSIONS_JSON: JSON.stringify({ github: {}, npm: {} }),
+      HAPPIER_RELEASE_PUBLISHED_VERSIONS_JSON: JSON.stringify({ github: {} }),
     },
   });
 
@@ -337,8 +265,6 @@ test('rolling version allocation merges remote git tags when GitHub release look
     mkdirSync(bin);
     writeFileSync(join(bin, 'gh'), '#!/usr/bin/env bash\nexit 0\n');
     chmodSync(join(bin, 'gh'), 0o755);
-    // Keep real local Git discovery while isolating the unrelated npm registry read.
-    writeFileSync(join(bin, 'npm'), '#!/usr/bin/env bash\nprintf "[]\\n"\n', { mode: 0o755 });
 
     git(root, ['init', '--bare', origin]);
     git(repo, ['init']);
@@ -354,11 +280,10 @@ test('rolling version allocation merges remote git tags when GitHub release look
       productId: 'cli',
       channel: 'publicdev',
       baseVersion: '99.99.99',
-      publishSurface: 'github',
       env: {
         ...process.env,
-        GITHUB_REPOSITORY: 'happier-dev/happier',
-        GH_REPO: 'happier-dev/happier',
+        GITHUB_REPOSITORY: 'ErikaAlk/happiest',
+        GH_REPO: 'ErikaAlk/happiest',
         PATH: `${bin}:${process.env.PATH ?? ''}`,
       },
     });

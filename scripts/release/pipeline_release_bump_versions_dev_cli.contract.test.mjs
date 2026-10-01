@@ -13,14 +13,8 @@ test('pipeline CLI can run bump-versions-dev in dry-run', async () => {
     [
       resolve(repoRoot, 'scripts', 'pipeline', 'run.mjs'),
       'release-bump-versions-dev',
-      '--bump-app',
+      '--bump-product',
       'patch',
-      '--bump-cli',
-      'none',
-      '--bump-stack',
-      'minor',
-      '--bump-server',
-      'none',
       '--bump-website',
       'none',
       '--dry-run',
@@ -28,7 +22,7 @@ test('pipeline CLI can run bump-versions-dev in dry-run', async () => {
     { cwd: repoRoot, env: process.env, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30_000 },
   );
 
-  assert.match(out, /scripts\/pipeline\/release\/bump-versions-dev\.mjs/);
-  assert.match(out, /scripts\/pipeline\/release\/bump-version\.mjs --component app --bump patch/);
+  assert.match(out, /scripts[\\/]+pipeline[\\/]+release[\\/]+bump-versions-dev\.mjs/);
+  assert.match(out, /scripts[\\/]+pipeline[\\/]+release[\\/]+bump-version\.mjs --component product --bump patch/);
   assert.match(out, /\bgit push origin HEAD:dev\b/);
 });

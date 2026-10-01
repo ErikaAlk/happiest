@@ -11,10 +11,14 @@ const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..', '..');
 
 test('bump-version updates app package + tauri versions without requiring a literal expo.version in app.config.js', () => {
-  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'happier-bump-app-'));
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'happiest-bump-app-'));
   const appDir = path.join(tmpRoot, 'apps', 'ui');
   const tauriDir = path.join(appDir, 'src-tauri');
   fs.mkdirSync(tauriDir, { recursive: true });
+  for (const dir of ['apps/cli', 'apps/server', 'packages/relay-server', 'apps/stack']) {
+    fs.mkdirSync(path.join(tmpRoot, dir), { recursive: true });
+    fs.writeFileSync(path.join(tmpRoot, dir, 'package.json'), `${JSON.stringify({ name: dir, version: '0.1.2' }, null, 2)}\n`);
+  }
 
   const packageJsonPath = path.join(appDir, 'package.json');
   const appConfigPath = path.join(appDir, 'app.config.js');
@@ -35,7 +39,7 @@ module.exports = {
 
   const nextVersion = execFileSync(
     process.execPath,
-    [resolve(repoRoot, 'scripts', 'pipeline', 'release', 'bump-version.mjs'), '--component', 'app', '--bump', 'minor'],
+    [resolve(repoRoot, 'scripts', 'pipeline', 'release', 'bump-version.mjs'), '--component', 'product', '--bump', 'minor'],
     { cwd: tmpRoot, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30_000 },
   ).trim();
 

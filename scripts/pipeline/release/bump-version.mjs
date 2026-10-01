@@ -1,23 +1,23 @@
 #!/usr/bin/env node
 // @ts-check
 /**
- * Bump versions for independent components.
+ * Bump the product version or the website version.
  *
  * CI-oriented behavior:
  * - Updates versions on the currently checked-out branch (typically main),
  * - so workflows can then promote that commit to deploy branches.
  *
  * Supported:
- * - --component app|cli|server|website|stack (required)
+ * - --component product|website (required)
  * - --bump none|patch|minor|major (required)
  *
- * For "app", this updates:
- * - apps/ui/package.json version
- * - apps/ui/app.config.js expo.version only when the config still uses a legacy string literal
- * - apps/ui/src-tauri/*.json (if present) top-level "version"
+ * "product" moves every product component to one new version (see lib/product-version.mjs) and
+ * also rewrites apps/ui/app.config.js expo.version when the config still uses a string literal.
  */
 import fs from 'node:fs';
 import path from 'node:path';
+
+import { readProductVersion, writeProductVersion } from './lib/product-version.mjs';
 
 function parseArgs(argv) {
   const out = new Map();
@@ -67,19 +67,11 @@ function bumpSemver(raw, bump) {
 }
 
 function readJson(filePath) {
-  const raw = fs.readFileSync(filePath, 'utf8');
-  return JSON.parse(raw);
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
 function writeJson(filePath, obj) {
   fs.writeFileSync(filePath, `${JSON.stringify(obj, null, 2)}\n`);
-}
-
-function updatePackageJsonVersion(pkgDir, nextVersion) {
-  const pkgPath = path.join(pkgDir, 'package.json');
-  const pkg = readJson(pkgPath);
-  pkg.version = nextVersion;
-  writeJson(pkgPath, pkg);
 }
 
 function updateExpoAppConfigVersion(appDir, nextVersion) {
@@ -88,129 +80,42 @@ function updateExpoAppConfigVersion(appDir, nextVersion) {
   const raw = fs.readFileSync(filePath, 'utf8');
 
   const re = /(\bversion\s*:\s*["'])([^"']+)(["'])/;
-  const m = re.exec(raw);
-  if (!m) return;
+  if (!re.test(raw)) return;
 
-  const updated = raw.replace(re, `$1${nextVersion}$3`);
-  fs.writeFileSync(filePath, updated);
+  fs.writeFileSync(filePath, raw.replace(re, `$1${nextVersion}$3`));
 }
 
-function updateTauriVersions(appDir, nextVersion) {
-  const tauriDir = path.join(appDir, 'src-tauri');
-  if (!fs.existsSync(tauriDir)) return;
-  const files = fs.readdirSync(tauriDir).filter((f) => f.endsWith('.json'));
-  for (const f of files) {
-    const p = path.join(tauriDir, f);
-    const obj = readJson(p);
-    if (typeof obj?.version === 'string') {
-      obj.version = nextVersion;
-      writeJson(p, obj);
-    }
-  }
-}
-
-function getAppCurrentVersion(appDir) {
-  const pkgPath = path.join(appDir, 'package.json');
-  if (fs.existsSync(pkgPath)) {
-    const pkg = readJson(pkgPath);
-    if (typeof pkg.version === 'string' && pkg.version.trim()) return pkg.version.trim();
-  }
-  const configPath = path.join(appDir, 'app.config.js');
-  if (fs.existsSync(configPath)) {
-    const raw = fs.readFileSync(configPath, 'utf8');
-    const re = /(\bversion\s*:\s*["'])([^"']+)(["'])/;
-    const m = re.exec(raw);
-    if (m) return m[2];
-  }
-  return null;
-}
-
-function resolveServerRunnerDir(repoRoot) {
-  const dir = path.join(repoRoot, 'packages', 'relay-server');
-  if (fs.existsSync(path.join(dir, 'package.json'))) return dir;
-  return null;
-}
-
-  function main() {
+function main() {
   const args = parseArgs(process.argv.slice(2));
   const component = String(args.get('--component') ?? '').trim();
   const bump = String(args.get('--bump') ?? '').trim();
+  const repoRoot = process.cwd();
 
-    const repoRoot = process.cwd();
-    const componentDirByName = {
-      app: path.join(repoRoot, 'apps', 'ui'),
-      cli: path.join(repoRoot, 'apps', 'cli'),
-      server: path.join(repoRoot, 'apps', 'server'),
-      website: path.join(repoRoot, 'apps', 'website'),
-      stack: path.join(repoRoot, 'apps', 'stack'),
-    };
-
-  if (!component || !(component in componentDirByName)) {
-    fail(`--component must be one of: ${Object.keys(componentDirByName).join(', ')}`);
+  if (component !== 'product' && component !== 'website') {
+    fail('--component must be one of: product, website');
   }
   if (!bump || !['none', 'patch', 'minor', 'major'].includes(bump)) {
     fail(`--bump must be one of: none, patch, minor, major`);
   }
 
-    const dir = componentDirByName[component];
-    if (!fs.existsSync(dir)) fail(`Missing component directory: ${dir}`);
+  if (bump === 'none') {
+    process.stdout.write(`SKIP\n`);
+    return;
+  }
 
-    if (bump === 'none') {
-      process.stdout.write(`SKIP\n`);
-      return;
-    }
+  if (component === 'website') {
+    const pkgPath = path.join(repoRoot, 'apps', 'website', 'package.json');
+    const pkg = readJson(pkgPath);
+    const nextVersion = bumpSemver(String(pkg.version ?? '').trim(), bump);
+    pkg.version = nextVersion;
+    writeJson(pkgPath, pkg);
+    process.stdout.write(`${nextVersion}\n`);
+    return;
+  }
 
-    let currentVersion = null;
-    let serverRunnerDir = null;
-		    if (component === 'app') {
-		      currentVersion = getAppCurrentVersion(dir);
-		      if (!currentVersion) fail(`Unable to determine current version for ${component}`);
-			    } else if (component === 'server') {
-			      const appPkgPath = path.join(dir, 'package.json');
-			      const appPkg = readJson(appPkgPath);
-			      const appVersion = String(appPkg.version ?? '').trim();
-			      if (!appVersion) fail(`Unable to determine current version for ${component}`);
-
-						      // "Server runner" is the user-facing installable that downloads/verifies the
-						      // correct server binary for the platform.
-						      serverRunnerDir = resolveServerRunnerDir(repoRoot);
-			      if (!serverRunnerDir) {
-				        fail(`Missing server runner package.json (expected packages/relay-server/package.json).`);
-			      }
-              const runnerRel = path.relative(repoRoot, serverRunnerDir);
-				      const runnerPkg = readJson(path.join(serverRunnerDir, 'package.json'));
-				      const runnerVersion = String(runnerPkg.version ?? '').trim();
-				      if (!runnerVersion) fail(`Unable to determine server runner version for ${runnerRel}`);
-
-					      if (appVersion !== runnerVersion) {
-					        fail(`Server app and server runner versions must match (apps/server=${appVersion}, ${runnerRel}=${runnerVersion}).`);
-					      }
-					      currentVersion = appVersion;
-				    } else {
-		      const pkg = readJson(path.join(dir, 'package.json'));
-		      currentVersion = String(pkg.version ?? '').trim() || null;
-		      if (!currentVersion) fail(`Unable to determine current version for ${component}`);
-	    }
-
-    const nextVersion = bumpSemver(currentVersion, bump);
-
-			    if (component === 'app') {
-			      updatePackageJsonVersion(dir, nextVersion);
-			      updateExpoAppConfigVersion(dir, nextVersion);
-			      updateTauriVersions(dir, nextVersion);
-				    } else if (component === 'server') {
-						      updatePackageJsonVersion(path.join(repoRoot, 'apps', 'server'), nextVersion);
-						      if (!serverRunnerDir) {
-						        serverRunnerDir = resolveServerRunnerDir(repoRoot);
-						      }
-							      if (!serverRunnerDir) {
-							        fail(`Missing server runner package.json (expected packages/relay-server/package.json).`);
-							      }
-						      updatePackageJsonVersion(serverRunnerDir, nextVersion);
-				    } else {
-				      updatePackageJsonVersion(dir, nextVersion);
-				    }
-
+  const nextVersion = bumpSemver(readProductVersion(repoRoot), bump);
+  writeProductVersion(repoRoot, nextVersion);
+  updateExpoAppConfigVersion(path.join(repoRoot, 'apps', 'ui'), nextVersion);
   process.stdout.write(`${nextVersion}\n`);
 }
 

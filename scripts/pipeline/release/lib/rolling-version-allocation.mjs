@@ -5,27 +5,13 @@ import { execFileSync } from 'node:child_process';
 import { resolveGitHubRepoSlug } from '../../github/resolve-github-repo-slug.mjs';
 import { resolveRollingReleaseTagSuffix } from './public-release-rings.mjs';
 
+// Release versions are allocated from this repository's GitHub releases and tags only.
 const PRODUCT_SOURCES = Object.freeze({
-  cli: Object.freeze({
-    githubTagPrefix: 'cli-v',
-    npmPackage: '@happier-dev/cli',
-  }),
-  hstack: Object.freeze({
-    githubTagPrefix: 'stack-v',
-    npmPackage: '@happier-dev/stack',
-  }),
-  stack: Object.freeze({
-    githubTagPrefix: 'stack-v',
-    npmPackage: '@happier-dev/stack',
-  }),
-  server: Object.freeze({
-    githubTagPrefix: 'server-v',
-    npmPackage: '@happier-dev/relay-server',
-  }),
-  'ui-web': Object.freeze({
-    githubTagPrefix: 'ui-web-v',
-    npmPackage: '',
-  }),
+  cli: Object.freeze({ githubTagPrefix: 'cli-v' }),
+  hstack: Object.freeze({ githubTagPrefix: 'stack-v' }),
+  stack: Object.freeze({ githubTagPrefix: 'stack-v' }),
+  server: Object.freeze({ githubTagPrefix: 'server-v' }),
+  'ui-web': Object.freeze({ githubTagPrefix: 'ui-web-v' }),
 });
 
 /**
@@ -95,11 +81,10 @@ function parsePublishedVersionsJson(text) {
   if (!raw) return null;
   /** @type {unknown} */
   const parsed = JSON.parse(raw);
-  if (!parsed || typeof parsed !== 'object') return { github: {}, npm: {} };
-  const record = /** @type {{ github?: Record<string, unknown>; npm?: Record<string, unknown> }} */ (parsed);
+  if (!parsed || typeof parsed !== 'object') return { github: {} };
+  const record = /** @type {{ github?: Record<string, unknown> }} */ (parsed);
   return {
     github: record.github && typeof record.github === 'object' ? record.github : {},
-    npm: record.npm && typeof record.npm === 'object' ? record.npm : {},
   };
 }
 
@@ -126,7 +111,7 @@ function compareBuildOrder(left, right) {
 }
 
 /**
- * @param {Array<{ run: number; attempt: number | null; version: string; surface: 'github' | 'npm' }>} builds
+ * @param {Array<{ run: number; attempt: number | null; version: string }>} builds
  */
 function latestBuild(builds) {
   const sorted = [...builds].sort(compareBuildOrder);
@@ -187,33 +172,6 @@ function tryExecLines(cmd, args, opts) {
         .map((line) => line.trim())
         .filter(Boolean),
     };
-  } catch {
-    return { ok: false, values: [] };
-  }
-}
-
-/**
- * @param {string} npmPackage
- * @param {{ cwd: string; env: Record<string, string | undefined> }} opts
- */
-function collectNpmVersions(npmPackage, opts) {
-  try {
-    const out = execFileSync('npm', ['view', npmPackage, 'versions', '--json'], {
-      cwd: opts.cwd,
-      env: { ...process.env, ...opts.env },
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
-      timeout: 20_000,
-    }).trim();
-    /** @type {unknown} */
-    const parsed = out ? JSON.parse(out) : [];
-    if (Array.isArray(parsed)) {
-      return { ok: true, values: parsed.map((version) => String(version ?? '').trim()).filter(Boolean) };
-    }
-    if (typeof parsed === 'string' && parsed.trim()) {
-      return { ok: true, values: [parsed.trim()] };
-    }
-    return { ok: true, values: [] };
   } catch {
     return { ok: false, values: [] };
   }
@@ -309,8 +267,6 @@ function getProductSource(productId) {
  *   channel: import('@happier-dev/release-runtime/releaseRings').PublicReleaseRingId;
  *   baseVersion: string;
  *   explicitVersion?: string;
- *   publishSurface?: 'github' | 'npm' | 'all';
- *   allowExistingExactVersion?: boolean;
  *   env?: Record<string, string | undefined>;
  *   dryRun?: boolean;
  * }} opts
@@ -330,30 +286,19 @@ export async function resolveRollingPublishVersion(opts) {
   const product = getProductSource(opts.productId);
   const channelSuffix = resolveRollingReleaseTagSuffix(opts.channel);
   const explicitVersion = String(opts.explicitVersion ?? '').trim();
-  const publishSurface = opts.publishSurface ?? 'all';
 
-  /** @type {Array<{ version: string; surface: 'github' | 'npm' }>} */
-  const publishedVersions = [];
   /** @type {string[]} */
-  const sourceLabels = [];
-  let sourceAvailable = false;
+  const publishedVersions = [];
+  let sourceLabel = '';
 
   const fixture = parsePublishedVersionsJson(env.HAPPIER_RELEASE_PUBLISHED_VERSIONS_JSON);
   if (fixture) {
-    sourceAvailable = true;
-    sourceLabels.push('fixture');
-    for (const version of collectFromFixtureSection(fixture.github, [
+    sourceLabel = 'fixture';
+    publishedVersions.push(...collectFromFixtureSection(fixture.github, [
       opts.productId,
       product.githubTagPrefix,
       product.githubTagPrefix.replace(/-v$/, ''),
-    ])) {
-      publishedVersions.push({ version, surface: 'github' });
-    }
-    if (product.npmPackage) {
-      for (const version of collectFromFixtureSection(fixture.npm, [product.npmPackage])) {
-        publishedVersions.push({ version, surface: 'npm' });
-      }
-    }
+    ]));
   } else {
     const github = collectGitHubVersions({
       repoRoot: opts.repoRoot,
@@ -361,37 +306,19 @@ export async function resolveRollingPublishVersion(opts) {
       githubTagPrefix: product.githubTagPrefix,
     });
     if (github.ok) {
-      sourceAvailable = true;
-      sourceLabels.push('github');
-      for (const version of github.values) {
-        publishedVersions.push({ version, surface: 'github' });
-      }
-    }
-
-    if (product.npmPackage) {
-      const npm = collectNpmVersions(product.npmPackage, { cwd: opts.repoRoot, env });
-      if (npm.ok) {
-        sourceAvailable = true;
-        sourceLabels.push('npm');
-        for (const version of npm.values) {
-          publishedVersions.push({ version, surface: 'npm' });
-        }
-      }
+      sourceLabel = 'github';
+      publishedVersions.push(...github.values);
     }
   }
 
   const builds = publishedVersions
-    .map((entry) => {
-      const build = parseRollingVersionBuild(entry.version, {
-        baseVersion,
-        channelSuffix,
-        githubTagPrefix: product.githubTagPrefix,
-      });
-      return build ? { ...build, surface: entry.surface } : null;
-    })
+    .map((version) => parseRollingVersionBuild(version, {
+      baseVersion,
+      channelSuffix,
+      githubTagPrefix: product.githubTagPrefix,
+    }))
     .filter(Boolean);
   const previous = latestBuild(builds);
-  const previousForSurface = publishSurface === 'all' ? previous : latestBuild(builds.filter((build) => build.surface === publishSurface));
 
   if (explicitVersion) {
     const explicitBuild = parseRollingVersionBuild(explicitVersion, {
@@ -404,49 +331,36 @@ export async function resolveRollingPublishVersion(opts) {
         `[release] --version must match ${baseVersion}-${channelSuffix}.<number> for ${opts.productId} ${channelSuffix} releases (got: ${explicitVersion})`,
       );
     }
-    const comparisonBuild = previousForSurface ?? previous;
-    const isOlderThanOverall = previous && compareBuildOrder(explicitBuild, previous) < 0;
-    const isAlreadyPublishedForTarget =
-      comparisonBuild &&
-      explicitBuild.run === comparisonBuild.run &&
-      (explicitBuild.attempt ?? 0) <= (comparisonBuild.attempt ?? 0);
-    const isBehindTarget = comparisonBuild && compareBuildOrder(explicitBuild, comparisonBuild) < 0;
-    const isExactTargetVersion = comparisonBuild
-      && explicitBuild.run === comparisonBuild.run
-      && (explicitBuild.attempt ?? 0) === (comparisonBuild.attempt ?? 0);
-    if (isOlderThanOverall || isBehindTarget || (isAlreadyPublishedForTarget && !(opts.allowExistingExactVersion && isExactTargetVersion))) {
+    const isBehindPublished = previous && compareBuildOrder(explicitBuild, previous) < 0;
+    const isAlreadyPublished =
+      previous &&
+      explicitBuild.run === previous.run &&
+      (explicitBuild.attempt ?? 0) <= (previous.attempt ?? 0);
+    if (isBehindPublished || isAlreadyPublished) {
       throw new Error(
         `[release] refusing to publish ${explicitVersion}; latest published ${opts.productId} ${channelSuffix} version is ${previous.version}`,
       );
     }
     return {
       version: explicitBuild.version,
-      source: sourceLabels.join('+') || 'explicit',
+      source: sourceLabel || 'explicit',
       previousVersion: previous?.version ?? null,
     };
   }
 
-  if (!sourceAvailable) {
+  if (!sourceLabel) {
     throw new Error(
       [
         `[release] unable to inspect published ${opts.productId} ${channelSuffix} versions.`,
-        'Install/authenticate gh or ensure npm is reachable, or pass --version from a previously allocated release version.',
+        'Install/authenticate gh or pass --version from a previously allocated release version.',
       ].join('\n'),
     );
-  }
-
-  if (publishSurface !== 'all' && previous && (!previousForSurface || compareBuildOrder(previousForSurface, previous) < 0)) {
-    return {
-      version: previous.version,
-      source: `${sourceLabels.join('+') || 'published'}:${publishSurface}:catch-up`,
-      previousVersion: previousForSurface?.version ?? null,
-    };
   }
 
   const nextRun = previous ? previous.run + 1 : 1;
   return {
     version: `${baseVersion}-${channelSuffix}.${nextRun}`,
-    source: sourceLabels.join('+') || 'published',
+    source: sourceLabel,
     previousVersion: previous?.version ?? null,
   };
 }
