@@ -24,7 +24,7 @@ const envKeys = [
 let envScope = createEnvKeyScope(envKeys);
 
 function writeInstalledDefaultFollowingServiceFixture(homeDir: string, happierHomeDir: string): void {
-  const installedPath = join(homeDir, '.config', 'systemd', 'user', 'happier-daemon.default.service');
+  const installedPath = join(homeDir, '.config', 'systemd', 'user', 'happiest-daemon.default.service');
   mkdirSync(dirname(installedPath), { recursive: true });
   writeFileSync(
     installedPath,
