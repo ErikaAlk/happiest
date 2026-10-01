@@ -37,13 +37,13 @@ echo Linux
 }
 
 async function writeLegacyCliArtifact(fixtureDir, version, marker = 'legacy') {
-  const artifactStem = `happier-v${version}-linux-x64`;
+  const artifactStem = `happiest-v${version}-linux-x64`;
   const artifactName = `${artifactStem}.tar.gz`;
   const artifactDir = join(fixtureDir, artifactStem);
   await mkdir(join(artifactDir, 'happiest-runtime'), { recursive: true });
-  const happierBin = join(artifactDir, 'happier');
+  const happiestBin = join(artifactDir, 'happiest');
   await writeFile(
-    happierBin,
+    happiestBin,
     `#!/usr/bin/env bash
 set -euo pipefail
 if [[ "$1" = "--version" ]]; then
@@ -58,14 +58,14 @@ exit 0
 `,
     'utf8',
   );
-  await chmod(happierBin, 0o755);
+  await chmod(happiestBin, 0o755);
   await writeFile(join(artifactDir, 'happiest-runtime', 'index.mjs'), `export default ${JSON.stringify(marker)};\n`, 'utf8');
 
   const tarPath = join(fixtureDir, artifactName);
   const tarRes = spawnSync('tar', ['-czf', tarPath, '-C', fixtureDir, artifactStem], { encoding: 'utf8' });
   assert.equal(tarRes.status, 0, `tar failed: ${String(tarRes.stderr ?? '')}`);
 
-  const checksumsName = `checksums-happier-v${version}.txt`;
+  const checksumsName = `checksums-happiest-v${version}.txt`;
   const checksumsPath = join(fixtureDir, checksumsName);
   const hash = await sha256(tarPath);
   await writeFile(checksumsPath, `${hash}  ${artifactName}\n`, 'utf8');
@@ -159,7 +159,7 @@ printf '%s' '${releaseJson}'
     ...process.env,
     PATH: `${binDir}:${process.env.PATH ?? ''}`,
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NO_PATH_UPDATE: '1',
     HAPPIER_NONINTERACTIVE: '1',
@@ -174,7 +174,7 @@ printf '%s' '${releaseJson}'
   assert.equal(res.status, 0, `installer failed:\n--- stdout ---\n${stdout}\n--- stderr ---\n${stderr}\n`);
   assert.match(stdout + stderr, /falling back to legacy binary install/i);
 
-  const versionRes = spawnSync(join(outBinDir, 'happier'), ['--version'], { env, encoding: 'utf8' });
+  const versionRes = spawnSync(join(outBinDir, 'happiest'), ['--version'], { env, encoding: 'utf8' });
   assert.equal(versionRes.status, 0, `installed binary failed: ${String(versionRes.stderr ?? '')}`);
   assert.match(String(versionRes.stdout ?? ''), /1\.2\.3/);
 
@@ -201,7 +201,7 @@ test('install.sh --version value installs the requested CLI release from rolling
   await writeLegacyCliArtifact(fixtureDir, requestedVersion, 'requested');
 
   const curlStubPath = join(binDir, 'curl');
-  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIER_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
+  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIEST_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
   await chmod(curlStubPath, 0o755);
 
   const installerPath = join(repoRoot, 'scripts', 'release', 'installers', 'install.sh');
@@ -209,12 +209,12 @@ test('install.sh --version value installs the requested CLI release from rolling
     ...process.env,
     PATH: `${binDir}:${process.env.PATH ?? ''}`,
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NO_PATH_UPDATE: '1',
     HAPPIER_NONINTERACTIVE: '1',
     HAPPIER_WITH_DAEMON: '0',
-    HAPPIER_RELEASE_ASSETS_DIR: fixtureDir,
+    HAPPIEST_RELEASE_ASSETS_DIR: fixtureDir,
   };
 
   const res = spawnSync('bash', [installerPath, '--version', requestedVersion], { env, encoding: 'utf8' });
@@ -223,7 +223,7 @@ test('install.sh --version value installs the requested CLI release from rolling
   assert.equal(res.status, 0, `installer failed:\n--- stdout ---\n${stdout}\n--- stderr ---\n${stderr}\n`);
   assert.match(stdout + stderr, /falling back to legacy binary install/i);
 
-  const versionRes = spawnSync(join(outBinDir, 'happier'), ['--version'], { env, encoding: 'utf8' });
+  const versionRes = spawnSync(join(outBinDir, 'happiest'), ['--version'], { env, encoding: 'utf8' });
   assert.equal(versionRes.status, 0, `installed binary failed: ${String(versionRes.stderr ?? '')}`);
   assert.match(String(versionRes.stdout ?? ''), /1\.2\.3/);
   assert.doesNotMatch(String(versionRes.stdout ?? ''), /9\.9\.9/);
@@ -251,7 +251,7 @@ test('install.sh installs preview CLI assets from a mixed local asset directory 
   await writeLegacyCliArtifact(fixtureDir, previewVersion, 'preview');
 
   const curlStubPath = join(binDir, 'curl');
-  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIER_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
+  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIEST_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
   await chmod(curlStubPath, 0o755);
 
   const installerPath = join(repoRoot, 'scripts', 'release', 'installers', 'install.sh');
@@ -260,12 +260,12 @@ test('install.sh installs preview CLI assets from a mixed local asset directory 
     PATH: `${binDir}:${process.env.PATH ?? ''}`,
     HAPPIER_CHANNEL: 'preview',
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NO_PATH_UPDATE: '1',
     HAPPIER_NONINTERACTIVE: '1',
     HAPPIER_WITH_DAEMON: '0',
-    HAPPIER_RELEASE_ASSETS_DIR: fixtureDir,
+    HAPPIEST_RELEASE_ASSETS_DIR: fixtureDir,
   };
 
   const res = spawnSync('bash', [installerPath], { env, encoding: 'utf8' });
@@ -274,7 +274,7 @@ test('install.sh installs preview CLI assets from a mixed local asset directory 
   assert.equal(res.status, 0, `installer failed:\n--- stdout ---\n${stdout}\n--- stderr ---\n${stderr}\n`);
   assert.match(stdout + stderr, /falling back to legacy binary install/i);
 
-  const versionRes = spawnSync(join(outBinDir, 'hprev'), ['--version'], { env, encoding: 'utf8' });
+  const versionRes = spawnSync(join(outBinDir, 'happiest-preview'), ['--version'], { env, encoding: 'utf8' });
   assert.equal(versionRes.status, 0, `installed preview shim failed: ${String(versionRes.stderr ?? '')}`);
   assert.match(String(versionRes.stdout ?? ''), /1\.2\.3-preview\.42/);
   assert.doesNotMatch(String(versionRes.stdout ?? ''), /1\.2\.3$/im);

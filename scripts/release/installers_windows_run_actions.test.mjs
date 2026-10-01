@@ -38,7 +38,7 @@ test('install.ps1 resolves post-install relay actions through the requested lane
   assert.doesNotMatch(
     resolverMatch[0],
     /\$target\b/,
-    'preview/dev run actions must not fall back to the generic stable happier.exe invoker',
+    'preview/dev run actions must not fall back to the generic stable happiest.exe invoker',
   );
 });
 
@@ -66,22 +66,22 @@ test('install.ps1 applies setup-relay default relay-host arguments for both shor
 // whitespace. The -Run / -SetupRelay support gate builds its pattern in a double-quoted string
 // (it needs $(...) subexpression interpolation), so a stray doubled backslash there silently
 // makes the gate unmatchable and every -Run / -SetupRelay invocation throws
-// "Installed Happier CLI does not support ...". No PowerShell host is available in CI, so this
+// "Installed Happiest CLI does not support ...". No PowerShell host is available in CI, so this
 // test reproduces the PowerShell string rule in JS and evaluates the resulting regex for real.
 const POWERSHELL_HELP_FIXTURE = [
-  'Usage: happier relay <command>',
+  'Usage: happiest relay <command>',
   '',
   'Commands:',
-  '  happier relay host        Manage relay hosts',
-  '  happier relay status      Show relay status',
+  '  happiest relay host        Manage relay hosts',
+  '  happiest relay status      Show relay status',
   '',
 ].join('\n');
 
 const POWERSHELL_HELP_FIXTURE_WITHOUT_SUBCOMMAND = [
-  'Usage: happier <command>',
+  'Usage: happiest <command>',
   '',
   'Commands:',
-  '  happier doctor            Diagnose the installation',
+  '  happiest doctor            Diagnose the installation',
   '',
 ].join('\n');
 
@@ -94,10 +94,17 @@ test('install.ps1 -Run support gate builds a regex that actually matches CLI hel
   const patternAssignment = raw.match(/\$pattern\s*=\s*"([^"\n]*)"/);
   assert.ok(patternAssignment, 'expected the -Run support gate to assign $pattern from a double-quoted string');
 
-  // PowerShell interpolation of the two $([Regex]::Escape(...)) subexpressions. Everything else
+  assert.doesNotMatch(
+    patternAssignment[1],
+    /happier|happiest/i,
+    'the gate pattern must take the command name from $CliCommandName instead of a literal copy',
+  );
+
+  // PowerShell interpolation of the three $([Regex]::Escape(...)) subexpressions. Everything else
   // in the literal is passed through verbatim, because backslash is not an escape here.
   const interpolated = patternAssignment[1]
-    .replace('$([Regex]::Escape($invokerName))', escapeForDotNetRegex('happier.exe'))
+    .replace('$([Regex]::Escape($invokerName))', escapeForDotNetRegex('happiest.exe'))
+    .replace('$([Regex]::Escape($CliCommandName))', escapeForDotNetRegex('happiest'))
     .replace('$([Regex]::Escape($requiredSubcommand))', escapeForDotNetRegex('relay'));
 
   assert.ok(
@@ -108,7 +115,7 @@ test('install.ps1 -Run support gate builds a regex that actually matches CLI hel
 
   assert.ok(
     compiled.test(POWERSHELL_HELP_FIXTURE),
-    `the -Run support gate regex ${compiled.source} does not match real 'happier relay --help' output, so every -Run/-SetupRelay invocation would throw`,
+    `the -Run support gate regex ${compiled.source} does not match real 'happiest relay --help' output, so every -Run/-SetupRelay invocation would throw`,
   );
   assert.ok(
     !compiled.test(POWERSHELL_HELP_FIXTURE_WITHOUT_SUBCOMMAND),

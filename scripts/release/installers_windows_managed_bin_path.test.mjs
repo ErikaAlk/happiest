@@ -18,23 +18,13 @@ test('install.ps1 makes the managed home bin directory the canonical PATH target
   );
   assert.doesNotMatch(
     raw,
-    /Copy-Item\s+-Path\s+\$target\s+-Destination\s+\(Join-Path\s+\$BinDir\s+"happier\.exe"\)\s+-Force/i,
-    'expected install.ps1 to avoid maintaining a drifting external happier.exe copy',
-  );
-  assert.match(
-    raw,
-    /\$LegacyBinDir\s*=\s*Join-Path\s+\$env:USERPROFILE\s+"\.local\\bin"/i,
-    'expected install.ps1 to keep track of the old default global shim directory for migration',
-  );
-  assert.match(
-    raw,
-    /Remove-Item\s+-Path\s+\(Join-Path\s+\$LegacyBinDir\s+"happier\.exe"\)/i,
-    'expected install.ps1 to remove the old drifting global shim copy during migration',
+    /Copy-Item\s+-Path\s+\$target\s+-Destination\s+\(Join-Path\s+\$BinDir\s+"[^"]+\.exe"\)\s+-Force/i,
+    'expected install.ps1 to avoid maintaining a drifting external CLI copy',
   );
   assert.doesNotMatch(
     raw,
-    /Where-Object\s*\{\s*\$_\s+-and\s+\$_\s+-ne\s+\$LegacyBinDir\s+-and\s+\$_\s+-ne\s+\$BinDir\s*\}/i,
-    'expected install.ps1 to preserve the shared legacy bin directory on PATH because tools like uv install there',
+    /\.local\\bin/i,
+    'expected install.ps1 to leave the shared ~\\.local\\bin directory alone: upstream Happier and tools like uv install there',
   );
 });
 
@@ -44,9 +34,9 @@ test('install.ps1 accepts an exact CLI version request through parameter or envi
 
   assert.match(raw, /\[string\]\s+\$Version\s*=\s*\$\(if\s*\(\$env:HAPPIER_INSTALL_VERSION\)/i);
   assert.match(raw, /Resolve-InstallerRequestedVersionPattern/i);
-  assert.match(raw, /\$assetPattern\s*=\s*if[\s\S]*happier-v\$\{resolvedVersionPattern\}-windows-x64/i);
-  assert.match(raw, /\$checksumsPattern\s*=\s*Resolve-InstallerRequestedVersionPattern[\s\S]*checksums-happier-v[\s\S]*\.txt/i);
-  assert.doesNotMatch(raw, /\$asset\s*=\s*Resolve-InstallerAsset\s+-Release\s+\$release\s+-Pattern\s+'[\^]happier-v\.\*-windows-x64/i);
+  assert.match(raw, /\$assetPattern\s*=\s*if[\s\S]*\$cliAssetStemPattern-v\$\{resolvedVersionPattern\}-windows-x64/i);
+  assert.match(raw, /\$checksumsPattern\s*=\s*Resolve-InstallerRequestedVersionPattern[\s\S]*checksums-\$CliCommandName-v[\s\S]*\.txt/i);
+  assert.doesNotMatch(raw, /\$asset\s*=\s*Resolve-InstallerAsset\s+-Release\s+\$release\s+-Pattern\s+'[\^][^']*-v\.\*-windows-x64/i);
 });
 
 test('install.ps1 resolves rolling payload aliases while binding exact versions to immutable releases', async () => {
@@ -54,8 +44,8 @@ test('install.ps1 resolves rolling payload aliases while binding exact versions 
   const raw = await readFile(path, 'utf8');
 
   assert.match(raw, /\$tag\s*=\s*if\s*\(\$Version\)\s*\{\s*"cli-v\$Version"/i);
-  assert.match(raw, /\^happier-windows-x64\\\.tar\\\.gz\$/i);
-  assert.match(raw, /\$checksumAssetName\s*=\s*"happier-v\$resolvedVersion-windows-x64\.tar\.gz"/i);
+  assert.match(raw, /"\^\$cliAssetStemPattern-windows-x64\\\.tar\\\.gz\$"/i);
+  assert.match(raw, /\$checksumAssetName\s*=\s*"\$CliCommandName-v\$resolvedVersion-windows-x64\.tar\.gz"/i);
 });
 
 test('install.ps1 semver-sorts rolling release assets instead of relying on provider enumeration order', async () => {

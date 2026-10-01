@@ -32,12 +32,12 @@ test('install.sh updates bash rc + login files and prints a reload hint', async 
   // Create both interactive + login bash files to cover common PATH-loading entrypoints.
   await writeFile(
     join(homeDir, '.bashrc'),
-    '# bashrc\nexport HAPPIEST_HOME_DIR="/tmp/old-happier-home"\n',
+    '# bashrc\nexport HAPPIEST_HOME_DIR="/opt/old-happiest-home"\n',
     'utf8',
   );
   await writeFile(
     join(homeDir, '.profile'),
-    '# profile\nexport HAPPIEST_HOME_DIR="/tmp/old-happier-home"\n',
+    '# profile\nexport HAPPIEST_HOME_DIR="/opt/old-happiest-home"\n',
     'utf8',
   );
 
@@ -63,13 +63,13 @@ echo Linux
 
   // Build a minimal CLI tarball.
   const version = '9.9.9';
-  const artifactStem = `happier-v${version}-linux-x64`;
+  const artifactStem = `happiest-v${version}-linux-x64`;
   const artifactName = `${artifactStem}.tar.gz`;
   const artifactDir = join(fixtureDir, artifactStem);
   await mkdir(artifactDir, { recursive: true });
-  const happierBin = join(artifactDir, 'happier');
+  const happiestBin = join(artifactDir, 'happiest');
   await writeFile(
-    happierBin,
+    happiestBin,
     `#!/usr/bin/env bash
 set -euo pipefail
 if [[ "$1" = "--version" ]]; then
@@ -80,13 +80,13 @@ exit 0
 `,
     'utf8',
   );
-  await chmod(happierBin, 0o755);
+  await chmod(happiestBin, 0o755);
 
   const tarPath = join(fixtureDir, artifactName);
   const tarRes = spawnSync('tar', ['-czf', tarPath, '-C', fixtureDir, artifactStem], { encoding: 'utf8' });
   assert.equal(tarRes.status, 0, `tar failed: ${String(tarRes.stderr ?? '')}`);
 
-  const checksumsName = `checksums-happier-v${version}.txt`;
+  const checksumsName = `checksums-happiest-v${version}.txt`;
   const checksumsPath = join(fixtureDir, checksumsName);
   const hash = await sha256(tarPath);
   await writeFile(checksumsPath, `${hash}  ${artifactName}\n`, 'utf8');
@@ -173,7 +173,7 @@ printf '%s' '${releaseJson}'
     SHELL: '/bin/bash',
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NONINTERACTIVE: '1',
     HAPPIER_GITHUB_TOKEN: '',
@@ -195,13 +195,13 @@ printf '%s' '${releaseJson}'
   assert.ok(profile.includes(homeExportLine), 'expected installer to refresh HAPPIEST_HOME_DIR in ~/.profile');
   assert.equal((bashrc.match(/HAPPIEST_HOME_DIR=/g) ?? []).length, 1, 'expected ~/.bashrc to keep a single HAPPIEST_HOME_DIR export');
   assert.equal((profile.match(/HAPPIEST_HOME_DIR=/g) ?? []).length, 1, 'expected ~/.profile to keep a single HAPPIEST_HOME_DIR export');
-  assert.ok(!bashrc.includes('/tmp/old-happier-home'), 'expected installer to remove stale ~/.bashrc HAPPIEST_HOME_DIR exports');
-  assert.ok(!profile.includes('/tmp/old-happier-home'), 'expected installer to remove stale ~/.profile HAPPIEST_HOME_DIR exports');
+  assert.ok(!bashrc.includes('/opt/old-happiest-home'), 'expected installer to remove stale ~/.bashrc HAPPIEST_HOME_DIR exports');
+  assert.ok(!profile.includes('/opt/old-happiest-home'), 'expected installer to remove stale ~/.profile HAPPIEST_HOME_DIR exports');
   assert.match(stdout, /(source|reload).*(bashrc|profile)|open a new terminal/i, 'expected installer to print a PATH reload hint');
   assert.equal((stdout.match(/^Next steps$/gmu) ?? []).length, 0, 'PATH guidance must not create a second next-steps section');
   assert.equal((stdout.match(/^\s*source\s+/gmu) ?? []).length, 1, 'expected one relevant source command, not multiple shell files');
   assert.ok(
-    stdout.indexOf('Happier CLI installed:') < stdout.search(/^PATH$/mu),
+    stdout.indexOf('Happiest CLI installed:') < stdout.search(/^PATH$/mu),
     'expected PATH guidance after the install summary',
   );
   assert.equal((stdout.match(/^\s*version:\s*9\.9\.9\s*$/gmu) ?? []).length, 1, 'expected one labeled installed version');
@@ -224,12 +224,12 @@ test('install.sh removes stale HAPPIEST_HOME_DIR exports when reinstalling back 
 
   await writeFile(
     join(homeDir, '.bashrc'),
-    '# bashrc\nexport HAPPIEST_HOME_DIR="/tmp/old-happier-home"\n',
+    '# bashrc\nexport HAPPIEST_HOME_DIR="/opt/old-happiest-home"\n',
     'utf8',
   );
   await writeFile(
     join(homeDir, '.profile'),
-    '# profile\nexport HAPPIEST_HOME_DIR="/tmp/old-happier-home"\n',
+    '# profile\nexport HAPPIEST_HOME_DIR="/opt/old-happiest-home"\n',
     'utf8',
   );
 
@@ -253,13 +253,13 @@ echo Linux
   await chmod(unameStubPath, 0o755);
 
   const version = '9.9.9';
-  const artifactStem = `happier-v${version}-linux-x64`;
+  const artifactStem = `happiest-v${version}-linux-x64`;
   const artifactName = `${artifactStem}.tar.gz`;
   const artifactDir = join(fixtureDir, artifactStem);
   await mkdir(artifactDir, { recursive: true });
-  const happierBin = join(artifactDir, 'happier');
+  const happiestBin = join(artifactDir, 'happiest');
   await writeFile(
-    happierBin,
+    happiestBin,
     `#!/usr/bin/env bash
 set -euo pipefail
 if [[ "$1" = "--version" ]]; then
@@ -270,13 +270,13 @@ exit 0
 `,
     'utf8',
   );
-  await chmod(happierBin, 0o755);
+  await chmod(happiestBin, 0o755);
 
   const tarPath = join(fixtureDir, artifactName);
   const tarRes = spawnSync('tar', ['-czf', tarPath, '-C', fixtureDir, artifactStem], { encoding: 'utf8' });
   assert.equal(tarRes.status, 0, `tar failed: ${String(tarRes.stderr ?? '')}`);
 
-  const checksumsName = `checksums-happier-v${version}.txt`;
+  const checksumsName = `checksums-happiest-v${version}.txt`;
   const checksumsPath = join(fixtureDir, checksumsName);
   const hash = await sha256(tarPath);
   await writeFile(checksumsPath, `${hash}  ${artifactName}\n`, 'utf8');
@@ -369,8 +369,8 @@ printf '%s' '${releaseJson}'
   const profile = await readFile(join(homeDir, '.profile'), 'utf8');
   assert.equal((bashrc.match(/HAPPIEST_HOME_DIR=/g) ?? []).length, 0, 'expected ~/.bashrc to remove stale HAPPIEST_HOME_DIR exports');
   assert.equal((profile.match(/HAPPIEST_HOME_DIR=/g) ?? []).length, 0, 'expected ~/.profile to remove stale HAPPIEST_HOME_DIR exports');
-  assert.ok(!bashrc.includes('/tmp/old-happier-home'), 'expected installer to remove stale ~/.bashrc HAPPIEST_HOME_DIR exports');
-  assert.ok(!profile.includes('/tmp/old-happier-home'), 'expected installer to remove stale ~/.profile HAPPIEST_HOME_DIR exports');
+  assert.ok(!bashrc.includes('/opt/old-happiest-home'), 'expected installer to remove stale ~/.bashrc HAPPIEST_HOME_DIR exports');
+  assert.ok(!profile.includes('/opt/old-happiest-home'), 'expected installer to remove stale ~/.profile HAPPIEST_HOME_DIR exports');
 
   await rm(root, { recursive: true, force: true });
 });

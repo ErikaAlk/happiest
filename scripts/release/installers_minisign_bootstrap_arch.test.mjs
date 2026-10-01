@@ -49,26 +49,26 @@ echo Linux
 
   // Build a minimal CLI tarball.
   const version = '9.9.9';
-  const artifactStem = `happier-v${version}-linux-arm64`;
+  const artifactStem = `happiest-v${version}-linux-arm64`;
   const artifactName = `${artifactStem}.tar.gz`;
   const artifactDir = join(fixtureDir, artifactStem);
   await mkdir(artifactDir, { recursive: true });
-  const happierBin = join(artifactDir, 'happier');
+  const happiestBin = join(artifactDir, 'happiest');
   await writeFile(
-    happierBin,
+    happiestBin,
     `#!/usr/bin/env bash
 set -euo pipefail
 echo ok
 `,
     'utf8',
   );
-  await chmod(happierBin, 0o755);
+  await chmod(happiestBin, 0o755);
 
   const tarPath = join(fixtureDir, artifactName);
   const tarRes = spawnSync('tar', ['-czf', tarPath, '-C', fixtureDir, artifactStem], { encoding: 'utf8' });
   assert.equal(tarRes.status, 0, `tar failed: ${String(tarRes.stderr ?? '')}`);
 
-  const checksumsName = `checksums-happier-v${version}.txt`;
+  const checksumsName = `checksums-happiest-v${version}.txt`;
   const checksumsPath = join(fixtureDir, checksumsName);
   const hash = await sha256(tarPath);
   await writeFile(checksumsPath, `${hash}  ${artifactName}\n`, 'utf8');
@@ -214,7 +214,7 @@ printf '%s' '${releaseJson}'
     ...process.env,
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NO_PATH_UPDATE: '1',
     HAPPIER_NONINTERACTIVE: '1',

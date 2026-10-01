@@ -41,13 +41,14 @@ test('install.ps1 defaults background-service commands to the managed install di
   assert.doesNotMatch(raw, /Invoke-InstallerCommandWithDaemonServiceContext[^\n]*-HomeDir \$InstallDir/i);
 });
 
-test('install.ps1 uses HAPPIEST_HOME_DIR as the managed install dir when HAPPIER_INSTALL_DIR is unset', async () => {
+test('install.ps1 uses HAPPIEST_HOME_DIR as the managed install dir when HAPPIEST_INSTALL_DIR is unset', async () => {
   const path = join(repoRoot, 'scripts', 'release', 'installers', 'install.ps1');
   const raw = await readFile(path, 'utf8');
 
+  assert.match(raw, /\$DefaultInstallDirName\s*=\s*"\.happiest"/);
   assert.match(
     raw,
-    /\$InstallDir\s*=\s*if\s*\(\$env:HAPPIER_INSTALL_DIR\)\s*\{\s*\$env:HAPPIER_INSTALL_DIR\s*\}\s*elseif\s*\(\$env:HAPPIEST_HOME_DIR\)\s*\{\s*\$env:HAPPIEST_HOME_DIR\s*\}\s*else\s*\{\s*Join-Path \$env:USERPROFILE "\.happier"\s*\}/i,
+    /\$InstallDir\s*=\s*if\s*\(\$env:HAPPIEST_INSTALL_DIR\)\s*\{\s*\$env:HAPPIEST_INSTALL_DIR\s*\}\s*elseif\s*\(\$env:HAPPIEST_HOME_DIR\)\s*\{\s*\$env:HAPPIEST_HOME_DIR\s*\}\s*else\s*\{\s*Join-Path \$env:USERPROFILE \$DefaultInstallDirName\s*\}/i,
   );
   assert.match(raw, /\$DaemonServiceStateHomeDir\s*=\s*if\s*\(\$env:HAPPIEST_HOME_DIR\)\s*\{\s*\$env:HAPPIEST_HOME_DIR\s*\}\s*else\s*\{\s*\$InstallDir\s*\}/i);
   assert.match(raw, /\$env:HAPPIEST_HOME_DIR\s*=\s*\$HomeDir/i);
@@ -92,7 +93,7 @@ test('published preview and dev PowerShell installers keep the HAPPIEST_HOME_DIR
   const devRaw = await readFile(join(repoRoot, 'apps', 'website', 'public', 'install-dev.ps1'), 'utf8');
 
   const installDirPattern =
-    /\$InstallDir\s*=\s*if\s*\(\$env:HAPPIER_INSTALL_DIR\)\s*\{\s*\$env:HAPPIER_INSTALL_DIR\s*\}\s*elseif\s*\(\$env:HAPPIEST_HOME_DIR\)\s*\{\s*\$env:HAPPIEST_HOME_DIR\s*\}\s*else\s*\{\s*Join-Path \$env:USERPROFILE "\.happier"\s*\}/i;
+    /\$InstallDir\s*=\s*if\s*\(\$env:HAPPIEST_INSTALL_DIR\)\s*\{\s*\$env:HAPPIEST_INSTALL_DIR\s*\}\s*elseif\s*\(\$env:HAPPIEST_HOME_DIR\)\s*\{\s*\$env:HAPPIEST_HOME_DIR\s*\}\s*else\s*\{\s*Join-Path \$env:USERPROFILE \$DefaultInstallDirName\s*\}/i;
 
   assert.match(previewRaw, installDirPattern);
   assert.match(devRaw, installDirPattern);

@@ -33,7 +33,7 @@ test('install.sh (stack) --check is read-only and reports missing install', asyn
     SHELL: '/bin/bash',
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_PRODUCT: 'stack',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NONINTERACTIVE: '1',
   };

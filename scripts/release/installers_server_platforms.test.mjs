@@ -9,8 +9,8 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..', '..');
 
-test('install.sh (server) no longer gates darwin as Linux-only before fetching metadata', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'happier-installer-server-version-darwin-'));
+test('install.sh (server) rejects darwin as unsupported before fetching any metadata', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'happiest-installer-server-darwin-'));
   const homeDir = join(root, 'home');
   const binDir = join(root, 'bin');
   const installDir = join(root, 'install');
@@ -59,7 +59,7 @@ exit 88
     SHELL: '/bin/bash',
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_PRODUCT: 'server',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NONINTERACTIVE: '1',
   };
@@ -67,9 +67,10 @@ exit 88
   const res = spawnSync('bash', [installerPath, '--reinstall'], { env, encoding: 'utf8' });
   const stdout = String(res.stdout ?? '');
   const stderr = String(res.stderr ?? '');
-  assert.notEqual(res.status, 0, `expected reinstall to fail due to curl stub:\n--- stdout ---\n${stdout}\n--- stderr ---\n${stderr}\n`);
-  assert.match(stdout + stderr, /__curl_called__/);
-  assert.doesNotMatch(stdout + stderr, /published for Linux only/i);
+  assert.notEqual(res.status, 0, `expected the installer to reject darwin:\n--- stdout ---\n${stdout}\n--- stderr ---\n${stderr}\n`);
+  assert.match(stderr, /Unsupported platform: Darwin\/arm64/);
+  assert.match(stderr, /Linux/);
+  assert.doesNotMatch(stdout + stderr, /__curl_called__/, 'an unsupported platform must be rejected before any network access');
 
   await rm(root, { recursive: true, force: true });
 });

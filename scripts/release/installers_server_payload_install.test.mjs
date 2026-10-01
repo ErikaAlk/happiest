@@ -51,7 +51,7 @@ echo Linux
   await chmod(minisignStubPath, 0o755);
 
   const version = '0.1.2-dev.123';
-  const artifactStem = `happier-server-v${version}-linux-x64`;
+  const artifactStem = `happiest-server-v${version}-linux-x64`;
   const artifactName = `${artifactStem}.tar.gz`;
   const artifactDir = join(fixtureDir, artifactStem);
 
@@ -59,7 +59,7 @@ echo Linux
   const engineMarker = join(artifactDir, 'generated', 'sqlite-client', 'libquery_engine-linux-x64-openssl-3.0.x.so.node');
   await writeFile(engineMarker, 'engine\n', 'utf8');
 
-  const serverBin = join(artifactDir, 'happier-server');
+  const serverBin = join(artifactDir, 'happiest-server');
   await writeFile(
     serverBin,
     `#!/usr/bin/env bash
@@ -80,7 +80,7 @@ exit 0
   const tarRes = spawnSync('tar', ['-czf', tarPath, '-C', fixtureDir, artifactStem], { encoding: 'utf8' });
   assert.equal(tarRes.status, 0, `tar failed: ${String(tarRes.stderr ?? '')}`);
 
-  const checksumsName = `checksums-happier-server-v${version}.txt`;
+  const checksumsName = `checksums-happiest-server-v${version}.txt`;
   const checksumsPath = join(fixtureDir, checksumsName);
   const hash = await sha256(tarPath);
   await writeFile(checksumsPath, `${hash}  ${artifactName}\n`, 'utf8');
@@ -132,7 +132,7 @@ printf '%s' '${releaseJson}'
     PATH: `${binDir}:${process.env.PATH ?? ''}`,
     HAPPIER_PRODUCT: 'server',
     HAPPIER_CHANNEL: 'dev',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NO_PATH_UPDATE: '1',
     HAPPIER_NONINTERACTIVE: '1',
@@ -146,7 +146,7 @@ printf '%s' '${releaseJson}'
   const stderr = String(res.stderr ?? '');
   assert.equal(res.status, 0, `installer failed:\n--- stdout ---\n${stdout}\n--- stderr ---\n${stderr}\n`);
 
-  const shimPath = join(outBinDir, 'happier-server-dev');
+  const shimPath = join(outBinDir, 'happiest-server-dev');
   const execRes = spawnSync('bash', ['-lc', `${JSON.stringify(shimPath)} 2>/dev/null`], { env, encoding: 'utf8' });
   assert.equal(execRes.status, 0, `expected shim to execute the payload binary successfully:\n--- stdout ---\n${String(execRes.stdout ?? '')}\n--- stderr ---\n${String(execRes.stderr ?? '')}\n`);
   assert.match(String(execRes.stdout ?? ''), /prisma engine marker found/);

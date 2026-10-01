@@ -110,7 +110,7 @@ test('install.ps1 runs payload promotion from a runner outside the extracted pay
   assert.ok(helper, 'expected Invoke-InstallerPayloadPromotionWithTimeout to exist');
   assert.match(
     helper[0],
-    /\$runnerBinaryPath\s*=\s*Join-Path\s+\$env:TEMP\s+"happier-payload-promotion-\$runToken\.exe"/i,
+    /\$runnerBinaryPath\s*=\s*Join-Path\s+\$env:TEMP\s+"\$CliCommandName-payload-promotion-\$runToken\.exe"/i,
     'expected installer to allocate a temporary promotion runner outside the extracted payload root',
   );
   assert.match(
@@ -126,7 +126,7 @@ test('install.ps1 runs payload promotion from a runner outside the extracted pay
   assert.doesNotMatch(
     helper[0],
     /& '\$\(& \$escapeSingleQuotedLiteral \$BinaryPath\)' self __install-payload/i,
-    'running install-payload from inside the payload root locks happier.exe on Windows and forces slow copy fallback',
+    'running install-payload from inside the payload root locks happiest.exe on Windows and forces slow copy fallback',
   );
   assert.match(
     helper[0],
@@ -199,7 +199,7 @@ test('install.ps1 stages release archives under the install home instead of proc
   );
   assert.doesNotMatch(
     trimmed,
-    /New-Item\s+-ItemType\s+Directory\s+-Path\s+\(Join-Path\s+\$env:TEMP\s+\("happier-install-"/i,
+    /New-Item\s+-ItemType\s+Directory\s+-Path\s+\(Join-Path\s+\$env:TEMP\s+\("\$CliCommandName-install-"/i,
     'process temp can be space-constrained and can force slow cross-root payload promotion on Windows',
   );
 });

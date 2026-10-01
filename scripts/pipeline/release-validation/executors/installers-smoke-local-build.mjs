@@ -53,7 +53,7 @@ function resolveLocalBuildInstallVersion(buildOutput) {
   const artifacts = Array.isArray(buildOutput?.artifacts) ? buildOutput.artifacts : [];
   for (const artifact of artifacts) {
     const name = String(artifact ?? '');
-    const match = name.match(/^.+-v(.+)-(linux|darwin|win32)-[^-]+[.]tar[.]gz$/);
+    const match = name.match(/^.+-v(.+)-(linux|windows)-[^-]+[.]tar[.]gz$/);
     if (match?.[1]) {
       return match[1];
     }

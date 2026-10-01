@@ -26,7 +26,7 @@ async function resolveInstalledCliInvoker(candidates) {
 }
 
 async function runInstallerScenario(envOverrides = {}) {
-  const root = await mkdtemp(join(tmpdir(), 'happier-installer-daemon-'));
+  const root = await mkdtemp(join(tmpdir(), 'happiest-installer-daemon-'));
   const homeDir = join(root, 'home');
   const binDir = join(root, 'bin');
   const installDir = join(root, 'install');
@@ -34,7 +34,7 @@ async function runInstallerScenario(envOverrides = {}) {
   const fixtureDir = join(root, 'fixture');
   const systemdUserDir = join(root, 'systemd', 'user');
   const systemdSystemDir = join(root, 'systemd', 'system');
-  const logPath = join(root, 'happier.invocations.log');
+  const logPath = join(root, 'happiest.invocations.log');
 
   await mkdir(homeDir, { recursive: true });
   await mkdir(binDir, { recursive: true });
@@ -52,10 +52,10 @@ async function runInstallerScenario(envOverrides = {}) {
   } = envOverrides;
 
   if (nativeUserServiceContent) {
-    await writeFile(join(systemdUserDir, 'happier-daemon.default.service'), nativeUserServiceContent, 'utf8');
+    await writeFile(join(systemdUserDir, 'happiest-daemon.default.service'), nativeUserServiceContent, 'utf8');
   }
   if (nativeSystemServiceContent) {
-    await writeFile(join(systemdSystemDir, 'happier-daemon.default.service'), nativeSystemServiceContent, 'utf8');
+    await writeFile(join(systemdSystemDir, 'happiest-daemon.default.service'), nativeSystemServiceContent, 'utf8');
   }
 
   // Stub uname so the installer deterministically selects linux-x64 assets.
@@ -110,13 +110,13 @@ exec "$HAPPIER_TEST_REAL_AWK" "$@"
   const artifactVersions = ['1.2.3', '1.2.4', '1.2.3-preview.1', '1.2.4-preview.1'];
   const artifacts = [];
   for (const version of artifactVersions) {
-    const artifactStem = `happier-v${version}-linux-x64`;
+    const artifactStem = `happiest-v${version}-linux-x64`;
     const artifactName = `${artifactStem}.tar.gz`;
     const artifactDir = join(fixtureDir, artifactStem);
     await mkdir(join(artifactDir, 'happiest-runtime'), { recursive: true });
-    const happierBin = join(artifactDir, 'happier');
+    const happiestBin = join(artifactDir, 'happiest');
     await writeFile(
-      happierBin,
+      happiestBin,
       `#!/usr/bin/env bash
 set -euo pipefail
 copy_tree() {
@@ -167,13 +167,13 @@ if [[ "$1" = "self" && "$2" = "__install-payload" ]]; then
   rm -rf "$target_version_dir" "$install_root/current"
   copy_tree "$payload_root" "$target_version_dir"
   copy_tree "$payload_root" "$install_root/current"
-  shim_name="happier"
+  shim_name="happiest"
   if [[ "$channel_id" = "preview" ]]; then
-    shim_name="hprev"
+    shim_name="happiest-preview"
   elif [[ "$channel_id" = "publicdev" || "$channel_id" = "dev" ]]; then
-    shim_name="hdev"
+    shim_name="happiest-dev"
   fi
-  cp "$install_root/current/happier" "$HAPPIEST_HOME_DIR/bin/$shim_name"
+  cp "$install_root/current/happiest" "$HAPPIEST_HOME_DIR/bin/$shim_name"
   chmod +x "$HAPPIEST_HOME_DIR/bin/$shim_name"
   exit 0
 fi
@@ -183,7 +183,7 @@ if [[ "$1" = "service" && "$2" = "install" ]]; then
     exit 1
   fi
   if [[ "\${HAPPIER_TEST_UNSUPPORTED_SERVICE_SURFACE:-0}" = "1" ]]; then
-    echo "Usage: happier <command> [options]"
+    echo "Usage: happiest <command> [options]"
     exit 0
   fi
   if [[ -f "${logPath}.repair-ran" && " $* " != *" --yes "* ]]; then
@@ -276,15 +276,15 @@ if [[ "$1" = "service" && "$2" = "status" ]]; then
 fi
 if [[ "$1" = "relay" && "$2" = "--help" ]]; then
   cat <<'EOF'
-happier relay
-  happier relay host
+happiest relay
+  happiest relay host
 EOF
   exit 0
 fi
 if [[ "$1" = "relay" && "$2" = "host" && "$3" = "install" && "$4" = "--help" ]]; then
   if [[ "\${HAPPIER_TEST_RELAY_INSTALL_HELP_NO_PRESERVE_ACTIVE_SERVER:-0}" = "1" ]]; then
     cat <<'EOF'
-happier relay host install
+happiest relay host install
   --mode
   --yes
   --channel
@@ -292,7 +292,7 @@ EOF
     exit 0
   fi
   cat <<'EOF'
-happier relay host install
+happiest relay host install
   --mode
   --yes
   --channel
@@ -316,14 +316,14 @@ exit 0
 `,
       'utf8',
     );
-    await chmod(happierBin, 0o755);
+    await chmod(happiestBin, 0o755);
     await writeFile(join(artifactDir, 'happiest-runtime', 'index.mjs'), `export default ${JSON.stringify(version)};\n`, 'utf8');
 
     const tarPath = join(fixtureDir, artifactName);
     const tarRes = spawnSync('tar', ['-czf', tarPath, '-C', fixtureDir, artifactStem], { encoding: 'utf8' });
     assert.equal(tarRes.status, 0, `tar failed: ${String(tarRes.stderr ?? '')}`);
 
-    const checksumsName = `checksums-happier-v${version}.txt`;
+    const checksumsName = `checksums-happiest-v${version}.txt`;
     const checksumsPath = join(fixtureDir, checksumsName);
     const hash = await sha256(tarPath);
     await writeFile(checksumsPath, `${hash}  ${artifactName}\n`, 'utf8');
@@ -468,7 +468,7 @@ printf '%s' '${releaseJson}'
     HOME: homeDir,
     PATH: `${binDir}:${process.env.PATH ?? ''}`,
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NO_PATH_UPDATE: '1',
     HAPPIER_NONINTERACTIVE: '1',
@@ -510,10 +510,10 @@ printf '%s' '${releaseJson}'
         : 'cli';
   const installedShimName =
     requestedChannel === 'preview'
-      ? 'hprev'
+      ? 'happiest-preview'
       : requestedChannel === 'dev' || requestedChannel === 'publicdev'
-        ? 'hdev'
-        : 'happier';
+        ? 'happiest-dev'
+        : 'happiest';
 
   const res = spawnSync('bash', [installerPath, ...installerArgs], { env, encoding: 'utf8' });
   const stdout = String(res.stdout ?? '');
@@ -525,8 +525,8 @@ printf '%s' '${releaseJson}'
   const installedInvoker = await resolveInstalledCliInvoker([
     join(outBinDir, installedShimName),
     join(installDir, 'bin', installedShimName),
-    join(outBinDir, 'happier'),
-    join(installDir, 'bin', 'happier'),
+    join(outBinDir, 'happiest'),
+    join(installDir, 'bin', 'happiest'),
   ]);
   const versionRes = spawnSync(installedInvoker, ['--version'], { env, encoding: 'utf8' });
   assert.equal(versionRes.status, 0, `installed binary failed: ${String(versionRes.stderr ?? '')}`);
@@ -536,7 +536,7 @@ printf '%s' '${releaseJson}'
     `export default ${JSON.stringify(expectedInstalledVersion)};\n`,
   );
   assert.match(
-    await readFile(join(installDir, installedManagedRoot, 'current', 'happier'), 'utf8'),
+    await readFile(join(installDir, installedManagedRoot, 'current', 'happiest'), 'utf8'),
     new RegExp(expectedInstalledVersion.replaceAll('.', '[.]')),
   );
 
@@ -610,7 +610,7 @@ test('install.sh skips daemon service preflight when daemon setup is explicitly 
 test('install.sh renders truthful linear download, verify, and install phases when redirected', async () => {
   const scenario = await runInstallerScenario();
   try {
-    assert.match(scenario.stdout, /^Happier\n[^\n]+\nDownload -> Verify -> Install\n/m);
+    assert.match(scenario.stdout, /^Happiest\n[^\n]+\nDownload -> Verify -> Install\n/m);
     assert.doesNotMatch(scenario.stdout, /3443|\x1b|\r/);
     assert.ok(scenario.stdout.indexOf('\n[Download]\n') < scenario.stdout.indexOf('\n[Verify]\n'));
     assert.ok(scenario.stdout.indexOf('\n[Verify]\n') < scenario.stdout.indexOf('\n[Install]\n'));
@@ -698,7 +698,7 @@ test('install.sh does not render a shell-owned post-install summary when doctor 
           name: 'Default background service',
           serverId: 'default',
           mode: 'user',
-          path: '/tmp/com.happier.cli.daemon.default.plist',
+          path: '/tmp/com.happiest.cli.daemon.default.plist',
           targetMode: 'default-following',
           releaseChannel: 'stable',
         },
@@ -706,7 +706,7 @@ test('install.sh does not render a shell-owned post-install summary when doctor 
           name: 'company',
           serverId: 'company',
           mode: 'user',
-          path: '/tmp/com.happier.cli.daemon.env_9675c02.plist',
+          path: '/tmp/com.happiest.cli.daemon.env_9675c02.plist',
           targetMode: 'pinned',
           releaseChannel: 'stable',
         },
@@ -719,16 +719,16 @@ test('install.sh does not render a shell-owned post-install summary when doctor 
     }),
     HAPPIER_TEST_SERVICE_LIST_TEXT:
       'Default background service (default, stable, user)\n' +
-      '  installed: /tmp/com.happier.cli.daemon.default.plist\n' +
+      '  installed: /tmp/com.happiest.cli.daemon.default.plist\n' +
       'company (company, stable, user)\n' +
-      '  installed: /tmp/com.happier.cli.daemon.env_9675c02.plist',
+      '  installed: /tmp/com.happiest.cli.daemon.env_9675c02.plist',
     HAPPIER_TEST_SERVICE_LIST_JSON: JSON.stringify({
       entries: [
         {
           name: 'Default background service',
           serverId: 'default',
           mode: 'user',
-          path: '/tmp/com.happier.cli.daemon.default.plist',
+          path: '/tmp/com.happiest.cli.daemon.default.plist',
           targetMode: 'default-following',
           releaseChannel: 'stable',
         },
@@ -736,7 +736,7 @@ test('install.sh does not render a shell-owned post-install summary when doctor 
           name: 'company',
           serverId: 'company',
           mode: 'user',
-          path: '/tmp/com.happier.cli.daemon.env_9675c02.plist',
+          path: '/tmp/com.happiest.cli.daemon.env_9675c02.plist',
           targetMode: 'pinned',
           releaseChannel: 'stable',
         },
@@ -744,7 +744,7 @@ test('install.sh does not render a shell-owned post-install summary when doctor 
       services: [
         {
           serviceType: 'daemon',
-          label: 'com.happier.cli.daemon.default',
+          label: 'com.happiest.cli.daemon.default',
           serverId: 'default',
           name: 'Default background service',
           ring: 'stable',
@@ -754,11 +754,11 @@ test('install.sh does not render a shell-owned post-install summary when doctor 
           running: false,
           configuredCliVersion: '0.2.5-stable.100',
           runningCliVersion: null,
-          path: '/tmp/com.happier.cli.daemon.default.plist',
+          path: '/tmp/com.happiest.cli.daemon.default.plist',
         },
         {
           serviceType: 'daemon',
-          label: 'com.happier.cli.daemon.env_9675c02',
+          label: 'com.happiest.cli.daemon.env_9675c02',
           serverId: 'company',
           name: 'company',
           ring: 'stable',
@@ -768,7 +768,7 @@ test('install.sh does not render a shell-owned post-install summary when doctor 
           running: false,
           configuredCliVersion: '0.2.4-stable.99',
           runningCliVersion: null,
-          path: '/tmp/com.happier.cli.daemon.env_9675c02.plist',
+          path: '/tmp/com.happiest.cli.daemon.env_9675c02.plist',
         },
       ],
     }),
@@ -780,7 +780,7 @@ test('install.sh does not render a shell-owned post-install summary when doctor 
           name: 'Default background service',
           serverId: 'default',
           mode: 'user',
-          path: '/tmp/com.happier.cli.daemon.default.plist',
+          path: '/tmp/com.happiest.cli.daemon.default.plist',
           targetMode: 'default-following',
           releaseChannel: 'stable',
         },
@@ -788,7 +788,7 @@ test('install.sh does not render a shell-owned post-install summary when doctor 
           name: 'company',
           serverId: 'company',
           mode: 'user',
-          path: '/tmp/com.happier.cli.daemon.env_9675c02.plist',
+          path: '/tmp/com.happiest.cli.daemon.env_9675c02.plist',
           targetMode: 'pinned',
           releaseChannel: 'stable',
         },
@@ -926,7 +926,7 @@ test('install.sh uses doctor repair --report-only for the post-install summary w
           name: 'Default background service',
           serverId: 'default',
           mode: 'user',
-          path: '/tmp/com.happier.cli.daemon.default.plist',
+          path: '/tmp/com.happiest.cli.daemon.default.plist',
           targetMode: 'default-following',
           releaseChannel: 'stable',
         },
@@ -975,7 +975,7 @@ test('install.sh skips the post-install summary when doctor repair --report-only
           name: 'Default background service',
           serverId: 'default',
           mode: 'user',
-          path: '/tmp/com.happier.cli.daemon.default.plist',
+          path: '/tmp/com.happiest.cli.daemon.default.plist',
           targetMode: 'default-following',
           releaseChannel: 'stable',
         },
@@ -1038,7 +1038,7 @@ test('install.sh skips doctor repair execution when the installed CLI only suppo
     HAPPIER_CHANNEL: 'preview',
     HAPPIER_NONINTERACTIVE: '',
     HAPPIER_TEST_UNSUPPORTED_DOCTOR_REPAIR: '1',
-    HAPPIER_TEST_DOCTOR_REPAIR_REPORT_ONLY_TEXT: '🩺 Happier CLI Doctor',
+    HAPPIER_TEST_DOCTOR_REPAIR_REPORT_ONLY_TEXT: '🩺 Happiest CLI Doctor',
     HAPPIER_TEST_SERVICE_LIST_JSON: JSON.stringify({
       entries: [
         { mode: 'user', targetMode: 'default-following', releaseChannel: 'preview' },
@@ -1049,7 +1049,7 @@ test('install.sh skips doctor repair execution when the installed CLI only suppo
     assert.equal(scenario.log.trim(), '');
     assert.doesNotMatch(scenario.log, /doctor repair 1\.2\.4 args=doctor repair --yes/);
     assert.doesNotMatch(scenario.log, /doctor repair-report-only 1\.2\.4 args=doctor repair --report-only/);
-    assert.doesNotMatch(scenario.stdout, /Happier CLI Doctor/);
+    assert.doesNotMatch(scenario.stdout, /Happiest CLI Doctor/);
   } finally {
     await scenario.cleanup();
   }
@@ -1247,13 +1247,13 @@ test('install.sh trusts CLI repair preflight over native Linux unit scans when s
     HAPPIER_TEST_SERVICE_LIST_TEXT: 'default service (user)',
     HAPPIER_TEST_SERVICE_STATUS_TEXT: 'current owner: background service',
     HAPPIER_TEST_NATIVE_SYSTEM_SERVICE_CONTENT: `[Unit]
-Description=Happier CLI daemon (default)
+Description=Happiest CLI daemon (default)
 
 [Service]
-Environment=HAPPIEST_DAEMON_SERVICE_LABEL=com.happier.cli.daemon.default
+Environment=HAPPIEST_DAEMON_SERVICE_LABEL=com.happiest.cli.daemon.default
 Environment=HAPPIEST_DAEMON_SERVICE_TARGET_MODE=default-following
 Environment=HAPPIER_PUBLIC_RELEASE_CHANNEL=preview
-ExecStart=/usr/bin/node /tmp/happier daemon start-sync
+ExecStart=/usr/bin/node /tmp/happiest daemon start-sync
 `,
   });
   try {
@@ -1367,6 +1367,6 @@ test('install.sh suppresses the installer welcome for help and invalid arguments
   const invalid = spawnSync('bash', [installerPath, '--definitely-invalid'], { encoding: 'utf8' });
   assert.equal(help.status, 0);
   assert.notEqual(invalid.status, 0);
-  assert.doesNotMatch(String(help.stdout ?? ''), /^Happier\n[^\n]+\nDownload -> Verify -> Install/m);
-  assert.doesNotMatch(`${invalid.stdout ?? ''}${invalid.stderr ?? ''}`, /^Happier\n[^\n]+\nDownload -> Verify -> Install/m);
+  assert.doesNotMatch(String(help.stdout ?? ''), /^Happiest\n[^\n]+\nDownload -> Verify -> Install/m);
+  assert.doesNotMatch(`${invalid.stdout ?? ''}${invalid.stderr ?? ''}`, /^Happiest\n[^\n]+\nDownload -> Verify -> Install/m);
 });

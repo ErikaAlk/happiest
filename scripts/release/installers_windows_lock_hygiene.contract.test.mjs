@@ -34,8 +34,8 @@ test('install.ps1 performs deterministic Windows lock hygiene before payload pro
   );
   assert.match(
     trimmed,
-    /\$happierProcessNames\s*=\s*@\(\s*"happier",\s*"hprev",\s*"hdev"\s*\)/i,
-    'expected lock hygiene to target known Happier process names only',
+    /\$productProcessNames\s*=\s*@\(\s*\$CliCommandName,\s*"\$CliCommandName-preview",\s*"\$CliCommandName-dev"\s*\)/i,
+    'expected lock hygiene to target known Happiest process names only',
   );
   assert.match(
     trimmed,
@@ -87,9 +87,9 @@ test('install.ps1 returns lock hygiene match needles as a string array', async (
 test('install.ps1 returns scoped process matches as an object array', async () => {
   const path = join(repoRoot, 'scripts', 'release', 'installers', 'install.ps1');
   const raw = await readFile(path, 'utf8');
-  const functionMatch = raw.match(/function Get-InstallerScopedHappierProcesses\s*\{[\s\S]*?\n\}/);
+  const functionMatch = raw.match(/function Get-InstallerScopedProductProcesses\s*\{[\s\S]*?\n\}/);
 
-  assert.ok(functionMatch, 'expected Get-InstallerScopedHappierProcesses to exist');
+  assert.ok(functionMatch, 'expected Get-InstallerScopedProductProcesses to exist');
   assert.match(
     functionMatch[0],
     /return\s+\$matched\.ToArray\(\)/i,
@@ -107,7 +107,7 @@ test('install.ps1 matches scoped process paths by path boundary, not sibling-pre
   const raw = await readFile(path, 'utf8');
   const scopeHelper = extractInstallerFunction(raw, 'Test-InstallerLockHygienePathInScope');
   const commandLineParser = extractInstallerFunction(raw, 'Resolve-InstallerLockHygieneExecutablePathFromCommandLine');
-  const processHelper = extractInstallerFunction(raw, 'Get-InstallerScopedHappierProcesses');
+  const processHelper = extractInstallerFunction(raw, 'Get-InstallerScopedProductProcesses');
 
   assert.match(
     scopeHelper,
@@ -117,7 +117,7 @@ test('install.ps1 matches scoped process paths by path boundary, not sibling-pre
   assert.match(
     scopeHelper,
     /\$scopePrefix\s*=\s*"\$scope\/"[\s\S]*\.StartsWith\(\$scopePrefix\)/i,
-    'scoped matching should require a path separator after the install root so .happier2 is not in scope for .happier',
+    'scoped matching should require a path separator after the install root so .happiest2 is not in scope for .happiest',
   );
   assert.match(
     commandLineParser,
@@ -142,7 +142,7 @@ test('install.ps1 matches scoped process paths by path boundary, not sibling-pre
   assert.doesNotMatch(
     processHelper,
     /\.Contains\(\$needle\)/i,
-    'process matching must not use substring scope checks because .happier2 contains .happier',
+    'process matching must not use substring scope checks because .happiest2 contains .happiest',
   );
 });
 
@@ -150,14 +150,19 @@ test('install.ps1 matches scoped service paths by path boundary, not sibling-pre
   const path = join(repoRoot, 'scripts', 'release', 'installers', 'install.ps1');
   const raw = await readFile(path, 'utf8');
   const labelHelper = extractInstallerFunction(raw, 'Test-InstallerLockHygieneDaemonServiceLabelInScope');
-  const serviceHelper = extractInstallerFunction(raw, 'Get-InstallerScopedHappierServices');
-  const scheduledTaskHelper = extractInstallerFunction(raw, 'Get-InstallerScopedHappierScheduledTasks');
+  const serviceHelper = extractInstallerFunction(raw, 'Get-InstallerScopedProductServices');
+  const scheduledTaskHelper = extractInstallerFunction(raw, 'Get-InstallerScopedProductScheduledTasks');
   const preInstall = extractInstallerFunction(raw, 'Invoke-InstallerPreInstallLockHygiene');
 
   assert.match(
+    raw,
+    /\$DaemonServiceUnitPrefix\s*=\s*"happiest-daemon"/,
+    'expected the daemon service label prefix to be the Happiest identity',
+  );
+  assert.match(
     labelHelper,
-    /\$leafLabel\s+-eq\s+["']happier-daemon["'][\s\S]*\.StartsWith\(["']happier-daemon\.["']\)/i,
-    'native service/task verification should only consider CLI daemon labels, not sibling services such as happier-server',
+    /\$leafLabel\s+-eq\s+\$DaemonServiceUnitPrefix[\s\S]*\.StartsWith\("\$DaemonServiceUnitPrefix\."\)/i,
+    'native service/task verification should only consider CLI daemon labels, not sibling services such as happiest-server',
   );
   assert.match(serviceHelper, /Win32_Service/i, 'service detection should use native Windows service inventory');
   assert.match(
@@ -188,12 +193,17 @@ test('install.ps1 matches scoped service paths by path boundary, not sibling-pre
   assert.doesNotMatch(
     serviceHelper,
     /\.Contains\(\$needle\)/i,
-    'service matching must not use substring scope checks because .happier2 contains .happier',
+    'service matching must not use substring scope checks because .happiest2 contains .happiest',
+  );
+  assert.match(
+    raw,
+    /\$WindowsTaskFolder\s*=\s*"Happiest"/,
+    'expected the Windows task folder to be the Happiest identity',
   );
   assert.match(
     scheduledTaskHelper,
-    /Get-ScheduledTask[\s\S]*-TaskPath\s+["']\\Happier\\["']/i,
-    'scheduled task detection should inspect the Happier task folder used by the Windows background-service backend',
+    /Get-ScheduledTask[\s\S]*-TaskPath\s+"\\\$WindowsTaskFolder\\"/i,
+    'scheduled task detection should inspect the Happiest task folder used by the Windows background-service backend',
   );
   assert.match(
     scheduledTaskHelper,
@@ -208,7 +218,7 @@ test('install.ps1 matches scoped service paths by path boundary, not sibling-pre
   assert.doesNotMatch(
     scheduledTaskHelper,
     /\.Contains\(\$needle\)/i,
-    'scheduled task matching must not use substring scope checks because .happier2 contains .happier',
+    'scheduled task matching must not use substring scope checks because .happiest2 contains .happiest',
   );
   assert.match(
     preInstall,
@@ -218,12 +228,12 @@ test('install.ps1 matches scoped service paths by path boundary, not sibling-pre
   assert.doesNotMatch(preInstall, /Test-InstallerPreInstallOldCliStopNeeded|shouldRunOldCliStopCommands/i);
   assert.match(
     preInstall,
-    /Get-InstallerScopedHappierServices\s+-MatchNeedles\s+\$matchNeedles/i,
+    /Get-InstallerScopedProductServices\s+-MatchNeedles\s+\$matchNeedles/i,
     'pre-install hygiene should still verify scoped running services with boundary-aware matching after old-CLI cleanup',
   );
   assert.match(
     preInstall,
-    /Get-InstallerScopedHappierScheduledTasks\s+-MatchNeedles\s+\$matchNeedles/i,
+    /Get-InstallerScopedProductScheduledTasks\s+-MatchNeedles\s+\$matchNeedles/i,
     'pre-install hygiene should verify active scheduled-task backed services with boundary-aware matching after old-CLI cleanup',
   );
 });

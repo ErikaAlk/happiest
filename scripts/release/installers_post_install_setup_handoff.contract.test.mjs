@@ -17,7 +17,7 @@ async function sha256(path) {
 }
 
 /**
- * Build a throwaway install root with a fake `happier` payload whose every
+ * Build a throwaway install root with a fake `happiest` payload whose every
  * invocation is appended to a log file, so a test can assert on exactly which
  * CLI commands the installer decided to run.
  */
@@ -53,16 +53,16 @@ echo Linux
   await chmod(unameStubPath, 0o755);
 
   const version = '9.9.9';
-  const artifactStem = `happier-v${version}-linux-x64`;
+  const artifactStem = `happiest-v${version}-linux-x64`;
   const artifactName = `${artifactStem}.tar.gz`;
   const artifactDir = join(fixtureDir, artifactStem);
   await mkdir(artifactDir, { recursive: true });
 
   // The fake CLI mirrors the real root help layout closely enough for the
-  // installer's `--run` support gate ("^\s*(happier|<bin>)\s+<subcommand>\b").
-  const happierBin = join(artifactDir, 'happier');
+  // installer's `--run` support gate ("^\s*(happiest|<bin>)\s+<subcommand>\b").
+  const happiestBin = join(artifactDir, 'happiest');
   await writeFile(
-    happierBin,
+    happiestBin,
     `#!/usr/bin/env bash
 set -uo pipefail
 printf '%s\\n' "$*" >> "\${HAPPIER_TEST_CLI_LOG}"
@@ -72,13 +72,13 @@ if [[ "\${1:-}" = "--version" ]]; then
 fi
 if [[ "\${1:-}" = "--help" ]]; then
   cat <<'HELPEOF'
-happier - AI CLI On the Go
+happiest - AI CLI On the Go
 
 Usage:
-  happier [options]           Start the default backend with mobile control
-  happier setup               Connect this computer to your Happier account
-  happier auth                Manage authentication
-  happier status              Show status
+  happiest [options]          Start the default backend with mobile control
+  happiest setup              Connect this computer to your Happiest account
+  happiest auth               Manage authentication
+  happiest status             Show status
 HELPEOF
   exit 0
 fi
@@ -126,7 +126,7 @@ exit 0
 `,
     'utf8',
   );
-  await chmod(happierBin, 0o755);
+  await chmod(happiestBin, 0o755);
 
   const authStatusJsonFile = join(root, 'auth-status.json');
   await writeFile(authStatusJsonFile, `${authStatusJson}\n`, 'utf8');
@@ -135,7 +135,7 @@ exit 0
   const tarRes = spawnSync('tar', ['-czf', tarPath, '-C', fixtureDir, artifactStem], { encoding: 'utf8' });
   assert.equal(tarRes.status, 0, `tar failed: ${String(tarRes.stderr ?? '')}`);
 
-  const checksumsName = `checksums-happier-v${version}.txt`;
+  const checksumsName = `checksums-happiest-v${version}.txt`;
   const checksumsPath = join(fixtureDir, checksumsName);
   await writeFile(checksumsPath, `${await sha256(tarPath)}  ${artifactName}\n`, 'utf8');
 
@@ -201,7 +201,7 @@ printf '%s' '${releaseJson}'
     SHELL: '/bin/bash',
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_GITHUB_TOKEN: '',
     GITHUB_TOKEN: '',
@@ -241,7 +241,7 @@ async function readCliInvocations(cliLogPath) {
   return raw.split('\n').map((line) => line.trim()).filter(Boolean);
 }
 
-test('install.sh hands a fresh interactive install off to `happier setup`', async () => {
+test('install.sh hands a fresh interactive install off to `happiest setup`', async () => {
   assert.ok(existsSync('/usr/bin/script'), 'expected script(1) for a real pty');
   const fixture = await prepareInstallFixture('happier-installer-setup-handoff-fresh-');
 
@@ -251,7 +251,7 @@ test('install.sh hands a fresh interactive install off to `happier setup`', asyn
 
   assert.ok(
     invocations.includes('setup'),
-    `expected the installer to run \`happier setup\` after a fresh interactive install; CLI invocations were ${JSON.stringify(invocations)}\n--- output ---\n${output}`,
+    `expected the installer to run \`happiest setup\` after a fresh interactive install; CLI invocations were ${JSON.stringify(invocations)}\n--- output ---\n${output}`,
   );
   assert.ok(invocations.includes('welcome_shown=1'), 'guided setup should know the installer already showed its welcome');
   assert.ok(invocations.includes('stderr_tty=yes'), 'terminal detection must preserve the child stderr terminal for diagnostics and animation');
@@ -278,7 +278,7 @@ test('install.sh keeps static art but emits no animation controls when motion is
   const output = String(res.stdout ?? '').replaceAll('\r\n', '\n');
   assert.equal(res.status, 0, `installer failed:\n${output}\n${String(res.stderr ?? '')}`);
   const artLines = output.split('\n').filter((line) => /^\s*\d{4,}/.test(line));
-  const titleRow = artLines.findIndex((line) => /Happier/.test(line));
+  const titleRow = artLines.findIndex((line) => /Happiest/.test(line));
   assert.ok(artLines.length >= 9, 'expected a complete numeric globe');
   assert.equal(titleRow, Math.floor((artLines.length - 1) / 2) - 1, 'title is centered beside the globe');
   assert.ok(artLines.every((line) => line.length <= 80), 'header must fit without terminal wrapping');
@@ -303,8 +303,8 @@ test('install.sh never runs setup unattended, and still prints next steps', asyn
     `an unattended install must never run guided setup; CLI invocations were ${JSON.stringify(invocations)}`,
   );
   assert.match(stdout, /Get started/i, 'expected the installer to always print next steps');
-  assert.match(stdout, /happier setup/, 'expected unattended next steps to name the setup command');
-  assert.match(stdout, /happier status/, 'expected next steps to name the status command');
+  assert.match(stdout, /happiest setup/, 'expected unattended next steps to name the setup command');
+  assert.match(stdout, /happiest status/, 'expected next steps to name the status command');
 
   await rm(fixture.root, { recursive: true, force: true });
 });
@@ -342,10 +342,10 @@ test('install.sh re-run on an already-configured machine neither runs setup nor 
   );
   assert.match(output, /Get started/i, 'expected next steps on a re-run too');
   assert.ok(
-    !/happier setup/.test(output),
+    !/happiest setup/.test(output),
     `an already-configured machine must not be told to run setup:\n--- output ---\n${output}`,
   );
-  assert.match(output, /happier status/, 'expected next steps to name the status command');
+  assert.match(output, /happiest status/, 'expected next steps to name the status command');
 
   await rm(fixture.root, { recursive: true, force: true });
 });
@@ -396,7 +396,7 @@ test('install.sh gives guided setup the controlling terminal even when the insta
   await rm(fixture.root, { recursive: true, force: true });
 });
 
-// install.ps1 cannot be executed on the Linux/macOS hosts that run this suite, so
+// install.ps1 cannot be executed on the Linux hosts that run this suite, so
 // the Windows behaviour is pinned here by shape and verified by running the real
 // installer on a Windows host during development.
 async function readInstallPs1() {

@@ -32,10 +32,11 @@ test('install.ps1 presents the compact branded header and truthful install stage
     .map((row) => row.map((cell) => cell?.digit ?? ' ').join(''));
   assert.deepEqual(powershellRows, expectedRows);
   assert.deepEqual(powershellRows, bashRows, 'expected PowerShell and Bash installers to share one visual identity');
-  assert.match(header, /Happier/);
+  assert.match(source, /\$ProductDisplayName\s*=\s*"Happiest"/);
+  assert.match(header, /\$label\s*=\s*\$ProductDisplayName/);
   assert.match(header, /Download -> Verify -> Install/);
   assert.match(header, /Test-InstallerRichHeaderAvailable/);
-  assert.match(header, /Write-Host "Happier"/);
+  assert.match(header, /Write-Host \$ProductDisplayName/);
   assert.match(header, /\[1m/);
   assert.ok(powershellRows.every((row) => row.length === 28), 'expected labels to start at one fixed column');
   assert.doesNotMatch(header, /Dark(?:Red|Blue|Magenta|Cyan|Yellow)/, 'expected readable colors on dark terminals');

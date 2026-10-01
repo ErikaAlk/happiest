@@ -5,12 +5,14 @@ import { execFileSync } from 'node:child_process';
 import { delimiter, join, resolve, win32 as pathWin32 } from 'node:path';
 import { tmpdir } from 'node:os';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 import {
   resolvePublishedInstallerAsset,
   resolvePublishedInstallerAssetForTag,
   resolvePublishedInstallerChannelForTag,
 } from '../../release/installers/catalog.mjs';
-import { normalizePublicReleaseChannel } from '../../release/lib/public-release-rings.mjs';
+import { normalizePublicReleaseChannel, resolveRollingReleaseTagSuffix } from '../../release/lib/public-release-rings.mjs';
 import { prepareInstallersSmokeLocalBuildAssets } from './installers-smoke-local-build.mjs';
 
 function assertNativePlatform(platform) {
@@ -20,15 +22,15 @@ function assertNativePlatform(platform) {
 }
 
 /**
+ * The installers name the stable command after the product and suffix every other ring.
+ *
  * @param {'linux' | 'darwin' | 'win32'} platform
- * @param {string} installer
+ * @param {'stable' | 'preview' | 'publicdev'} channel
  */
-function resolveCliSmokeBinaryName(platform, installer) {
-  const baseName = installer.includes('install-dev')
-    ? 'hdev'
-    : installer.includes('install-preview')
-      ? 'hprev'
-      : 'happier';
+function resolveCliSmokeBinaryName(platform, channel) {
+  const baseName = channel === 'stable'
+    ? productIdentity.commandName
+    : `${productIdentity.commandName}-${resolveRollingReleaseTagSuffix(channel)}`;
   return platform === 'win32' ? `${baseName}.exe` : baseName;
 }
 
@@ -62,12 +64,13 @@ export function resolveInstallersSmokePlan({ platform, source, releaseChannel })
     throw new Error('installers-smoke currently supports only published-channel, published-tag, or local-build sources');
   }
   const { tag, installer } = resolved;
+  const channel = /** @type {'stable' | 'preview' | 'publicdev'} */ (localBuildChannel);
   return {
     platform,
     tag,
     installer,
-    binaryName: resolveCliSmokeBinaryName(platform, installer),
-    releaseChannel: /** @type {'stable' | 'preview' | 'publicdev'} */ (localBuildChannel),
+    binaryName: resolveCliSmokeBinaryName(platform, channel),
+    releaseChannel: channel,
     installerEnv: {
       HAPPIER_WITH_DAEMON: '0',
     },
@@ -201,7 +204,7 @@ export async function runInstallersSmokeValidation({ repoRoot, platform, source,
   }
 
   const scratch = await mkdtemp(join(tmpdir(), 'happier-installers-smoke-'));
-  const installDir = join(scratch, '.happier');
+  const installDir = join(scratch, '.happiest');
   const requestedBinDir = join(scratch, '.local', 'bin');
   const installerSourcePath = resolve(repoRoot, 'apps', 'website', 'public', plan.installer);
   const installerScratchPath = join(scratch, plan.installer);
@@ -220,14 +223,14 @@ export async function runInstallersSmokeValidation({ repoRoot, platform, source,
     ...process.env,
     HAPPIER_GITHUB_TOKEN: token ?? process.env.HAPPIER_GITHUB_TOKEN ?? '',
     HAPPIER_NONINTERACTIVE: '1',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: requestedBinDir,
     HAPPIER_CHANNEL: plan.releaseChannel === 'publicdev' ? 'dev' : plan.releaseChannel,
     ...plan.installerEnv,
   };
   if (localBuildAssets) {
-    env.HAPPIER_RELEASE_ASSETS_DIR = localBuildAssets.assetsDir;
-    env.HAPPIEST_MINISIGN_PUBKEY =localBuildAssets.publicKey;
+    env.HAPPIEST_RELEASE_ASSETS_DIR = localBuildAssets.assetsDir;
+    env.HAPPIEST_MINISIGN_PUBKEY = localBuildAssets.publicKey;
     if (localBuildAssets.installVersion) {
       env.HAPPIER_INSTALL_VERSION = localBuildAssets.installVersion;
     }

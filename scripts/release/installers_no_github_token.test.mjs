@@ -52,7 +52,7 @@ printf '%s' '{"assets":[]}'
     PATH: `${binDir}:${process.env.PATH ?? ''}`,
     HAPPIER_CHANNEL: 'preview',
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NO_PATH_UPDATE: '1',
     HAPPIER_NONINTERACTIVE: '1',

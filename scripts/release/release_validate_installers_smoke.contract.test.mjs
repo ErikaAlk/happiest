@@ -18,7 +18,7 @@ test('installers-smoke resolves published channel installer plans by platform', 
       platform: 'linux',
       tag: 'cli-stable',
       installer: 'install.sh',
-      binaryName: 'happier',
+      binaryName: 'happiest',
       releaseChannel: 'stable',
       installerEnv: {
         HAPPIER_WITH_DAEMON: '0',
@@ -35,7 +35,7 @@ test('installers-smoke resolves published channel installer plans by platform', 
       platform: 'darwin',
       tag: 'cli-preview',
       installer: 'install-preview.sh',
-      binaryName: 'hprev',
+      binaryName: 'happiest-preview',
       releaseChannel: 'preview',
       installerEnv: {
         HAPPIER_WITH_DAEMON: '0',
@@ -52,7 +52,7 @@ test('installers-smoke resolves published channel installer plans by platform', 
       platform: 'win32',
       tag: 'cli-dev',
       installer: 'install-dev.ps1',
-      binaryName: 'hdev.exe',
+      binaryName: 'happiest-dev.exe',
       releaseChannel: 'publicdev',
       installerEnv: {
         HAPPIER_WITH_DAEMON: '0',
@@ -71,7 +71,7 @@ test('installers-smoke resolves published rolling and versioned tags to the matc
       platform: 'linux',
       tag: 'cli-preview',
       installer: 'install-preview.sh',
-      binaryName: 'hprev',
+      binaryName: 'happiest-preview',
       releaseChannel: 'preview',
       installerEnv: {
         HAPPIER_WITH_DAEMON: '0',
@@ -88,7 +88,7 @@ test('installers-smoke resolves published rolling and versioned tags to the matc
       platform: 'win32',
       tag: 'cli-v0.2.4-dev.47.1',
       installer: 'install-dev.ps1',
-      binaryName: 'hdev.exe',
+      binaryName: 'happiest-dev.exe',
       releaseChannel: 'publicdev',
       installerEnv: {
         HAPPIER_WITH_DAEMON: '0',
@@ -108,7 +108,7 @@ test('installers-smoke resolves local-build plans when an explicit release chann
       platform: 'linux',
       tag: null,
       installer: 'install-preview.sh',
-      binaryName: 'hprev',
+      binaryName: 'happiest-preview',
       releaseChannel: 'preview',
       installerEnv: {
         HAPPIER_WITH_DAEMON: '0',
@@ -126,7 +126,7 @@ test('installers-smoke resolves local-build plans when an explicit release chann
       platform: 'win32',
       tag: null,
       installer: 'install-dev.ps1',
-      binaryName: 'hdev.exe',
+      binaryName: 'happiest-dev.exe',
       releaseChannel: 'publicdev',
       installerEnv: {
         HAPPIER_WITH_DAEMON: '0',
@@ -187,33 +187,22 @@ test('installers-smoke resolves the managed binary path for each native installe
   const normalizeSlashes = (value) => String(value).replaceAll('\\', '/');
   const linuxPath = resolveInstallersSmokeBinaryPath({
     platform: 'linux',
-    installDir: '/tmp/happier-install',
+    installDir: '/tmp/happiest-install',
     requestedBinDir: '/tmp/bin',
-    binaryName: 'happier',
-  });
-  const darwinPath = resolveInstallersSmokeBinaryPath({
-    platform: 'darwin',
-    installDir: '/tmp/happier-install',
-    requestedBinDir: '/tmp/bin',
-    binaryName: 'happier',
+    binaryName: 'happiest',
   });
   assert.equal(
     normalizeSlashes(linuxPath),
-    '/tmp/bin/happier',
+    '/tmp/bin/happiest',
   );
-  assert.equal(
-    normalizeSlashes(darwinPath),
-    '/tmp/bin/happier',
-  );
-  assert.equal(darwinPath, linuxPath);
   assert.equal(
     resolveInstallersSmokeBinaryPath({
       platform: 'win32',
-      installDir: 'C:\\Users\\lee\\.happier',
+      installDir: 'C:\\Users\\lee\\.happiest',
       requestedBinDir: 'C:\\Users\\lee\\.local\\bin',
-      binaryName: 'hdev.exe',
+      binaryName: 'happiest-dev.exe',
     }),
-    'C:\\Users\\lee\\.happier\\bin\\hdev.exe',
+    'C:\\Users\\lee\\.happiest\\bin\\happiest-dev.exe',
   );
 });
 

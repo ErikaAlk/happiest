@@ -10,7 +10,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..', '..');
 
 test('install.sh resolves the canonical unversioned rolling archive through its signed checksum envelope', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'happier-installer-local-rolling-assets-'));
+  const root = await mkdtemp(join(tmpdir(), 'happiest-installer-local-rolling-assets-'));
   const binDir = join(root, 'bin');
   const assetsDir = join(root, 'assets');
   const installDir = join(root, 'install');
@@ -40,17 +40,17 @@ echo Linux
   await chmod(unameStubPath, 0o755);
 
   const curlStubPath = join(binDir, 'curl');
-  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIER_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
+  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIEST_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
   await chmod(curlStubPath, 0o755);
 
   const version = '1.2.3';
-  await writeFile(join(assetsDir, 'happier-linux-x64.tar.gz'), 'archive', 'utf8');
+  await writeFile(join(assetsDir, 'happiest-linux-x64.tar.gz'), 'archive', 'utf8');
   await writeFile(
-    join(assetsDir, `checksums-happier-v${version}.txt`),
-    `0000000000000000000000000000000000000000000000000000000000000000  happier-v${version}-linux-x64.tar.gz\n`,
+    join(assetsDir, `checksums-happiest-v${version}.txt`),
+    `0000000000000000000000000000000000000000000000000000000000000000  happiest-v${version}-linux-x64.tar.gz\n`,
     'utf8',
   );
-  await writeFile(join(assetsDir, `checksums-happier-v${version}.txt.minisig`), 'signature', 'utf8');
+  await writeFile(join(assetsDir, `checksums-happiest-v${version}.txt.minisig`), 'signature', 'utf8');
 
   const installerPath = join(repoRoot, 'scripts', 'release', 'installers', 'install.sh');
   const res = spawnSync('bash', [installerPath, '--version'], {
@@ -59,10 +59,10 @@ echo Linux
       PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
       HAPPIER_CHANNEL: 'stable',
       HAPPIER_PRODUCT: 'cli',
-      HAPPIER_INSTALL_DIR: installDir,
+      HAPPIEST_INSTALL_DIR: installDir,
       HAPPIER_BIN_DIR: outBinDir,
       HAPPIER_NONINTERACTIVE: '1',
-      HAPPIER_RELEASE_ASSETS_DIR: assetsDir,
+      HAPPIEST_RELEASE_ASSETS_DIR: assetsDir,
     },
     encoding: 'utf8',
   });
@@ -77,7 +77,7 @@ echo Linux
 });
 
 test('install.sh --version can resolve local release assets without fetching GitHub metadata', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'happier-installer-local-assets-version-'));
+  const root = await mkdtemp(join(tmpdir(), 'happiest-installer-local-assets-version-'));
   const binDir = join(root, 'bin');
   const assetsDir = join(root, 'assets');
   const installDir = join(root, 'install');
@@ -107,13 +107,13 @@ echo Linux
   await chmod(unameStubPath, 0o755);
 
   const curlStubPath = join(binDir, 'curl');
-  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIER_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
+  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIEST_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
   await chmod(curlStubPath, 0o755);
 
   const version = '9.9.9-preview.42';
-  await writeFile(join(assetsDir, `happier-v${version}-linux-x64.tar.gz`), 'archive', 'utf8');
-  await writeFile(join(assetsDir, `checksums-happier-v${version}.txt`), 'checksum', 'utf8');
-  await writeFile(join(assetsDir, `checksums-happier-v${version}.txt.minisig`), 'signature', 'utf8');
+  await writeFile(join(assetsDir, `happiest-v${version}-linux-x64.tar.gz`), 'archive', 'utf8');
+  await writeFile(join(assetsDir, `checksums-happiest-v${version}.txt`), 'checksum', 'utf8');
+  await writeFile(join(assetsDir, `checksums-happiest-v${version}.txt.minisig`), 'signature', 'utf8');
 
   const installerPath = join(repoRoot, 'scripts', 'release', 'installers', 'install.sh');
   const env = {
@@ -121,10 +121,10 @@ echo Linux
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_CHANNEL: 'preview',
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NONINTERACTIVE: '1',
-    HAPPIER_RELEASE_ASSETS_DIR: assetsDir,
+    HAPPIEST_RELEASE_ASSETS_DIR: assetsDir,
   };
 
   const res = spawnSync('bash', [installerPath, '--version'], {
@@ -142,7 +142,7 @@ echo Linux
 });
 
 test('install.sh reports missing local release assets instead of exiting silently', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'happier-installer-local-assets-missing-'));
+  const root = await mkdtemp(join(tmpdir(), 'happiest-installer-local-assets-missing-'));
   const binDir = join(root, 'bin');
   const assetsDir = join(root, 'assets');
   const installDir = join(root, 'install');
@@ -172,7 +172,7 @@ echo Linux
   await chmod(unameStubPath, 0o755);
 
   const curlStubPath = join(binDir, 'curl');
-  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIER_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
+  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIEST_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
   await chmod(curlStubPath, 0o755);
 
   const installerPath = join(repoRoot, 'scripts', 'release', 'installers', 'install.sh');
@@ -181,10 +181,10 @@ echo Linux
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_CHANNEL: 'preview',
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NONINTERACTIVE: '1',
-    HAPPIER_RELEASE_ASSETS_DIR: assetsDir,
+    HAPPIEST_RELEASE_ASSETS_DIR: assetsDir,
   };
 
   const res = spawnSync('bash', [installerPath, '--version'], {
@@ -200,7 +200,7 @@ echo Linux
 });
 
 test('install.sh --version deterministically selects the newest local release assets for the requested channel', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'happier-installer-local-assets-latest-'));
+  const root = await mkdtemp(join(tmpdir(), 'happiest-installer-local-assets-latest-'));
   const binDir = join(root, 'bin');
   const assetsDir = join(root, 'assets');
   const installDir = join(root, 'install');
@@ -230,18 +230,18 @@ echo Linux
   await chmod(unameStubPath, 0o755);
 
   const curlStubPath = join(binDir, 'curl');
-  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIER_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
+  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIEST_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
   await chmod(curlStubPath, 0o755);
 
   const findStubPath = join(binDir, 'find');
   const newerVersion = '1.2.3-preview.42';
   const olderVersion = '1.2.3-preview.7';
-  const newerArchive = join(assetsDir, `happier-v${newerVersion}-linux-x64.tar.gz`);
-  const olderArchive = join(assetsDir, `happier-v${olderVersion}-linux-x64.tar.gz`);
-  const newerChecksums = join(assetsDir, `checksums-happier-v${newerVersion}.txt`);
-  const olderChecksums = join(assetsDir, `checksums-happier-v${olderVersion}.txt`);
-  const newerSig = join(assetsDir, `checksums-happier-v${newerVersion}.txt.minisig`);
-  const olderSig = join(assetsDir, `checksums-happier-v${olderVersion}.txt.minisig`);
+  const newerArchive = join(assetsDir, `happiest-v${newerVersion}-linux-x64.tar.gz`);
+  const olderArchive = join(assetsDir, `happiest-v${olderVersion}-linux-x64.tar.gz`);
+  const newerChecksums = join(assetsDir, `checksums-happiest-v${newerVersion}.txt`);
+  const olderChecksums = join(assetsDir, `checksums-happiest-v${olderVersion}.txt`);
+  const newerSig = join(assetsDir, `checksums-happiest-v${newerVersion}.txt.minisig`);
+  const olderSig = join(assetsDir, `checksums-happiest-v${olderVersion}.txt.minisig`);
 
   await writeFile(
     findStubPath,
@@ -272,10 +272,10 @@ printf '%s\\0' \
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_CHANNEL: 'preview',
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NONINTERACTIVE: '1',
-    HAPPIER_RELEASE_ASSETS_DIR: assetsDir,
+    HAPPIEST_RELEASE_ASSETS_DIR: assetsDir,
   };
 
   const res = spawnSync('bash', [installerPath, '--version'], {
@@ -294,7 +294,7 @@ printf '%s\\0' \
 });
 
 test('install.sh --version ignores stable local assets when preview channel resolves a mixed asset directory', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'happier-installer-local-assets-mixed-channel-'));
+  const root = await mkdtemp(join(tmpdir(), 'happiest-installer-local-assets-mixed-channel-'));
   const binDir = join(root, 'bin');
   const assetsDir = join(root, 'assets');
   const installDir = join(root, 'install');
@@ -324,18 +324,18 @@ echo Linux
   await chmod(unameStubPath, 0o755);
 
   const curlStubPath = join(binDir, 'curl');
-  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIER_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
+  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIEST_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
   await chmod(curlStubPath, 0o755);
 
   const findStubPath = join(binDir, 'find');
   const stableVersion = '1.2.3';
   const previewVersion = '1.2.3-preview.42';
-  const stableArchive = join(assetsDir, `happier-v${stableVersion}-linux-x64.tar.gz`);
-  const previewArchive = join(assetsDir, `happier-v${previewVersion}-linux-x64.tar.gz`);
-  const stableChecksums = join(assetsDir, `checksums-happier-v${stableVersion}.txt`);
-  const previewChecksums = join(assetsDir, `checksums-happier-v${previewVersion}.txt`);
-  const stableSig = join(assetsDir, `checksums-happier-v${stableVersion}.txt.minisig`);
-  const previewSig = join(assetsDir, `checksums-happier-v${previewVersion}.txt.minisig`);
+  const stableArchive = join(assetsDir, `happiest-v${stableVersion}-linux-x64.tar.gz`);
+  const previewArchive = join(assetsDir, `happiest-v${previewVersion}-linux-x64.tar.gz`);
+  const stableChecksums = join(assetsDir, `checksums-happiest-v${stableVersion}.txt`);
+  const previewChecksums = join(assetsDir, `checksums-happiest-v${previewVersion}.txt`);
+  const stableSig = join(assetsDir, `checksums-happiest-v${stableVersion}.txt.minisig`);
+  const previewSig = join(assetsDir, `checksums-happiest-v${previewVersion}.txt.minisig`);
 
   await writeFile(
     findStubPath,
@@ -366,10 +366,10 @@ printf '%s\\0' \
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_CHANNEL: 'preview',
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NONINTERACTIVE: '1',
-    HAPPIER_RELEASE_ASSETS_DIR: assetsDir,
+    HAPPIEST_RELEASE_ASSETS_DIR: assetsDir,
   };
 
   const res = spawnSync('bash', [installerPath, '--version'], {
@@ -388,7 +388,7 @@ printf '%s\\0' \
 });
 
 test('install.sh --version ignores prerelease local assets when stable channel resolves a mixed asset directory', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'happier-installer-local-assets-stable-mixed-channel-'));
+  const root = await mkdtemp(join(tmpdir(), 'happiest-installer-local-assets-stable-mixed-channel-'));
   const binDir = join(root, 'bin');
   const assetsDir = join(root, 'assets');
   const installDir = join(root, 'install');
@@ -418,18 +418,18 @@ echo Linux
   await chmod(unameStubPath, 0o755);
 
   const curlStubPath = join(binDir, 'curl');
-  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIER_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
+  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIEST_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
   await chmod(curlStubPath, 0o755);
 
   const findStubPath = join(binDir, 'find');
   const stableVersion = '1.2.3';
   const previewVersion = '9.9.9-preview.42';
-  const stableArchive = join(assetsDir, `happier-v${stableVersion}-linux-x64.tar.gz`);
-  const previewArchive = join(assetsDir, `happier-v${previewVersion}-linux-x64.tar.gz`);
-  const stableChecksums = join(assetsDir, `checksums-happier-v${stableVersion}.txt`);
-  const previewChecksums = join(assetsDir, `checksums-happier-v${previewVersion}.txt`);
-  const stableSig = join(assetsDir, `checksums-happier-v${stableVersion}.txt.minisig`);
-  const previewSig = join(assetsDir, `checksums-happier-v${previewVersion}.txt.minisig`);
+  const stableArchive = join(assetsDir, `happiest-v${stableVersion}-linux-x64.tar.gz`);
+  const previewArchive = join(assetsDir, `happiest-v${previewVersion}-linux-x64.tar.gz`);
+  const stableChecksums = join(assetsDir, `checksums-happiest-v${stableVersion}.txt`);
+  const previewChecksums = join(assetsDir, `checksums-happiest-v${previewVersion}.txt`);
+  const stableSig = join(assetsDir, `checksums-happiest-v${stableVersion}.txt.minisig`);
+  const previewSig = join(assetsDir, `checksums-happiest-v${previewVersion}.txt.minisig`);
 
   await writeFile(
     findStubPath,
@@ -460,10 +460,10 @@ printf '%s\\0' \
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_CHANNEL: 'stable',
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NONINTERACTIVE: '1',
-    HAPPIER_RELEASE_ASSETS_DIR: assetsDir,
+    HAPPIEST_RELEASE_ASSETS_DIR: assetsDir,
   };
 
   const res = spawnSync('bash', [installerPath, '--version'], {
@@ -482,7 +482,7 @@ printf '%s\\0' \
 });
 
 test('install.sh --version semver-sorts local build-metadata assets without numeric parsing warnings', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'happier-installer-local-assets-build-meta-'));
+  const root = await mkdtemp(join(tmpdir(), 'happiest-installer-local-assets-build-meta-'));
   const binDir = join(root, 'bin');
   const assetsDir = join(root, 'assets');
   const installDir = join(root, 'install');
@@ -512,18 +512,18 @@ echo Linux
   await chmod(unameStubPath, 0o755);
 
   const curlStubPath = join(binDir, 'curl');
-  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIER_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
+  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIEST_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
   await chmod(curlStubPath, 0o755);
 
   const findStubPath = join(binDir, 'find');
   const newerVersion = '1.2.10+build5';
   const olderVersion = '1.2.9+build7';
-  const newerArchive = join(assetsDir, `happier-v${newerVersion}-linux-x64.tar.gz`);
-  const olderArchive = join(assetsDir, `happier-v${olderVersion}-linux-x64.tar.gz`);
-  const newerChecksums = join(assetsDir, `checksums-happier-v${newerVersion}.txt`);
-  const olderChecksums = join(assetsDir, `checksums-happier-v${olderVersion}.txt`);
-  const newerSig = join(assetsDir, `checksums-happier-v${newerVersion}.txt.minisig`);
-  const olderSig = join(assetsDir, `checksums-happier-v${olderVersion}.txt.minisig`);
+  const newerArchive = join(assetsDir, `happiest-v${newerVersion}-linux-x64.tar.gz`);
+  const olderArchive = join(assetsDir, `happiest-v${olderVersion}-linux-x64.tar.gz`);
+  const newerChecksums = join(assetsDir, `checksums-happiest-v${newerVersion}.txt`);
+  const olderChecksums = join(assetsDir, `checksums-happiest-v${olderVersion}.txt`);
+  const newerSig = join(assetsDir, `checksums-happiest-v${newerVersion}.txt.minisig`);
+  const olderSig = join(assetsDir, `checksums-happiest-v${olderVersion}.txt.minisig`);
 
   await writeFile(
     findStubPath,
@@ -554,10 +554,10 @@ printf '%s\\0' \
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_CHANNEL: 'stable',
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NONINTERACTIVE: '1',
-    HAPPIER_RELEASE_ASSETS_DIR: assetsDir,
+    HAPPIEST_RELEASE_ASSETS_DIR: assetsDir,
   };
 
   const res = spawnSync('bash', [installerPath, '--version'], {
@@ -577,7 +577,7 @@ printf '%s\\0' \
 });
 
 test('install.sh --version orders strict-prefix prerelease identifiers for preview local rolling assets', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'happier-installer-local-prerelease-prefix-'));
+  const root = await mkdtemp(join(tmpdir(), 'happiest-installer-local-prerelease-prefix-'));
   const binDir = join(root, 'bin');
   const assetsDir = join(root, 'assets');
   const installDir = join(root, 'install');
@@ -607,18 +607,18 @@ echo Linux
   await chmod(unameStubPath, 0o755);
 
   const curlStubPath = join(binDir, 'curl');
-  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIER_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
+  await writeFile(curlStubPath, '#!/usr/bin/env bash\necho "curl should not run when HAPPIEST_RELEASE_ASSETS_DIR is set" >&2\nexit 88\n', 'utf8');
   await chmod(curlStubPath, 0o755);
 
   const findStubPath = join(binDir, 'find');
   const newerVersion = '1.0.0-preview.alpha.1';
   const olderVersion = '1.0.0-preview.alpha';
-  const newerArchive = join(assetsDir, `happier-v${newerVersion}-linux-x64.tar.gz`);
-  const olderArchive = join(assetsDir, `happier-v${olderVersion}-linux-x64.tar.gz`);
-  const newerChecksums = join(assetsDir, `checksums-happier-v${newerVersion}.txt`);
-  const olderChecksums = join(assetsDir, `checksums-happier-v${olderVersion}.txt`);
-  const newerSig = join(assetsDir, `checksums-happier-v${newerVersion}.txt.minisig`);
-  const olderSig = join(assetsDir, `checksums-happier-v${olderVersion}.txt.minisig`);
+  const newerArchive = join(assetsDir, `happiest-v${newerVersion}-linux-x64.tar.gz`);
+  const olderArchive = join(assetsDir, `happiest-v${olderVersion}-linux-x64.tar.gz`);
+  const newerChecksums = join(assetsDir, `checksums-happiest-v${newerVersion}.txt`);
+  const olderChecksums = join(assetsDir, `checksums-happiest-v${olderVersion}.txt`);
+  const newerSig = join(assetsDir, `checksums-happiest-v${newerVersion}.txt.minisig`);
+  const olderSig = join(assetsDir, `checksums-happiest-v${olderVersion}.txt.minisig`);
 
   await writeFile(
     findStubPath,
@@ -649,10 +649,10 @@ printf '%s\\0' \
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_CHANNEL: 'preview',
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NONINTERACTIVE: '1',
-    HAPPIER_RELEASE_ASSETS_DIR: assetsDir,
+    HAPPIEST_RELEASE_ASSETS_DIR: assetsDir,
   };
 
   const res = spawnSync('bash', [installerPath, '--version'], {

@@ -21,6 +21,14 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Product identity: the same literals as packages/release-runtime/src/productIdentity.ts.
+$ProductDisplayName = "Happiest"
+$CliCommandName = "happiest"
+$DefaultGitHubRepo = "ErikaAlk/happiest"
+$DefaultInstallDirName = ".happiest"
+$WindowsTaskFolder = "Happiest"
+$DaemonServiceUnitPrefix = "happiest-daemon"
+
 if ($WithDaemon.IsPresent -and $WithoutDaemon.IsPresent) {
   throw "Specify either -WithDaemon or -WithoutDaemon, not both."
 }
@@ -60,18 +68,17 @@ function Normalize-Channel {
 
 $Channel = Normalize-Channel -Raw ([string]$Channel)
 
-$Repo = if ($env:HAPPIER_GITHUB_REPO) { $env:HAPPIER_GITHUB_REPO } else { "happier-dev/happier" }
+$Repo = if ($env:HAPPIEST_GITHUB_REPO) { $env:HAPPIEST_GITHUB_REPO } else { $DefaultGitHubRepo }
 $Token = if ($env:HAPPIER_GITHUB_TOKEN) { $env:HAPPIER_GITHUB_TOKEN } elseif ($env:GITHUB_TOKEN) { $env:GITHUB_TOKEN } else { "" }
-$ReleaseAssetsDir = if ($env:HAPPIER_RELEASE_ASSETS_DIR) { $env:HAPPIER_RELEASE_ASSETS_DIR } else { "" }
+$ReleaseAssetsDir = if ($env:HAPPIEST_RELEASE_ASSETS_DIR) { $env:HAPPIEST_RELEASE_ASSETS_DIR } else { "" }
 $GitHubHeaders = @{
   "X-GitHub-Api-Version" = "2022-11-28"
 }
 if ($Token) {
   $GitHubHeaders["Authorization"] = "Bearer $Token"
 }
-$InstallDir = if ($env:HAPPIER_INSTALL_DIR) { $env:HAPPIER_INSTALL_DIR } elseif ($env:HAPPIER_HOME_DIR) { $env:HAPPIER_HOME_DIR } else { Join-Path $env:USERPROFILE ".happier" }
-$DaemonServiceStateHomeDir = if ($env:HAPPIER_HOME_DIR) { $env:HAPPIER_HOME_DIR } else { $InstallDir }
-$LegacyBinDir = Join-Path $env:USERPROFILE ".local\bin"
+$InstallDir = if ($env:HAPPIEST_INSTALL_DIR) { $env:HAPPIEST_INSTALL_DIR } elseif ($env:HAPPIEST_HOME_DIR) { $env:HAPPIEST_HOME_DIR } else { Join-Path $env:USERPROFILE $DefaultInstallDirName }
+$DaemonServiceStateHomeDir = if ($env:HAPPIEST_HOME_DIR) { $env:HAPPIEST_HOME_DIR } else { $InstallDir }
 $BinDir = Join-Path $InstallDir "bin"
 if ($env:HAPPIER_BIN_DIR) {
   $requestedBinDir = $env:HAPPIER_BIN_DIR
@@ -81,7 +88,7 @@ if ($env:HAPPIER_BIN_DIR) {
 }
 $Noninteractive = if ($Yes.IsPresent) { "1" } elseif ($env:HAPPIER_NONINTERACTIVE) { $env:HAPPIER_NONINTERACTIVE } else { "0" }
 if ($Yes.IsPresent) {
-  # Mirror install.sh: the flag must reach every child `happier` invocation too.
+  # Mirror install.sh: the flag must reach every child `happiest` invocation too.
   $env:HAPPIER_NONINTERACTIVE = "1"
 }
 $NoPathUpdate = if ($env:HAPPIER_NO_PATH_UPDATE) { $env:HAPPIER_NO_PATH_UPDATE } else { "0" }
@@ -102,16 +109,15 @@ else {
   $WithDaemonPreference = "0"
 }
 $DefaultMinisignPubKey = @"
-untrusted comment: minisign public key 91AE28177BF6E43C
-RWQ85PZ7FyiukYbL3qv/bKnwgbT68wLVzotapeMFIb8n+c7pBQ7U8W2t
+untrusted comment: minisign public key 1C1A3EFF24BD09FC
+RWT8Cb0k/z4aHMcDQPt0+sH/rJL5nMdYl1n7EgW+Z/S+gqYoaF46qtz5
 "@
-$MinisignPubKey = if ($env:HAPPIER_MINISIGN_PUBKEY) { $env:HAPPIER_MINISIGN_PUBKEY } else { $DefaultMinisignPubKey.Trim() }
-$MinisignPubKeyUrl = if ($env:HAPPIER_MINISIGN_PUBKEY_URL) { $env:HAPPIER_MINISIGN_PUBKEY_URL } else { "https://happier.dev/happier-release.pub" }
+$MinisignPubKey = if ($env:HAPPIEST_MINISIGN_PUBKEY) { $env:HAPPIEST_MINISIGN_PUBKEY } else { $DefaultMinisignPubKey.Trim() }
 
 function Resolve-CliShimName {
-  if ($Channel -eq "preview") { return "hprev" }
-  if ($Channel -eq "publicdev") { return "hdev" }
-  return "happier"
+  if ($Channel -eq "preview") { return "$CliCommandName-preview" }
+  if ($Channel -eq "publicdev") { return "$CliCommandName-dev" }
+  return $CliCommandName
 }
 
 function Resolve-CliInstallRootName {
@@ -197,7 +203,7 @@ function New-InstallerStagingDirectory {
 
   $stagingParent = Join-Path $InstallHomeDir ".install-staging"
   New-Item -ItemType Directory -Path $stagingParent -Force | Out-Null
-  return New-Item -ItemType Directory -Path (Join-Path $stagingParent ("happier-install-" + [System.Guid]::NewGuid().ToString("N")))
+  return New-Item -ItemType Directory -Path (Join-Path $stagingParent ("$CliCommandName-install-" + [System.Guid]::NewGuid().ToString("N")))
 }
 
 function Remove-InstallerStagingDirectory {
@@ -267,7 +273,7 @@ function Invoke-InstallerCliRollback {
   }
 
   $previousDir = Join-Path (Join-Path $installRoot "versions") $previousVersion
-  $previousBinary = Join-Path $previousDir "happier.exe"
+  $previousBinary = Join-Path $previousDir "$CliCommandName.exe"
   if (-not (Test-Path $previousBinary -PathType Leaf)) {
     throw "Rollback target is missing or incomplete: $previousDir"
   }
@@ -286,8 +292,8 @@ function Invoke-InstallerCliRollback {
 
   $shimName = Resolve-CliShimName
   Sync-InstallerCliRollbackShim -ShimName $shimName -BinaryPath $previousBinary
-  if ($shimName -ne "happier" -and (Test-InstallerDefaultChannelMatchesSelectedChannel)) {
-    Sync-InstallerCliRollbackShim -ShimName "happier" -BinaryPath $previousBinary
+  if ($shimName -ne $CliCommandName -and (Test-InstallerDefaultChannelMatchesSelectedChannel)) {
+    Sync-InstallerCliRollbackShim -ShimName $CliCommandName -BinaryPath $previousBinary
   }
 
   Write-Host "Rolled back $shimName from $(if ($currentVersion) { $currentVersion } else { 'current' }) to $previousVersion."
@@ -420,7 +426,7 @@ function Test-InstallerRichHeaderAvailable {
 
 function Write-InstallerHeader {
   if (-not (Test-InstallerRichHeaderAvailable)) {
-    Write-Host "Happier"
+    Write-Host $ProductDisplayName
     Write-Host "Start coding anywhere. Continue anywhere."
     Write-Host "Download -> Verify -> Install"
     Write-Host ""
@@ -471,7 +477,7 @@ function Write-InstallerHeader {
 
   for ($index = 0; $index -lt $rows.Count; $index++) {
     $label = ""
-    if ($index -eq ($center - 1)) { $label = "Happier" }
+    if ($index -eq ($center - 1)) { $label = $ProductDisplayName }
     elseif ($index -eq $center) { $label = "Start coding anywhere. Continue anywhere." }
     elseif ($index -eq ($center + 2)) { $label = "Download -> Verify -> Install" }
     if ($useColor -and $supportsVirtualTerminal -and ($env:COLORTERM -in @("truecolor", "24bit") -or $env:WT_SESSION)) {
@@ -646,14 +652,14 @@ function Invoke-InstallerCommandWithDaemonServiceContext {
     [Parameter(Mandatory = $true)] [string] $HomeDir
   )
 
-  $previousHomeDir = $env:HAPPIER_HOME_DIR
+  $previousHomeDir = $env:HAPPIEST_HOME_DIR
   $previousNoninteractive = $env:HAPPIER_NONINTERACTIVE
   $previousPublicReleaseChannel = $env:HAPPIER_PUBLIC_RELEASE_CHANNEL
-  $previousDaemonServiceChannel = $env:HAPPIER_DAEMON_SERVICE_CHANNEL
+  $previousDaemonServiceChannel = $env:HAPPIEST_DAEMON_SERVICE_CHANNEL
   $previousInstallerDaemonServiceStrategy = $env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY
   try {
     $channelLabel = if ($Channel -eq "publicdev") { "dev" } else { $Channel }
-    $env:HAPPIER_HOME_DIR = $HomeDir
+    $env:HAPPIEST_HOME_DIR = $HomeDir
     if ($null -eq $previousNoninteractive) {
       Remove-Item Env:HAPPIER_NONINTERACTIVE -ErrorAction SilentlyContinue
     }
@@ -661,7 +667,7 @@ function Invoke-InstallerCommandWithDaemonServiceContext {
       $env:HAPPIER_NONINTERACTIVE = $previousNoninteractive
     }
     $env:HAPPIER_PUBLIC_RELEASE_CHANNEL = $channelLabel
-    $env:HAPPIER_DAEMON_SERVICE_CHANNEL = $channelLabel
+    $env:HAPPIEST_DAEMON_SERVICE_CHANNEL = $channelLabel
     if ($env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY) {
       $env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY = $env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY
     }
@@ -674,10 +680,10 @@ function Invoke-InstallerCommandWithDaemonServiceContext {
   }
   finally {
     if ($null -eq $previousHomeDir) {
-      Remove-Item Env:HAPPIER_HOME_DIR -ErrorAction SilentlyContinue
+      Remove-Item Env:HAPPIEST_HOME_DIR -ErrorAction SilentlyContinue
     }
     else {
-      $env:HAPPIER_HOME_DIR = $previousHomeDir
+      $env:HAPPIEST_HOME_DIR = $previousHomeDir
     }
     if ($null -eq $previousNoninteractive) {
       Remove-Item Env:HAPPIER_NONINTERACTIVE -ErrorAction SilentlyContinue
@@ -692,10 +698,10 @@ function Invoke-InstallerCommandWithDaemonServiceContext {
       $env:HAPPIER_PUBLIC_RELEASE_CHANNEL = $previousPublicReleaseChannel
     }
     if ($null -eq $previousDaemonServiceChannel) {
-      Remove-Item Env:HAPPIER_DAEMON_SERVICE_CHANNEL -ErrorAction SilentlyContinue
+      Remove-Item Env:HAPPIEST_DAEMON_SERVICE_CHANNEL -ErrorAction SilentlyContinue
     }
     else {
-      $env:HAPPIER_DAEMON_SERVICE_CHANNEL = $previousDaemonServiceChannel
+      $env:HAPPIEST_DAEMON_SERVICE_CHANNEL = $previousDaemonServiceChannel
     }
     if ($null -eq $previousInstallerDaemonServiceStrategy) {
       Remove-Item Env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY -ErrorAction SilentlyContinue
@@ -775,18 +781,18 @@ function Invoke-InstallerCommandWithDaemonServiceContextCapturingOutputWithTimeo
     [Parameter(Mandatory = $true)] [int] $timeoutMs
   )
 
-  $previousHomeDir = $env:HAPPIER_HOME_DIR
+  $previousHomeDir = $env:HAPPIEST_HOME_DIR
   $previousNoninteractive = $env:HAPPIER_NONINTERACTIVE
   $previousPublicReleaseChannel = $env:HAPPIER_PUBLIC_RELEASE_CHANNEL
-  $previousDaemonServiceChannel = $env:HAPPIER_DAEMON_SERVICE_CHANNEL
+  $previousDaemonServiceChannel = $env:HAPPIEST_DAEMON_SERVICE_CHANNEL
   $previousInstallerDaemonServiceStrategy = $env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY
   $runToken = [System.Guid]::NewGuid().ToString("N")
-  $stdoutPath = Join-Path $env:TEMP "happier-pre-install-$runToken.stdout.log"
-  $stderrPath = Join-Path $env:TEMP "happier-pre-install-$runToken.stderr.log"
+  $stdoutPath = Join-Path $env:TEMP "$CliCommandName-pre-install-$runToken.stdout.log"
+  $stderrPath = Join-Path $env:TEMP "$CliCommandName-pre-install-$runToken.stderr.log"
 
   try {
     $channelLabel = if ($Channel -eq "publicdev") { "dev" } else { $Channel }
-    $env:HAPPIER_HOME_DIR = $HomeDir
+    $env:HAPPIEST_HOME_DIR = $HomeDir
     if ($null -eq $previousNoninteractive) {
       Remove-Item Env:HAPPIER_NONINTERACTIVE -ErrorAction SilentlyContinue
     }
@@ -794,7 +800,7 @@ function Invoke-InstallerCommandWithDaemonServiceContextCapturingOutputWithTimeo
       $env:HAPPIER_NONINTERACTIVE = $previousNoninteractive
     }
     $env:HAPPIER_PUBLIC_RELEASE_CHANNEL = $channelLabel
-    $env:HAPPIER_DAEMON_SERVICE_CHANNEL = $channelLabel
+    $env:HAPPIEST_DAEMON_SERVICE_CHANNEL = $channelLabel
     if ($env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY) {
       $env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY = $env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY
     }
@@ -829,10 +835,10 @@ function Invoke-InstallerCommandWithDaemonServiceContextCapturingOutputWithTimeo
     Remove-Item -Path $stderrPath -Force -ErrorAction SilentlyContinue
 
     if ($null -eq $previousHomeDir) {
-      Remove-Item Env:HAPPIER_HOME_DIR -ErrorAction SilentlyContinue
+      Remove-Item Env:HAPPIEST_HOME_DIR -ErrorAction SilentlyContinue
     }
     else {
-      $env:HAPPIER_HOME_DIR = $previousHomeDir
+      $env:HAPPIEST_HOME_DIR = $previousHomeDir
     }
     if ($null -eq $previousNoninteractive) {
       Remove-Item Env:HAPPIER_NONINTERACTIVE -ErrorAction SilentlyContinue
@@ -847,10 +853,10 @@ function Invoke-InstallerCommandWithDaemonServiceContextCapturingOutputWithTimeo
       $env:HAPPIER_PUBLIC_RELEASE_CHANNEL = $previousPublicReleaseChannel
     }
     if ($null -eq $previousDaemonServiceChannel) {
-      Remove-Item Env:HAPPIER_DAEMON_SERVICE_CHANNEL -ErrorAction SilentlyContinue
+      Remove-Item Env:HAPPIEST_DAEMON_SERVICE_CHANNEL -ErrorAction SilentlyContinue
     }
     else {
-      $env:HAPPIER_DAEMON_SERVICE_CHANNEL = $previousDaemonServiceChannel
+      $env:HAPPIEST_DAEMON_SERVICE_CHANNEL = $previousDaemonServiceChannel
     }
     if ($null -eq $previousInstallerDaemonServiceStrategy) {
       Remove-Item Env:HAPPIER_INSTALLER_DAEMON_SERVICE_STRATEGY -ErrorAction SilentlyContinue
@@ -867,10 +873,10 @@ function Test-DoctorRepairPreflightLooksLikePlainDoctorReport {
   )
 
   # Mirror install.sh:823-862: an older CLI that doesn't understand
-  # `doctor repair --json` may instead emit a plain-text "Happier CLI Doctor"
+  # `doctor repair --json` may instead emit a plain-text "Happiest CLI Doctor"
   # report. We must reject that — even if portions of it accidentally parse
   # as JSON — and fall through to the legacy `service list --json` probe.
-  return $Output -match 'Happier CLI Doctor'
+  return $Output -match "$([Regex]::Escape($ProductDisplayName)) CLI Doctor"
 }
 
 function Test-DoctorRepairPreflightJsonIsSupported {
@@ -1066,7 +1072,7 @@ function Test-InstallerCommandLooksUnsupported {
     [Parameter()] [string] $Output = ""
   )
 
-  return $Output -match '(?i)unknown (option|command|subcommand)|invalid option|usage: happier <command>|does not support'
+  return $Output -match "(?i)unknown (option|command|subcommand)|invalid option|usage: $([Regex]::Escape($CliCommandName)) <command>|does not support"
 }
 
 function Get-BackgroundServiceInstallManualCommand {
@@ -1251,7 +1257,7 @@ function Test-InstalledCliSupportsCommandSurface {
   )
 
   $invokerName = (Split-Path -Leaf $CliPath)
-  if ([string]::IsNullOrWhiteSpace($invokerName)) { $invokerName = "happier" }
+  if ([string]::IsNullOrWhiteSpace($invokerName)) { $invokerName = $CliCommandName }
 
   $helpOutput = ""
   if ($requiredSubcommand -eq "relay") {
@@ -1266,11 +1272,11 @@ function Test-InstalledCliSupportsCommandSurface {
     $helpOutput = Get-InstalledCliRootHelp -CliPath $CliPath
   }
 
-  $pattern = "(?m)^\s*($([Regex]::Escape($invokerName))|happier)\s+$([Regex]::Escape($requiredSubcommand))\b"
+  $pattern = "(?m)^\s*($([Regex]::Escape($invokerName))|$([Regex]::Escape($CliCommandName)))\s+$([Regex]::Escape($requiredSubcommand))\b"
   return [bool]($helpOutput -match $pattern)
 }
 
-# `happier setup` is the CLI's own guided first run. The installer hands off to
+# `happiest setup` is the CLI's own guided first run. The installer hands off to
 # it after the binary is ready; every question a first run needs to ask belongs
 # to the CLI.
 # Whether this computer already has an account on its active relay. Ask the CLI
@@ -1399,7 +1405,7 @@ function Invoke-PostInstallAction {
 
   if ($requiredSubcommand) {
     if (-not (Test-InstalledCliSupportsCommandSurface -CliPath $CliPath -requiredSubcommand $requiredSubcommand)) {
-      throw "Installed Happier CLI does not support the '$requiredSubcommand' command surface required for -Run $runValue. Update your Happier CLI (or switch installer channel) and try again."
+      throw "Installed $ProductDisplayName CLI does not support the '$requiredSubcommand' command surface required for -Run $runValue. Update your $ProductDisplayName CLI and try again."
     }
   }
   if ($runValue -eq "setup") {
@@ -1463,7 +1469,7 @@ function Get-InstallerAssetVersionSortKey {
   elseif ($Name -match '^checksums-.+-v(.+)\.txt$') {
     $version = $matches[1]
   }
-  elseif ($Name -match '^.+-v(.+)-(linux|darwin|windows)-[^-]+\.tar\.gz$') {
+  elseif ($Name -match '^.+-v(.+)-(linux|windows)-[^-]+\.tar\.gz$') {
     $version = $matches[1]
   }
   if (-not $version) {
@@ -1537,7 +1543,7 @@ function Get-LocalAssetByPattern {
     return $null
   }
   if (-not (Test-Path $ReleaseAssetsDir -PathType Container)) {
-    throw "HAPPIER_RELEASE_ASSETS_DIR does not exist: $ReleaseAssetsDir"
+    throw "HAPPIEST_RELEASE_ASSETS_DIR does not exist: $ReleaseAssetsDir"
   }
   return Select-NewestInstallerAsset -Assets @(Get-ChildItem -Path $ReleaseAssetsDir -File | Where-Object { $_.Name -match $Pattern })
 }
@@ -1929,7 +1935,7 @@ function Test-InstallerLockHygieneDaemonServiceLabelInScope {
     $leafLabel = $leafLabel.Substring($lastSeparatorIndex + 1)
   }
 
-  return $leafLabel -eq "happier-daemon" -or $leafLabel.StartsWith("happier-daemon.")
+  return $leafLabel -eq $DaemonServiceUnitPrefix -or $leafLabel.StartsWith("$DaemonServiceUnitPrefix.")
 }
 
 function Resolve-InstallerLockHygieneWaitMs {
@@ -1968,9 +1974,9 @@ function Get-InstallerLockHygieneMatchNeedles {
     $managedBinDir
     (Join-Path $managedBinDir "$shimName.exe")
     (Join-Path $managedBinDir "$shimName")
-    (Join-Path $managedBinDir "happier.exe")
-    (Join-Path $managedBinDir "hprev.exe")
-    (Join-Path $managedBinDir "hdev.exe")
+    (Join-Path $managedBinDir "$CliCommandName.exe")
+    (Join-Path $managedBinDir "$CliCommandName-preview.exe")
+    (Join-Path $managedBinDir "$CliCommandName-dev.exe")
   )
 
   $needles = New-Object System.Collections.Generic.List[string]
@@ -1984,13 +1990,14 @@ function Get-InstallerLockHygieneMatchNeedles {
   return $needles.ToArray()
 }
 
-function Get-InstallerScopedHappierProcesses {
+function Get-InstallerScopedProductProcesses {
   param (
     [Parameter(Mandatory = $true)] [string[]] $MatchNeedles
   )
 
-  $happierProcessNames = @("happier", "hprev", "hdev")
-  $processes = Get-CimInstance Win32_Process -Filter "Name='happier.exe' OR Name='hprev.exe' OR Name='hdev.exe'" -ErrorAction SilentlyContinue
+  $productProcessNames = @($CliCommandName, "$CliCommandName-preview", "$CliCommandName-dev")
+  $processFilter = ($productProcessNames | ForEach-Object { "Name='$_.exe'" }) -join " OR "
+  $processes = Get-CimInstance Win32_Process -Filter $processFilter -ErrorAction SilentlyContinue
   if (-not $processes) {
     return @()
   }
@@ -2006,7 +2013,7 @@ function Get-InstallerScopedHappierProcesses {
     if ($normalizedName.EndsWith(".exe")) {
       $normalizedName = $normalizedName.Substring(0, $normalizedName.Length - 4)
     }
-    if (-not ($happierProcessNames -contains $normalizedName)) {
+    if (-not ($productProcessNames -contains $normalizedName)) {
       continue
     }
 
@@ -2022,7 +2029,7 @@ function Get-InstallerScopedHappierProcesses {
   return $matched.ToArray()
 }
 
-function Get-InstallerScopedHappierServices {
+function Get-InstallerScopedProductServices {
   param (
     [Parameter(Mandatory = $true)] [string[]] $MatchNeedles
   )
@@ -2064,14 +2071,14 @@ function Get-InstallerScopedHappierServices {
   return $matched.ToArray()
 }
 
-function Get-InstallerScopedHappierScheduledTasks {
+function Get-InstallerScopedProductScheduledTasks {
   param (
     [Parameter(Mandatory = $true)] [string[]] $MatchNeedles
   )
 
   $tasks = @()
   try {
-    $tasks = Get-ScheduledTask -TaskPath "\Happier\" -ErrorAction SilentlyContinue
+    $tasks = Get-ScheduledTask -TaskPath "\$WindowsTaskFolder\" -ErrorAction SilentlyContinue
   }
   catch {
     return @()
@@ -2125,14 +2132,14 @@ function Wait-InstallerLockHygieneProcessesToExit {
 
   $deadline = (Get-Date).AddMilliseconds($WaitMs)
   while ((Get-Date) -lt $deadline) {
-    $remaining = Get-InstallerScopedHappierProcesses -MatchNeedles $MatchNeedles
+    $remaining = Get-InstallerScopedProductProcesses -MatchNeedles $MatchNeedles
     if ($remaining.Count -eq 0) {
       return @()
     }
     Start-Sleep -Milliseconds 250
   }
 
-  return Get-InstallerScopedHappierProcesses -MatchNeedles $MatchNeedles
+  return Get-InstallerScopedProductProcesses -MatchNeedles $MatchNeedles
 }
 
 function Remove-StaleInstallerVersionBackups {
@@ -2194,7 +2201,7 @@ function Invoke-InstallerPreInstallLockHygiene {
     }
   }
 
-  $matchingProcesses = Get-InstallerScopedHappierProcesses -MatchNeedles $matchNeedles
+  $matchingProcesses = Get-InstallerScopedProductProcesses -MatchNeedles $matchNeedles
   foreach ($process in $matchingProcesses) {
     Stop-Process -Id $process.ProcessId -Force -ErrorAction SilentlyContinue
   }
@@ -2210,7 +2217,7 @@ function Invoke-InstallerPreInstallLockHygiene {
     throw "Pre-install lock hygiene failed to quiesce managed runtime holders within $waitMs ms: $($details -join ', ')"
   }
 
-  $remainingServices = Get-InstallerScopedHappierServices -MatchNeedles $matchNeedles
+  $remainingServices = Get-InstallerScopedProductServices -MatchNeedles $matchNeedles
   if ($remainingServices.Count -gt 0) {
     $details = $remainingServices |
       ForEach-Object {
@@ -2220,7 +2227,7 @@ function Invoke-InstallerPreInstallLockHygiene {
     throw "Pre-install lock hygiene found scoped managed services still active after cleanup: $($details -join ', ')"
   }
 
-  $remainingScheduledTasks = Get-InstallerScopedHappierScheduledTasks -MatchNeedles $matchNeedles
+  $remainingScheduledTasks = Get-InstallerScopedProductScheduledTasks -MatchNeedles $matchNeedles
   if ($remainingScheduledTasks.Count -gt 0) {
     $details = $remainingScheduledTasks |
       ForEach-Object {
@@ -2269,10 +2276,10 @@ function Invoke-InstallerPayloadPromotionWithTimeout {
 
   $timeoutMs = Resolve-InstallerPayloadPromotionTimeoutMs
   $runToken = [System.Guid]::NewGuid().ToString("N")
-  $runnerBinaryPath = Join-Path $env:TEMP "happier-payload-promotion-$runToken.exe"
-  $runnerScriptPath = Join-Path $env:TEMP "happier-payload-promotion-$runToken.ps1"
-  $stdoutPath = Join-Path $env:TEMP "happier-payload-promotion-$runToken.stdout.log"
-  $stderrPath = Join-Path $env:TEMP "happier-payload-promotion-$runToken.stderr.log"
+  $runnerBinaryPath = Join-Path $env:TEMP "$CliCommandName-payload-promotion-$runToken.exe"
+  $runnerScriptPath = Join-Path $env:TEMP "$CliCommandName-payload-promotion-$runToken.ps1"
+  $stdoutPath = Join-Path $env:TEMP "$CliCommandName-payload-promotion-$runToken.stdout.log"
+  $stderrPath = Join-Path $env:TEMP "$CliCommandName-payload-promotion-$runToken.stderr.log"
 
   $escapeSingleQuotedLiteral = {
     param([string] $Value)
@@ -2281,11 +2288,11 @@ function Invoke-InstallerPayloadPromotionWithTimeout {
 
   $runnerScript = @"
 `$ErrorActionPreference = 'Stop'
-`$previousHappyHomeDir = `$env:HAPPIER_HOME_DIR
+`$previousHappyHomeDir = `$env:HAPPIEST_HOME_DIR
 `$previousSkipPayloadOwnerStopCommands = `$env:HAPPIER_CLI_SKIP_PAYLOAD_OWNER_STOP_COMMANDS
 `$previousSkipInstallPayloadMigration = `$env:HAPPIER_CLI_SKIP_INSTALL_PAYLOAD_MIGRATION
 try {
-  `$env:HAPPIER_HOME_DIR = '$(& $escapeSingleQuotedLiteral $InstallHomeDir)'
+  `$env:HAPPIEST_HOME_DIR = '$(& $escapeSingleQuotedLiteral $InstallHomeDir)'
   `$env:HAPPIER_CLI_SKIP_PAYLOAD_OWNER_STOP_COMMANDS = '1'
   `$env:HAPPIER_CLI_SKIP_INSTALL_PAYLOAD_MIGRATION = '1'
   & '$(& $escapeSingleQuotedLiteral $runnerBinaryPath)' self __install-payload --component happier-cli --payload-root '$(& $escapeSingleQuotedLiteral $PayloadRoot)' --version '$(& $escapeSingleQuotedLiteral $Version)' --channel '$(& $escapeSingleQuotedLiteral $ChannelValue)'
@@ -2297,10 +2304,10 @@ try {
 }
 finally {
   if (`$null -eq `$previousHappyHomeDir) {
-    Remove-Item Env:HAPPIER_HOME_DIR -ErrorAction SilentlyContinue
+    Remove-Item Env:HAPPIEST_HOME_DIR -ErrorAction SilentlyContinue
   }
   else {
-    `$env:HAPPIER_HOME_DIR = `$previousHappyHomeDir
+    `$env:HAPPIEST_HOME_DIR = `$previousHappyHomeDir
   }
   if (`$null -eq `$previousSkipPayloadOwnerStopCommands) {
     Remove-Item Env:HAPPIER_CLI_SKIP_PAYLOAD_OWNER_STOP_COMMANDS -ErrorAction SilentlyContinue
@@ -2407,14 +2414,7 @@ function Resolve-MinisignPublicKey {
   param (
     [Parameter(Mandatory = $true)] [string] $TargetPath
   )
-  if ($MinisignPubKey) {
-    Set-Content -Path $TargetPath -Value "$MinisignPubKey`n" -NoNewline
-    return
-  }
-  if (-not $MinisignPubKeyUrl) {
-    throw "HAPPIER_MINISIGN_PUBKEY_URL is empty; cannot fetch minisign public key."
-  }
-  Invoke-InstallerWebRequestWithRetry -Uri $MinisignPubKeyUrl -OutFile $TargetPath
+  Set-Content -Path $TargetPath -Value "$MinisignPubKey`n" -NoNewline
 }
 
 $tag = if ($Version) { "cli-v$Version" } elseif ($Channel -eq "preview") { "cli-preview" } elseif ($Channel -eq "publicdev") { "cli-dev" } else { "cli-stable" }
@@ -2427,44 +2427,45 @@ if (-not $ReleaseAssetsDir) {
   }
   catch {
     if ($Channel -eq "stable") {
-      throw "No stable releases found for Happier CLI."
+      throw "No stable releases found for $ProductDisplayName CLI."
     }
     if ($Channel -eq "publicdev") {
-      throw "No dev releases found for Happier CLI."
+      throw "No dev releases found for $ProductDisplayName CLI."
     }
-    throw "No preview releases found for Happier CLI."
+    throw "No preview releases found for $ProductDisplayName CLI."
   }
 }
 else {
   $release = $null
 }
-$checksumsPattern = Resolve-InstallerRequestedVersionPattern -Prefix "checksums-happier-v" -Suffix ".txt"
+$checksumsPattern = Resolve-InstallerRequestedVersionPattern -Prefix "checksums-$CliCommandName-v" -Suffix ".txt"
 $checksumsAsset = Resolve-InstallerAsset -Release $release -Pattern $checksumsPattern
 if (-not $checksumsAsset) {
   throw "Unable to locate checksum asset on release tag $tag."
 }
 
 $checksumsName = [string]$checksumsAsset.Name
-$resolvedVersion = $checksumsName -replace '^checksums-happier-v', '' -replace '\.txt$', ''
+$resolvedVersion = $checksumsName -replace "^checksums-$([Regex]::Escape($CliCommandName))-v", '' -replace '\.txt$', ''
 if (-not $resolvedVersion -or $resolvedVersion -eq $checksumsName) {
   throw "Failed to infer release version from checksum asset: $checksumsName"
 }
 $resolvedVersionPattern = [Regex]::Escape($resolvedVersion)
-$signaturePattern = "^checksums-happier-v${resolvedVersionPattern}\.txt\.minisig$"
+$signaturePattern = "^checksums-$([Regex]::Escape($CliCommandName))-v${resolvedVersionPattern}\.txt\.minisig$"
 $signatureAsset = Resolve-InstallerAsset -Release $release -Pattern $signaturePattern
 if (-not $signatureAsset) {
   throw "Unable to locate minisign signature asset on release tag $tag."
 }
 
+$cliAssetStemPattern = [Regex]::Escape($CliCommandName)
 $assetPattern = if (-not $Version -and ($Channel -eq "stable" -or $Channel -eq "preview")) {
-  '^happier-windows-x64\.tar\.gz$'
+  "^$cliAssetStemPattern-windows-x64\.tar\.gz$"
 }
 else {
-  "^happier-v${resolvedVersionPattern}-windows-x64\.tar\.gz$"
+  "^$cliAssetStemPattern-v${resolvedVersionPattern}-windows-x64\.tar\.gz$"
 }
 $asset = Resolve-InstallerAsset -Release $release -Pattern $assetPattern
 if (-not $asset -and -not $Version -and ($Channel -eq "stable" -or $Channel -eq "preview")) {
-  $asset = Resolve-InstallerAsset -Release $release -Pattern "^happier-v${resolvedVersionPattern}-windows-x64\.tar\.gz$"
+  $asset = Resolve-InstallerAsset -Release $release -Pattern "^$cliAssetStemPattern-v${resolvedVersionPattern}-windows-x64\.tar\.gz$"
 }
 if (-not $asset) {
   throw "Unable to locate Windows x64 binary on release tag $tag."
@@ -2474,7 +2475,7 @@ $script:PostInstallRunStatus = 0
 $script:PostInstallActionWasExplicit = [bool]($Run -or $SetupRelay)
 $tmpDir = New-InstallerStagingDirectory -InstallHomeDir $InstallDir
 try {
-  $archivePath = Join-Path $tmpDir.FullName "happier.tar.gz"
+  $archivePath = Join-Path $tmpDir.FullName "$CliCommandName.tar.gz"
   $checksumsPath = Join-Path $tmpDir.FullName "checksums.txt"
   $signaturePath = Join-Path $tmpDir.FullName "checksums.txt.minisig"
   $pubKeyPath = Join-Path $tmpDir.FullName "minisign.pub"
@@ -2485,7 +2486,7 @@ try {
 
   Write-InstallerStage -Name "Verify"
   $assetName = [string]$asset.Name
-  $checksumAssetName = "happier-v$resolvedVersion-windows-x64.tar.gz"
+  $checksumAssetName = "$CliCommandName-v$resolvedVersion-windows-x64.tar.gz"
   $expectedSha = $null
   foreach ($line in (Get-Content -Path $checksumsPath)) {
     if ($line -match '^([a-fA-F0-9]{64})\s{2}(.+)$' -and $matches[2] -eq $checksumAssetName) {
@@ -2521,13 +2522,13 @@ try {
   $tarPath = Resolve-TarExecutablePath
   & $tarPath -xzf $archivePath -C $extractDir
   $version = $resolvedVersion
-  $payloadRoot = Join-Path $extractDir "happier-v$version-windows-x64"
+  $payloadRoot = Join-Path $extractDir "$CliCommandName-v$version-windows-x64"
   if (-not (Test-Path $payloadRoot)) {
     throw "Failed to locate extracted payload root: $payloadRoot"
   }
-  $binary = Join-Path $payloadRoot "happier.exe"
+  $binary = Join-Path $payloadRoot "$CliCommandName.exe"
   if (-not (Test-Path $binary)) {
-    throw "Failed to locate extracted happier.exe"
+    throw "Failed to locate extracted $CliCommandName.exe"
   }
 
   New-Item -ItemType Directory -Path $BinDir -Force | Out-Null
@@ -2567,10 +2568,6 @@ try {
       throw "Payload promotion failed."
     }
   }
-  if ($LegacyBinDir -ne $BinDir) {
-    Remove-Item -Path (Join-Path $LegacyBinDir "happier.exe") -Force -ErrorAction SilentlyContinue
-  }
-
   if ($NoPathUpdate -ne "1") {
     $userPath = [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User)
     $pathEntries = @()
@@ -2611,7 +2608,7 @@ try {
   $displayShimBasename = [System.IO.Path]::GetFileNameWithoutExtension($displayShimPath)
   $displayBinaryPath = $invoker
   Write-Host ""
-  Write-Host "Happier CLI installed:"
+  Write-Host "$ProductDisplayName CLI installed:"
   Write-Host "  binary: $displayBinaryPath"
   Write-Host "  shim:   $displayShimPath"
   Write-Host "  version: $version"
@@ -2733,7 +2730,7 @@ try {
     try {
       $script:LastInstallerCommandExitCode = 0
       Invoke-PostInstallAction -CliPath $invoker
-      # `happier setup` exits non-zero when it stops short of finishing -- for
+      # `happiest setup` exits non-zero when it stops short of finishing -- for
       # example when it has set the relay but sign-in still needs a person. That
       # is not "done", and it must not fail the install either.
       $script:PostInstallSetupIsDone = ($script:LastInstallerCommandExitCode -eq 0)

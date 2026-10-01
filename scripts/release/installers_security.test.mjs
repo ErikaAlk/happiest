@@ -17,9 +17,9 @@ test('release-owned installer scripts enforce minisign verification defaults', a
   const publicKeyLines = publicKey.split('\n').map((line) => line.trim()).filter(Boolean);
   const publicKeyPayload = publicKeyLines.at(-1) ?? '';
 
-  assert.match(installSh, /HAPPIER_MINISIGN_PUBKEY_URL/);
-  assert.match(installSh, /HAPPIER_RELEASE_ASSETS_DIR/);
-  assert.match(installSh, /https:\/\/happier\.dev\/happier-release\.pub/);
+  assert.doesNotMatch(installSh, /HAPPIER_MINISIGN_PUBKEY_URL/, 'the release public key is embedded; it must not be downloaded');
+  assert.doesNotMatch(installSh, /happier\.dev/);
+  assert.match(installSh, /HAPPIEST_RELEASE_ASSETS_DIR/);
   assert.match(installSh, /verify_release_signature/);
   assert.doesNotMatch(installSh, /skipped signature verification/i);
   assert.ok(publicKeyPayload.length > 10);
@@ -31,9 +31,9 @@ test('release-owned windows installer enforces minisign verification defaults', 
   const publicKey = (await readFile(publicKeyPath, 'utf8')).trim();
   const publicKeyLines = publicKey.split('\n').map((line) => line.trim()).filter(Boolean);
   const publicKeyPayload = publicKeyLines.at(-1) ?? '';
-  assert.match(installPs1, /HAPPIER_MINISIGN_PUBKEY_URL/);
-  assert.match(installPs1, /HAPPIER_RELEASE_ASSETS_DIR/);
-  assert.match(installPs1, /https:\/\/happier\.dev\/happier-release\.pub/);
+  assert.doesNotMatch(installPs1, /HAPPIER_MINISIGN_PUBKEY_URL/, 'the release public key is embedded; it must not be downloaded');
+  assert.doesNotMatch(installPs1, /happier\.dev/);
+  assert.match(installPs1, /HAPPIEST_RELEASE_ASSETS_DIR/);
   assert.match(installPs1, /Signature verified\./);
   assert.doesNotMatch(installPs1, /skip.*signature/i);
   assert.match(installPs1, /&\s+\$exe\.FullName\s+--version\s+\*>\s+\$null/);

@@ -10,7 +10,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..', '..');
 
 test('install.sh asset lookup works even when awk has a line-length limit', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'happier-installer-asset-lookup-'));
+  const root = await mkdtemp(join(tmpdir(), 'happiest-installer-asset-lookup-'));
   const binDir = join(root, 'bin');
   const installDir = join(root, 'install');
   const outBinDir = join(root, 'out-bin');
@@ -96,9 +96,9 @@ for ((i=1; i<=$#; i++)); do
   esac
 done
 if [[ -n "$out" ]]; then
-  if [[ "$url" == *"checksums-happier-v0.1.0-preview.1.txt" ]]; then
+  if [[ "$url" == *"checksums-happiest-v0.1.0-preview.1.txt" ]]; then
     # Wrong checksum on purpose; should trigger "Checksum verification failed." later.
-    printf '%s  %s\n' "0000000000000000000000000000000000000000000000000000000000000000" "happier-v0.1.0-preview.1-linux-x64.tar.gz" > "$out"
+    printf '%s  %s\n' "0000000000000000000000000000000000000000000000000000000000000000" "happiest-v0.1.0-preview.1-linux-x64.tar.gz" > "$out"
     exit 0
   fi
   : > "$out"
@@ -109,16 +109,16 @@ cat <<'JSON_HEAD'
 {
   "assets": [
     {
-      "name": "happier-v0.1.0-preview.1-linux-x64.tar.gz",
-      "browser_download_url": "https://example.test/happier-v0.1.0-preview.1-linux-x64.tar.gz"
+      "name": "happiest-v0.1.0-preview.1-linux-x64.tar.gz",
+      "browser_download_url": "https://example.test/happiest-v0.1.0-preview.1-linux-x64.tar.gz"
     },
     {
-      "name": "checksums-happier-v0.1.0-preview.1.txt",
-      "browser_download_url": "https://example.test/checksums-happier-v0.1.0-preview.1.txt"
+      "name": "checksums-happiest-v0.1.0-preview.1.txt",
+      "browser_download_url": "https://example.test/checksums-happiest-v0.1.0-preview.1.txt"
     },
     {
-      "name": "checksums-happier-v0.1.0-preview.1.txt.minisig",
-      "browser_download_url": "https://example.test/checksums-happier-v0.1.0-preview.1.txt.minisig"
+      "name": "checksums-happiest-v0.1.0-preview.1.txt.minisig",
+      "browser_download_url": "https://example.test/checksums-happiest-v0.1.0-preview.1.txt.minisig"
     }
   ],
   "pad": [
@@ -147,7 +147,7 @@ JSON_TAIL
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_CHANNEL: 'preview',
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NO_PATH_UPDATE: '1',
     HAPPIER_NONINTERACTIVE: '1',
@@ -168,7 +168,7 @@ JSON_TAIL
 });
 
 test('install.sh asset lookup handles compact GitHub release JSON', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'happier-installer-compact-asset-lookup-'));
+  const root = await mkdtemp(join(tmpdir(), 'happiest-installer-compact-asset-lookup-'));
   const binDir = join(root, 'bin');
   const installDir = join(root, 'install');
   const outBinDir = join(root, 'out-bin');
@@ -182,27 +182,27 @@ test('install.sh asset lookup handles compact GitHub release JSON', async () => 
     `#!/usr/bin/env bash
 set -euo pipefail
 if [[ "$1" = "-s" ]]; then
-  echo Darwin
+  echo Linux
   exit 0
 fi
 if [[ "$1" = "-m" ]]; then
-  echo arm64
+  echo x86_64
   exit 0
 fi
-echo Darwin
+echo Linux
 `,
     'utf8',
   );
   await chmod(unameStubPath, 0o755);
 
   const version = '0.2.2-preview.1775586717.26498';
-  const assetName = `happier-v${version}-darwin-arm64.tar.gz`;
-  const checksumsName = `checksums-happier-v${version}.txt`;
+  const assetName = `happiest-v${version}-linux-x64.tar.gz`;
+  const checksumsName = `checksums-happiest-v${version}.txt`;
   const compactReleaseJson = JSON.stringify({
     assets: [
       {
-        name: 'darwin-arm64.json',
-        browser_download_url: 'https://example.test/darwin-arm64.json',
+        name: 'linux-x64.json',
+        browser_download_url: 'https://example.test/linux-x64.json',
       },
       {
         name: assetName,
@@ -258,7 +258,7 @@ printf '%s' '${compactReleaseJson}'
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_CHANNEL: 'preview',
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NO_PATH_UPDATE: '1',
     HAPPIER_NONINTERACTIVE: '1',
@@ -279,7 +279,7 @@ printf '%s' '${compactReleaseJson}'
 });
 
 test('install.sh --version semver-sorts rolling remote release assets instead of trusting API order', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'happier-installer-remote-asset-order-'));
+  const root = await mkdtemp(join(tmpdir(), 'happiest-installer-remote-asset-order-'));
   const binDir = join(root, 'bin');
   const installDir = join(root, 'install');
   const outBinDir = join(root, 'out-bin');
@@ -317,20 +317,20 @@ cat <<'JSON'
 {
   "assets": [
     {
-      "name": "happier-v${newerVersion}-linux-x64.tar.gz",
-      "browser_download_url": "https://example.test/happier-v${newerVersion}-linux-x64.tar.gz"
+      "name": "happiest-v${newerVersion}-linux-x64.tar.gz",
+      "browser_download_url": "https://example.test/happiest-v${newerVersion}-linux-x64.tar.gz"
     },
     {
-      "name": "happier-v${olderVersion}-linux-x64.tar.gz",
-      "browser_download_url": "https://example.test/happier-v${olderVersion}-linux-x64.tar.gz"
+      "name": "happiest-v${olderVersion}-linux-x64.tar.gz",
+      "browser_download_url": "https://example.test/happiest-v${olderVersion}-linux-x64.tar.gz"
     },
     {
-      "name": "checksums-happier-v${newerVersion}.txt",
-      "browser_download_url": "https://example.test/checksums-happier-v${newerVersion}.txt"
+      "name": "checksums-happiest-v${newerVersion}.txt",
+      "browser_download_url": "https://example.test/checksums-happiest-v${newerVersion}.txt"
     },
     {
-      "name": "checksums-happier-v${olderVersion}.txt",
-      "browser_download_url": "https://example.test/checksums-happier-v${olderVersion}.txt"
+      "name": "checksums-happiest-v${olderVersion}.txt",
+      "browser_download_url": "https://example.test/checksums-happiest-v${olderVersion}.txt"
     }
   ]
 }
@@ -346,7 +346,7 @@ JSON
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_CHANNEL: 'preview',
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NONINTERACTIVE: '1',
     HAPPIER_GITHUB_TOKEN: '',
@@ -366,7 +366,7 @@ JSON
 });
 
 test('install.sh --version orders strict-prefix prerelease identifiers for preview remote rolling assets', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'happier-installer-remote-prerelease-prefix-'));
+  const root = await mkdtemp(join(tmpdir(), 'happiest-installer-remote-prerelease-prefix-'));
   const binDir = join(root, 'bin');
   const installDir = join(root, 'install');
   const outBinDir = join(root, 'out-bin');
@@ -404,20 +404,20 @@ cat <<'JSON'
 {
   "assets": [
     {
-      "name": "happier-v${newerVersion}-linux-x64.tar.gz",
-      "browser_download_url": "https://example.test/happier-v${newerVersion}-linux-x64.tar.gz"
+      "name": "happiest-v${newerVersion}-linux-x64.tar.gz",
+      "browser_download_url": "https://example.test/happiest-v${newerVersion}-linux-x64.tar.gz"
     },
     {
-      "name": "happier-v${olderVersion}-linux-x64.tar.gz",
-      "browser_download_url": "https://example.test/happier-v${olderVersion}-linux-x64.tar.gz"
+      "name": "happiest-v${olderVersion}-linux-x64.tar.gz",
+      "browser_download_url": "https://example.test/happiest-v${olderVersion}-linux-x64.tar.gz"
     },
     {
-      "name": "checksums-happier-v${newerVersion}.txt",
-      "browser_download_url": "https://example.test/checksums-happier-v${newerVersion}.txt"
+      "name": "checksums-happiest-v${newerVersion}.txt",
+      "browser_download_url": "https://example.test/checksums-happiest-v${newerVersion}.txt"
     },
     {
-      "name": "checksums-happier-v${olderVersion}.txt",
-      "browser_download_url": "https://example.test/checksums-happier-v${olderVersion}.txt"
+      "name": "checksums-happiest-v${olderVersion}.txt",
+      "browser_download_url": "https://example.test/checksums-happiest-v${olderVersion}.txt"
     }
   ]
 }
@@ -433,7 +433,7 @@ JSON
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_CHANNEL: 'preview',
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NONINTERACTIVE: '1',
     HAPPIER_GITHUB_TOKEN: '',
@@ -452,7 +452,7 @@ JSON
 });
 
 test('install.sh --version reports a missing stable asset without shell variable crashes', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'happier-installer-missing-stable-asset-'));
+  const root = await mkdtemp(join(tmpdir(), 'happiest-installer-missing-stable-asset-'));
   const binDir = join(root, 'bin');
   const installDir = join(root, 'install');
   const outBinDir = join(root, 'out-bin');
@@ -488,8 +488,8 @@ cat <<'JSON'
 {
   "assets": [
     {
-      "name": "happier-v9.9.9-preview.42-linux-x64.tar.gz",
-      "browser_download_url": "https://example.test/happier-v9.9.9-preview.42-linux-x64.tar.gz"
+      "name": "happiest-v9.9.9-preview.42-linux-x64.tar.gz",
+      "browser_download_url": "https://example.test/happiest-v9.9.9-preview.42-linux-x64.tar.gz"
     }
   ]
 }
@@ -505,7 +505,7 @@ JSON
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_CHANNEL: 'stable',
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NONINTERACTIVE: '1',
     HAPPIER_GITHUB_TOKEN: '',

@@ -27,24 +27,24 @@ test('install.sh --run setup-relay applies the default relay install arguments w
   await chmod(curlStubPath, 0o755);
 
   // Provide a fake installed CLI for the stable ring in the managed location.
-  const cliPath = join(installDir, 'cli', 'current', 'happier');
+  const cliPath = join(installDir, 'cli', 'current', 'happiest');
   await writeFile(
     cliPath,
     `#!/usr/bin/env bash
 set -euo pipefail
 if [[ "$1" = "--help" ]]; then
   cat <<'EOF'
-happier relay
-happier auth
-happier daemon
+happiest relay
+happiest auth
+happiest daemon
 EOF
   exit 0
 fi
 if [[ "$1" = "relay" && "$2" = "--help" ]]; then
   cat <<'EOF'
-happier relay inspect-target [--json]
-happier relay set <relay-url>
-happier relay host <install|status|start|stop|restart|uninstall>
+happiest relay inspect-target [--json]
+happiest relay set <relay-url>
+happiest relay host <install|status|start|stop|restart|uninstall>
 EOF
   exit 0
 fi
@@ -84,7 +84,7 @@ exit 22
     SHELL: '/bin/bash',
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NONINTERACTIVE: '1',
   };
@@ -119,22 +119,22 @@ test('install.sh --run setup-relay forwards relay host flags to the installed CL
   await writeFile(curlStubPath, '#!/usr/bin/env bash\necho \"curl should not run\" >&2\nexit 88\n', 'utf8');
   await chmod(curlStubPath, 0o755);
 
-  const cliPath = join(previewCliDir, 'happier');
+  const cliPath = join(previewCliDir, 'happiest');
   await writeFile(
     cliPath,
     `#!/usr/bin/env bash
 set -euo pipefail
 if [[ "$1" = "--help" ]]; then
   cat <<'EOF'
-happier relay
+happiest relay
 EOF
   exit 0
 fi
 if [[ "$1" = "relay" && "$2" = "--help" ]]; then
   cat <<'EOF'
-happier relay inspect-target [--json]
-happier relay set <relay-url>
-happier relay host <install|status|start|stop|restart|uninstall>
+happiest relay inspect-target [--json]
+happiest relay set <relay-url>
+happiest relay host <install|status|start|stop|restart|uninstall>
 EOF
   exit 0
 fi
@@ -173,7 +173,7 @@ exit 22
     SHELL: '/bin/bash',
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NONINTERACTIVE: '1',
     HAPPIER_CHANNEL: 'preview',
@@ -208,14 +208,14 @@ test('install.sh --run auth-login runs the installed CLI without network', async
   await writeFile(curlStubPath, '#!/usr/bin/env bash\necho \"curl should not run\" >&2\nexit 88\n', 'utf8');
   await chmod(curlStubPath, 0o755);
 
-  const cliPath = join(installDir, 'cli', 'current', 'happier');
+  const cliPath = join(installDir, 'cli', 'current', 'happiest');
   await writeFile(
     cliPath,
     `#!/usr/bin/env bash
 set -euo pipefail
 if [[ "$1" = "--help" ]]; then
   cat <<'EOF'
-happier auth
+happiest auth
 EOF
   exit 0
 fi
@@ -239,7 +239,7 @@ exit 22
     SHELL: '/bin/bash',
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
   };
 
@@ -273,14 +273,14 @@ test('install.sh does not force noninteractive mode when running a post-install 
   await writeFile(curlStubPath, '#!/usr/bin/env bash\necho \"curl should not run\" >&2\nexit 88\n', 'utf8');
   await chmod(curlStubPath, 0o755);
 
-  const cliPath = join(installDir, 'cli', 'current', 'happier');
+  const cliPath = join(installDir, 'cli', 'current', 'happiest');
   await writeFile(
     cliPath,
     `#!/usr/bin/env bash
 set -euo pipefail
 if [[ "$1" = "--help" ]]; then
   cat <<'EOF'
-happier setup
+happiest setup
 EOF
   exit 0
 fi
@@ -306,7 +306,7 @@ exit 22
     SHELL: '/bin/bash',
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
   };
   delete env.HAPPIER_NONINTERACTIVE;
@@ -338,23 +338,23 @@ test('install.sh --run setup-relay accepts a CLI that advertises relay support t
 
   // CLI is present and can run the command, but the top-level `--help` output does not list relay.
   // The installer should still accept it if `relay --help` advertises the relay host surface.
-  const cliPath = join(installDir, 'cli', 'current', 'happier');
+  const cliPath = join(installDir, 'cli', 'current', 'happiest');
   await writeFile(
     cliPath,
     `#!/usr/bin/env bash
 set -euo pipefail
 if [[ "$1" = "--help" ]]; then
   cat <<'EOF'
-happier auth
-happier daemon
+happiest auth
+happiest daemon
 EOF
   exit 0
 fi
 if [[ "$1" = "relay" && "$2" = "--help" ]]; then
   cat <<'EOF'
-happier relay inspect-target [--json]
-happier relay set <relay-url>
-happier relay host <install|status|start|stop|restart|uninstall>
+happiest relay inspect-target [--json]
+happiest relay set <relay-url>
+happiest relay host <install|status|start|stop|restart|uninstall>
 EOF
   exit 0
 fi
@@ -376,7 +376,7 @@ exit 22
     SHELL: '/bin/bash',
     PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
     HAPPIER_PRODUCT: 'cli',
-    HAPPIER_INSTALL_DIR: installDir,
+    HAPPIEST_INSTALL_DIR: installDir,
     HAPPIER_BIN_DIR: outBinDir,
     HAPPIER_NONINTERACTIVE: '1',
   };

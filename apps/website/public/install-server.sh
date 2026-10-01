@@ -5,5 +5,5 @@ set -euo pipefail
 # Uses the shared installer with HAPPIER_PRODUCT=server.
 export HAPPIER_PRODUCT="${HAPPIER_PRODUCT:-server}"
 
-curl -fsSL "https://happier.dev/install.sh" | bash
+curl -fsSL "https://github.com/ErikaAlk/happiest/releases/download/cli-stable/install.sh" | bash
 
