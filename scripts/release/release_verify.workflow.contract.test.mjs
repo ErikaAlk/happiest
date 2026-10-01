@@ -223,19 +223,10 @@ test('grouped and independent candidate verifiers install trusted control depend
   }
 });
 
-test('release-verify proves a deployed server loaded the exact candidate revision', async () => {
+test('release-verify checks no hosted server deployment, which the fork release never makes', async () => {
   const raw = await readFile(join(repoRoot, '.github', 'workflows', 'release-verify.yml'), 'utf8');
   const workflow = YAML.parse(raw, { prettyErrors: true });
-  assert.equal(workflow.on.workflow_call.inputs.server_api_version_url.type, 'string');
-  assert.equal(workflow.on.workflow_call.inputs.verify_deploy_server.type, 'boolean');
-
-  const step = workflow.jobs.verify_candidate.steps.find(
-    (candidate) => candidate.name === 'Verify loaded server API revision',
-  );
-  assert.ok(step);
-  assert.equal(step.if, '${{ inputs.verify_deploy_server }}');
-  assert.equal(step.env.SERVER_API_VERSION_URL, '${{ inputs.server_api_version_url }}');
-  assert.equal(step.env.CANDIDATE_SOURCE_SHA, '${{ inputs.candidate_source_sha }}');
-  assert.match(step.run, /test -n "\$SERVER_API_VERSION_URL"/);
-  assert.match(step.run, /verify-loaded-release-revision\.mjs/);
+  assert.equal(workflow.on.workflow_call.inputs.server_api_version_url, undefined);
+  assert.equal(workflow.on.workflow_call.inputs.verify_deploy_server, undefined);
+  assert.doesNotMatch(raw, /verify-loaded-release-revision|SERVER_API_VERSION_URL/);
 });

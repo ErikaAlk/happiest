@@ -94,14 +94,6 @@ on:
         required: false
         default: ''
         type: string
-      server_api_version_url:
-        required: false
-        default: ''
-        type: string
-      verify_deploy_server:
-        required: false
-        default: false
-        type: boolean
 
 permissions:
   contents: read
@@ -189,18 +181,6 @@ jobs:
           candidate_source_sha: ${{ inputs.candidate_source_sha }}
           product: ui-web
           version: ${{ inputs.candidate_ui_web_version }}
-
-      - name: Verify loaded server API revision
-        if: ${{ inputs.verify_deploy_server }}
-        env:
-          SERVER_API_VERSION_URL: ${{ inputs.server_api_version_url }}
-          CANDIDATE_SOURCE_SHA: ${{ inputs.candidate_source_sha }}
-        run: |
-          set -euo pipefail
-          test -n "$SERVER_API_VERSION_URL"
-          node "$GITHUB_WORKSPACE/.release-control/scripts/pipeline/release/verify-loaded-release-revision.mjs" \
-            --url "$SERVER_API_VERSION_URL" \
-            --expected-source-sha "$CANDIDATE_SOURCE_SHA"
 
   resolve_validation_profile:
     name: Resolve bounded validation profile
