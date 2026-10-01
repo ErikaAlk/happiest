@@ -7,15 +7,15 @@ import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 
-import { signUpdaterArtifacts } from './sign-updater-artifacts.mjs';
+import { extractTauriUpdaterSignature, signUpdaterArtifacts } from './sign-updater-artifacts.mjs';
 
 function createFixture() {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'happier-tauri-sign-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'happiest-tauri-sign-'));
   const bundleDir = path.join(root, 'bundle');
   fs.mkdirSync(path.join(bundleDir, 'nested'), { recursive: true });
   const artifacts = [
-    path.join(bundleDir, 'happier.AppImage'),
-    path.join(bundleDir, 'nested', 'Happier (dev)_0.2.10-266_x64_en-US.msi'),
+    path.join(bundleDir, 'happiest.AppImage'),
+    path.join(bundleDir, 'nested', 'Happiest (dev)_0.2.10-266_x64_en-US.msi'),
   ];
   for (const artifact of artifacts) {
     fs.writeFileSync(artifact, 'candidate-bytes');
@@ -132,6 +132,42 @@ test('signUpdaterArtifacts signs with the installed Tauri CLI and a throwaway fi
     assert.match(Buffer.from(signature, 'base64').toString('utf8'), /untrusted comment:/);
     assert.equal(fs.readFileSync(artifact, 'utf8'), 'candidate-bytes');
   }
+});
+
+test('extractTauriUpdaterSignature picks the base64 signature out of noisy tauri output', () => {
+  const sig = `${'A'.repeat(86)}==`;
+  const out = [
+    'tauri signer sign v2.0.0',
+    'some warning that includes base64-ish stuff: AAAA',
+    `Signature: ${sig}`,
+    'done',
+    '',
+  ].join('\n');
+
+  assert.equal(extractTauriUpdaterSignature(out), sig);
+});
+
+test('extractTauriUpdaterSignature preserves a standalone long signature line', () => {
+  const sig = Buffer.from(
+    [
+      'untrusted comment: signature from tauri secret key',
+      `${'A'.repeat(88)}==`,
+      'trusted comment: timestamp:1775372442\tfile:Happiest_1.2.3_amd64.AppImage',
+      `${'B'.repeat(88)}==`,
+      '',
+    ].join('\n'),
+    'utf8',
+  ).toString('base64');
+  assert.ok(sig.length > 256);
+
+  const out = [
+    'tauri signer sign v2.0.0',
+    'Signature:',
+    sig,
+    '',
+  ].join('\n');
+
+  assert.equal(extractTauriUpdaterSignature(out), sig);
 });
 
 test('signUpdaterArtifacts rejects invalid signer output without replacing the candidate signature', (t) => {

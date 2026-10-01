@@ -27,10 +27,10 @@ test('Linux desktop package policy accepts only native deb/rpm packages', () => 
 
 test('Linux package metadata validation uses the owning package inspector', () => {
   const calls = [];
-  validateLinuxPackageMetadata('/tmp/happier.deb', (command, args) => {
+  validateLinuxPackageMetadata('/tmp/happiest.deb', (command, args) => {
     calls.push([command, args]);
-    return 'happier-ui-desktop\n0.2.0\namd64\n';
+    return 'happiest\n0.2.0\namd64\n';
   });
-  assert.deepEqual(calls, [['dpkg-deb', ['--show', '--showformat', '${Package}\\n${Version}\\n${Architecture}\\n', '/tmp/happier.deb']]]);
-  assert.throws(() => validateLinuxPackageMetadata('/tmp/happier.rpm', () => 'bad'), /invalid RPM metadata/);
+  assert.deepEqual(calls, [['dpkg-deb', ['--show', '--showformat', '${Package}\\n${Version}\\n${Architecture}\\n', '/tmp/happiest.deb']]]);
+  assert.throws(() => validateLinuxPackageMetadata('/tmp/happiest.rpm', () => 'bad'), /invalid RPM metadata/);
 });

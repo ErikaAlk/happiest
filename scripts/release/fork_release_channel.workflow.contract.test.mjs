@@ -27,6 +27,9 @@ const releasePathWorkflows = [
   'release-verify.yml',
   'resolve-release-resume.yml',
   'publish-github-release.yml',
+  'promote-ui.yml',
+  'build-tauri.yml',
+  'publish-ui-release.yml',
 ];
 
 const writerJobs = [
@@ -41,6 +44,7 @@ const writerJobs = [
   ['publish-ui-web.yml', 'promote_existing'],
   ['promote-branch.yml', 'promote'],
   ['publish-github-release.yml', 'publish'],
+  ['build-tauri.yml', 'promote_stable_feed'],
 ];
 
 test('the fork publishes no npm package and no Homebrew formula', () => {
@@ -146,6 +150,22 @@ test('release writes use the workflow token with explicit write permissions', ()
       'write',
       `release.yml/${jobName} must grant the contents write scope its called writer jobs use`,
     );
+  }
+
+  // The UI promotion pushes its version bump and moves the deploy branch; both use the workflow token.
+  const promoteUi = load('promote-ui.yml');
+  for (const jobName of ['apply_bump', 'promote']) {
+    const job = promoteUi.jobs[jobName];
+    assert.deepEqual(job.permissions, { contents: 'write' }, `promote-ui.yml/${jobName} declares exactly its write scope`);
+    const tokens = (job.steps ?? []).flatMap((step) =>
+      Object.entries(step.env ?? {})
+        .filter(([name]) => /^(GH_TOKEN|GITHUB_TOKEN|PUSH_TOKEN)$/.test(name))
+        .map(([, value]) => value),
+    );
+    assert.ok(tokens.length > 0, `promote-ui.yml/${jobName} writes with a token`);
+    for (const token of tokens) {
+      assert.equal(token, '${{ github.token }}', `promote-ui.yml/${jobName} writes with the workflow token`);
+    }
   }
 
   const combined = load('release-preview-and-production.yml');

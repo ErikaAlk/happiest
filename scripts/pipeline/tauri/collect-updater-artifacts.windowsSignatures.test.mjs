@@ -12,7 +12,7 @@ function writeFile(p, contents) {
 
 test('collect-updater-artifacts supports Windows .msi.sig updater signatures (non-zipped)', () => {
   const repoRoot = path.resolve(import.meta.dirname, '..', '..', '..');
-  const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'happier-tauri-collect-'));
+  const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'happiest-tauri-collect-'));
   const artifactRel = path.join(
     'apps',
     'ui',
@@ -21,7 +21,7 @@ test('collect-updater-artifacts supports Windows .msi.sig updater signatures (no
     'release',
     'bundle',
     'msi',
-    'Happier (dev)_0.1.2-23_x64_en-US.msi',
+    'Happiest (dev)_0.1.2-23_x64_en-US.msi',
   );
   const sigRel = `${artifactRel}.sig`;
 

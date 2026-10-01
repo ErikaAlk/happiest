@@ -12,7 +12,7 @@ function writeExecutable(file, contents) {
 }
 
 test('native Wayland smoke waits for the Tauri ready marker before validating it', (t) => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'happier-wayland-smoke-test-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'happiest-wayland-smoke-test-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const binDir = path.join(root, 'bin');
   fs.mkdirSync(binDir);
@@ -20,11 +20,11 @@ test('native Wayland smoke waits for the Tauri ready marker before validating it
   writeExecutable(path.join(binDir, 'weston'), `#!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
-fs.writeFileSync(path.join(process.env.XDG_RUNTIME_DIR, 'happier-wayland'), '');
+fs.writeFileSync(path.join(process.env.XDG_RUNTIME_DIR, 'happiest-wayland'), '');
 setInterval(() => {}, 30_000);
 `);
 
-  const appImage = path.join(root, 'happier.AppImage');
+  const appImage = path.join(root, 'happiest.AppImage');
   writeExecutable(appImage, `#!/usr/bin/env bash
 set -euo pipefail
 mkdir -p squashfs-root

@@ -79,7 +79,6 @@ test('every GitHub App token reachable from full or nightly release declares rep
 
 test('previously broad release-path tokens use the minimum current-repository contents permission', () => {
   const expected = new Map([
-    ['promote-ui.yml/promote/Create GitHub App token', 'write'],
     ['promote-website.yml/promote/Create GitHub App token', 'write'],
     ['promote-docs.yml/promote/Create GitHub App token', 'write'],
     ['publish-docker.yml/publish/Create GitHub App token', 'read'],

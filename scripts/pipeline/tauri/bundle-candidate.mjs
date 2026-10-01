@@ -9,10 +9,8 @@ import { fileURLToPath } from 'node:url';
 const MAX_FILE_BYTES = 768 * 1024 * 1024;
 
 const PLATFORM_LAYOUTS = Object.freeze({
-  'linux-x86_64': { os: 'ubuntu-22.04', target: 'x86_64-unknown-linux-gnu', executable: 'app', sidecar: 'hsetup-x86_64-unknown-linux-gnu', gzip: true },
-  'windows-x86_64': { os: 'windows-latest', target: 'x86_64-pc-windows-msvc', executable: 'app.exe', sidecar: 'hsetup-x86_64-pc-windows-msvc.exe', gzip: false },
-  'darwin-aarch64': { os: 'macos-latest', target: 'aarch64-apple-darwin', executable: 'app', sidecar: 'hsetup-aarch64-apple-darwin', gzip: false },
-  'darwin-x86_64': { os: 'macos-latest', target: 'x86_64-apple-darwin', executable: 'app', sidecar: 'hsetup-x86_64-apple-darwin', gzip: false },
+  'linux-x86_64': { os: 'ubuntu-22.04', executable: 'app', sidecar: 'hsetup-x86_64-unknown-linux-gnu', gzip: true },
+  'windows-x86_64': { os: 'windows-latest', executable: 'app.exe', sidecar: 'hsetup-x86_64-pc-windows-msvc.exe', gzip: false },
 });
 
 export const BUNDLE_CANDIDATE_PLATFORMS = Object.freeze(Object.keys(PLATFORM_LAYOUTS));
@@ -22,7 +20,6 @@ export function planBundleCandidates(artifacts) {
   const include = Object.entries(PLATFORM_LAYOUTS).map(([platform, layout]) => ({
     os: layout.os,
     platform_key: platform,
-    tauri_target: platform.startsWith('darwin-') ? layout.target : '',
     artifact_id: artifacts[platform]?.id ?? '',
     artifact_digest: artifacts[platform]?.digest ?? '',
   }));
@@ -57,25 +54,21 @@ function assertExactKeys(value, keys, label) {
   if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${label} has unexpected fields`);
 }
 
-function resolveLayout(platformKey, tauriTarget) {
+function resolveLayout(platformKey) {
   const layout = PLATFORM_LAYOUTS[platformKey];
   if (!layout) throw new Error(`unsupported platform key: ${platformKey}`);
-  const expectedTauriTarget = platformKey.startsWith('darwin-') ? layout.target : '';
-  if (tauriTarget !== expectedTauriTarget) {
-    throw new Error(`unexpected Tauri target for ${platformKey}: ${tauriTarget || '<empty>'}`);
-  }
   return layout;
 }
 
 export function packBundleCandidate(options) {
-  const layout = resolveLayout(options.platformKey, options.tauriTarget);
+  const layout = resolveLayout(options.platformKey);
   if (!/^[0-9a-f]{40}$/u.test(options.sourceSha)) throw new Error('source SHA must be a full lowercase Git SHA');
   if (!['preview', 'dev', 'production'].includes(options.environment)) throw new Error('unsupported environment');
   if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u.test(options.uiVersion)) throw new Error('invalid UI version');
   if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u.test(options.buildVersion)) throw new Error('invalid build version');
 
   const uiDir = path.resolve(options.uiDir);
-  const releaseDir = path.join(uiDir, 'src-tauri', 'target', ...(options.tauriTarget ? [options.tauriTarget] : []), 'release');
+  const releaseDir = path.join(uiDir, 'src-tauri', 'target', 'release');
   const binariesDir = path.join(uiDir, 'src-tauri', 'binaries');
   const outDir = path.resolve(options.outDir);
   const filesDir = path.join(outDir, 'files');
@@ -99,7 +92,6 @@ export function packBundleCandidate(options) {
     uiVersion: options.uiVersion,
     buildVersion: options.buildVersion,
     platformKey: options.platformKey,
-    tauriTarget: options.tauriTarget,
     files: manifestFiles,
   };
   fs.writeFileSync(path.join(outDir, 'candidate.json'), `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
@@ -107,10 +99,10 @@ export function packBundleCandidate(options) {
 }
 
 export function materializeBundleCandidate(options) {
-  const layout = resolveLayout(options.platformKey, options.tauriTarget);
+  const layout = resolveLayout(options.platformKey);
   const candidateDir = path.resolve(options.candidateDir);
   const manifest = JSON.parse(fs.readFileSync(path.join(candidateDir, 'candidate.json'), 'utf8'));
-  assertExactKeys(manifest, ['schema', 'sourceSha', 'environment', 'uiVersion', 'buildVersion', 'platformKey', 'tauriTarget', 'files'], 'candidate manifest');
+  assertExactKeys(manifest, ['schema', 'sourceSha', 'environment', 'uiVersion', 'buildVersion', 'platformKey', 'files'], 'candidate manifest');
   if (manifest.schema !== 1) throw new Error('unsupported candidate manifest schema');
   for (const [field, expected] of [
     ['sourceSha', options.sourceSha],
@@ -118,7 +110,6 @@ export function materializeBundleCandidate(options) {
     ['uiVersion', options.uiVersion],
     ['buildVersion', options.buildVersion],
     ['platformKey', options.platformKey],
-    ['tauriTarget', options.tauriTarget],
   ]) {
     if (manifest[field] !== expected) throw new Error(`candidate ${field} does not match the trusted workflow input`);
   }
@@ -132,7 +123,7 @@ export function materializeBundleCandidate(options) {
   }
 
   const uiDir = path.resolve(options.uiDir);
-  const releaseDir = path.join(uiDir, 'src-tauri', 'target', ...(options.tauriTarget ? [options.tauriTarget] : []), 'release');
+  const releaseDir = path.join(uiDir, 'src-tauri', 'target', 'release');
   const binariesDir = path.join(uiDir, 'src-tauri', 'binaries');
   fs.mkdirSync(releaseDir, { recursive: true });
   fs.mkdirSync(binariesDir, { recursive: true });
@@ -172,7 +163,6 @@ function main() {
       'expected-ui-version': { type: 'string', default: '' },
       'build-version': { type: 'string', default: '' },
       'expected-build-version': { type: 'string', default: '' },
-      'tauri-target': { type: 'string', default: '' },
       'ui-dir': { type: 'string', default: 'apps/ui' },
       'out-dir': { type: 'string', default: '' },
       'candidate-dir': { type: 'string', default: '' },
@@ -189,14 +179,13 @@ function main() {
     return;
   }
   const platformKey = String(values['platform-key'] ?? '').trim();
-  const tauriTarget = String(values['tauri-target'] ?? '').trim();
   const uiDir = String(values['ui-dir'] ?? '').trim() || 'apps/ui';
   if (values.mode === 'pack') {
-    packBundleCandidate({ platformKey, tauriTarget, uiDir, sourceSha: String(values['source-sha']), environment: String(values.environment), uiVersion: String(values['ui-version']), buildVersion: String(values['build-version']), outDir: String(values['out-dir']) });
+    packBundleCandidate({ platformKey, uiDir, sourceSha: String(values['source-sha']), environment: String(values.environment), uiVersion: String(values['ui-version']), buildVersion: String(values['build-version']), outDir: String(values['out-dir']) });
     return;
   }
   if (values.mode === 'materialize') {
-    materializeBundleCandidate({ platformKey, tauriTarget, uiDir, sourceSha: String(values['expected-source-sha']), environment: String(values['expected-environment']), uiVersion: String(values['expected-ui-version']), buildVersion: String(values['expected-build-version']), candidateDir: String(values['candidate-dir']) });
+    materializeBundleCandidate({ platformKey, uiDir, sourceSha: String(values['expected-source-sha']), environment: String(values['expected-environment']), uiVersion: String(values['expected-ui-version']), buildVersion: String(values['expected-build-version']), candidateDir: String(values['candidate-dir']) });
     return;
   }
   throw new Error('--mode must be pack or materialize');

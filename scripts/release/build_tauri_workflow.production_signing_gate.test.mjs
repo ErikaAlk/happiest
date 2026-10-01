@@ -7,6 +7,7 @@ import os from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..', '..');
@@ -113,55 +114,23 @@ test('Tauri workflow passes expression data through env instead of interpolating
   assert.equal(materializeStep.env.BUILD_VERSION, '${{ needs.resolve_source.outputs.build_version }}');
 });
 
-test('production macOS tauri workflow hard-fails when signing/notarization secrets are missing', async () => {
+test('desktop finalizer hard-fails without the updater signing key and uses no Apple signing', async () => {
   const workflow = await readFile(workflowPath, 'utf8');
   const parsed = parse(workflow);
   const buildSteps = parsed?.jobs?.finalize?.steps;
   assert.ok(Array.isArray(buildSteps), 'build-tauri workflow should define jobs.finalize.steps');
 
-  const failStep = buildSteps.find(
-    (step) => step?.name === 'Fail when production notarization/signing secrets are missing (macOS)'
-  );
-  assert.ok(failStep, 'workflow should contain an explicit fail gate step');
-
-  const ifCondition = String(failStep.if ?? '');
-  assert.match(ifCondition, /inputs\.environment == 'production'/, 'fail gate should apply to production only');
-  assert.match(ifCondition, /runner\.os == 'macOS'/, 'fail gate should apply to macOS builds');
   const signingCheck = buildSteps.find((step) => step?.name === 'Check private signing availability');
-  for (const secretName of [
-    'APPLE_CERTIFICATE',
-    'APPLE_CERTIFICATE_PASSWORD',
-    'APPLE_API_KEY_ID',
-    'APPLE_API_ISSUER_ID',
-    'APPLE_API_PRIVATE_KEY',
-    'TAURI_SIGNING_PRIVATE_KEY',
-  ]) {
-    assert.match(JSON.stringify(signingCheck?.env), new RegExp(secretName), `trusted signing check should include ${secretName}`);
-  }
+  assert.ok(signingCheck, 'workflow should check the updater signing key before bundling');
+  assert.deepEqual(signingCheck.env, { TAURI_SIGNING_PRIVATE_KEY: '${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}' });
+  assert.equal(signingCheck.if, undefined, 'every environment requires the updater signing key');
+  assert.match(String(signingCheck.run ?? ''), /Missing required Tauri updater signing private key\./);
+  assert.match(String(signingCheck.run ?? ''), /\bexit 1\b/);
 
-  const runScript = String(failStep.run ?? '');
-  assert.match(
-    runScript,
-    /Missing required production macOS signing\/notarization secrets\./,
-    'workflow fail gate should emit a clear missing-secrets error'
-  );
-  assert.match(
-    runScript,
-    /\bexit 1\b/,
-    'workflow fail gate should exit with status 1'
-  );
-
-  const warningStep = buildSteps.find(
-    (step) => String(step?.name ?? '').includes('Warn when production notarization is skipped')
-  );
-  assert.equal(
-    warningStep,
-    undefined,
-    'workflow must not silently warn-and-continue for production notarization gaps'
-  );
+  assert.doesNotMatch(workflow, /APPLE_|setup-apple-codesigning|setup-xcode|notariz|macOS/i);
 });
 
-test('build-tauri workflow avoids escaped quote JS snippets and captures Apple identity robustly', async () => {
+test('build-tauri workflow avoids escaped quote JS snippets and delegates bundling to the pipeline', async () => {
   const workflow = await readFile(workflowPath, 'utf8');
   const parsed = parse(workflow);
   const buildSteps = parsed?.jobs?.finalize?.steps;
@@ -171,20 +140,6 @@ test('build-tauri workflow avoids escaped quote JS snippets and captures Apple i
     workflow,
     /require\(\\"/,
     'build-tauri workflow must not escape quotes inside node -p/-e snippets'
-  );
-
-  const resolveIdentityStep = buildSteps.find(
-    (step) => step?.name === 'Setup Apple code signing identity (macOS)'
-  );
-  assert.ok(resolveIdentityStep, 'workflow should consume the shared Apple identity owner');
-  assert.equal(
-    resolveIdentityStep.uses,
-    './.github/actions/setup-apple-codesigning',
-  );
-  assert.equal(resolveIdentityStep.with.certificate, '${{ secrets.APPLE_CERTIFICATE }}');
-  assert.equal(
-    resolveIdentityStep.with['certificate-password'],
-    '${{ secrets.APPLE_CERTIFICATE_PASSWORD }}',
   );
 
   const tauriBuildStep = buildSteps.find(
@@ -204,7 +159,6 @@ test('build-tauri workflow avoids escaped quote JS snippets and captures Apple i
     /node scripts\/pipeline\/run\.mjs tauri-build-updater-artifacts/,
     'desktop build should delegate to the pipeline command (no direct leaf script call)'
   );
-  assert.match(buildScript, /--tauri-target/, 'desktop build should pass --tauri-target through to pipeline script');
 
   const buildPipelineScript = await loadFile('scripts/pipeline/tauri/build-updater-artifacts.mjs');
   assert.match(buildPipelineScript, /\brustup\b/, 'pipeline build script should install the tauri rust target when provided');
@@ -231,24 +185,6 @@ test('build-tauri workflow avoids escaped quote JS snippets and captures Apple i
   );
   const collectPipelineScript = await loadFile('scripts/pipeline/tauri/collect-updater-artifacts.mjs');
   assert.match(collectPipelineScript, /\.appimage\.sig/, 'linux updater collection should match appimage signature files');
-
-  const notarizeStep = buildSteps.find(
-    (step) => step?.name === 'Notarize macOS artifacts (updater + DMG) (macOS)'
-  );
-  assert.ok(notarizeStep, 'workflow should contain macOS notarization step');
-  const notarizeScript = String(notarizeStep.run ?? '');
-  assert.match(
-    notarizeScript,
-    /node scripts\/pipeline\/run\.mjs tauri-notarize-macos-artifacts/,
-    'notarization should delegate to the pipeline command'
-  );
-
-  const notarizePipelineScript = await loadFile('scripts/pipeline/tauri/notarize-macos-artifacts.mjs');
-  assert.match(
-    notarizePipelineScript,
-    /replaceAll\('\\\\n', '\\n'\)|replaceAll\(\"\\\\n\", \"\\n\"\)/,
-    'notarization script should normalize escaped newline private key secrets before writing the key file'
-  );
 });
 
 test('build-tauri finalizer generates its ephemeral password without platform UUID utilities', async () => {
@@ -396,30 +332,22 @@ test('Tauri build and trusted finalizer share the complete Linux bundling depend
   assert.doesNotMatch(curlCommand, /--retry-all-errors/, 'linuxdeploy must not retry permanent HTTP failures');
 });
 
-test('build-tauri workflow sets Happier Cloud as explicit default server for desktop release builds', async () => {
+test('build-tauri workflow sets the Happiest server as explicit default server for desktop release builds', async () => {
   const workflow = await readFile(workflowPath, 'utf8');
   const parsed = parse(workflow);
   const buildJobEnv = parsed?.jobs?.build?.env;
   assert.ok(buildJobEnv && typeof buildJobEnv === 'object', 'build-tauri workflow should define jobs.build.env');
 
-  assert.equal(
-    buildJobEnv.EXPO_PUBLIC_HAPPIER_SERVER_URL,
-    'https://api.happier.dev',
-    'desktop release builds should explicitly set EXPO_PUBLIC_HAPPIER_SERVER_URL to Happier Cloud',
-  );
-  assert.equal(
-    buildJobEnv.EXPO_PUBLIC_HAPPY_SERVER_URL,
-    'https://api.happier.dev',
-    'desktop release builds should keep EXPO_PUBLIC_HAPPY_SERVER_URL aligned with the canonical server URL',
-  );
-  assert.equal(
-    buildJobEnv.EXPO_PUBLIC_SERVER_URL,
-    'https://api.happier.dev',
-    'desktop release builds should keep EXPO_PUBLIC_SERVER_URL aligned with the canonical server URL',
-  );
+  for (const name of ['EXPO_PUBLIC_HAPPIER_SERVER_URL', 'EXPO_PUBLIC_HAPPY_SERVER_URL', 'EXPO_PUBLIC_SERVER_URL']) {
+    assert.equal(
+      buildJobEnv[name],
+      productIdentity.defaultServerUrl,
+      `desktop release builds should set ${name} to the product's default server`,
+    );
+  }
 });
 
-test('candidate code is isolated from Tauri and Apple private signing authority', async () => {
+test('candidate code is isolated from Tauri private signing authority', async () => {
   const workflow = await readFile(workflowPath, 'utf8');
   const parsed = parse(workflow);
   const build = parsed?.jobs?.build;
@@ -431,15 +359,7 @@ test('candidate code is isolated from Tauri and Apple private signing authority'
   assert.equal(build?.permissions?.contents, 'read', 'candidate builds must not receive a publishing token');
   assert.equal(build?.environment, undefined, 'candidate builds must not enter the secret-bearing release environment');
 
-  const privateSecretNames = [
-    'APPLE_CERTIFICATE',
-    'APPLE_CERTIFICATE_PASSWORD',
-    'APPLE_API_KEY_ID',
-    'APPLE_API_ISSUER_ID',
-    'APPLE_API_PRIVATE_KEY',
-    'TAURI_SIGNING_PRIVATE_KEY',
-    'TAURI_SIGNING_PRIVATE_KEY_PASSWORD',
-  ];
+  const privateSecretNames = ['TAURI_SIGNING_PRIVATE_KEY', 'TAURI_SIGNING_PRIVATE_KEY_PASSWORD'];
   const buildJson = JSON.stringify(build);
   for (const secretName of privateSecretNames) {
     assert.doesNotMatch(buildJson, new RegExp(secretName), `candidate build must not receive ${secretName}`);
@@ -514,10 +434,10 @@ test('candidate code is isolated from Tauri and Apple private signing authority'
   assert.equal(finalizeStep?.env?.TAURI_SIGNING_PRIVATE_KEY, '${{ env.TAURI_EPHEMERAL_KEY }}');
   assert.equal(finalizeStep?.env?.TAURI_SIGNING_PRIVATE_KEY_PASSWORD, '${{ env.TAURI_EPHEMERAL_PASSWORD }}');
   assert.doesNotMatch(JSON.stringify(finalizeStep), /secrets\.TAURI_SIGNING_PRIVATE_KEY/);
-  const nonMacSigner = finalize.steps.find((step) => step?.name === 'Sign non-mac updater artifacts');
-  assert.equal(nonMacSigner?.if, "runner.os != 'macOS'");
-  assert.equal(nonMacSigner?.env?.TAURI_SIGNING_PRIVATE_KEY, '${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}');
-  assert.match(String(nonMacSigner?.run ?? ''), /tauri-sign-updater-artifacts/);
+  const signer = finalize.steps.find((step) => step?.name === 'Sign updater artifacts');
+  assert.equal(signer?.if, undefined, 'every desktop platform signs its updater artifacts with the release key');
+  assert.equal(signer?.env?.TAURI_SIGNING_PRIVATE_KEY, '${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}');
+  assert.match(String(signer?.run ?? ''), /tauri-sign-updater-artifacts/);
 
   const finalizedUpload = finalize.steps.find((step) => step?.name === 'Upload finalized updater assets');
   assert.equal(finalizedUpload?.with?.name, 'tauri-updates-${{ matrix.platform_key }}');

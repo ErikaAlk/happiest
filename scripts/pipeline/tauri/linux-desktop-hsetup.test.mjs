@@ -13,11 +13,11 @@ import { extractBundledHsetup } from './linux-desktop-hsetup.mjs';
 function buildDeb(root, { hsetupScript, resourceNames = ['hsetup-x86_64-unknown-linux-gnu.gz'] }) {
   const pkg = join(root, 'pkg');
   mkdirSync(join(pkg, 'DEBIAN'), { recursive: true });
-  writeFileSync(join(pkg, 'DEBIAN', 'control'), 'Package: happier-test\nVersion: 0.0.1\nArchitecture: amd64\nMaintainer: test <t@example.invalid>\nDescription: test\n');
-  const binaries = join(pkg, 'usr', 'lib', 'Happier', 'binaries');
+  writeFileSync(join(pkg, 'DEBIAN', 'control'), 'Package: happiest-test\nVersion: 0.0.1\nArchitecture: amd64\nMaintainer: test <t@example.invalid>\nDescription: test\n');
+  const binaries = join(pkg, 'usr', 'lib', 'Happiest', 'binaries');
   mkdirSync(binaries, { recursive: true });
   for (const name of resourceNames) writeFileSync(join(binaries, name), gzipSync(Buffer.from(hsetupScript)));
-  const deb = join(root, 'happier-test.deb');
+  const deb = join(root, 'happiest-test.deb');
   execFileSync('dpkg-deb', ['--root-owner-group', '--build', pkg, deb], { stdio: 'ignore' });
   return deb;
 }
@@ -30,7 +30,7 @@ test('extracts and decompresses the bundled hsetup resource from a .deb', () => 
     const deb = buildDeb(root, { hsetupScript: HSETUP });
     const outFile = join(root, 'out', 'hsetup');
     const extracted = extractBundledHsetup({ artifactPath: deb, outFile });
-    assert.equal(extracted.resource, 'usr/lib/Happier/binaries/hsetup-x86_64-unknown-linux-gnu.gz');
+    assert.equal(extracted.resource, 'usr/lib/Happiest/binaries/hsetup-x86_64-unknown-linux-gnu.gz');
     assert.equal(readFileSync(outFile, 'utf8'), HSETUP);
     assert.equal(extracted.hsetupSha256, createHash('sha256').update(HSETUP).digest('hex'));
     // The packaged resource's own size: the app names its materialized copy after it.

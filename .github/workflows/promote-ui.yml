@@ -281,15 +281,6 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 22.x
-      - name: Create GitHub App token
-        id: app_token
-        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547
-        with:
-          app-id: ${{ secrets.RELEASE_BOT_APP_ID }}
-          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ github.event.repository.name }}
-          permission-contents: write
       - name: Apply app version bump with trusted control
         id: bump
         working-directory: candidate
@@ -308,12 +299,12 @@ jobs:
         if: steps.bump.outputs.skipped != 'true'
         working-directory: candidate
         env:
-          APP_TOKEN: ${{ steps.app_token.outputs.token }}
+          PUSH_TOKEN: ${{ github.token }}
           SOURCE_REF: ${{ needs.resolve_source.outputs.source_ref }}
           VERSION: ${{ steps.bump.outputs.version }}
         run: |
           set -euo pipefail
-          auth="$(printf 'x-access-token:%s' "$APP_TOKEN" | base64 -w0)"
+          auth="$(printf 'x-access-token:%s' "$PUSH_TOKEN" | base64 -w0)"
           export GIT_CONFIG_COUNT=1
           export GIT_CONFIG_KEY_0=http.https://github.com/.extraheader
           export GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $auth"
@@ -374,8 +365,6 @@ jobs:
           yarn --cwd apps/ui test:integration
       - name: Generate release notes manifest
         run: yarn --cwd apps/ui tsx sources/scripts/parseReleaseNotes.ts
-      - name: Build release notes assets
-        run: node scripts/pipeline/release/release-notes/build-release-notes-assets.mjs --out-dir "$RUNNER_TEMP/release-notes-assets"
       - name: Project approved release notes from exact candidate
         id: release_notes
         env:
@@ -409,13 +398,6 @@ jobs:
                 appendFileSync(process.env.GITHUB_OUTPUT, `${key}<<${delimiter}\n${value}\n${delimiter}\n`);
               }
             '
-      - name: Upload release notes assets
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: ui-release-notes-${{ needs.apply_bump.outputs.release_sha }}
-          path: ${{ runner.temp }}/release-notes-assets
-          if-no-files-found: error
-          retention-days: 1
       - name: Prepare Android OTA artifact without credentials
         if: inputs.expo_action == 'ota' || inputs.expo_action == 'full'
         env:
@@ -488,42 +470,12 @@ jobs:
         uses: ./.github/actions/install-yarn-dependencies
         with:
           args: --frozen-lockfile --ignore-engines
-      - name: Download release notes assets
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-        with:
-          name: ui-release-notes-${{ needs.apply_bump.outputs.release_sha }}
-          path: ${{ runner.temp }}/release-notes-assets
       - name: Download prepared OTA artifacts
         if: inputs.expo_action == 'ota' || inputs.expo_action == 'full'
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: ui-ota-${{ needs.apply_bump.outputs.release_sha }}
           path: ${{ runner.temp }}/prepared-ota
-      - name: Create GitHub App token
-        id: app_token
-        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547
-        with:
-          app-id: ${{ secrets.RELEASE_BOT_APP_ID }}
-          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ github.event.repository.name }}
-          permission-contents: write
-      - name: Create release notes asset token
-        id: release_notes_assets_token
-        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547
-        with:
-          app-id: ${{ secrets.RELEASE_BOT_APP_ID }}
-          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: happier-assets
-          permission-contents: write
-      - name: Publish release notes assets with trusted control
-        env:
-          GH_TOKEN: ${{ steps.release_notes_assets_token.outputs.token }}
-          GH_REPO: happier-dev/happier-assets
-        run: |
-          node scripts/pipeline/release/release-notes/publish-release-notes-assets.mjs \
-            --in-dir "$RUNNER_TEMP/release-notes-assets" --repo happier-dev/happier-assets --tag release-notes
       - name: Publish Android OTA from validated bytes
         if: inputs.expo_action == 'ota' || inputs.expo_action == 'full'
         env:
@@ -552,7 +504,7 @@ jobs:
         if: inputs.deploy_web
         id: promote_ref
         env:
-          GH_TOKEN: ${{ steps.app_token.outputs.token }}
+          GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           RELEASE_SHA: ${{ needs.apply_bump.outputs.release_sha }}
@@ -563,7 +515,7 @@ jobs:
       - name: Trigger deploy webhooks when forced without branch change
         if: inputs.deploy_web && inputs.force_deploy && steps.promote_ref.outputs.changed == 'false'
         env:
-          GH_TOKEN: ${{ steps.app_token.outputs.token }}
+          GH_TOKEN: ${{ github.token }}
           CF_WEBHOOK_DEPLOY_CLIENT_ID: ${{ secrets.CF_WEBHOOK_DEPLOY_CLIENT_ID }}
           CF_WEBHOOK_DEPLOY_CLIENT_SECRET: ${{ secrets.CF_WEBHOOK_DEPLOY_CLIENT_SECRET }}
           DEPLOY_WEBHOOK_URL: ${{ vars.DEPLOY_WEBHOOK_URL != '' && vars.DEPLOY_WEBHOOK_URL || secrets.DEPLOY_WEBHOOK_URL }}

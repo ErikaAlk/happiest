@@ -14,7 +14,7 @@ const validSignature = Buffer.from(
   [
     'untrusted comment: signature from tauri secret key',
     `${'A'.repeat(88)}==`,
-    'trusted comment: timestamp:1775372442\tfile:Happier.app.tar.gz',
+    'trusted comment: timestamp:1775372442\tfile:Happiest_1.2.3_amd64.AppImage',
     `${'B'.repeat(88)}==`,
     '',
   ].join('\n'),
@@ -22,7 +22,7 @@ const validSignature = Buffer.from(
 ).toString('base64');
 const truncatedSignature = Buffer.from(
   [
-    'le:Happier.app.tar.gz',
+    'le:Happiest_1.2.3_amd64.AppImage',
     `${'B'.repeat(88)}==`,
     '',
   ].join('\n'),
@@ -39,8 +39,6 @@ async function writePlatformArtifact(root, platformKey, artifactName, signature 
 async function writeAllPlatformArtifacts(root, overrides = {}) {
   await writePlatformArtifact(root, 'linux-x86_64', 'happier-ui-desktop-linux-x86_64-v1.2.3.AppImage', overrides.linux);
   await writePlatformArtifact(root, 'windows-x86_64', 'happier-ui-desktop-windows-x86_64-v1.2.3.exe', overrides.windows);
-  await writePlatformArtifact(root, 'darwin-x86_64', 'happier-ui-desktop-darwin-x86_64-v1.2.3.app.tar.gz', overrides.darwinX64);
-  await writePlatformArtifact(root, 'darwin-aarch64', 'happier-ui-desktop-darwin-aarch64-v1.2.3.app.tar.gz', overrides.darwinArm64);
 }
 
 function runMakeLatestJson(artifactsDir, outPath) {
@@ -79,12 +77,12 @@ test('make-latest-json rejects truncated updater signatures before publishing', 
   try {
     const artifactsDir = join(root, 'artifacts');
     const outPath = join(root, 'latest.json');
-    await writeAllPlatformArtifacts(artifactsDir, { darwinArm64: truncatedSignature });
+    await writeAllPlatformArtifacts(artifactsDir, { windows: truncatedSignature });
 
     const result = runMakeLatestJson(artifactsDir, outPath);
 
     assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /Invalid updater signature file for platform "darwin-aarch64"/);
+    assert.match(result.stderr, /Invalid updater signature file for platform "windows-x86_64"/);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -101,7 +99,9 @@ test('make-latest-json preserves validated updater signatures', async () => {
 
     assert.equal(result.status, 0, result.stderr);
     const latest = JSON.parse(await readFile(outPath, 'utf8'));
-    assert.equal(latest.platforms['darwin-aarch64'].signature, validSignature);
+    assert.deepEqual(Object.keys(latest.platforms).sort(), ['linux-x86_64', 'windows-x86_64']);
+    assert.equal(latest.platforms['linux-x86_64'].signature, validSignature);
+    assert.equal(latest.platforms['windows-x86_64'].signature, validSignature);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

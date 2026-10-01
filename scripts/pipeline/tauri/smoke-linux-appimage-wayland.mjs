@@ -15,10 +15,10 @@ async function main() {
   const { values } = parseArgs({ options: { appimage: { type: 'string' }, duration: { type: 'string', default: '8' } }, allowPositionals: false });
   const appImage = path.resolve(String(values.appimage ?? '').trim());
   if (!appImage || !fs.existsSync(appImage)) fail(`missing AppImage: ${appImage || '<empty>'}`);
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'happier-wayland-smoke-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'happiest-wayland-smoke-'));
   const runtimeDir = path.join(root, 'runtime');
   fs.mkdirSync(runtimeDir, { mode: 0o700 });
-  const socket = 'happier-wayland';
+  const socket = 'happiest-wayland';
   const marker = path.join(root, 'startup-ready.json');
   let weston;
   let app;

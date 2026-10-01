@@ -4,7 +4,7 @@
 // runs `daemon.service.status.v1` through `start_system_task`, which spawns the app's bundled
 // hsetup. That read is read-only only when a CLI resolves without acquisition, so the smoke points
 // the shipped `HAPPIEST_BOOTSTRAP_CLI_PATH` override (provenance `override`, never approved
-// unattended) at a stand-in `happier` that records who ran it and answers only the status read.
+// unattended) at a stand-in `happiest` that records who ran it and answers only the status read.
 // No hook is added to the app: the probe observes, from outside, what the release build already does.
 
 import fs from 'node:fs';
@@ -18,14 +18,14 @@ const POLL_INTERVAL_MS = 250;
 /** A recorded command outside the read-only set: final, no amount of waiting undoes it. */
 class NonReadOnlyInvocationError extends Error {}
 
-/** A fresh computer as `happier daemon status --json` reports it (DoctorSnapshotDaemonStatusSchema). */
+/** A fresh computer as `happiest daemon status --json` reports it (DoctorSnapshotDaemonStatusSchema). */
 const FRESH_COMPUTER_STATUS = {
   server: {
     activeServerId: 'cloud',
-    serverUrl: 'https://api.happier.dev',
+    serverUrl: 'https://happiest.erikaalk.click',
     localServerUrl: null,
-    publicServerUrl: 'https://api.happier.dev',
-    webappUrl: 'https://app.happier.dev',
+    publicServerUrl: 'https://happiest.erikaalk.click',
+    webappUrl: 'https://happiest.erikaalk.click',
     comparableKey: null,
   },
   daemon: { running: false, pid: null, httpPort: null },
@@ -44,10 +44,10 @@ function shellQuote(value) {
  * parent up to init, read from /proc). POSIX sh only: the app's environment has no node.
  * @param {{ dir: string; recordDir: string }} params
  */
-export function writeStubHappierCli({ dir, recordDir }) {
+export function writeStubHappiestCli({ dir, recordDir }) {
   fs.mkdirSync(dir, { recursive: true });
   fs.mkdirSync(recordDir, { recursive: true });
-  const cliPath = path.join(dir, 'happier');
+  const cliPath = path.join(dir, 'happiest');
   const script = `#!/bin/sh
 records=${shellQuote(recordDir)}
 command_line="$*"
@@ -67,7 +67,7 @@ mv "$tmp" "$records/$$"
 case "$command_line" in
   "--version") echo '0.2.99' ;;
   "daemon status --json") echo ${shellQuote(JSON.stringify(FRESH_COMPUTER_STATUS))} ;;
-  *) echo "stand-in happier: refusing non-read-only command: $command_line" >&2; exit 64 ;;
+  *) echo "stand-in happiest: refusing non-read-only command: $command_line" >&2; exit 64 ;;
 esac
 `;
   fs.writeFileSync(cliPath, script, { mode: 0o755 });

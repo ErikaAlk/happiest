@@ -232,14 +232,13 @@ test('nightly desktop resume admits exact unsigned artifacts independently of mi
   const input = {
     originRun: originRun({ head_sha: workflowSha }),
     artifacts: [statusArtifact({ workflow_run: { id: RUN_ID, head_sha: workflowSha } }),
-      desktopArtifact('darwin-aarch64', 101), desktopArtifact('darwin-x86_64', 102),
       desktopArtifact('linux-x86_64', 103), desktopArtifact('windows-x86_64', 104)],
     downloadedDigest: DIGEST, status: status(), expected,
   };
   assert.deepEqual(resolveReleaseResume(input).desktop, {
     runNumber: 337,
-    artifacts: Object.fromEntries(['darwin-aarch64', 'darwin-x86_64', 'linux-x86_64', 'windows-x86_64']
-      .map((platform, index) => [platform, { id: index + 101, digest: DIGEST }])),
+    artifacts: Object.fromEntries(['linux-x86_64', 'windows-x86_64']
+      .map((platform, index) => [platform, { id: index + 103, digest: DIGEST }])),
   });
   const desktopStatus = (candidateOriginRunId) => status({ surfaces: [...status().surfaces,
     { id: 'ui_desktop', state: 'failed', result: 'failed', identity: { sourceSha: SOURCE_SHA, verified: false, candidateOriginRunId } }] });
@@ -247,8 +246,8 @@ test('nightly desktop resume admits exact unsigned artifacts independently of mi
   assert.throws(() => resolveReleaseResume({ ...input, status: desktopStatus(RUN_ID - 1) }), new RegExp(`original desktop candidate run ${RUN_ID - 1}`));
   assert.throws(() => resolveReleaseResume({ ...input, status: desktopStatus('337\\nother=true') }), /origin run ID/);
   assert.deepEqual(resolveReleaseResume({ ...input, artifacts: [input.artifacts[0],
-    desktopArtifact('darwin-aarch64', 101), desktopArtifact('linux-x86_64', 103, { expired: true })] }).desktop,
-  { runNumber: 337, artifacts: { 'darwin-aarch64': { id: 101, digest: DIGEST } } });
+    desktopArtifact('windows-x86_64', 104), desktopArtifact('linux-x86_64', 103, { expired: true })] }).desktop,
+  { runNumber: 337, artifacts: { 'windows-x86_64': { id: 104, digest: DIGEST } } });
 
   for (const artifacts of [
     [desktopArtifact('linux-x86_64', 103), desktopArtifact('linux-x86_64', 105)],

@@ -32,16 +32,6 @@ test('tauri latest.json generator tolerates flattened updater artifacts (no plat
       file: 'happier-ui-desktop-dev-windows-x86_64.nsis.zip',
       sig: makeTauriUpdaterSignature('windows'),
     },
-    {
-      platform: 'darwin-x86_64',
-      file: 'happier-ui-desktop-dev-darwin-x86_64.app.tar.gz',
-      sig: makeTauriUpdaterSignature('darwin-x86_64'),
-    },
-    {
-      platform: 'darwin-aarch64',
-      file: 'happier-ui-desktop-dev-darwin-aarch64.app.tar.gz',
-      sig: makeTauriUpdaterSignature('darwin-aarch64'),
-    },
   ];
 
   for (const { file, sig } of fixtures) {
@@ -78,6 +68,7 @@ test('tauri latest.json generator tolerates flattened updater artifacts (no plat
   assert.equal(latest.pub_date, '2026-04-03T00:00:00Z');
   assert.equal(latest.notes, 'Rolling dev build.');
 
+  assert.deepEqual(Object.keys(latest.platforms).sort(), ['linux-x86_64', 'windows-x86_64']);
   for (const { platform, file, sig } of fixtures) {
     assert.ok(latest.platforms[platform], `missing platform entry for ${platform}`);
     assert.equal(latest.platforms[platform].signature, sig);

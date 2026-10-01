@@ -27,10 +27,11 @@ test('GitHub release titles of the web bundle and binaries are prefixed with Hap
   assert.equal(getBinaryPublishProductSpec('hstack').releaseTitleBase, 'Happiest Stack');
 });
 
-test('desktop release titles keep the desktop app name', async () => {
+test('desktop release titles are prefixed with Happiest', async () => {
   const buildTauri = await loadWorkflow('build-tauri.yml');
-  assert.match(buildTauri, /title: Happier UI Desktop Dev/);
-  assert.match(buildTauri, /title: Happier UI Desktop Preview/);
-  assert.match(buildTauri, /title: Happier UI Desktop v/);
-  assert.match(buildTauri, /--title "Happier UI Desktop Stable"/);
+  assert.match(buildTauri, /title: Happiest UI Desktop Dev/);
+  assert.match(buildTauri, /title: Happiest UI Desktop Preview/);
+  assert.match(buildTauri, /title: Happiest UI Desktop v/);
+  assert.match(buildTauri, /--title "Happiest UI Desktop Stable"/);
+  assert.doesNotMatch(buildTauri, /Happier UI Desktop/);
 });

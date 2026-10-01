@@ -36,7 +36,7 @@ function main() {
   if (!fs.statSync(appImage).isFile()) fail(`AppImage is not a file: ${appImage}`);
   if ((fs.statSync(appImage).mode & 0o111) === 0) fail(`AppImage is not executable: ${appImage}`);
 
-  const extractionRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'happier-linux-audit-'));
+  const extractionRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'happiest-linux-audit-'));
   try {
     execFileSync(appImage, ['--appimage-extract'], {
       cwd: extractionRoot,

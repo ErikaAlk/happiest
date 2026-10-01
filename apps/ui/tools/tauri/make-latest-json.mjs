@@ -87,7 +87,7 @@ function main() {
         fail(`artifacts-dir does not exist or is not a directory: ${artifactsDir}`);
     }
 
-    const wantedPlatforms = ['linux-x86_64', 'windows-x86_64', 'darwin-x86_64', 'darwin-aarch64'];
+    const wantedPlatforms = ['linux-x86_64', 'windows-x86_64'];
     const allFiles = listFilesRecursive(artifactsDir);
     const sigFiles = allFiles.filter((p) => p.endsWith('.sig')).sort((a, b) => a.localeCompare(b));
 

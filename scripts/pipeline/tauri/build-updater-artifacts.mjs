@@ -74,8 +74,8 @@ export function normalizeTauriBuildVersionForWindows(buildVersion) {
 export function resolveLinuxProductNameOverride(opts) {
   const env = String(opts.environment ?? '').trim();
   if (!env || env === 'production') return null;
-  if (env === 'dev' || env === 'publicdev') return 'HappierDev';
-  if (env === 'preview') return 'HappierPreview';
+  if (env === 'dev' || env === 'publicdev') return 'HappiestDev';
+  if (env === 'preview') return 'HappiestPreview';
   return null;
 }
 
@@ -139,7 +139,7 @@ export function resolveLinuxHsetupResourcesOverrideConfig() {
  */
 export function resolveLinuxAppImageDiagnosticsLayout(opts) {
   const environment = String(opts.environment ?? '').trim();
-  const productName = resolveLinuxProductNameOverride({ environment }) ?? 'Happier';
+  const productName = resolveLinuxProductNameOverride({ environment }) ?? 'Happiest';
   return {
     productName,
     appRelativePath: path.join('usr', 'bin', 'app'),
@@ -498,18 +498,6 @@ function main() {
       fs.writeFileSync(beforeBundleOverridePath, `${JSON.stringify({ build: { beforeBundleCommand: '' } })}\n`, 'utf8');
     }
     configs.push('--config', beforeBundleOverridePath);
-  }
-
-  const appleSigningIdentity = String(process.env.APPLE_SIGNING_IDENTITY ?? '').trim();
-  if (process.platform === 'darwin' && appleSigningIdentity) {
-    const codesignOverride = tempFile(tmpRoot, 'tauri.codesign.override.json');
-    if (opts.dryRun) {
-      console.log(`[dry-run] write ${codesignOverride} (macOS signingIdentity=${appleSigningIdentity})`);
-    } else {
-      const payload = { bundle: { macOS: { signingIdentity: appleSigningIdentity, hardenedRuntime: true } } };
-      fs.writeFileSync(codesignOverride, `${JSON.stringify(payload)}\n`, 'utf8');
-    }
-    configs.push('--config', codesignOverride);
   }
 
   const baseTauriEnv = {

@@ -12,7 +12,7 @@ const validSignature = Buffer.from(
   [
     'untrusted comment: signature from tauri secret key',
     `${'A'.repeat(88)}==`,
-    'trusted comment: timestamp:1775372442\tfile:Happier.app.tar.gz',
+    'trusted comment: timestamp:1775372442\tfile:Happiest_1.2.3_amd64.AppImage',
     `${'B'.repeat(88)}==`,
     '',
   ].join('\n'),
@@ -75,7 +75,7 @@ for (const environment of ['preview', 'dev', 'production']) {
 }
 
 test('production stable publish assets use rolling filenames while versioned release assets keep versions', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'happier-tauri-prepare-assets-'));
+  const root = await mkdtemp(join(tmpdir(), 'happiest-tauri-prepare-assets-'));
   try {
     const artifactsDir = join(root, 'updates');
     const publishDir = join(root, 'publish');
@@ -97,16 +97,6 @@ test('production stable publish assets use rolling filenames while versioned rel
       artifactsDir,
       'windows-x86_64',
       'happier-ui-desktop-windows-x86_64-v1.2.3.exe',
-    );
-    await writePlatformArtifact(
-      artifactsDir,
-      'darwin-x86_64',
-      'happier-ui-desktop-darwin-x86_64-v1.2.3.app.tar.gz',
-    );
-    await writePlatformArtifact(
-      artifactsDir,
-      'darwin-aarch64',
-      'happier-ui-desktop-darwin-aarch64-v1.2.3.app.tar.gz',
     );
 
     execFileSync(

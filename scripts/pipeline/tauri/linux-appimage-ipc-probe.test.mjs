@@ -5,7 +5,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { assertPackagedHsetupResolution, evaluateAppIpcInvocations, readStubInvocations, waitForAppIpcStatusRead, writeStubHappierCli } from './linux-appimage-ipc-probe.mjs';
+import { assertPackagedHsetupResolution, evaluateAppIpcInvocations, readStubInvocations, waitForAppIpcStatusRead, writeStubHappiestCli } from './linux-appimage-ipc-probe.mjs';
 
 /**
  * Stand-ins for the process tree of the real smoke: an "app" process that spawns an "hsetup"
@@ -44,10 +44,12 @@ function withScratch(run) {
 
 test('the stand-in CLI answers the status read and records the process tree that ran it', linuxOnly, () => withScratch(async (root) => {
   const recordDir = join(root, 'records');
-  const cli = writeStubHappierCli({ dir: join(root, 'bin'), recordDir });
+  const cli = writeStubHappiestCli({ dir: join(root, 'bin'), recordDir });
   const { appPid, outputs } = await runThroughAppTree(cli, [['--version'], ['daemon', 'status', '--json']]);
   assert.equal(outputs[0].stdout.trim(), '0.2.99');
-  assert.equal(JSON.parse(outputs[1].stdout).service.installed, false);
+  const snapshot = JSON.parse(outputs[1].stdout);
+  assert.equal(snapshot.service.installed, false);
+  assert.deepEqual([snapshot.server.serverUrl, snapshot.server.publicServerUrl, snapshot.server.webappUrl], Array(3).fill('https://happiest.erikaalk.click'));
   const verdict = evaluateAppIpcInvocations({ invocations: readStubInvocations(recordDir), appPid, isBundledHsetup: isNodeHsetup });
   assert.deepEqual(verdict.statusRead.argv, ['daemon', 'status', '--json']);
   assert.equal(verdict.hsetupExe, process.execPath);
@@ -55,7 +57,7 @@ test('the stand-in CLI answers the status read and records the process tree that
 
 test('no status read at all fails the probe', linuxOnly, () => withScratch(async (root) => {
   const recordDir = join(root, 'records');
-  const cli = writeStubHappierCli({ dir: join(root, 'bin'), recordDir });
+  const cli = writeStubHappiestCli({ dir: join(root, 'bin'), recordDir });
   const { appPid } = await runThroughAppTree(cli, [['--version']]);
   assert.throws(
     () => evaluateAppIpcInvocations({ invocations: readStubInvocations(recordDir), appPid, isBundledHsetup: isNodeHsetup }),
@@ -65,9 +67,9 @@ test('no status read at all fails the probe', linuxOnly, () => withScratch(async
 
 test('a status read that did not descend from the launched app fails the probe', linuxOnly, () => withScratch(async (root) => {
   const recordDir = join(root, 'records');
-  const cli = writeStubHappierCli({ dir: join(root, 'bin'), recordDir });
+  const cli = writeStubHappiestCli({ dir: join(root, 'bin'), recordDir });
   await runThroughAppTree(cli, [['daemon', 'status', '--json']]);
-  const { appPid: otherApp } = await runThroughAppTree(writeStubHappierCli({ dir: join(root, 'bin2'), recordDir: join(root, 'other') }), [['--version']]);
+  const { appPid: otherApp } = await runThroughAppTree(writeStubHappiestCli({ dir: join(root, 'bin2'), recordDir: join(root, 'other') }), [['--version']]);
   assert.throws(
     () => evaluateAppIpcInvocations({ invocations: readStubInvocations(recordDir), appPid: otherApp, isBundledHsetup: isNodeHsetup }),
     /no `daemon status --json`/,
@@ -76,7 +78,7 @@ test('a status read that did not descend from the launched app fails the probe',
 
 test('a status read whose parent is not the bundled hsetup fails the probe', linuxOnly, () => withScratch(async (root) => {
   const recordDir = join(root, 'records');
-  const cli = writeStubHappierCli({ dir: join(root, 'bin'), recordDir });
+  const cli = writeStubHappiestCli({ dir: join(root, 'bin'), recordDir });
   const { appPid } = await runThroughAppTree(cli, [['daemon', 'status', '--json']]);
   assert.throws(
     () => evaluateAppIpcInvocations({ invocations: readStubInvocations(recordDir), appPid, isBundledHsetup: () => false }),
@@ -86,7 +88,7 @@ test('a status read whose parent is not the bundled hsetup fails the probe', lin
 
 test('a command outside the read-only set is refused by the CLI and fails the probe at once', linuxOnly, () => withScratch(async (root) => {
   const recordDir = join(root, 'records');
-  const cli = writeStubHappierCli({ dir: join(root, 'bin'), recordDir });
+  const cli = writeStubHappiestCli({ dir: join(root, 'bin'), recordDir });
   const { appPid, outputs } = await runThroughAppTree(cli, [['daemon', 'status', '--json'], ['daemon', 'service', 'install', '--json']]);
   assert.notEqual(outputs[1].status, 0);
   await assert.rejects(
@@ -104,29 +106,29 @@ test('waiting stops when the app exits before its task ran', linuxOnly, () => wi
 
 test('the app ran the packaged hsetup: its materialized copy of the .gz resource, or the resource itself', () => {
   const cacheHome = '/tmp/smoke/home/.cache';
-  const resource = 'usr/lib/Happier/binaries/hsetup-x86_64-unknown-linux-gnu.gz';
+  const resource = 'usr/lib/Happiest/binaries/hsetup-x86_64-unknown-linux-gnu.gz';
   // hsetup_path.rs materializes `<app cache dir>/systemTasks/hsetup-materialized-<gz len>-<mtime>`.
   assert.equal(assertPackagedHsetupResolution({
-    hsetupExe: `${cacheHome}/dev.happier.app/systemTasks/hsetup-materialized-5120-1790000000`,
+    hsetupExe: `${cacheHome}/click.erikaalk.happiest/systemTasks/hsetup-materialized-5120-1790000000`,
     cacheHome, resource, resourceBytes: 5120,
   }), 'materialized-resource');
   assert.equal(assertPackagedHsetupResolution({
-    hsetupExe: '/tmp/.mount_HappieXYZ/usr/lib/Happier/binaries/hsetup-x86_64-unknown-linux-gnu',
+    hsetupExe: '/tmp/.mount_HappieXYZ/usr/lib/Happiest/binaries/hsetup-x86_64-unknown-linux-gnu',
     cacheHome, resource, resourceBytes: 5120,
   }), 'packaged-resource');
   // A checkout's `apps/ui/src-tauri/binaries` (compile-time CARGO_MANIFEST_DIR) is not packaged.
   assert.throws(() => assertPackagedHsetupResolution({
-    hsetupExe: '/home/runner/work/happier/apps/ui/src-tauri/binaries/hsetup-x86_64-unknown-linux-gnu',
+    hsetupExe: '/home/runner/work/happiest/apps/ui/src-tauri/binaries/hsetup-x86_64-unknown-linux-gnu',
     cacheHome, resource, resourceBytes: 5120,
   }), /not the packaged resource/);
   // A materialized copy of some other .gz (a different size) is not this artifact's resource.
   assert.throws(() => assertPackagedHsetupResolution({
-    hsetupExe: `${cacheHome}/dev.happier.app/systemTasks/hsetup-materialized-9999-1790000000`,
+    hsetupExe: `${cacheHome}/click.erikaalk.happiest/systemTasks/hsetup-materialized-9999-1790000000`,
     cacheHome, resource, resourceBytes: 5120,
   }), /not the packaged resource/);
   // Outside the app's cache dir (e.g. the runner's own cache) is not this app's materialization.
   assert.throws(() => assertPackagedHsetupResolution({
-    hsetupExe: '/home/runner/.cache/dev.happier.app/systemTasks/hsetup-materialized-5120-1790000000',
+    hsetupExe: '/home/runner/.cache/click.erikaalk.happiest/systemTasks/hsetup-materialized-5120-1790000000',
     cacheHome, resource, resourceBytes: 5120,
   }), /not the packaged resource/);
 });

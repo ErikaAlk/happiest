@@ -91,7 +91,6 @@ function resolveArtifactExt(artifactFilename) {
   if (artifactFilename.endsWith('.msi.zip')) return '.msi.zip';
   if (artifactFilename.endsWith('.exe.zip')) return '.exe.zip';
   if (artifactFilename.endsWith('.nsis.zip')) return '.nsis.zip';
-  if (artifactFilename.endsWith('.app.tar.gz')) return '.app.tar.gz';
   if (artifactFilename.endsWith('.AppImage.tar.gz')) return '.AppImage.tar.gz';
   if (artifactFilename.endsWith('.appimage.tar.gz')) return '.appimage.tar.gz';
   if (artifactFilename.includes('.')) return `.${artifactFilename.split('.').pop()}`;
@@ -125,7 +124,7 @@ function main() {
 
   const platformKey = String(values['platform-key'] ?? '').trim();
   if (!platformKey) fail('--platform-key is required');
-  if (!platformKey.startsWith('windows-') && !platformKey.startsWith('darwin-') && !platformKey.startsWith('linux-')) {
+  if (!platformKey.startsWith('windows-') && !platformKey.startsWith('linux-')) {
     fail(`Unknown platform key: ${platformKey}`);
   }
 
@@ -169,9 +168,6 @@ function main() {
         lower.endsWith('.nsis.zip.sig') ||
         lower.endsWith('.nsis.sig')
       );
-    }
-    if (platformKey.startsWith('darwin-')) {
-      return lower.endsWith('.app.tar.gz.sig');
     }
     return lower.endsWith('.appimage.sig') || lower.endsWith('.appimage.tar.gz.sig');
   });
@@ -217,19 +213,6 @@ function main() {
     }
   }
 
-  if (platformKey.startsWith('darwin-')) {
-    if (dryRun) {
-      console.log(`[dry-run] maybe copy *.dmg -> ${rel(path.join(outDir, `${outBase}.dmg`))}`);
-      return;
-    }
-    const dmgCandidates = findMatching(files, (p) => {
-      const normalized = p.replaceAll(path.sep, '/');
-      return normalized.includes('/release/bundle/') && p.toLowerCase().endsWith('.dmg');
-    });
-    if (dmgCandidates.length > 0) {
-      fs.copyFileSync(dmgCandidates[0], path.join(outDir, `${outBase}.dmg`));
-    }
-  }
 }
 
 main();

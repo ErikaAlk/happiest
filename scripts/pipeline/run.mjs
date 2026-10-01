@@ -787,22 +787,6 @@ function runTauriBundleCandidate({ repoRoot, env, args, dryRun }) {
 /**
  * @param {{ repoRoot: string; env: Record<string, string>; args: string[]; dryRun: boolean }} opts
  */
-function runTauriNotarizeMacosArtifacts({ repoRoot, env, args, dryRun }) {
-  const scriptPath = path.join(repoRoot, 'scripts', 'pipeline', 'tauri', 'notarize-macos-artifacts.mjs');
-  const fullArgs = [scriptPath, ...args];
-  if (dryRun) {
-    console.log(`[pipeline] exec: node ${fullArgs.map((a) => JSON.stringify(a)).join(' ')}`);
-  }
-  execFileSync(process.execPath, fullArgs, {
-    cwd: repoRoot,
-    env,
-    stdio: 'inherit',
-  });
-}
-
-/**
- * @param {{ repoRoot: string; env: Record<string, string>; args: string[]; dryRun: boolean }} opts
- */
 function runTauriCollectUpdaterArtifacts({ repoRoot, env, args, dryRun }) {
   const scriptPath = path.join(repoRoot, 'scripts', 'pipeline', 'tauri', 'collect-updater-artifacts.mjs');
   const fullArgs = [scriptPath, ...args];
@@ -1064,7 +1048,6 @@ function runJsonScript({ repoRoot, env, scriptRel, args }) {
       subcommand !== 'tauri-validate-updater-pubkey' &&
       subcommand !== 'tauri-build-updater-artifacts' &&
       subcommand !== 'tauri-bundle-candidate' &&
-      subcommand !== 'tauri-notarize-macos-artifacts' &&
       subcommand !== 'tauri-collect-updater-artifacts' &&
       subcommand !== 'tauri-sign-updater-artifacts' &&
       subcommand !== 'testing-create-auth-credentials' &&
@@ -3174,7 +3157,6 @@ function runJsonScript({ repoRoot, env, scriptRel, args }) {
           'expected-ui-version': { type: 'string', default: '' },
           'build-version': { type: 'string', default: '' },
           'expected-build-version': { type: 'string', default: '' },
-          'tauri-target': { type: 'string', default: '' },
           'ui-dir': { type: 'string', default: 'apps/ui' },
           'out-dir': { type: 'string', default: '' },
           'candidate-dir': { type: 'string', default: '' },
@@ -3261,66 +3243,6 @@ function runJsonScript({ repoRoot, env, scriptRel, args }) {
           ...(uiDir ? ['--ui-dir', uiDir] : []),
           ...(noBundle ? ['--no-bundle'] : []),
           ...(bundleOnly ? ['--bundle-only'] : []),
-          ...(dryRun ? ['--dry-run'] : []),
-        ],
-      });
-
-      return;
-    }
-
-    if (subcommand === 'tauri-notarize-macos-artifacts') {
-      const { values } = parseArgs({
-        args: rest,
-        options: {
-          'ui-dir': { type: 'string', default: 'apps/ui' },
-          'tauri-target': { type: 'string', default: '' },
-          'dry-run': { type: 'boolean', default: false },
-          'secrets-source': { type: 'string', default: 'auto' },
-          'keychain-service': { type: 'string', default: 'happier/pipeline' },
-          'keychain-account': { type: 'string', default: '' },
-        },
-        allowPositionals: false,
-      });
-
-      const uiDir = String(values['ui-dir'] ?? '').trim() || 'apps/ui';
-      const tauriTarget = String(values['tauri-target'] ?? '').trim();
-      const dryRun = values['dry-run'] === true;
-
-      const { env, sources } = loadPipelineEnv({ repoRoot });
-      const secretsSourceRaw = String(values['secrets-source'] ?? '').trim();
-      const secretsSource =
-        secretsSourceRaw === 'auto' || secretsSourceRaw === 'env' || secretsSourceRaw === 'keychain'
-          ? secretsSourceRaw
-          : 'auto';
-      if (secretsSourceRaw && secretsSource !== secretsSourceRaw) {
-        fail(`--secrets-source must be 'auto', 'env', or 'keychain' (got: ${secretsSourceRaw})`);
-      }
-
-      const keychainService = String(values['keychain-service'] ?? '').trim() || 'happier/pipeline';
-      const keychainAccount = String(values['keychain-account'] ?? '').trim() || undefined;
-      const { env: mergedEnv, usedKeychain } = dryRun
-        ? { env, usedKeychain: false }
-        : loadSecrets({
-            baseEnv: env,
-            secretsSource,
-            keychainService,
-            keychainAccount,
-          });
-      if (sources.length > 0) {
-        console.log(`[pipeline] using env sources: ${sources.join(', ')}`);
-        console.log('[pipeline] warning: env-file mode is for fast local iteration; prefer Keychain bundle for long-term use.');
-      }
-      if (usedKeychain) {
-        console.log(`[pipeline] loaded secrets from Keychain service '${keychainService}'`);
-      }
-
-      runTauriNotarizeMacosArtifacts({
-        repoRoot,
-        env: mergedEnv,
-        dryRun,
-        args: [
-          ...(uiDir ? ['--ui-dir', uiDir] : []),
-          ...(tauriTarget ? ['--tauri-target', tauriTarget] : []),
           ...(dryRun ? ['--dry-run'] : []),
         ],
       });

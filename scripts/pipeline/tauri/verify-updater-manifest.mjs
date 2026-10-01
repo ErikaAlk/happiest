@@ -72,7 +72,7 @@ export function verifyUpdaterManifestSignatures({ latestJsonPath, artifactsDir, 
   const manifest = JSON.parse(fs.readFileSync(latestJsonPath, 'utf8'));
   const platforms = Object.entries(manifest?.platforms ?? {});
   if (platforms.length === 0) throw new Error(`${latestJsonPath} lists no platforms`);
-  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'happier-updater-verify-'));
+  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'happiest-updater-verify-'));
   try {
     return platforms.map(([platform, entry]) => {
       const name = decodeURIComponent(String(/** @type {{ url?: string }} */ (entry)?.url ?? '').split('/').pop() ?? '');

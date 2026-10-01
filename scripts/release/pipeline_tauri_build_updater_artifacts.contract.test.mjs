@@ -89,7 +89,6 @@ exec actool "--compile" "path with spaces" "quote' dollar$" "$2"
       ACTOOL_PATH_CAPTURE: `${capture}.path`,
       ACTOOL_MARKER: 'retained environment',
       TAURI_SIGNING_PRIVATE_KEY: 'opaque-boundary-test-key',
-      APPLE_SIGNING_IDENTITY: undefined,
     };
     if (mode === 'build') {
       const frozenEnv = Object.freeze({ ...env });

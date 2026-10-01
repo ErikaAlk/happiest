@@ -7,10 +7,51 @@ import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
 import { createTauriSignerFileEnv, ensureTauriSigningKeyFile } from './ensure-signing-key-file.mjs';
-import { extractTauriUpdaterSignature } from './notarize-macos-artifacts.mjs';
 import { resolveTauriSigningPrivateKeyPassword } from './resolve-signing-key-password.mjs';
 import { resolveYarnInvocation } from './resolve-yarn-invocation.mjs';
 import { execFileSyncPortable } from '../lib/exec-file-sync-portable.mjs';
+
+/**
+ * Extracts the base64 updater signature from `tauri signer sign` stdout.
+ *
+ * Tauri CLI may print additional log lines (or prefix the signature with a label), so we can't
+ * assume stdout is only the base64 blob.
+ *
+ * @param {string} stdout
+ * @returns {string}
+ */
+export function extractTauriUpdaterSignature(stdout) {
+  const raw = String(stdout ?? '').replaceAll('\r', '');
+  const lines = raw
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  // Prefer explicit "Signature: <base64>" lines when present.
+  for (let i = lines.length - 1; i >= 0; i -= 1) {
+    const line = lines[i];
+    const m = /^signature:\s*([A-Za-z0-9+/=]+)$/i.exec(line);
+    if (m?.[1]) return m[1];
+    if (/^signature:\s*$/i.test(line)) {
+      const nextLine = lines[i + 1];
+      if (nextLine && /^[A-Za-z0-9+/=]{80,}$/.test(nextLine)) {
+        return nextLine;
+      }
+    }
+  }
+
+  // Fallback: pick the last full base64-only line. Signatures can be longer than 256
+  // characters, so token chunking would silently publish only the tail of the signature.
+  for (let i = lines.length - 1; i >= 0; i -= 1) {
+    const line = lines[i];
+    if (/^[A-Za-z0-9+/=]{80,}$/.test(line)) {
+      return line;
+    }
+  }
+
+  const matches = raw.match(/[A-Za-z0-9+/=]{80,}/g) ?? [];
+  return matches.length > 0 ? matches[matches.length - 1] : '';
+}
 
 function listSignatureFiles(dir) {
   const output = [];

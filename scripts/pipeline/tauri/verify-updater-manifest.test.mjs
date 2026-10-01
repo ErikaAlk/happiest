@@ -24,7 +24,7 @@ function fixture(tamper) {
   const artifactsDir = path.join(root, 'updates');
   const files = {
     'linux-x86_64': path.join(artifactsDir, 'linux-x86_64', 'happier-ui-desktop-linux-x86_64-v1.0.0.AppImage'),
-    'darwin-aarch64': path.join(artifactsDir, 'happier-ui-desktop-darwin-aarch64-v1.0.0.app.tar.gz'),
+    'windows-x86_64': path.join(artifactsDir, 'happier-ui-desktop-windows-x86_64-v1.0.0.exe'),
   };
   const platforms = {};
   for (const [platform, file] of Object.entries(files)) {
@@ -46,7 +46,7 @@ test('every latest.json platform entry is verified against the artifact its url 
   try {
     assert.deepEqual(verifyUpdaterManifestSignatures({ latestJsonPath, artifactsDir, publicKey: 'RWKEY', verify: fakeVerify }), [
       { platform: 'linux-x86_64', artifact: 'happier-ui-desktop-linux-x86_64-v1.0.0.AppImage' },
-      { platform: 'darwin-aarch64', artifact: 'happier-ui-desktop-darwin-aarch64-v1.0.0.app.tar.gz' },
+      { platform: 'windows-x86_64', artifact: 'happier-ui-desktop-windows-x86_64-v1.0.0.exe' },
     ]);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
@@ -54,11 +54,11 @@ test('every latest.json platform entry is verified against the artifact its url 
 });
 
 test('an artifact changed after signing, or a signature from another key, names the rejected platform', () => {
-  const tampered = fixture(({ files }) => fs.writeFileSync(files['darwin-aarch64'], 'rebuilt'));
+  const tampered = fixture(({ files }) => fs.writeFileSync(files['windows-x86_64'], 'rebuilt'));
   try {
     assert.throws(
       () => verifyUpdaterManifestSignatures({ ...tampered, publicKey: 'RWKEY', verify: fakeVerify }),
-      /darwin-aarch64: the updater would reject happier-ui-desktop-darwin-aarch64-v1\.0\.0\.app\.tar\.gz.*Signature verification failed/,
+      /windows-x86_64: the updater would reject happier-ui-desktop-windows-x86_64-v1\.0\.0\.exe.*Signature verification failed/,
     );
     assert.throws(() => verifyUpdaterManifestSignatures({ ...tampered, publicKey: 'RWOTHER', verify: fakeVerify }), /linux-x86_64: the updater would reject/);
   } finally {

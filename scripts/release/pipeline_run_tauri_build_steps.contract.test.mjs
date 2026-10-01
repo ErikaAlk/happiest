@@ -38,27 +38,16 @@ for (const [environment, buildVersion] of [
       ],
       {
         TAURI_SIGNING_PRIVATE_KEY: '/tmp/tauri.signing.key',
-        APPLE_SIGNING_IDENTITY: 'Developer ID Application: Dummy',
       },
     );
     assert.equal(res.status, 0, `expected exit 0, got ${res.status} stderr=${res.stderr}`);
   });
 }
 
-test('pipeline run exposes tauri-notarize-macos-artifacts (dry-run)', () => {
-  const res = run(
-    [
-      'tauri-notarize-macos-artifacts',
-      '--ui-dir',
-      'apps/ui',
-      '--tauri-target',
-      'aarch64-apple-darwin',
-      '--secrets-source',
-      'keychain',
-      '--dry-run',
-    ],
-  );
-  assert.equal(res.status, 0, `expected exit 0, got ${res.status} stderr=${res.stderr}`);
+test('pipeline run no longer offers tauri-notarize-macos-artifacts', () => {
+  const res = run(['tauri-notarize-macos-artifacts', '--dry-run']);
+  assert.notEqual(res.status, 0);
+  assert.match(res.stderr, /Unsupported subcommand: tauri-notarize-macos-artifacts/);
 });
 
 for (const environment of ['preview', 'dev']) {
@@ -69,7 +58,7 @@ for (const environment of ['preview', 'dev']) {
         '--environment',
         environment,
         '--platform-key',
-        'linux-x64',
+        'linux-x86_64',
         '--ui-version',
         '0.0.0',
         '--tauri-target',

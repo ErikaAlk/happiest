@@ -38,8 +38,8 @@ const RISK_PATTERNS = Object.freeze({
   trustRoots: Object.freeze([
     /^apps\/ui\/src-tauri\/tauri\.conf\.json$/u,
     /^scripts\/release\/installers\//u,
-    /^scripts\/pipeline\/(?:release\/lib\/(?:minisign|signed-asset)|tauri\/(?:ensure-signing|notarize|resolve-signing|sign-|validate-updater))/u,
-    /(?:^|\/)(?:minisign|notariz|signing|updater-pubkey)/u,
+    /^scripts\/pipeline\/(?:release\/lib\/(?:minisign|signed-asset)|tauri\/(?:ensure-signing|resolve-signing|sign-|validate-updater))/u,
+    /(?:^|\/)(?:minisign|signing|updater-pubkey)/u,
   ]),
 });
 

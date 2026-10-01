@@ -303,11 +303,11 @@ jobs:
       contents: read
     env:
       HAPPIER_EMBEDDED_POLICY_ENV: ${{ inputs.environment == 'production' && 'production' || 'preview' }}
-      # Ensure desktop release bundles always bootstrap against Happier Cloud unless explicitly overridden
-      # by runtime server profile switching inside the app.
-      EXPO_PUBLIC_HAPPIER_SERVER_URL: https://api.happier.dev
-      EXPO_PUBLIC_HAPPY_SERVER_URL: https://api.happier.dev
-      EXPO_PUBLIC_SERVER_URL: https://api.happier.dev
+      # Ensure desktop release bundles always bootstrap against the Happiest server unless explicitly
+      # overridden by runtime server profile switching inside the app.
+      EXPO_PUBLIC_HAPPIER_SERVER_URL: https://happiest.erikaalk.click
+      EXPO_PUBLIC_HAPPY_SERVER_URL: https://happiest.erikaalk.click
+      EXPO_PUBLIC_SERVER_URL: https://happiest.erikaalk.click
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.resolve_source.outputs.build_matrix) }}
@@ -318,12 +318,6 @@ jobs:
           ref: ${{ needs.resolve_source.outputs.source_sha }}
           fetch-depth: 1
           persist-credentials: false
-
-      - name: Setup Xcode (pin) (macOS only)
-        if: runner.os == 'macOS'
-        uses: ./.github/actions/setup-xcode
-        with:
-          xcode_version: "26.2"
 
       - name: Enforce trusted refs for manual dispatch
         run: |
@@ -390,8 +384,6 @@ jobs:
         uses: dtolnay/rust-toolchain@4360b52568e2003a75bf9bc1d59f33a8e3fc893c
         env:
           RUSTUP_MAX_RETRIES: "10"
-        with:
-          targets: ${{ matrix.tauri_target }}
 
       - name: Cache Rust build (Cargo)
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
@@ -414,13 +406,11 @@ jobs:
           CI: "true"
           APP_ENV: ${{ inputs.environment }}
           BUILD_VERSION: ${{ needs.resolve_source.outputs.build_version }}
-          TAURI_TARGET: ${{ matrix.tauri_target }}
         run: |
           set -euo pipefail
           node scripts/pipeline/run.mjs tauri-build-updater-artifacts \
             --environment "${APP_ENV}" \
             --build-version "${BUILD_VERSION}" \
-            --tauri-target "${TAURI_TARGET}" \
             --ui-dir "apps/ui" \
             --no-bundle \
             --secrets-source env
@@ -432,7 +422,6 @@ jobs:
           RELEASE_ENVIRONMENT: ${{ inputs.environment }}
           UI_VERSION: ${{ needs.resolve_source.outputs.ui_version }}
           BUILD_VERSION: ${{ needs.resolve_source.outputs.build_version }}
-          TAURI_TARGET: ${{ matrix.tauri_target }}
         run: |
           set -euo pipefail
           node scripts/pipeline/run.mjs tauri-bundle-candidate \
@@ -442,7 +431,6 @@ jobs:
             --environment "${RELEASE_ENVIRONMENT}" \
             --ui-version "${UI_VERSION}" \
             --build-version "${BUILD_VERSION}" \
-            --tauri-target "${TAURI_TARGET}" \
             --ui-dir "apps/ui" \
             --out-dir "dist/tauri/candidates/${PLATFORM_KEY}"
 
@@ -476,12 +464,6 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Setup Xcode (pin) (macOS only)
-        if: runner.os == 'macOS'
-        uses: ./.github/actions/setup-xcode
-        with:
-          xcode_version: "26.2"
-
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
@@ -511,8 +493,6 @@ jobs:
         uses: dtolnay/rust-toolchain@4360b52568e2003a75bf9bc1d59f33a8e3fc893c
         env:
           RUSTUP_MAX_RETRIES: "10"
-        with:
-          targets: ${{ matrix.tauri_target }}
 
       - name: Install Linux system dependencies (Tauri)
         if: runner.os == 'Linux'
@@ -553,7 +533,6 @@ jobs:
           RELEASE_ENVIRONMENT: ${{ inputs.environment }}
           UI_VERSION: ${{ needs.resolve_source.outputs.ui_version }}
           BUILD_VERSION: ${{ needs.resolve_source.outputs.build_version }}
-          TAURI_TARGET: ${{ matrix.tauri_target }}
         run: |
           set -euo pipefail
           node scripts/pipeline/run.mjs tauri-bundle-candidate \
@@ -563,7 +542,6 @@ jobs:
             --expected-environment "${RELEASE_ENVIRONMENT}" \
             --expected-ui-version "${UI_VERSION}" \
             --expected-build-version "${BUILD_VERSION}" \
-            --tauri-target "${TAURI_TARGET}" \
             --ui-dir "apps/ui" \
             --candidate-dir "dist/tauri/candidate/${PLATFORM_KEY}"
 
@@ -572,13 +550,7 @@ jobs:
         run: node scripts/pipeline/run.mjs tauri-validate-updater-pubkey --config-path apps/ui/src-tauri/tauri.conf.json
 
       - name: Check private signing availability
-        id: signing
         env:
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
-          APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
         run: |
           set -euo pipefail
@@ -586,26 +558,6 @@ jobs:
             echo "Missing required Tauri updater signing private key." >&2
             exit 1
           fi
-          apple_ready=true
-          for name in APPLE_CERTIFICATE APPLE_CERTIFICATE_PASSWORD APPLE_API_KEY_ID APPLE_API_ISSUER_ID APPLE_API_PRIVATE_KEY; do
-            if [ -z "${!name:-}" ]; then apple_ready=false; fi
-          done
-          echo "apple_ready=${apple_ready}" >> "$GITHUB_OUTPUT"
-
-      - name: Fail when production notarization/signing secrets are missing (macOS)
-        if: runner.os == 'macOS' && inputs.environment == 'production' && steps.signing.outputs.apple_ready != 'true'
-        run: |
-          echo "Missing required production macOS signing/notarization secrets." >&2
-          echo "Required: APPLE_CERTIFICATE, APPLE_CERTIFICATE_PASSWORD, APPLE_API_KEY_ID, APPLE_API_ISSUER_ID, APPLE_API_PRIVATE_KEY, TAURI_SIGNING_PRIVATE_KEY." >&2
-          exit 1
-
-      - name: Setup Apple code signing identity (macOS)
-        if: runner.os == 'macOS' && steps.signing.outputs.apple_ready == 'true'
-        id: apple_id
-        uses: ./.github/actions/setup-apple-codesigning
-        with:
-          certificate: ${{ secrets.APPLE_CERTIFICATE }}
-          certificate-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
 
       - name: Generate ephemeral updater bundle key
         shell: bash
@@ -620,13 +572,8 @@ jobs:
       - name: Bundle and sign desktop updater artifacts
         env:
           CI: "true"
-          # Tauri skips the Finder layout step (background, icon positions) whenever
-          # CI=true unless this is set (tauri-bundler dmg/mod.rs, issue #592).
-          TAURI_BUNDLER_DMG_IGNORE_CI: "true"
           APP_ENV: ${{ inputs.environment }}
           BUILD_VERSION: ${{ needs.resolve_source.outputs.build_version }}
-          TAURI_TARGET: ${{ matrix.tauri_target }}
-          APPLE_SIGNING_IDENTITY: ${{ steps.apple_id.outputs.identity }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ env.TAURI_EPHEMERAL_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ env.TAURI_EPHEMERAL_PASSWORD }}
         run: |
@@ -634,48 +581,28 @@ jobs:
           node scripts/pipeline/run.mjs tauri-build-updater-artifacts \
             --environment "${APP_ENV}" \
             --build-version "${BUILD_VERSION}" \
-            --tauri-target "${TAURI_TARGET}" \
             --ui-dir "apps/ui" \
             --bundle-only \
             --secrets-source env
 
-      - name: Sign non-mac updater artifacts
-        if: runner.os != 'macOS'
+      - name: Sign updater artifacts
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          TAURI_TARGET: ${{ matrix.tauri_target }}
         run: |
           node scripts/pipeline/run.mjs tauri-sign-updater-artifacts \
-            --ui-dir "apps/ui" \
-            --tauri-target "${TAURI_TARGET}"
-
-      - name: Notarize macOS artifacts (updater + DMG) (macOS)
-        if: runner.os == 'macOS' && steps.signing.outputs.apple_ready == 'true'
-        env:
-          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
-          APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          TAURI_TARGET: ${{ matrix.tauri_target }}
-        run: |
-          node scripts/pipeline/run.mjs tauri-notarize-macos-artifacts \
-            --ui-dir "apps/ui" \
-            --tauri-target "${TAURI_TARGET}"
+            --ui-dir "apps/ui"
 
       - name: Collect updater artifact + signature
         env:
           PLATFORM_KEY: ${{ matrix.platform_key }}
           RELEASE_ENVIRONMENT: ${{ inputs.environment }}
           UI_VERSION: ${{ needs.resolve_source.outputs.ui_version }}
-          TAURI_TARGET: ${{ matrix.tauri_target }}
         run: |
           node scripts/pipeline/run.mjs tauri-collect-updater-artifacts \
             --environment "${RELEASE_ENVIRONMENT}" \
             --platform-key "${PLATFORM_KEY}" \
             --ui-version "${UI_VERSION}" \
-            --tauri-target "${TAURI_TARGET}" \
             --ui-dir "apps/ui"
 
       - name: Audit and smoke-test Linux desktop artifacts
@@ -702,14 +629,7 @@ jobs:
       - name: Clean private signing material
         if: always()
         shell: bash
-        env:
-          APPLE_KEYCHAIN_PATH: ${{ steps.apple_id.outputs.keychain-path }}
-          APPLE_CERTIFICATE_PATH: ${{ steps.apple_id.outputs.certificate-path }}
         run: |
-          if [ "${RUNNER_OS}" = "macOS" ]; then
-            security delete-keychain "${APPLE_KEYCHAIN_PATH}" >/dev/null 2>&1 || true
-            rm -f "${APPLE_CERTIFICATE_PATH}"
-          fi
           rm -f "${TAURI_EPHEMERAL_KEY:-}" "${TAURI_EPHEMERAL_KEY:-}.pub"
 
       - name: Upload finalized updater assets
@@ -895,7 +815,7 @@ jobs:
     secrets: inherit
     with:
       tag: ui-desktop-preview
-      title: Happier UI Desktop Preview
+      title: Happiest UI Desktop Preview
       target_sha: ${{ needs.prepare_assets.outputs.target_sha }}
       prerelease: true
       rolling_tag: true
@@ -913,7 +833,7 @@ jobs:
     secrets: inherit
     with:
       tag: ui-desktop-dev
-      title: Happier UI Desktop Dev
+      title: Happiest UI Desktop Dev
       target_sha: ${{ needs.prepare_assets.outputs.target_sha }}
       prerelease: true
       rolling_tag: true
@@ -931,7 +851,7 @@ jobs:
     secrets: inherit
     with:
       tag: ui-desktop-v${{ needs.prepare_assets.outputs.ui_version }}
-      title: Happier UI Desktop v${{ needs.prepare_assets.outputs.ui_version }}
+      title: Happiest UI Desktop v${{ needs.prepare_assets.outputs.ui_version }}
       target_sha: ${{ needs.prepare_assets.outputs.target_sha }}
       prerelease: false
       rolling_tag: false
@@ -983,19 +903,9 @@ jobs:
       - name: Install minisign
         uses: ./.github/actions/bootstrap-minisign
 
-      - name: Create scoped release token
-        id: app_token
-        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547
-        with:
-          app-id: ${{ secrets.RELEASE_BOT_APP_ID }}
-          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ github.event.repository.name }}
-          permission-contents: write
-
       - name: Promote verified immutable desktop release
         env:
-          GH_TOKEN: ${{ steps.app_token.outputs.token }}
+          GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           SOURCE_TAG: ui-desktop-v${{ needs.resolve_source.outputs.retry_version != '' && needs.resolve_source.outputs.retry_version || needs.resolve_source.outputs.ui_version }}
           SOURCE_VERSION: ${{ needs.resolve_source.outputs.retry_version != '' && needs.resolve_source.outputs.retry_version || needs.resolve_source.outputs.ui_version }}
@@ -1008,7 +918,7 @@ jobs:
             --expected-product ui-desktop \
             --expected-version "$SOURCE_VERSION" \
             --rolling-tag ui-desktop-stable \
-            --title "Happier UI Desktop Stable" \
+            --title "Happiest UI Desktop Stable" \
             --target-sha "$TARGET_SHA" \
             --prerelease false \
             --notes "$RELEASE_MESSAGE" \

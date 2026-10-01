@@ -6,7 +6,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { parseArgs } from 'node:util';
 
-import { assertPackagedHsetupResolution, waitForAppIpcStatusRead, writeStubHappierCli } from './linux-appimage-ipc-probe.mjs';
+import { assertPackagedHsetupResolution, waitForAppIpcStatusRead, writeStubHappiestCli } from './linux-appimage-ipc-probe.mjs';
 import { observeTauriStartup } from './linux-appimage-smoke-process.mjs';
 import { extractBundledHsetup } from './linux-desktop-hsetup.mjs';
 
@@ -17,7 +17,7 @@ async function main() {
   const appImage = path.resolve(String(values.appimage ?? '').trim());
   if (!appImage || !fs.existsSync(appImage)) fail(`missing AppImage: ${appImage || '<empty>'}`);
   const durationMs = Math.max(3, Number(values.duration)) * 1000;
-  const scratch = fs.mkdtempSync(path.join('/tmp', 'happier-appimage-smoke-'));
+  const scratch = fs.mkdtempSync(path.join('/tmp', 'happiest-appimage-smoke-'));
   const marker = path.join(scratch, 'ready.json');
   // A computer of its own: the app's warm-up runs hsetup against this HOME, never the runner's.
   const home = path.join(scratch, 'home');
@@ -28,13 +28,13 @@ async function main() {
   let app;
   const cleanup = () => { if (app && app.exitCode === null) app.kill('SIGTERM'); if (xvfb.exitCode === null) xvfb.kill('SIGTERM'); };
   try {
-    const stubCli = writeStubHappierCli({ dir: path.join(scratch, 'cli'), recordDir });
+    const stubCli = writeStubHappiestCli({ dir: path.join(scratch, 'cli'), recordDir });
     const bundled = extractBundledHsetup({ artifactPath: appImage, outFile: path.join(scratch, 'bundled-hsetup') });
     for (let i = 0; i < 50 && !fs.existsSync(`/tmp/.X11-unix/X${display.slice(1)}`); i += 1) await new Promise((resolve) => setTimeout(resolve, 100));
     if (!fs.existsSync(`/tmp/.X11-unix/X${display.slice(1)}`)) fail('Xvfb did not create an X11 socket');
     app = spawn(appImage, ['--appimage-extract-and-run'], {
       env: {
-        ...Object.fromEntries(Object.entries(process.env).filter(([name]) => !name.startsWith('HAPPIER_') && !name.startsWith('XDG_'))),
+        ...Object.fromEntries(Object.entries(process.env).filter(([name]) => !name.startsWith('HAPPIER_') && !name.startsWith('HAPPIEST_') && !name.startsWith('XDG_'))),
         HOME: home,
         XDG_CONFIG_HOME: path.join(home, '.config'),
         XDG_CACHE_HOME: path.join(home, '.cache'),
@@ -66,7 +66,7 @@ async function main() {
       resource: bundled.resource,
       resourceBytes: bundled.resourceBytes,
     });
-    console.log(`[linux-appimage-smoke] the app ran daemon.service.status.v1 through its IPC: bundled hsetup ${bundled.resource} (sha256 ${bundled.hsetupSha256}, ${resolution}) at ${hsetupExe} ran \`happier ${statusRead.argv.join(' ')}\` read-only`);
+    console.log(`[linux-appimage-smoke] the app ran daemon.service.status.v1 through its IPC: bundled hsetup ${bundled.resource} (sha256 ${bundled.hsetupSha256}, ${resolution}) at ${hsetupExe} ran \`happiest ${statusRead.argv.join(' ')}\` read-only`);
     console.log(`[linux-appimage-smoke] passed: remained alive for ${durationMs / 1000}s`);
   } finally { cleanup(); fs.rmSync(scratch, { recursive: true, force: true }); }
 }

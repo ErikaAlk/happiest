@@ -11,17 +11,16 @@ async function loadWorkflow(name) {
   return readFile(join(repoRoot, '.github', 'workflows', name), 'utf8');
 }
 
-test('the release-owned UI promotion is the only writer of rolling release-note assets', async () => {
-  const owner = await loadWorkflow('promote-ui.yml');
-  assert.match(owner, /Build release notes assets/);
-  assert.match(owner, /Publish release notes assets with trusted control/);
-  assert.match(owner, /scripts\/pipeline\/release\/release-notes\/publish-release-notes-assets\.mjs/);
-  assert.match(owner, /GH_REPO:\s*happier-dev\/happier-assets/);
+test('no release workflow publishes release-note assets to the upstream assets repository', async () => {
+  for (const workflow of ['promote-ui.yml', 'build-ui-mobile-local.yml', 'publish-ui-web.yml', 'publish-ui-mobile-dev.yml']) {
+    const raw = await loadWorkflow(workflow);
+    assert.doesNotMatch(raw, /publish-release-notes-assets\.mjs/, workflow);
+    assert.doesNotMatch(raw, /release_notes_assets_token/, workflow);
+    assert.doesNotMatch(raw, /happier-assets/, workflow);
+  }
 
   for (const workflow of ['build-ui-mobile-local.yml', 'publish-ui-web.yml', 'publish-ui-mobile-dev.yml']) {
     const raw = await loadWorkflow(workflow);
     assert.match(raw, /(?:sources\/scripts\/parseReleaseNotes\.ts|project-release-notes\.mjs)/);
-    assert.doesNotMatch(raw, /publish-release-notes-assets\.mjs/);
-    assert.doesNotMatch(raw, /release_notes_assets_token/);
   }
 });

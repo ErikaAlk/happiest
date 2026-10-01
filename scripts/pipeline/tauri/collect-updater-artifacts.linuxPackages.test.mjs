@@ -11,14 +11,14 @@ function writeFile(filePath, contents) {
 }
 
 test('collect-updater-artifacts publishes Linux deb/rpm alongside the AppImage', () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'happier-tauri-linux-assets-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'happiest-tauri-linux-assets-'));
   const searchDir = path.join(root, 'apps/ui/src-tauri/target/release/bundle');
-  const appImage = path.join(searchDir, 'appimage/happier.AppImage');
+  const appImage = path.join(searchDir, 'appimage/happiest.AppImage');
   const signature = Buffer.from('untrusted comment: test\ntrusted comment: test\nsignature\n').toString('base64');
   writeFile(appImage, 'appimage');
   writeFile(`${appImage}.sig`, `${signature}\n`);
-  writeFile(path.join(searchDir, 'deb/happier.deb'), 'deb');
-  writeFile(path.join(searchDir, 'rpm/happier.rpm'), 'rpm');
+  writeFile(path.join(searchDir, 'deb/happiest.deb'), 'deb');
+  writeFile(path.join(searchDir, 'rpm/happiest.rpm'), 'rpm');
 
   execFileSync(process.execPath, [
     path.resolve('scripts/pipeline/tauri/collect-updater-artifacts.mjs'),
