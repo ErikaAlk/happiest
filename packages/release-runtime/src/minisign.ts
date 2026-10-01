@@ -2,8 +2,8 @@ import { createHash, createPublicKey, verify } from 'node:crypto';
 
 const ED25519_SPKI_PREFIX = Buffer.from('302a300506032b6570032100', 'hex');
 
-export const DEFAULT_MINISIGN_PUBLIC_KEY = `untrusted comment: minisign public key 91AE28177BF6E43C
-RWQ85PZ7FyiukYbL3qv/bKnwgbT68wLVzotapeMFIb8n+c7pBQ7U8W2t
+export const DEFAULT_MINISIGN_PUBLIC_KEY = `untrusted comment: minisign public key 1C1A3EFF24BD09FC
+RWT8Cb0k/z4aHMcDQPt0+sH/rJL5nMdYl1n7EgW+Z/S+gqYoaF46qtz5
 `;
 
 function decodeBase64Line(line: string, expectedBytes?: number): Buffer {
