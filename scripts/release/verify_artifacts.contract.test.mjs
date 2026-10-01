@@ -8,6 +8,9 @@ import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
+import { getFirstPartyComponentCatalogEntry } from '@happier-dev/cli-common/firstPartyRuntime';
+
+const SERVER_EXECUTABLE_BASE_NAME = getFirstPartyComponentCatalogEntry('happier-server').executableBaseName;
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..', '..');
 const verifyArtifactsPath = resolve(repoRoot, 'scripts', 'pipeline', 'release', 'verify-artifacts.mjs');
@@ -394,7 +397,7 @@ test('verify-artifacts smoke-runs packaged server binaries with isolated startup
     await mkdir(stageDir, { recursive: true });
     await mkdir(artifactsDir, { recursive: true });
     await writeFile(
-      join(stageDir, 'happier-server'),
+      join(stageDir, SERVER_EXECUTABLE_BASE_NAME),
       [
         '#!/usr/bin/env bash',
         'set -euo pipefail',
@@ -468,7 +471,7 @@ test('verify-artifacts rejects a packaged server binary that exits before the sm
     await mkdir(stageDir, { recursive: true });
     await mkdir(artifactsDir, { recursive: true });
     await writeFile(
-      join(stageDir, 'happier-server'),
+      join(stageDir, SERVER_EXECUTABLE_BASE_NAME),
       '#!/usr/bin/env bash\nexit 0\n',
       { encoding: 'utf-8', mode: 0o755 },
     );
@@ -528,7 +531,7 @@ test('verify-artifacts selects the packaged binary instead of a sibling sidecar 
     await mkdir(artifactsDir, { recursive: true });
     await writeFile(join(stageDir, 'generated', 'sqlite-client', 'placeholder.txt'), 'placeholder\n', 'utf-8');
     await writeFile(
-      join(stageDir, 'happier-server'),
+      join(stageDir, SERVER_EXECUTABLE_BASE_NAME),
       [
         '#!/usr/bin/env bash',
         'set -euo pipefail',
@@ -845,7 +848,7 @@ test('verify-artifacts hard-times-out packaged server binaries that ignore SIGTE
     await mkdir(stageDir, { recursive: true });
     await mkdir(artifactsDir, { recursive: true });
     await writeFile(
-      join(stageDir, 'happier-server'),
+      join(stageDir, SERVER_EXECUTABLE_BASE_NAME),
       [
         '#!/usr/bin/env bash',
         'set -euo pipefail',

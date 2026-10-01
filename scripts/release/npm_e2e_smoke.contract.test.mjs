@@ -252,18 +252,18 @@ test('npm-e2e-smoke cli smoke waits for daemon to register a machine (connected 
   const raw = await readFile(cliSmokePath, 'utf8');
   assert.match(
     raw,
-    /command -v happier/,
-    'expected cli smoke to verify the installed happier command is present on PATH'
+    /command -v happiest/,
+    'expected cli smoke to verify the installed happiest command is present on PATH'
   );
   assert.match(
     raw,
-    /\bhappier\b --version/,
-    'expected cli smoke to execute the real installed happier shim command for version proof'
+    /\bhappiest\b --version/,
+    'expected cli smoke to execute the real installed happiest shim command for version proof'
   );
   assert.match(
     raw,
-    /HAPPIER_PREFIX=\(happier\)/,
-    'expected cli smoke to run flow commands through the installed happier shim'
+    /HAPPIER_PREFIX=\(happiest\)/,
+    'expected cli smoke to run flow commands through the installed happiest shim'
   );
   assert.doesNotMatch(
     raw,
@@ -288,18 +288,18 @@ test('npm-e2e-smoke includes a second CLI machine smoke', async () => {
   const cli2Raw = await readFile(cli2SmokePath, 'utf8');
   assert.match(
     cli2Raw,
-    /command -v happier/,
-    'expected cli2 smoke to verify the installed happier command is present on PATH'
+    /command -v happiest/,
+    'expected cli2 smoke to verify the installed happiest command is present on PATH'
   );
   assert.match(
     cli2Raw,
-    /\bhappier\b --version/,
-    'expected cli2 smoke to execute the real installed happier shim command for version proof'
+    /\bhappiest\b --version/,
+    'expected cli2 smoke to execute the real installed happiest shim command for version proof'
   );
   assert.match(
     cli2Raw,
-    /HAPPIER_PREFIX=\(happier\)/,
-    'expected cli2 smoke to run flow commands through the installed happier shim'
+    /HAPPIER_PREFIX=\(happiest\)/,
+    'expected cli2 smoke to run flow commands through the installed happiest shim'
   );
   assert.doesNotMatch(
     cli2Raw,
@@ -431,7 +431,7 @@ test('npm-e2e-smoke local mode prepares a local linux server binary for remote s
   );
   assert.match(
     runnerRaw,
-    /REMOTE_SELF_HOST_SERVER_BINARY=\/packs\/happier-server-\$\{server_target\}-runtime\/happier-server/,
+    /REMOTE_SELF_HOST_SERVER_BINARY=\/packs\/happier-server-\$\{server_target\}-runtime\/happiest-server/,
     'expected runner to point remote setup at the staged runtime binary path'
   );
 });
@@ -480,17 +480,17 @@ test('npm-e2e-smoke remote server smoke forwards canonical server binary overrid
   assert.match(
     raw,
     /ensure_happier_command_from_global_cli_package/,
-    'expected remote server smoke to expose a stable `happier` command for hstack remote setup'
+    'expected remote server smoke to expose a stable `happiest` command for hstack remote setup'
   );
   assert.match(
     raw,
     /bin\/happiest\.mjs/,
-    'expected remote server smoke to source happier command from packaged cli bin/happiest.mjs'
+    'expected remote server smoke to source happiest command from packaged cli bin/happiest.mjs'
   );
   assert.match(
     raw,
-    /ln -sf "\$expected" \/usr\/local\/bin\/happier/,
-    'expected remote server smoke to install a deterministic happier compatibility symlink in /usr/local/bin'
+    /ln -sf "\$expected" \/usr\/local\/bin\/happiest/,
+    'expected remote server smoke to install a deterministic happiest compatibility symlink in /usr/local/bin'
   );
   assert.match(
     raw,
@@ -499,12 +499,12 @@ test('npm-e2e-smoke remote server smoke forwards canonical server binary overrid
   );
   assert.doesNotMatch(
     raw,
-    /~\/\.happier\/bin\/hstack/,
+    /~\/\.happiest\/bin\/hstack/,
     'expected remote server smoke to avoid hardcoded remote hstack paths (remote install roots can vary)'
   );
   assert.match(
     raw,
-    /remote_config_env_path="\/etc\/happier/,
+    /remote_config_env_path="\/etc\/happiest\//,
     'expected remote server smoke to resolve canonical remote relay config env path for system mode'
   );
   assert.match(
@@ -753,7 +753,7 @@ test('remote install shims keep npm cache bounded across repeated setup runs', a
   const hostSystemdRaw = await readFile(remoteHostSystemdPath, 'utf8');
   assert.match(
     hostRaw,
-    /cache_dir="\$\(mktemp -d "\$HOME\/\.happier\/\.npm-cache\.[X]{6}"\)"/,
+    /cache_dir="\$\(mktemp -d "\$HOME\/\.happiest\/\.npm-cache\.[X]{6}"\)"/,
     'expected remote daemon host shim to allocate an isolated npm cache directory per install run'
   );
   assert.match(
@@ -878,17 +878,17 @@ test('remote daemon smoke scripts fail closed when --public-server-url is unsupp
   );
   assert.match(
     reuseCliRaw,
-    /~\/\.happier\/bin\/h(prev|appier)/,
+    /~\/\.happiest\/bin\/happiest-preview/,
     'expected reuse-cli remote daemon smoke to probe channel-specific managed shims on the remote host'
   );
   assert.match(
     reuseCliRaw,
-    /~\/\.happier\/cli-preview\/current\/happier/,
-    'expected reuse-cli remote daemon smoke to probe installer-managed preview CLI payload paths when ~/.happier/bin is absent'
+    /~\/\.happiest\/cli-preview\/current\/happiest/,
+    'expected reuse-cli remote daemon smoke to probe installer-managed preview CLI payload paths when ~/.happiest/bin is absent'
   );
   assert.doesNotMatch(
     reuseCliRaw,
-    /ssh "\$REMOTE_SSH_TARGET" "~\/\.happier\/bin\/happier daemon start"/,
+    /ssh "\$REMOTE_SSH_TARGET" "~\/\.happiest\/bin\/happiest daemon start"/,
     'expected reuse-cli remote daemon smoke to avoid hardcoding a stable-only remote CLI path'
   );
   assert.match(
@@ -966,17 +966,17 @@ test('remote daemon smoke scripts fail closed when --public-server-url is unsupp
   );
   assert.match(
     bootstrapRaw,
-    /~\/\.happier\/bin\/h(prev|appier)/,
+    /~\/\.happiest\/bin\/happiest-preview/,
     'expected bootstrap remote daemon smoke to probe channel-specific managed shims on the remote host'
   );
   assert.match(
     bootstrapRaw,
-    /~\/\.happier\/cli-preview\/current\/happier/,
-    'expected bootstrap remote daemon smoke to probe installer-managed preview CLI payload paths when ~/.happier/bin is absent'
+    /~\/\.happiest\/cli-preview\/current\/happiest/,
+    'expected bootstrap remote daemon smoke to probe installer-managed preview CLI payload paths when ~/.happiest/bin is absent'
   );
   assert.doesNotMatch(
     bootstrapRaw,
-    /ssh "\$REMOTE_SSH_TARGET" "~\/\.happier\/bin\/happier daemon start"/,
+    /ssh "\$REMOTE_SSH_TARGET" "~\/\.happiest\/bin\/happiest daemon start"/,
     'expected bootstrap remote daemon smoke to avoid hardcoding a stable-only remote CLI path'
   );
   assert.match(
