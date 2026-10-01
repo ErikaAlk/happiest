@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 test('apps/ui package.json exposes shared stack-owned Tauri dev entrypoints', async () => {
   const scriptsDir = dirname(fileURLToPath(import.meta.url));
@@ -30,26 +31,21 @@ test('apps/ui Tauri public dev config enables the global Tauri bridge API for MC
   assert.equal(config?.app?.withGlobalTauri, true);
 });
 
-test('apps/ui Tauri channel configs use the expected desktop product names', async () => {
+test('apps/ui Tauri channel configs install beside upstream Happier under the product name and identifier', async () => {
   const scriptsDir = dirname(fileURLToPath(import.meta.url));
   const packageRoot = dirname(scriptsDir);
+  const { productName, desktopAppIdentifier } = productIdentity;
 
-  const stableRaw = await readFile(join(packageRoot, 'src-tauri', 'tauri.conf.json'), 'utf-8');
-  const previewRaw = await readFile(join(packageRoot, 'src-tauri', 'tauri.preview.conf.json'), 'utf-8');
-  const publicDevRaw = await readFile(join(packageRoot, 'src-tauri', 'tauri.publicdev.conf.json'), 'utf-8');
-
-  const stable = JSON.parse(stableRaw);
-  const preview = JSON.parse(previewRaw);
-  const publicDev = JSON.parse(publicDevRaw);
-
-  assert.equal(stable?.productName, 'Happier');
-  assert.equal(stable?.app?.windows?.[0]?.title, 'Happier');
-
-  assert.equal(preview?.productName, 'Happier (preview)');
-  assert.equal(preview?.app?.windows?.[0]?.title, 'Happier (preview)');
-
-  assert.equal(publicDev?.productName, 'Happier (dev)');
-  assert.equal(publicDev?.app?.windows?.[0]?.title, 'Happier (dev)');
+  for (const [configName, name, identifier] of [
+    ['tauri.conf.json', productName, desktopAppIdentifier],
+    ['tauri.preview.conf.json', `${productName} (preview)`, `${desktopAppIdentifier}.preview`],
+    ['tauri.publicdev.conf.json', `${productName} (dev)`, `${desktopAppIdentifier}.publicdev`],
+  ]) {
+    const config = JSON.parse(await readFile(join(packageRoot, 'src-tauri', configName), 'utf-8'));
+    assert.equal(config?.productName, name, configName);
+    assert.equal(config?.identifier, identifier, configName);
+    assert.deepEqual(config?.app?.windows?.map((window) => window?.title), [name], configName);
+  }
 });
 
 test('apps/ui Tauri channel configs leave HTML5 file drag-and-drop available to the frontend', async () => {

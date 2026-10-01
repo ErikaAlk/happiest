@@ -44,6 +44,12 @@ export const productIdentity = {
   systemDirName: 'happiest',
   /** Default port of the local relay server; upstream Happier's relay defaults to 3005. */
   relayDefaultPort: 3015,
+  /**
+   * Tauri identifier of the stable desktop app (preview and dev append `.preview` and `.publicdev`).
+   * It names the app's data directories and installer registration, so it differs from upstream's
+   * `dev.happier.app`.
+   */
+  desktopAppIdentifier: 'click.erikaalk.happiest',
 } as const;
 
 export type ProductIdentity = typeof productIdentity;

@@ -14,6 +14,7 @@ const productIdentity = {
   windowsTaskFolder: 'Happiest',
   systemDirName: 'happiest',
   relayDefaultPort: 3015,
+  desktopAppIdentifier: 'click.erikaalk.happiest',
 };
 
 module.exports = { productIdentity };

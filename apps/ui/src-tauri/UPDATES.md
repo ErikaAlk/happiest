@@ -1,6 +1,6 @@
 # Desktop updates & signing (Tauri)
 
-This folder contains the Tauri (desktop) app for Happier.
+This folder contains the Tauri (desktop) app for Happiest. Desktop releases are built for Windows x64 and Linux x64.
 
 ## Current status
 
@@ -8,36 +8,29 @@ This folder contains the Tauri (desktop) app for Happier.
   - Rust registers the updater plugin and exposes Tauri commands used by the UI.
   - `tauri.conf.json` configures the stable update endpoint; `tauri.preview.conf.json` and `tauri.publicdev.conf.json` override it for preview/dev feeds.
   - GitHub Actions publishes platform updater artifacts plus a `latest.json` feed used by the app.
+- The app's name and identifier (`Happiest`, `click.erikaalk.happiest`; preview and dev append ` (preview)`/` (dev)` and `.preview`/`.publicdev`) differ from upstream Happier, so both desktop apps install side by side with separate data directories.
 
 ## Two different “signing” concepts
 
 ### 1) Updater signing (update integrity)
 
-Tauri’s updater mechanism can verify that update metadata and/or update artifacts were produced by you (tamper protection). This is *not* the same as OS-level code signing.
+Tauri’s updater mechanism verifies that update metadata and artifacts were produced by the release pipeline (tamper protection). This is *not* the same as OS-level code signing.
 
-Typical setup:
+Setup:
 
-1. Generate an updater signing keypair (private key + public key).
-2. Embed the **public key** in the app’s Tauri config so the app can verify signatures.
-3. Store the **private key** in GitHub Secrets and use it in CI to sign updater metadata/artifacts.
-
-The CI workflow is already pre-wired to pass these secrets if you add them:
-
-- `TAURI_SIGNING_PRIVATE_KEY`
-- `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`
+1. Generate an updater signing keypair (private key + public key), e.g. `yarn tauri signer generate -w ~/.tauri/happiest.key` in `apps/ui`.
+2. Embed the **public key** in `plugins.updater.pubkey` of all three Tauri configs so the app can verify signatures.
+3. Store the **private key** and its password in the `release-shared` GitHub environment of the repository:
+   - `TAURI_SIGNING_PRIVATE_KEY`
+   - `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`
 
 ### 2) Code signing (OS trust / installer UX)
 
-This is what reduces “unknown developer/publisher” warnings:
+Code signing reduces “unknown publisher” warnings (Windows Authenticode / SmartScreen). Happiest's Windows installers are not code-signed; updater signing works without it.
 
-- macOS: codesign + notarization (Gatekeeper).
-- Windows: Authenticode signing (SmartScreen reputation).
+## Release model (repo convention)
 
-You can do updater signing without code signing, and vice-versa.
-
-## Recommended release model (repo convention)
-
-We publish UI Desktop component releases:
+We publish UI Desktop component releases on `ErikaAlk/happiest`:
 
 - Production: tag/release `ui-desktop-vX.Y.Z`
 - Preview (rolling prerelease): tag/release `ui-desktop-preview` (assets replaced on each build)
@@ -45,7 +38,7 @@ We publish UI Desktop component releases:
 
 Desktop updater artifacts and feeds are published by `.github/workflows/build-tauri.yml` through the centralized publisher `.github/workflows/publish-ui-release.yml`.
 
-## Implementing auto-updates (recommended approach)
+## Implementing auto-updates
 
 We use the official Tauri updater plugin and a static JSON feed (`latest.json`) published to GitHub Releases.
 
@@ -57,43 +50,6 @@ Key pieces:
   - preview overrides endpoints in `tauri.preview.conf.json`
   - public dev overrides endpoints in `tauri.publicdev.conf.json`
 - Local builds: `bundle.createUpdaterArtifacts` is disabled by default so contributors can build the desktop app without updater signing keys.
-- CI: when `TAURI_SIGNING_PRIVATE_KEY` is present, CI enables `bundle.createUpdaterArtifacts` and publishes:
+- CI: the finalizer requires `TAURI_SIGNING_PRIVATE_KEY`, enables `bundle.createUpdaterArtifacts` and publishes:
   - platform update bundles (per target)
   - `latest.json` (public dev: `ui-desktop-dev/latest.json`, preview: `ui-desktop-preview/latest.json`, stable: `ui-desktop-stable/latest.json`)
-
-Notes:
-- For preview vs production update channels, you usually either:
-  - provide different endpoints (preview vs production), or
-  - embed logic/config per environment (`tauri.publicdev.conf.json`, `tauri.preview.conf.json`, `tauri.conf.json`).
-
-## macOS codesigning & notarization (overview)
-
-You already have the Apple Developer Program, which includes “Developer ID” certificates for macOS distribution.
-
-Typical CI inputs:
-
-- A Developer ID Application certificate exported as `.p12` + password (stored as secrets).
-- Notarization credentials:
-  - either Apple ID + app-specific password, or
-  - App Store Connect API key (preferred for CI).
-
-Typical CI process:
-
-1. Import `.p12` into a temporary keychain on the runner.
-2. Build and codesign the app bundle.
-3. Submit to Apple notarization.
-4. Staple the notarization ticket to the app.
-
-## Windows code signing (overview)
-
-Windows signing generally requires purchasing a code signing certificate from a Certificate Authority (CA). EV certificates are more expensive but improve SmartScreen reputation.
-
-Typical CI inputs:
-
-- `.pfx` certificate + password (stored as secrets) OR a remote signing service/HSM.
-
-Typical CI process:
-
-1. Build the installer/binary.
-2. Run `signtool` to sign it.
-3. Timestamp the signature.

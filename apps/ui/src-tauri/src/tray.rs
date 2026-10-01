@@ -27,7 +27,7 @@ const TRAY_ICON_FOR_LIGHT_TRAY: Image<'static> = tauri::include_image!("./icons/
 #[cfg(all(desktop, not(target_os = "macos")))]
 const TRAY_ICON_FOR_DARK_TRAY: Image<'static> = tauri::include_image!("./icons/tray/tray-dark.png");
 #[cfg(desktop)]
-const TRAY_TOOLTIP: &str = "Happier";
+const TRAY_TOOLTIP: &str = "Happiest";
 /// The tray is how Windows and Linux reach Quit at all: they get no app menu, and closing the main
 /// window only hides it. It is also the only way to bring that window back on those platforms.
 #[cfg(desktop)]
@@ -45,7 +45,7 @@ pub fn register<R: Runtime>(app: &mut App<R>) -> tauri::Result<()> {
     }
 
     let initial_state = DesktopTrayStatePayload {
-        label: "Happier".to_string(),
+        label: "Happiest".to_string(),
         detail: "Checking connection".to_string(),
         open_label: default_open_label(),
         quit_label: default_quit_label(),
@@ -253,12 +253,12 @@ pub struct DesktopTrayStatePayload {
 
 #[cfg(desktop)]
 fn default_open_label() -> String {
-    "Open Happier".to_string()
+    "Open Happiest".to_string()
 }
 
 #[cfg(desktop)]
 fn default_quit_label() -> String {
-    "Quit Happier".to_string()
+    "Quit Happiest".to_string()
 }
 
 #[cfg(desktop)]
@@ -351,17 +351,17 @@ mod tests {
     #[test]
     fn tray_menu_labels_come_from_the_app_and_default_to_english() {
         let localized: DesktopTrayStatePayload = serde_json::from_str(
-            r#"{"status":"healthy","label":"Verbunden","detail":"Online","openLabel":"Happier öffnen","quitLabel":"Happier beenden"}"#,
+            r#"{"status":"healthy","label":"Verbunden","detail":"Online","openLabel":"Happiest öffnen","quitLabel":"Happiest beenden"}"#,
         )
         .expect("payload parses");
-        assert_eq!(localized.open_label, "Happier öffnen");
-        assert_eq!(localized.quit_label, "Happier beenden");
+        assert_eq!(localized.open_label, "Happiest öffnen");
+        assert_eq!(localized.quit_label, "Happiest beenden");
 
         let older: DesktopTrayStatePayload =
             serde_json::from_str(r#"{"status":"healthy","label":"Connected","detail":"Online"}"#)
                 .expect("payload without labels parses");
-        assert_eq!(older.open_label, "Open Happier");
-        assert_eq!(older.quit_label, "Quit Happier");
+        assert_eq!(older.open_label, "Open Happiest");
+        assert_eq!(older.quit_label, "Quit Happiest");
         assert_eq!(older.updates_label, None);
 
         let with_updates: DesktopTrayStatePayload = serde_json::from_str(
@@ -384,7 +384,7 @@ mod tests {
     #[test]
     fn the_menu_status_line_joins_label_and_detail() {
         let state: DesktopTrayStatePayload = serde_json::from_str(
-            r#"{"label":"Connected","detail":"Online · 2/2","openLabel":"Open Happier","quitLabel":"Quit Happier"}"#,
+            r#"{"label":"Connected","detail":"Online · 2/2","openLabel":"Open Happiest","quitLabel":"Quit Happiest"}"#,
         )
         .expect("payload without status parses");
         assert_eq!(status_line(&state), "Connected · Online · 2/2");
