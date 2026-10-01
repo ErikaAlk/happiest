@@ -56,10 +56,6 @@ async function verifyChecksumSignature({ checksumsPath, pubkeyFile }) {
   return message.toString('utf8');
 }
 
-function isServerBinaryCandidate(candidate) {
-  return String(candidate ?? '').startsWith('happier-server');
-}
-
 function formatSmokeOutput(result) {
   const stdout = String(result?.stdout ?? '').trim();
   const stderr = String(result?.stderr ?? '').trim();
@@ -446,7 +442,7 @@ export async function smokeTestArchive({ archivePath, execute = true }) {
     }
     if (!execute || !shouldSmokeTestReleaseArtifact({ archiveName: basename(archivePath) })) return;
     const binPath = join(root, candidate);
-    const serverBinary = isServerBinaryCandidate(candidate);
+    const serverBinary = component.id === 'happier-server';
     const args = memoryRuntime ? ['--input-type=module', '-e', `
       const { Tensor, env } = await import(${JSON.stringify(pathToFileURL(binPath).href)});
       env.allowRemoteModels = false;
