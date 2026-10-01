@@ -347,7 +347,7 @@ USER node
 # Relay server (self-host default: light + sqlite)
 FROM debian:12-slim AS relay-artifacts
 ARG TARGETARCH
-ARG HAPPIER_RELEASE_BASE_URL="https://github.com/happier-dev/happier/releases/download"
+ARG HAPPIER_RELEASE_BASE_URL="https://github.com/ErikaAlk/happiest/releases/download"
 ARG HAPPIER_RELAY_SERVER_RELEASE_TAG=""
 ARG HAPPIER_RELAY_SERVER_VERSION=""
 RUN apt-get update \
@@ -365,7 +365,7 @@ RUN set -eux; \
     fetch-verified-release-artifact \
       --base-url "$HAPPIER_RELEASE_BASE_URL" \
       --release-tag "$HAPPIER_RELAY_SERVER_RELEASE_TAG" \
-      --product happier-server \
+      --product happiest-server \
       --version "$HAPPIER_RELAY_SERVER_VERSION" \
       --os linux \
       --arch "$artifact_arch" \
@@ -419,7 +419,7 @@ ENV HAPPY_SQLITE_MIGRATIONS_DIR=/opt/happier/server/prisma/sqlite/migrations
 USER happier
 EXPOSE 3005
 VOLUME ["/data"]
-CMD ["run-server", "/opt/happier/server/happier-server"]
+CMD ["run-server", "/opt/happier/server/happiest-server"]
 
 # Default target when building without --target
 FROM server AS default

@@ -12,9 +12,10 @@ test('dev-box Dockerfile consumes the CLI release artifact without stack/source 
   assert.match(raw, /fetch-verified-release-artifact/);
   assert.match(raw, /HAPPIER_DEVBOX_CLI_RELEASE_TAG/);
   assert.match(raw, /HAPPIER_DEVBOX_CLI_VERSION/);
-  assert.match(raw, /--product\s+happier/);
+  assert.match(raw, /ARG HAPPIER_RELEASE_BASE_URL="https:\/\/github\.com\/ErikaAlk\/happiest\/releases\/download"/);
+  assert.match(raw, /--product\s+happiest\s/);
   assert.match(raw, /COPY --from=devbox-artifacts --chown=happier:happier \/opt\/happier\/cli \/opt\/happier\/cli/);
-  assert.match(raw, /ln -sf \/opt\/happier\/cli\/happier \/usr\/local\/bin\/happier/);
+  assert.match(raw, /ln -sf \/opt\/happier\/cli\/happiest \/usr\/local\/bin\/happiest/);
   assert.doesNotMatch(raw, /\bAS cli-builder\b/);
   assert.doesNotMatch(raw, /COPY apps\/stack\b/);
   assert.doesNotMatch(raw, /ln -sf .*hstack/);

@@ -3,23 +3,26 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { getFirstPartyComponentCatalogEntry } from '@happier-dev/cli-common/firstPartyRuntime';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 import {
   normalizePublicReleaseChannel,
   resolveRollingVersionSuffix,
 } from '../release/lib/public-release-rings.mjs';
 import { versionedComponents } from '../release/component-registry.mjs';
 
-const DEFAULT_RELEASE_BASE_URL = 'https://github.com/happier-dev/happier/releases/download';
+const DEFAULT_RELEASE_BASE_URL = `https://github.com/${productIdentity.githubRepo}/releases/download`;
 
 const ARTIFACT_SPECS = Object.freeze({
   server: Object.freeze({
-    product: 'happier-server',
+    product: getFirstPartyComponentCatalogEntry('happier-server').releaseProductName,
     versionTagPrefix: versionedComponents.server.baselineTagPrefix,
     versionEnv: 'HAPPIER_DOCKER_SERVER_VERSION',
     packageJsonPath: 'apps/server/package.json',
   }),
   cli: Object.freeze({
-    product: 'happier',
+    product: getFirstPartyComponentCatalogEntry('happier-cli').releaseProductName,
     versionTagPrefix: versionedComponents.cli.baselineTagPrefix,
     versionEnv: 'HAPPIER_DOCKER_CLI_VERSION',
     packageJsonPath: 'apps/cli/package.json',

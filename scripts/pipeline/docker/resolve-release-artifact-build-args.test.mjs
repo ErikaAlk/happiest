@@ -43,6 +43,20 @@ test('uses explicit Docker artifact version overrides without GitHub lookups', a
   assert.deepEqual(inputs.devBox.cli, { releaseTag: 'cli-v1.0.0-dev.3', version: '1.0.0-dev.3' });
 });
 
+test('downloads Docker artifacts from this product fork unless a release base URL is given', async () => {
+  const inputs = await resolveDockerReleaseArtifactInputs({
+    channel: 'stable',
+    repoRoot: process.cwd(),
+    dryRun: false,
+    env: {
+      HAPPIER_DOCKER_SERVER_VERSION: '0.1.0',
+      HAPPIER_DOCKER_CLI_VERSION: '0.1.0',
+    },
+  });
+
+  assert.equal(inputs.releaseBaseUrl, 'https://github.com/ErikaAlk/happiest/releases/download');
+});
+
 test('requires the exact CLI version when publishing only the dev-box image', async () => {
   await assert.rejects(
     resolveDockerReleaseArtifactInputs({

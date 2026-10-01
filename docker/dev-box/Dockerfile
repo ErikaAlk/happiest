@@ -2,7 +2,7 @@
 
 FROM debian:12-slim AS devbox-artifacts
 ARG TARGETARCH
-ARG HAPPIER_RELEASE_BASE_URL="https://github.com/happier-dev/happier/releases/download"
+ARG HAPPIER_RELEASE_BASE_URL="https://github.com/ErikaAlk/happiest/releases/download"
 ARG HAPPIER_DEVBOX_CLI_RELEASE_TAG=""
 ARG HAPPIER_DEVBOX_CLI_VERSION=""
 
@@ -23,7 +23,7 @@ RUN set -eux; \
   fetch-verified-release-artifact \
     --base-url "$HAPPIER_RELEASE_BASE_URL" \
     --release-tag "$HAPPIER_DEVBOX_CLI_RELEASE_TAG" \
-    --product happier \
+    --product happiest \
     --version "$HAPPIER_DEVBOX_CLI_VERSION" \
     --os linux \
     --arch "$artifact_arch" \
@@ -51,8 +51,8 @@ ENV NPM_CONFIG_PREFIX=/home/happier/.npm-global
 ENV PATH=/opt/happier/cli:/home/happier/.local/bin:/home/happier/.npm-global/bin:$PATH
 
 COPY --from=devbox-artifacts --chown=happier:happier /opt/happier/cli /opt/happier/cli
-RUN chmod +x /opt/happier/cli/happier \
-  && ln -sf /opt/happier/cli/happier /usr/local/bin/happier
+RUN chmod +x /opt/happier/cli/happiest \
+  && ln -sf /opt/happier/cli/happiest /usr/local/bin/happiest
 
 COPY docker/dev-box/entrypoint.sh /usr/local/bin/happier-dev-box-entrypoint
 RUN chmod +x /usr/local/bin/happier-dev-box-entrypoint

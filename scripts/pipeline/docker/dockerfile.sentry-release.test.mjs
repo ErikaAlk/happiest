@@ -45,7 +45,8 @@ test("relay-server target is artifact based and keeps the self-host runtime cont
   assert.match(artifactSection, /HAPPIER_RELAY_SERVER_VERSION/);
   assert.doesNotMatch(artifactSection, /HAPPIER_RELAY_UI_WEB_RELEASE_TAG/);
   assert.doesNotMatch(artifactSection, /HAPPIER_RELAY_UI_WEB_VERSION/);
-  assert.match(artifactSection, /happier-server/);
+  assert.match(artifactSection, /ARG HAPPIER_RELEASE_BASE_URL="https:\/\/github\.com\/ErikaAlk\/happiest\/releases\/download"/);
+  assert.match(artifactSection, /--product happiest-server\b/);
   assert.doesNotMatch(artifactSection, /--product happier-ui-web/);
   assert.doesNotMatch(artifactSection, /rm -rf \/opt\/happier\/server\/ui-web/);
   assert.match(artifactSection, /rm -rf \/opt\/happier\/server\/generated\/mysql-client \/opt\/happier\/server\/prisma\/mysql/);
@@ -66,5 +67,5 @@ test("relay-server target is artifact based and keeps the self-host runtime cont
   assert.match(runtimeSection, /\bENV HAPPY_SQLITE_MIGRATIONS_DIR=\/opt\/happier\/server\/prisma\/sqlite\/migrations\b/);
   assert.match(runtimeSection, /\bVOLUME \["\/data"\]/);
   assert.match(runtimeSection, /COPY apps\/server\/scripts\/run-server\.sh \/usr\/local\/bin\/run-server/);
-  assert.match(runtimeSection, /\bCMD \["run-server", "\/opt\/happier\/server\/happier-server"\]/);
+  assert.match(runtimeSection, /\bCMD \["run-server", "\/opt\/happier\/server\/happiest-server"\]/);
 });
