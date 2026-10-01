@@ -16,6 +16,7 @@ import {
   DaemonStartupSourceSchema,
   type DaemonStartupSource,
 } from '@/daemon/ownership/daemonOwnershipMetadata';
+import { DEFAULT_SERVER_NAME, DEFAULT_SERVER_URL } from '@/server/defaultServer';
 import { isServerIdFilesystemSafe, sanitizeServerIdForFilesystem } from '@/server/serverId';
 import { isLocalishServerUrl } from '@/server/serverUrlClassification';
 import * as z from 'zod';
@@ -196,9 +197,9 @@ const defaultSettings: Settings = {
   servers: {
     cloud: {
       id: 'cloud',
-      name: 'Happier Cloud',
-      serverUrl: 'https://api.happier.dev',
-      webappUrl: 'https://cloud.happier.dev',
+      name: DEFAULT_SERVER_NAME,
+      serverUrl: DEFAULT_SERVER_URL,
+      webappUrl: DEFAULT_SERVER_URL,
       createdAt: 0,
       updatedAt: 0,
       lastUsedAt: 0,

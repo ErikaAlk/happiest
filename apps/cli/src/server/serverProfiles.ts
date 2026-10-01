@@ -1,4 +1,5 @@
 import { readSettings, updateSettings } from '@/persistence';
+import { DEFAULT_SERVER_NAME } from '@/server/defaultServer';
 import { deriveServerIdFromName, deriveServerIdFromUrl, sanitizeServerIdForFilesystem } from '@/server/serverId';
 import { isLocalishServerUrl } from '@/server/serverUrlClassification';
 import { createServerUrlComparableKey } from '@happier-dev/protocol';
@@ -106,7 +107,7 @@ function coerceProfile(value: any): ServerProfile | null {
 
   if (!id || !serverUrl || !webappUrl) return null;
   const displayName = id === 'cloud'
-    ? 'Happier Cloud'
+    ? DEFAULT_SERVER_NAME
     : name;
   if (!displayName) return null;
   return {
@@ -537,7 +538,7 @@ export async function removeServerProfile(
     throw new Error(`Server profile not found: ${identifier}`);
   }
   if (resolvedId === 'cloud') {
-    throw new Error('Cannot remove the Happier Cloud server profile');
+    throw new Error(`Cannot remove the ${DEFAULT_SERVER_NAME} profile`);
   }
 
   if (resolvedId === activeServerId && !force) {

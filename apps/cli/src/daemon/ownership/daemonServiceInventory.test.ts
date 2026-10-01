@@ -124,9 +124,9 @@ describe('daemonServiceInventory', () => {
             envScope.patch({
                 HAPPIEST_HOME_DIR: homeDir,
                 HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
-                HAPPIEST_SERVER_URL: 'https://api.happier.dev',
-                HAPPIEST_WEBAPP_URL: 'https://app.happier.dev',
-                HAPPIEST_PUBLIC_SERVER_URL: 'https://api.happier.dev',
+                HAPPIEST_SERVER_URL: 'https://happiest.erikaalk.click',
+                HAPPIEST_WEBAPP_URL: 'https://happiest.erikaalk.click',
+                HAPPIEST_PUBLIC_SERVER_URL: 'https://happiest.erikaalk.click',
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
                 HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
                 HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,

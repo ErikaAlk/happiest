@@ -10,6 +10,7 @@
 
 import chalk from 'chalk';
 
+import { DEFAULT_SERVER_NAME } from '@/server/defaultServer';
 import { cleanRelayRuntimeVersion } from '@/ui/format/styles';
 
 import { authSignInCommand } from '../authSignInCommand';
@@ -817,7 +818,7 @@ export function copyNoServersConfigured(invoker: string = 'happier'): readonly s
   return [
     'You need at least one server profile to connect to.',
     '',
-    'Sign in to Happier cloud with:',
+    `Sign in to ${DEFAULT_SERVER_NAME} with:`,
     `  ${authSignInCommand(invoker)}`,
     '',
     'Or connect to a self-hosted server with:',

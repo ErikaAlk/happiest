@@ -1,5 +1,6 @@
 import { reloadConfiguration, configuration } from '@/configuration';
 import { addServerProfile, getServerProfile, useServerProfile } from '@/server/serverProfiles';
+import { deriveDefaultWebappUrl } from '@/server/defaultServer';
 import { deriveServerIdFromUrl } from '@/server/serverId';
 
 function takeFlagValue(args: string[], name: string): { value: string | null; rest: string[] } {
@@ -54,13 +55,6 @@ function deriveProfileNameFromServerUrl(serverUrl: string): string {
   const host = url.hostname.toLowerCase();
   const port = url.port ? `-${url.port}` : '';
   return `${host}${port}`;
-}
-
-function deriveDefaultWebappUrl(serverUrl: string): string {
-  if (serverUrl.replace(/\/+$/, '') === 'https://api.happier.dev') {
-    return 'https://cloud.happier.dev';
-  }
-  return new URL(serverUrl).origin;
 }
 
 function takePrefixFlagValue(args: string[], name: string): { value: string | null; consumed: number } {

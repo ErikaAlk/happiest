@@ -29,6 +29,7 @@ import type { CommandContext } from '@/cli/commandRegistry';
 import { readTailscaleStatusSnapshot } from '@/integrations/tailscale/tailscaleStatus';
 import { resolveProviderCliCommand } from '@/runtime/managedTools/providerCliResolution';
 import { invokeProviderCliInstall } from '@/runtime/managedTools/invokeProviderCliInstall';
+import { DEFAULT_SERVER_NAME, DEFAULT_SERVER_URL } from '@/server/defaultServer';
 import { getActiveServerProfile } from '@/server/serverProfiles';
 import { isLoopbackServerHost } from '@/server/serverUrlClassification';
 import { promptConfirmYesNo } from '@/terminal/prompts/promptConfirmYesNo';
@@ -67,7 +68,7 @@ Usage:
   happier setup [options]
 
 Options:
-  --cloud                 Use Happier Cloud without being asked
+  --cloud                 Use ${DEFAULT_SERVER_NAME} without being asked
   --relay <url>           Use a relay you already run
   --this-computer         Install and use a relay on this computer
   --yes                   Ask nothing. Every step that needs no answer runs, then
@@ -229,7 +230,7 @@ async function askWhereTheRelayLives(): Promise<SetupRelaySelection> {
         subtitle: 'Connect your devices. Your coding agents run here.',
         question: 'How would you like to connect your devices?',
         choices: [
-            { id: 'cloud', key: 'c', label: 'Happier Cloud (recommended)', description: 'No server maintenance', isDefault: true },
+            { id: 'cloud', key: 'c', label: `${DEFAULT_SERVER_NAME} (recommended)`, description: new URL(DEFAULT_SERVER_URL).host, isDefault: true },
             { id: 'existing', key: 'r', label: 'Existing server', description: 'Address from the Happier app or your administrator' },
             { id: 'thisComputer', key: 't', label: 'Host on this computer', description: 'Installs an additional server; needs a reachable network route' },
         ],

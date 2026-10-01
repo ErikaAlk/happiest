@@ -25,13 +25,13 @@ const VARIANTS = {
     homeDir: path.join(os.homedir(), productIdentity.homeDirName),
     color: '\x1b[32m', // Green
     label: '✅ STABLE',
-    serverUrl: process.env.HAPPIEST_SERVER_URL ||'https://api.happier.dev'
+    serverUrl: process.env.HAPPIEST_SERVER_URL || productIdentity.defaultServerUrl
   },
   dev: {
     homeDir: path.join(os.homedir(), productIdentity.sourceHomeDirName),
     color: '\x1b[33m', // Yellow
     label: '🔧 DEV',
-    serverUrl: process.env.HAPPIEST_SERVER_URL ||'https://api.happier.dev'
+    serverUrl: process.env.HAPPIEST_SERVER_URL || productIdentity.defaultServerUrl
   }
 };
 

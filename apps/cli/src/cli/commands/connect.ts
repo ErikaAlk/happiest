@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { configuration } from '@/configuration';
 import { readCredentials } from '@/persistence';
 import { ApiClient } from '@/api/api';
 import type { CloudConnectTarget, CloudConnectTargetStatus } from '@/cloud/connectTypes';
@@ -73,7 +74,7 @@ function showConnectHelp(targets: ReadonlyArray<CloudConnectTarget>, opts: Reado
       ? targets.map((t) => formatTargetLine(t)).join('\n')
       : '  (no connect targets registered)';
     console.log(`
-${chalk.bold('happier connect')} - Connect AI vendor subscriptions and API keys to Happier cloud
+${chalk.bold('happier connect')} - Connect AI vendor subscriptions and API keys to your server
 
 ${chalk.bold('Usage:')}
 ${targetLines}
@@ -93,7 +94,7 @@ ${targetLines}
 
 ${chalk.bold('Description:')}
   The connect command allows you to securely store your connected-service credentials
-  in Happier cloud. This enables you to use these services through Happier
+  on your server. This enables you to use these services through Happier
   without exposing credentials locally.
 
 ${chalk.bold('Examples:')}
@@ -102,8 +103,8 @@ ${chalk.bold('Examples:')}
 
 ${chalk.bold('Notes:')} 
   • You must be authenticated with Happier first (run 'happier auth login')
-  • Credentials are encrypted and stored securely in Happier cloud
-  • You can manage your stored keys at cloud.happier.dev
+  • Credentials are encrypted and stored securely on your server
+  • You can manage your stored keys at ${configuration.webappUrl}
   ${opts.includeExperimental ? '' : '• Some providers are experimental; use --all to show them'}
 `);
 }
@@ -114,7 +115,7 @@ function formatTargetLine(target: CloudConnectTarget): string {
 }
 
 async function handleConnectVendor(target: CloudConnectTarget, options: ConnectParsedOptions): Promise<void> {
-    console.log(chalk.bold(`\n🔌 Connecting ${target.vendorDisplayName} to Happier cloud\n`));
+    console.log(chalk.bold(`\n🔌 Connecting ${target.vendorDisplayName} to your server\n`));
 
     // Check if authenticated
     const credentials = await readCredentials();

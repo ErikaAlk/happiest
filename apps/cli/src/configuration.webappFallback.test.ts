@@ -58,7 +58,28 @@ describe('configuration env url fallback', () => {
     }
   });
 
-  it('keeps the cloud default webappUrl when HAPPIEST_SERVER_URL matches the cloud default and webapp is unset', async () => {
+  it('connects a fresh home to the Happiest server, which also serves the web app', async () => {
+    const homeDir = createTempDirSync('happier-cli-config-');
+    tempDirs.push(homeDir);
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    delete process.env.HAPPIEST_SERVER_URL;
+    delete process.env.HAPPIEST_PUBLIC_SERVER_URL;
+    delete process.env.HAPPIEST_LOCAL_SERVER_URL;
+    delete process.env.HAPPIEST_WEBAPP_URL;
+    delete process.env.HAPPIEST_ACTIVE_SERVER_ID;
+
+    const output = captureConsoleText();
+    try {
+      const configMod = await import('./configuration');
+      configMod.reloadConfiguration();
+      expect(configMod.configuration.serverUrl).toBe('https://happiest.erikaalk.click');
+      expect(configMod.configuration.webappUrl).toBe('https://happiest.erikaalk.click');
+    } finally {
+      output.restore();
+    }
+  });
+
+  it('keeps the upstream cloud webappUrl when HAPPIEST_SERVER_URL is the upstream cloud API and webapp is unset', async () => {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
     process.env.HAPPIEST_HOME_DIR = homeDir;

@@ -4,6 +4,7 @@ import { createServerUrlComparableKey } from '@happier-dev/protocol';
 import { approveTerminalAuthRequest } from '@/auth/terminalAuthApproval';
 import { writeJsonStdout } from '@/cli/output/jsonEnvelope';
 import { configuration } from '@/configuration';
+import { deriveDefaultWebappUrl } from '@/server/defaultServer';
 import { promptForCurrentMachineReachableServerUrl } from '@/server/reachability/promptCurrentMachineReachableServerUrl';
 import { applyServerSelectionFromArgs } from '@/server/serverSelection';
 import { isLoopbackHttpServerUrl } from '@/server/serverUrlClassification';
@@ -90,12 +91,9 @@ function normalizeUrlOrFail(raw: string, label: string): string {
   }
 }
 
-function deriveDefaultWebappUrl(serverUrl: string): string {
-  if (serverUrl.replace(/\/+$/, '') === 'https://api.happier.dev') {
-    return 'https://cloud.happier.dev';
-  }
+function deriveWebappUrlOrServerUrl(serverUrl: string): string {
   try {
-    return new URL(serverUrl).origin;
+    return deriveDefaultWebappUrl(serverUrl);
   } catch {
     return serverUrl;
   }
@@ -141,7 +139,7 @@ async function resolveRemoteServerSelection(params: Readonly<{
     const promptedRemoteServerUrl = normalizeUrlOrFail(answer, '--server-url-for-remote');
     const promptedRemoteWebappUrl = params.remoteWebappUrl
       ? normalizeUrlOrFail(params.remoteWebappUrl, '--remote-webapp-url')
-      : deriveDefaultWebappUrl(promptedRemoteServerUrl);
+      : deriveWebappUrlOrServerUrl(promptedRemoteServerUrl);
     return {
       serverUrl: promptedRemoteServerUrl,
       webappUrl: promptedRemoteWebappUrl,
@@ -153,7 +151,7 @@ async function resolveRemoteServerSelection(params: Readonly<{
   const webappUrl = params.remoteWebappUrl
     ? normalizeUrlOrFail(params.remoteWebappUrl, '--remote-webapp-url')
     : explicitRemoteServerUrl
-      ? deriveDefaultWebappUrl(serverUrl)
+      ? deriveWebappUrlOrServerUrl(serverUrl)
       : configuration.webappUrl;
 
   return {
