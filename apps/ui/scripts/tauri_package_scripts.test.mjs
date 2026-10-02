@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 test('apps/ui package.json exposes shared stack-owned Tauri dev entrypoints', async () => {
   const scriptsDir = dirname(fileURLToPath(import.meta.url));
@@ -29,23 +28,6 @@ test('apps/ui Tauri public dev config enables the global Tauri bridge API for MC
   const config = JSON.parse(raw);
 
   assert.equal(config?.app?.withGlobalTauri, true);
-});
-
-test('apps/ui Tauri channel configs install beside upstream Happier under the product name and identifier', async () => {
-  const scriptsDir = dirname(fileURLToPath(import.meta.url));
-  const packageRoot = dirname(scriptsDir);
-  const { productName, desktopAppIdentifier } = productIdentity;
-
-  for (const [configName, name, identifier] of [
-    ['tauri.conf.json', productName, desktopAppIdentifier],
-    ['tauri.preview.conf.json', `${productName} (preview)`, `${desktopAppIdentifier}.preview`],
-    ['tauri.publicdev.conf.json', `${productName} (dev)`, `${desktopAppIdentifier}.publicdev`],
-  ]) {
-    const config = JSON.parse(await readFile(join(packageRoot, 'src-tauri', configName), 'utf-8'));
-    assert.equal(config?.productName, name, configName);
-    assert.equal(config?.identifier, identifier, configName);
-    assert.deepEqual(config?.app?.windows?.map((window) => window?.title), [name], configName);
-  }
 });
 
 test('apps/ui Tauri channel configs verify updates with the product updater key', async () => {

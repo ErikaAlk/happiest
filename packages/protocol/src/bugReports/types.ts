@@ -48,7 +48,7 @@ export type BugReportServiceSubmitInput = {
 };
 
 // Same repository as `productIdentity.githubRepo`; protocol builds before release-runtime, so it
-// carries the literals and the identity contract test compares them.
+// carries the literals and scripts/release/product_identity_literals.contract.test.mjs compares them.
 export const BUG_REPORT_DEFAULT_ISSUE_OWNER = 'ErikaAlk';
 export const BUG_REPORT_DEFAULT_ISSUE_REPO = 'happiest';
 export const BUG_REPORT_DEFAULT_ISSUE_LABELS: readonly string[] = ['bug'];

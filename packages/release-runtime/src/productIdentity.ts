@@ -7,7 +7,7 @@ const githubRepo = 'ErikaAlk/happiest';
  * machine (its command, home directory, background services and release source) is read
  * from here. Artifacts that cannot import TypeScript (installer scripts, Tauri config and
  * Rust constants, Dockerfiles, workflows) carry the same literals and are checked against
- * this module by a contract test.
+ * this module by scripts/release/product_identity_literals.contract.test.mjs.
  */
 export const productIdentity = {
   /** Display name shown to people. */
