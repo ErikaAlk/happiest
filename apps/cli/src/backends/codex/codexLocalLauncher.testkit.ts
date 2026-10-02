@@ -25,6 +25,7 @@ const TRACKED_ENV_KEYS = [
   'TEST_CODEX_ARGV_PATH',
   'TEST_CODEX_THREAD_ID_PATH',
   'TEST_CODEX_ENV_DUMP_PATH',
+  'TEST_CODEX_VERSION',
 ] as const;
 
 export type LocalSessionHarness = {
@@ -84,6 +85,7 @@ export function applyCodexLauncherEnv(vars: Partial<Record<(typeof TRACKED_ENV_K
     TEST_CODEX_ARGV_PATH: process.env.TEST_CODEX_ARGV_PATH,
     TEST_CODEX_THREAD_ID_PATH: process.env.TEST_CODEX_THREAD_ID_PATH,
     TEST_CODEX_ENV_DUMP_PATH: process.env.TEST_CODEX_ENV_DUMP_PATH,
+    TEST_CODEX_VERSION: process.env.TEST_CODEX_VERSION,
   };
 
   for (const key of TRACKED_ENV_KEYS) {
@@ -143,6 +145,11 @@ export async function writeFakeCodexScript(path: string, opts: {
 const script = `#!/usr/bin/env node
 const fs = require('node:fs');
 const path = require('node:path');
+
+if (process.argv.includes('--version')) {
+  console.log('codex-cli ' + (process.env.TEST_CODEX_VERSION || '0.150.0'));
+  process.exit(0);
+}
 
 const root = process.env.HAPPIER_CODEX_SESSIONS_DIR
   ? process.env.HAPPIER_CODEX_SESSIONS_DIR

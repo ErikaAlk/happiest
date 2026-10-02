@@ -412,6 +412,58 @@ describe('codexLocalLauncher', () => {
     }
   });
 
+  it.each([
+    ['0.155.0', false],
+    ['0.156.0', true],
+  ] as const)('runs Codex %s without its shared background server only when it supports that (%s)', async (version, standalone) => {
+    const fixture = await createCodexBinaryFixture();
+    const argsPath = join(fixture.binDir, 'argv.json');
+    const sessionId = randomUUID();
+
+    await writeFakeCodexScript(fixture.fakeCodex, {
+      terminatedFlag: fixture.terminatedFlag,
+      recordArgv: true,
+    });
+
+    const { session } = createLocalSessionHarness();
+    const messageQueue = createLocalMessageQueue();
+    const restoreEnv = applyCodexLauncherEnv({
+      HAPPIER_CODEX_SESSIONS_DIR: fixture.sessionsRoot,
+      HAPPIER_CODEX_TUI_BIN: fixture.fakeCodex,
+      TEST_CODEX_SESSION_ID: sessionId,
+      TEST_CODEX_TIMESTAMP: new Date().toISOString(),
+      TEST_CODEX_ARGV_PATH: argsPath,
+      TEST_CODEX_VERSION: version,
+    });
+
+    try {
+      const launcherPromise = codexLocalLauncher({
+        path: fixture.sessionsRoot,
+        api: {},
+        session,
+        messageQueue,
+        permissionMode: 'default',
+        resumeId: sessionId,
+      });
+
+      await waitFor(() => {
+        expect(existsSync(argsPath)).toBe(true);
+      });
+      const argv = JSON.parse(await readFile(argsPath, 'utf8')) as string[];
+      expect(argv.includes('--no-daemon')).toBe(standalone);
+      expect(argv.slice(-2)).toEqual(['resume', sessionId]);
+
+      messageQueue.push('hi', { permissionMode: 'default' });
+      await expect(launcherPromise).resolves.toEqual({ type: 'switch', resumeId: sessionId });
+      await waitFor(() => {
+        expect(existsSync(fixture.terminatedFlag)).toBe(true);
+      });
+    } finally {
+      restoreEnv();
+      await cleanupCodexBinaryFixture(fixture);
+    }
+  });
+
   it('passes provider-native Codex args after Happier wrapper args', async () => {
     const fixture = await createCodexBinaryFixture();
     const argsPath = join(fixture.binDir, 'argv.json');
