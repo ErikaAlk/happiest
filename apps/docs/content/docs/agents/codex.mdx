@@ -113,7 +113,7 @@ With the App Server backend, Codex uses shared local control with Codex CLI 0.13
 
 This shared-control flow starts with a Happier session. If you started a thread directly in Codex CLI, Happier cannot join its running app-server by resuming that thread in a separate process: Codex keeps one active writer for the thread. To use both interfaces for a new session, start it in Happier and run `happier attach` on the same machine.
 
-Windows, ACP sessions, and App Server sessions using an older Codex CLI keep the existing exclusive local-control flow. Happier waits for a safe turn boundary before moving those sessions between the app and the terminal.
+Windows, ACP sessions, and App Server sessions using an older Codex CLI keep the existing exclusive local-control flow. Happier waits for a safe turn boundary before moving those sessions between the app and the terminal. In this flow the Codex TUI owns the thread until Happier stops it, so with Codex CLI 0.156.0 or newer Happier starts it with `--no-daemon`, outside Codex's shared background server. Codex 0.157.0 and newer start that server by default and refuse to start without it from an install that lacks the complete local package.
 
 Codex model availability depends on the active Codex backend, installed runtime, and account state. The new-session engine picker can show the currently available Codex models, model-specific options such as reasoning effort, and favorite Codex model shortcuts when those models are available for the selected backend.
 

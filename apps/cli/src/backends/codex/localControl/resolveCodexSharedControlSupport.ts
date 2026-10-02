@@ -1,51 +1,27 @@
-import { execFileSync } from 'node:child_process';
-
-import { resolveWindowsCommandInvocation } from '@happier-dev/cli-common/process';
-
-import { isVersionAtLeast, parseCodexVersionInfo } from '../mcp/version';
-import { resolveCodexCliInvocation } from '../utils/resolveCodexCliInvocation';
+import { isVersionAtLeast } from '../mcp/version';
+import { probeCodexCliVersion, type CodexCliVersionProbeDependencies } from '../utils/probeCodexCliVersion';
 
 const SHARED_CONTROL_MIN_VERSION_UNIX = { major: 0, minor: 131, patch: 0 } as const;
-
-type Dependencies = Readonly<{
-  resolveInvocation: typeof resolveCodexCliInvocation;
-  execute: (command: string, args: readonly string[], env: NodeJS.ProcessEnv) => string;
-}>;
 
 export async function resolveCodexSharedControlSupport(params: Readonly<{
   cwd: string;
   processEnv?: NodeJS.ProcessEnv;
   platform?: NodeJS.Platform;
-  dependencies?: Partial<Dependencies>;
+  dependencies?: Partial<CodexCliVersionProbeDependencies>;
 }>): Promise<Readonly<{ ok: true }> | Readonly<{ ok: false; reason: 'unsupported-version' }>> {
-  const processEnv = params.processEnv ?? process.env;
-  const resolveInvocation = params.dependencies?.resolveInvocation ?? resolveCodexCliInvocation;
-  const execute = params.dependencies?.execute ?? ((command, args, env) => execFileSync(command, args, {
-    encoding: 'utf8',
-    env,
-    windowsHide: true,
-  }));
+  // Codex 0.154 added protected Windows AF_UNIX sockets, but Node's IPC path
+  // transport connects Windows named pipes only. Keep Windows on the existing
+  // exclusive local-control path until Happier owns an AF_UNIX-capable bridge.
+  if ((params.platform ?? process.platform) === 'win32') {
+    return { ok: false, reason: 'unsupported-version' };
+  }
   try {
-    const resolved = await resolveInvocation({
-      args: ['--version'],
+    const version = await probeCodexCliVersion({
       cwd: params.cwd,
-      processEnv,
+      processEnv: params.processEnv ?? process.env,
       overrideEnvVarKeys: ['HAPPIER_CODEX_APP_SERVER_BIN', 'HAPPIER_CODEX_TUI_BIN', 'HAPPY_CODEX_TUI_BIN'],
-      targetLabel: 'Codex CLI',
+      dependencies: params.dependencies,
     });
-    const invocation = resolveWindowsCommandInvocation({
-      command: resolved.command,
-      args: resolved.args,
-      env: processEnv,
-      resolveCommandOnPath: true,
-    });
-    const version = parseCodexVersionInfo(execute(invocation.command, invocation.args, processEnv));
-    // Codex 0.154 added protected Windows AF_UNIX sockets, but Node's IPC path
-    // transport connects Windows named pipes only. Keep Windows on the existing
-    // exclusive local-control path until Happier owns an AF_UNIX-capable bridge.
-    if ((params.platform ?? process.platform) === 'win32') {
-      return { ok: false, reason: 'unsupported-version' };
-    }
     return isVersionAtLeast(version, SHARED_CONTROL_MIN_VERSION_UNIX)
       ? { ok: true }
       : { ok: false, reason: 'unsupported-version' };

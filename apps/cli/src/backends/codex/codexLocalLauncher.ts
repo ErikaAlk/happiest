@@ -14,6 +14,8 @@ import { logger } from '@/ui/logger';
 import { expandHomeDirPath } from '@happier-dev/cli-common/providers';
 import { resolveWindowsCommandInvocation } from '@happier-dev/cli-common/process';
 import { resolveCodexCliInvocation } from './utils/resolveCodexCliInvocation';
+import { probeCodexCliVersion } from './utils/probeCodexCliVersion';
+import { isVersionAtLeast } from './mcp/version';
 import { delay } from '@/utils/time';
 import { resolveConfiguredCodexHome } from './utils/resolveConfiguredCodexHome';
 import { configuration } from '@/configuration';
@@ -66,17 +68,29 @@ function resolveCodexSessionsRootDir(): string {
   return join(resolveConfiguredCodexHome(process.env), 'sessions');
 }
 
+const CODEX_TUI_OVERRIDE_ENV_VAR_KEYS = ['HAPPIER_CODEX_TUI_BIN', 'HAPPY_CODEX_TUI_BIN'] as const;
+/** First Codex release with `--no-daemon` (openai/codex#46088, released in 0.156.0). */
+const CODEX_NO_DAEMON_MIN_VERSION = { major: 0, minor: 156, patch: 0 } as const;
+
 async function resolveCodexTuiInvocation(opts: {
   cwd: string;
   resumeId?: string | null;
   permissionMode: PermissionMode;
   codexArgs?: readonly string[];
 }): Promise<{ command: string; args: string[] }> {
-  return await resolveCodexCliInvocation({
-    args: buildCodexTuiArgs(opts),
+  const version = await probeCodexCliVersion({
     cwd: opts.cwd,
     processEnv: process.env,
-    overrideEnvVarKeys: ['HAPPIER_CODEX_TUI_BIN', 'HAPPY_CODEX_TUI_BIN'],
+    overrideEnvVarKeys: CODEX_TUI_OVERRIDE_ENV_VAR_KEYS,
+  });
+  return await resolveCodexCliInvocation({
+    args: buildCodexTuiArgs({
+      ...opts,
+      withoutSharedBackgroundServer: isVersionAtLeast(version, CODEX_NO_DAEMON_MIN_VERSION),
+    }),
+    cwd: opts.cwd,
+    processEnv: process.env,
+    overrideEnvVarKeys: CODEX_TUI_OVERRIDE_ENV_VAR_KEYS,
     targetLabel: 'Codex CLI',
   });
 }
@@ -122,8 +136,16 @@ function buildCodexTuiArgs(opts: {
   resumeId?: string | null;
   permissionMode: PermissionMode;
   codexArgs?: readonly string[];
+  withoutSharedBackgroundServer: boolean;
 }): string[] {
   const args: string[] = [];
+
+  // In exclusive local control the Codex UI owns the thread until Happier stops it for remote mode.
+  // Attached to Codex's shared background server, the thread would outlive the UI (and Codex 0.157+
+  // refuses to start that way from an install without a complete local package).
+  if (opts.withoutSharedBackgroundServer) {
+    args.push('--no-daemon');
+  }
 
   // Always enforce working directory to match the Happy session path.
   args.push('--cd', opts.cwd);
