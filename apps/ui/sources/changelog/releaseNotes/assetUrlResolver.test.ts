@@ -1,10 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { resetAssetIndexForTests, setAssetIndex } from './assetIndex';
 import { resolveAssetUrl } from './assetUrlResolver';
 import { resetManifestRuntimeCacheForTests } from './manifestRuntime';
 
 const originalEnv = { ...process.env };
+const PRODUCT_RELEASE_NOTES_RELEASE = `github.com/${productIdentity.githubRepo}/releases/download/release-notes/`;
 
 declare const __DEV__: boolean | undefined;
 
@@ -19,9 +21,9 @@ describe('resolveAssetUrl', () => {
         process.env = { ...originalEnv };
     });
 
-    it('falls back to the default GitHub release URL when no manifest/asset index is configured', () => {
+    it('falls back to the product release-notes GitHub release URL when no manifest/asset index is configured', () => {
         const resolved = resolveAssetUrl('v1.0.0/hero.webp');
-        expect(resolved?.url).toContain('happier-dev/happier-assets/releases/download/release-notes/');
+        expect(resolved?.url).toContain(PRODUCT_RELEASE_NOTES_RELEASE);
         expect(resolved?.url).toContain('hero.webp');
     });
 
@@ -60,11 +62,11 @@ describe('resolveAssetUrl', () => {
             expect(resolved?.primary.kind).toBe('local');
             expect(resolved?.primary.uri).toContain('127.0.0.1');
             expect(resolved?.fallback?.kind).toBe('remote');
-            expect(resolved?.fallback?.uri).toContain('happier-dev/happier-assets');
+            expect(resolved?.fallback?.uri).toContain(PRODUCT_RELEASE_NOTES_RELEASE);
         } else {
             // In a non-dev test runtime, the resolver must still produce a remote URL.
             expect(resolved?.primary.kind).toBe('remote');
-            expect(resolved?.url).toContain('happier-dev/happier-assets');
+            expect(resolved?.url).toContain(PRODUCT_RELEASE_NOTES_RELEASE);
             expect(resolved?.fallback).toBeNull();
         }
     });

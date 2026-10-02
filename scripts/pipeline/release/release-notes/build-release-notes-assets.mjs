@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // @ts-check
 /**
- * Build the release-notes asset bundle that will be published to
- * `happier-dev/happier-assets` under the rolling `release-notes` tag.
+ * Build the release-notes asset bundle that will be published to this product's
+ * repository under the rolling `release-notes` tag.
  *
  * Inputs:
  *   - apps/ui/sources/changelog/releaseNotes/manifest.generated.json (committed)
@@ -20,6 +20,8 @@ import { createHash } from 'node:crypto';
 import { copyFile, mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, resolve, relative, dirname } from 'node:path';
+
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 const REPO_ROOT = resolve(new URL('../../../..', import.meta.url).pathname);
 const MANIFEST_PATH = join(REPO_ROOT, 'apps/ui/sources/changelog/releaseNotes/manifest.generated.json');
@@ -105,7 +107,7 @@ async function main() {
     const assetsDir = resolve(flags.get('assets-dir') ?? AUTHORED_ASSETS_DIR);
     const outDir = resolve(flags.get('out-dir') ?? join(REPO_ROOT, 'dist/release-notes-assets'));
     const assetBaseUrl = (flags.get('assets-base-url')
-        ?? 'https://github.com/happier-dev/happier-assets/releases/download/release-notes/').replace(/\/?$/, '/');
+        ?? `https://github.com/${productIdentity.githubRepo}/releases/download/release-notes/`).replace(/\/?$/, '/');
 
     if (!existsSync(manifestPath)) {
         throw new Error(`Generated manifest not found at ${manifestPath}. Run parseReleaseNotes.ts first.`);

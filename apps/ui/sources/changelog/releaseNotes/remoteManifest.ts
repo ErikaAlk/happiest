@@ -2,12 +2,15 @@ import { commitRemoteAssetIndex } from './assetIndex';
 import { doesAssetIndexCoverReleaseNotesManifest } from './manifestAssetCoverage';
 import { commitRemoteManifest } from './manifestRuntime';
 import {
+    buildReleaseNotesAssetsBaseUrl,
+    RELEASE_NOTES_ASSETS_REPO,
+    RELEASE_NOTES_ASSETS_TAG,
+} from './releaseNotesAssetSource';
+import {
     parseReleaseNotesAssetIndex,
     parseReleaseNotesManifest,
 } from './schema';
 
-const DEFAULT_REPO = 'happier-dev/happier-assets';
-const DEFAULT_TAG = 'release-notes';
 const DEFAULT_MANIFEST_FILE = 'release-notes__manifest.json';
 const DEFAULT_ASSET_INDEX_FILE = 'release-notes__assets-index.json';
 const FETCH_TIMEOUT_MS = 5_000;
@@ -29,12 +32,12 @@ function resolveRemoteAssetFileUrl(fileName: string): string {
         return explicit;
     }
     const repo =
-        (process.env.EXPO_PUBLIC_HAPPIER_RELEASE_NOTES_ASSETS_REPO ?? DEFAULT_REPO).trim()
-        || DEFAULT_REPO;
+        (process.env.EXPO_PUBLIC_HAPPIER_RELEASE_NOTES_ASSETS_REPO ?? RELEASE_NOTES_ASSETS_REPO).trim()
+        || RELEASE_NOTES_ASSETS_REPO;
     const tag =
-        (process.env.EXPO_PUBLIC_HAPPIER_RELEASE_NOTES_ASSETS_TAG ?? DEFAULT_TAG).trim()
-        || DEFAULT_TAG;
-    return `https://github.com/${repo}/releases/download/${tag}/${fileName}`;
+        (process.env.EXPO_PUBLIC_HAPPIER_RELEASE_NOTES_ASSETS_TAG ?? RELEASE_NOTES_ASSETS_TAG).trim()
+        || RELEASE_NOTES_ASSETS_TAG;
+    return `${buildReleaseNotesAssetsBaseUrl(repo, tag)}${fileName}`;
 }
 
 function appendCacheBust(url: string): string {

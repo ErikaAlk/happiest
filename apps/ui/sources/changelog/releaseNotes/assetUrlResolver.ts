@@ -1,9 +1,11 @@
 import { getAssetIndex, lookupAsset } from './assetIndex';
 import { getActiveManifest } from './manifestRuntime';
+import {
+    buildReleaseNotesAssetsBaseUrl,
+    RELEASE_NOTES_ASSETS_REPO,
+    RELEASE_NOTES_ASSETS_TAG,
+} from './releaseNotesAssetSource';
 import type { ReleaseNotesMediaSource, ResolvedReleaseNotesMedia } from './types';
-
-const DEFAULT_REPO = 'happier-dev/happier-assets';
-const DEFAULT_TAG = 'release-notes';
 
 function isDevMode(): boolean {
     return typeof __DEV__ !== 'undefined' && __DEV__ === true;
@@ -26,12 +28,12 @@ function getRemoteAssetsBaseUrl(): string {
         return manifest.assetBaseUrl;
     }
     const repo =
-        (process.env.EXPO_PUBLIC_HAPPIER_RELEASE_NOTES_ASSETS_REPO ?? DEFAULT_REPO).trim()
-        || DEFAULT_REPO;
+        (process.env.EXPO_PUBLIC_HAPPIER_RELEASE_NOTES_ASSETS_REPO ?? RELEASE_NOTES_ASSETS_REPO).trim()
+        || RELEASE_NOTES_ASSETS_REPO;
     const tag =
-        (process.env.EXPO_PUBLIC_HAPPIER_RELEASE_NOTES_ASSETS_TAG ?? DEFAULT_TAG).trim()
-        || DEFAULT_TAG;
-    return `https://github.com/${repo}/releases/download/${tag}/`;
+        (process.env.EXPO_PUBLIC_HAPPIER_RELEASE_NOTES_ASSETS_TAG ?? RELEASE_NOTES_ASSETS_TAG).trim()
+        || RELEASE_NOTES_ASSETS_TAG;
+    return buildReleaseNotesAssetsBaseUrl(repo, tag);
 }
 
 function ensureTrailingSlash(value: string): string {

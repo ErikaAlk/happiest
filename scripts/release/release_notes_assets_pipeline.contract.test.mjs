@@ -6,6 +6,8 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..', '..');
 const buildScript = resolve(repoRoot, 'scripts/pipeline/release/release-notes/build-release-notes-assets.mjs');
@@ -142,7 +144,7 @@ test('release notes asset build fails when authored assets are not referenced by
   assert.match(result.stderr, /v9\.9\.9\/unused\.webp/);
 });
 
-test('release notes asset publish dry-run targets happier-assets release-notes with clobbered bundle files', () => {
+test('release notes asset publish dry-run targets the product repository release-notes release with clobbered bundle files', () => {
   const fixture = makeFixtureBundle();
   execFileSync(
     process.execPath,
@@ -156,12 +158,12 @@ test('release notes asset publish dry-run targets happier-assets release-notes w
     { cwd: repoRoot, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30_000 },
   );
 
-  assert.match(out, /gh release view release-notes --repo happier-dev\/happier-assets/);
+  assert.ok(out.includes(`gh release view release-notes --repo ${productIdentity.githubRepo}`), out);
   assert.match(out, /gh release upload release-notes/);
   assert.match(out, /release-notes__manifest\.json/);
   assert.match(out, /release-notes__assets-index\.json/);
   assert.match(out, /release-notes__v9\.9\.9__hero\.webp/);
-  assert.match(out, /--repo happier-dev\/happier-assets --clobber/);
+  assert.ok(out.includes(`--repo ${productIdentity.githubRepo} --clobber`), out);
 });
 
 test('release notes asset publish skips gh when the generated bundle has no authored releases or assets', () => {

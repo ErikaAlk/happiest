@@ -24,6 +24,7 @@ import {
     STORY_DECK_MAX_CARDS,
 } from '../changelog/releaseNotes/storyDeckCardLimits';
 import { hasStoryDeckBundledImageAssetKey } from '../components/ui/storyDeck/storyDeckBundledAssetRegistry';
+import { RELEASE_NOTES_ASSETS_BASE_URL } from '../changelog/releaseNotes/releaseNotesAssetSource';
 
 const ROOT = path.resolve(__dirname, '../../');
 const RELEASES_DIR = path.join(ROOT, 'release-notes/releases');
@@ -407,7 +408,7 @@ function buildManifest(releases: AuthoredRelease[]): {
         latestReleaseId: sorted.length > 0 ? sorted[0].releaseId : null,
         generatedAt: new Date().toISOString(),
         assetBaseUrl: process.env.HAPPIER_RELEASE_NOTES_ASSET_BASE_URL
-            || 'https://github.com/happier-dev/happier-assets/releases/download/release-notes/',
+            || RELEASE_NOTES_ASSETS_BASE_URL,
         releases: sorted,
     };
 }
@@ -451,7 +452,7 @@ function main() {
     const releases = listAuthoredReleases();
     const generatedAt = new Date().toISOString();
     const assetBaseUrl = process.env.HAPPIER_RELEASE_NOTES_ASSET_BASE_URL
-        || 'https://github.com/happier-dev/happier-assets/releases/download/release-notes/';
+        || RELEASE_NOTES_ASSETS_BASE_URL;
 
     if (releases.length === 0) {
         console.warn('No authored releases found. Writing empty manifest.');

@@ -20,7 +20,7 @@ function hasActiveSetupIntent(): boolean {
  * Headless mount that runs once per cold launch:
  *   1. Seed release-notes seen-state migration so existing users do not get
  *      retroactive notes.
- *   2. Best-effort revalidate the remote manifest from `happier-assets`.
+ *   2. Best-effort revalidate the remote manifest from the product's `release-notes` GitHub release.
  *   3. Auto-show the release-notes story modal if the launch policy allows.
  *
  * Auto-show gates (per plan §1.3 #11):

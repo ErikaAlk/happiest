@@ -28,9 +28,10 @@ rewrites it.
    bundled poster via `localPosterAssetKey`. You may also provide `posterKey` as
    a remote poster fallback.
 5. Place remote video and fallback media files under `assets/<releaseId>/`.
-   Release workflows upload those files to
-   `happier-dev/happier-assets@release-notes`; bundled image/poster assets are
-   not uploaded and are not included in the remote asset index.
+   Release workflows do not upload them: upload them by hand to the
+   `release-notes` GitHub release of `ErikaAlk/happiest`, which the app reads
+   remote files from. Bundled image/poster assets are not uploaded and are not
+   included in the remote asset index.
 6. Optionally provide `media.mobile` or `media.desktop` overrides when a card
    needs different artwork or video per surface. Base media remains the fallback;
    tablet and desktop widths use the `desktop` override, phone-width sheets use

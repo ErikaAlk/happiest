@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @ts-check
 /**
- * Publish release-notes assets to `happier-dev/happier-assets` under the rolling
+ * Publish release-notes assets to this product's repository under the rolling
  * `release-notes` tag.
  *
  * Pre-conditions:
@@ -14,7 +14,7 @@
  *
  * Flags:
  *   --in-dir <path>          Default: dist/release-notes-assets
- *   --repo <owner/repo>      Default: happier-dev/happier-assets
+ *   --repo <owner/repo>      Default: the product repository (productIdentity.githubRepo)
  *   --tag <tag>              Default: release-notes
  *   --dry-run                Print commands without executing.
  */
@@ -23,6 +23,8 @@ import { execFileSync } from 'node:child_process';
 import { readFile, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 const REQUIRED_BUNDLE_FILES = Object.freeze([
     'release-notes__manifest.json',
@@ -87,7 +89,7 @@ async function main() {
     const { map } = parseFlags(process.argv.slice(2));
     const repoRoot = resolve(new URL('../../../..', import.meta.url).pathname);
     const inDir = resolve(map.get('in-dir') ?? join(repoRoot, 'dist/release-notes-assets'));
-    const repo = map.get('repo') ?? 'happier-dev/happier-assets';
+    const repo = map.get('repo') ?? productIdentity.githubRepo;
     const tag = map.get('tag') ?? 'release-notes';
     const dryRun = map.get('dry-run') === 'true';
 
