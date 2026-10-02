@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 const repoRoot = path.resolve(import.meta.dirname, '..', '..');
 
 function collectExpectedUiInstallScopeWorkspaces() {
@@ -97,7 +99,7 @@ test('apps/ui/eas.json defines internaldev profiles for OTA-native debug dev-cli
   assert.equal(internaldev?.env?.EXPO_UPDATES_CHANNEL, 'internaldev');
   assert.equal(internaldev?.env?.EXPO_APP_NAME, 'Happier (internal dev)');
   assert.equal(internaldev?.env?.EXPO_APP_BUNDLE_ID, 'dev.happier.app.dev.internal');
-  assert.equal(internaldev?.env?.EXPO_ANDROID_PACKAGE, 'dev.happier.app.internaldev');
+  assert.equal(internaldev?.env?.EXPO_ANDROID_PACKAGE, `${productIdentity.androidPackage}.internaldev`);
   assert.equal(internaldev?.env?.EXPO_APP_SCHEME, undefined);
   assert.equal(internaldev?.env?.HAPPIER_EXPO_DEVCLIENT_LAUNCH_MODE, 'most-recent');
   assert.equal(internaldev?.env?.HAPPIER_EXPO_DEVCLIENT_SILENT_LAUNCH, 'true');
@@ -108,7 +110,7 @@ test('apps/ui/eas.json defines internaldev profiles for OTA-native debug dev-cli
   assert.ok(internaldevDevClient, 'expected internaldev-dev-client build profile');
   assert.equal(internaldevDevClient.extends, 'internaldev');
   assert.equal(internaldevDevClient?.env?.EXPO_APP_BUNDLE_ID, 'dev.happier.app.dev.internal.devclient');
-  assert.equal(internaldevDevClient?.env?.EXPO_ANDROID_PACKAGE, 'dev.happier.app.internaldev.devclient');
+  assert.equal(internaldevDevClient?.env?.EXPO_ANDROID_PACKAGE, `${productIdentity.androidPackage}.internaldev.devclient`);
 
   const internaldevStore = build?.['internaldev-store'] ?? null;
   assert.equal(typeof internaldevStore, 'object');
@@ -121,7 +123,7 @@ test('apps/ui/eas.json defines internaldev profiles for OTA-native debug dev-cli
   assert.equal(internaldevStore?.env?.EXPO_UPDATES_CHANNEL, 'internaldev');
   assert.equal(internaldevStore?.env?.EXPO_APP_NAME, 'Happier (internal dev)');
   assert.equal(internaldevStore?.env?.EXPO_APP_BUNDLE_ID, 'dev.happier.app.dev.internal');
-  assert.equal(internaldevStore?.env?.EXPO_ANDROID_PACKAGE, 'dev.happier.app.internaldev');
+  assert.equal(internaldevStore?.env?.EXPO_ANDROID_PACKAGE, `${productIdentity.androidPackage}.internaldev`);
   assert.equal(internaldevStore?.env?.EXPO_APP_SCHEME, undefined);
 });
 

@@ -4,8 +4,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { createRequire } from 'node:module';
+
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 const repoRoot = path.resolve(import.meta.dirname, '..', '..', '..');
+const { EXPO_PROJECT_CONFIG } = createRequire(import.meta.url)(path.join(repoRoot, 'apps', 'ui', 'appProjectConfig.cjs'));
 
 test('prepares a dependency-free Android submit project from canonical app identity', () => {
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'happier-expo-submit-'));
@@ -27,11 +31,11 @@ test('prepares a dependency-free Android submit project from canonical app ident
     const app = JSON.parse(fs.readFileSync(path.join(outputDir, 'app.json'), 'utf8'));
     const eas = JSON.parse(fs.readFileSync(path.join(outputDir, 'eas.json'), 'utf8'));
     assert.deepEqual(app.expo, {
-      name: 'Happier (preview)',
-      slug: 'happier',
-      owner: 'happier-dev',
-      android: { package: 'dev.happier.app.preview' },
-      extra: { eas: { projectId: '2a550bd7-e4d2-4f59-ab47-dcb778775cee' } },
+      name: `${productIdentity.productName} (preview)`,
+      slug: EXPO_PROJECT_CONFIG.slug,
+      owner: EXPO_PROJECT_CONFIG.owner,
+      android: { package: `${productIdentity.androidPackage}.preview` },
+      extra: { eas: { projectId: EXPO_PROJECT_CONFIG.easProjectId } },
     });
     assert.deepEqual(eas, { submit: { preview: { android: { track: 'internal' } } } });
     assert.deepEqual(JSON.parse(fs.readFileSync(path.join(outputDir, 'package.json'), 'utf8')), {
@@ -93,7 +97,7 @@ test('static submit workspace normalizes the public dev profile to its canonical
     );
     const app = JSON.parse(fs.readFileSync(path.join(outputDir, 'app.json'), 'utf8'));
     const eas = JSON.parse(fs.readFileSync(path.join(outputDir, 'eas.json'), 'utf8'));
-    assert.equal(app.expo.android.package, 'dev.happier.app.publicdev');
+    assert.equal(app.expo.android.package, `${productIdentity.androidPackage}.publicdev`);
     assert.deepEqual(eas, {
       submit: { publicdev: { android: { track: 'internal', releaseStatus: 'draft' } } },
     });

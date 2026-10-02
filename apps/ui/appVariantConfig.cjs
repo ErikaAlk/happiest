@@ -1,9 +1,10 @@
 const path = require('node:path');
 
 // Keep this module dependency-free so it can run in GitHub Actions before `yarn install`.
-// We load the canonical release ring catalog from the checked-in CJS entrypoint.
-const releaseRings = require(path.resolve(__dirname, '..', '..', 'packages', 'release-runtime', 'releaseRings.cjs'));
-const { getReleaseRingCatalogEntry, normalizeReleaseRingId } = releaseRings;
+// We load the canonical release ring catalog and product identity from their checked-in CJS entrypoints.
+const releaseRuntimeDir = path.resolve(__dirname, '..', '..', 'packages', 'release-runtime');
+const { getReleaseRingCatalogEntry, normalizeReleaseRingId } = require(path.join(releaseRuntimeDir, 'releaseRings.cjs'));
+const { productIdentity } = require(path.join(releaseRuntimeDir, 'productIdentity.cjs'));
 
 function resolveLogicalVariantFromRing(ring) {
     if (ring.expoAppEnv === 'production') return 'production';
@@ -18,7 +19,7 @@ function buildRingBackedConfig(ringId, overrides) {
         logicalVariant: resolveLogicalVariantFromRing(ring),
         name: overrides.name,
         iosBundleId: overrides.iosBundleId,
-        androidPackage: overrides.androidPackage,
+        androidPackage: `${productIdentity.androidPackage}.${ringId}`,
         scheme: ring.appScheme,
         updatesChannel: ring.expoUpdatesChannel,
         featurePolicyEnv: ring.embeddedPolicyEnv,
@@ -33,7 +34,7 @@ function buildProductionConfig(overrides) {
         logicalVariant: 'production',
         name: overrides.name,
         iosBundleId: overrides.iosBundleId,
-        androidPackage: overrides.androidPackage,
+        androidPackage: productIdentity.androidPackage,
         scheme: ring.appScheme,
         updatesChannel: ring.expoUpdatesChannel,
         featurePolicyEnv: ring.embeddedPolicyEnv,
@@ -45,31 +46,26 @@ const APP_ENVIRONMENT_CONFIGS = {
     internaldev: buildRingBackedConfig('internaldev', {
         name: 'Happiest (internal dev)',
         iosBundleId: 'dev.happier.app.dev.internal',
-        androidPackage: 'dev.happier.app.internaldev',
         enableAssociatedDomains: false,
     }),
     internalpreview: buildRingBackedConfig('internalpreview', {
         name: 'Happiest (internal preview)',
         iosBundleId: 'dev.happier.app.internalpreview',
-        androidPackage: 'dev.happier.app.internalpreview',
         enableAssociatedDomains: false,
     }),
     publicdev: buildRingBackedConfig('publicdev', {
         name: 'Happiest (dev)',
         iosBundleId: 'dev.happier.app.publicdev',
-        androidPackage: 'dev.happier.app.publicdev',
         enableAssociatedDomains: false,
     }),
     preview: buildRingBackedConfig('preview', {
         name: 'Happiest (preview)',
         iosBundleId: 'dev.happier.app.preview',
-        androidPackage: 'dev.happier.app.preview',
         enableAssociatedDomains: false,
     }),
     production: buildProductionConfig({
         name: 'Happiest',
         iosBundleId: 'dev.happier.app',
-        androidPackage: 'dev.happier.app',
         enableAssociatedDomains: true,
     }),
 };

@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 import { buildMobileDevClientInstallInvocation } from './dev_client_install_invocation.mjs';
 
 test('buildMobileDevClientInstallInvocation forwards --port to mobile.mjs args', async () => {
@@ -34,7 +36,7 @@ test('buildMobileDevClientInstallInvocation sets EXPO_APP_SCHEME for dev-client 
 
   assert.equal(invocation.env.EXPO_APP_SCHEME, invocation.identity.scheme);
   assert.equal(invocation.env.EXPO_APP_BUNDLE_ID, 'dev.happier.app.dev.internal.devclient');
-  assert.equal(invocation.env.EXPO_ANDROID_PACKAGE, 'dev.happier.app.internaldev.devclient');
+  assert.equal(invocation.env.EXPO_ANDROID_PACKAGE, `${productIdentity.androidPackage}.internaldev.devclient`);
   assert.equal(
     invocation.env.EXPO_APP_SLUG,
     '',
@@ -52,10 +54,10 @@ test('buildMobileDevClientInstallInvocation selects public dev profile identitie
   assert.equal(invocation.profile, 'publicdev');
   assert.equal(invocation.identity.iosAppName, 'Happier (dev)');
   assert.equal(invocation.identity.iosBundleId, 'dev.happier.app.publicdev.devclient');
-  assert.equal(invocation.identity.androidPackage, 'dev.happier.app.publicdev.devclient');
+  assert.equal(invocation.identity.androidPackage, `${productIdentity.androidPackage}.publicdev.devclient`);
   assert.equal(invocation.identity.scheme, 'happier-dev');
   assert.equal(invocation.env.EXPO_APP_BUNDLE_ID, 'dev.happier.app.publicdev.devclient');
-  assert.equal(invocation.env.EXPO_ANDROID_PACKAGE, 'dev.happier.app.publicdev.devclient');
+  assert.equal(invocation.env.EXPO_ANDROID_PACKAGE, `${productIdentity.androidPackage}.publicdev.devclient`);
   assert.ok(invocation.nodeArgs.includes('--app-env=publicdev'), 'expected public dev profile app env');
   assert.ok(
     invocation.nodeArgs.includes('--ios-bundle-id=dev.happier.app.publicdev.devclient'),

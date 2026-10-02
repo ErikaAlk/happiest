@@ -1,11 +1,14 @@
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 const DEFAULT_APP_SCHEME = 'happier';
+const { androidPackage } = productIdentity;
 
 const APP_SCHEME_BY_APP_ID = new Map<string, string>([
-  ['dev.happier.app.internaldev', 'happier-internaldev'],
-  ['dev.happier.app.internaldev.devclient', 'happier-internaldev-devclient'],
+  [`${androidPackage}.internaldev`, 'happier-internaldev'],
+  [`${androidPackage}.internaldev.devclient`, 'happier-internaldev-devclient'],
   ['dev.happier.app.dev.internal.devclient', 'happier-internaldev'],
-  ['dev.happier.app.publicdev', 'happier-dev'],
-  ['dev.happier.app.publicdev.devclient', 'happier-dev-devclient'],
+  [`${androidPackage}.publicdev`, 'happier-dev'],
+  [`${androidPackage}.publicdev.devclient`, 'happier-dev-devclient'],
 ]);
 
 export function resolveMobileAppScheme(

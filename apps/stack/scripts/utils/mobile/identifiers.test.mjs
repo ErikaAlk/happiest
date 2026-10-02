@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 import {
   defaultDevClientIdentity,
   defaultStackReleaseIdentity,
@@ -32,7 +34,7 @@ test('defaultDevClientIdentity is stable and safe', () => {
   assert.equal(id.iosAppName, 'Happier (internal dev)');
   assert.equal(id.scheme, 'happier-internaldev');
   assert.equal(id.iosBundleId, 'dev.happier.app.dev.internal.devclient');
-  assert.equal(id.androidPackage, 'dev.happier.app.internaldev.devclient');
+  assert.equal(id.androidPackage, `${productIdentity.androidPackage}.internaldev.devclient`);
 });
 
 test('defaultDevClientIdentity supports the public dev profile', () => {
@@ -41,7 +43,7 @@ test('defaultDevClientIdentity supports the public dev profile', () => {
   assert.equal(id.iosAppName, 'Happier (dev)');
   assert.equal(id.scheme, 'happier-dev');
   assert.equal(id.iosBundleId, 'dev.happier.app.publicdev.devclient');
-  assert.equal(id.androidPackage, 'dev.happier.app.publicdev.devclient');
+  assert.equal(id.androidPackage, `${productIdentity.androidPackage}.publicdev.devclient`);
 });
 
 test('defaultDevClientIdentity accepts dev as a public dev profile alias', () => {

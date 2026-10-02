@@ -10,10 +10,10 @@ In the repo and in CI we also use internal variants for local development.
 
 | Variant | `APP_ENV` | iOS Bundle ID | Android Package | URL scheme | Use case |
 | --- | --- | --- | --- | --- | --- |
-| **Internal dev** | `development` (alias `internaldev`) | `dev.happier.app.dev.internal` | `dev.happier.app.internaldev` | `happier-internaldev` | Local development with hot reload |
-| **Public dev** | `publicdev` | `dev.happier.app.publicdev` | `dev.happier.app.publicdev` | `happier-dev` | Nightly public dev builds + OTA updates |
-| **Preview** | `preview` | `dev.happier.app.preview` | `dev.happier.app.preview` | `happier-preview` | Pre-release testing + OTA updates |
-| **Production** | `production` | `dev.happier.app` | `dev.happier.app` | `happier` | App Store / Play Store builds |
+| **Internal dev** | `development` (alias `internaldev`) | `dev.happier.app.dev.internal` | `click.erikaalk.happiest.internaldev` | `happier-internaldev` | Local development with hot reload |
+| **Public dev** | `publicdev` | `dev.happier.app.publicdev` | `click.erikaalk.happiest.publicdev` | `happier-dev` | Nightly public dev builds + OTA updates |
+| **Preview** | `preview` | `dev.happier.app.preview` | `click.erikaalk.happiest.preview` | `happier-preview` | Pre-release testing + OTA updates |
+| **Production** | `production` | `dev.happier.app` | `click.erikaalk.happiest` | `happier` | App Store / Play Store builds |
 
 ## Quick Start
 

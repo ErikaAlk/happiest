@@ -38,7 +38,11 @@ Product names, release titles and targets come from
 component catalog and is checked against them by
 `scripts/release/publish_binary_product_specs.contract.test.mjs`. Installer scripts, Tauri configs,
 Dockerfiles and workflows carry identity literals checked by
-`scripts/release/product_identity_literals.contract.test.mjs`.
+`scripts/release/product_identity_literals.contract.test.mjs`. The mobile app variants derive their
+Android application ids from the identity's `androidPackage` (`apps/ui/appVariantConfig.cjs`); the
+dev-client ids in `apps/ui/eas.json` are checked by the `ui_mobile_eas_*_profile` contract tests,
+and `apps/ui/sources/__tests__/config/googleServices.variantPackages.test.ts` checks that
+`apps/ui/google-services.json` registers every id the app is built with.
 
 Not published: npm packages, Homebrew formulae or casks, Docker images (the repository `Dockerfile`
 and `docker/dev-box/Dockerfile` download these releases and can be built locally), hstack binaries

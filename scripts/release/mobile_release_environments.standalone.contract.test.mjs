@@ -22,6 +22,7 @@ test('mobile-release-environments runs without node_modules (standalone repo che
   copyFileInto(tmpRoot, 'scripts/pipeline/expo/mobile-release-environments.mjs');
   copyFileInto(tmpRoot, 'apps/ui/appVariantConfig.cjs');
   copyFileInto(tmpRoot, 'packages/release-runtime/releaseRings.cjs');
+  copyFileInto(tmpRoot, 'packages/release-runtime/productIdentity.cjs');
 
   const probePath = path.join(tmpRoot, 'probe.mjs');
   fs.writeFileSync(

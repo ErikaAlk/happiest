@@ -114,6 +114,7 @@ console.log('ARGS=' + JSON.stringify(process.argv.slice(2)));
 console.log('RCT_METRO_PORT=' + (process.env.RCT_METRO_PORT ?? ''));
 console.log('EXPO_PACKAGER_PORT=' + (process.env.EXPO_PACKAGER_PORT ?? ''));
 console.log('EXPO_APP_BUNDLE_ID=' + (process.env.EXPO_APP_BUNDLE_ID ?? ''));
+console.log('APP_ENV=' + (process.env.APP_ENV ?? ''));
 console.log('EXPO_ANDROID_PACKAGE=' + (process.env.EXPO_ANDROID_PACKAGE ?? ''));
 process.exit(0);
 `,
@@ -162,10 +163,13 @@ process.exit(0);
       'com.happier.local.user.dev',
       `expected local iOS bundle id to stay isolated\nstdout:\n${res.stdout}\nstderr:\n${res.stderr}`
     );
+    // app.config.js derives the Android application id from APP_ENV (apps/ui/appVariantConfig.cjs),
+    // and every id it derives has a Firebase client, so hstack must not pin one of its own.
+    assert.equal(kv.APP_ENV, 'development', `expected APP_ENV to select the app variant\nstdout:\n${res.stdout}\nstderr:\n${res.stderr}`);
     assert.equal(
       kv.EXPO_ANDROID_PACKAGE,
-      'dev.happier.app.internaldev',
-      `expected Android package to stay on a Firebase-configured app id\nstdout:\n${res.stdout}\nstderr:\n${res.stderr}`
+      '',
+      `expected the Android package to be left to the app variant\nstdout:\n${res.stdout}\nstderr:\n${res.stderr}`
     );
     assert.equal(
       existsSync(staleAutolinkingEntryPoint),

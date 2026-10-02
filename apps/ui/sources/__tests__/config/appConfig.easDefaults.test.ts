@@ -5,7 +5,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
-const DEFAULT_EAS_PROJECT_ID = '2a550bd7-e4d2-4f59-ab47-dcb778775cee';
+const DEFAULT_EAS_PROJECT_ID = '971759a9-c24e-416f-933b-d114a003895a';
+const { androidPackage } = productIdentity;
 const DEFAULT_UPDATES_URL = `https://u.expo.dev/${DEFAULT_EAS_PROJECT_ID}`;
 
 function getUiDir(): string {
@@ -126,10 +127,10 @@ describe('app.config.js', () => {
         expect(exp.updates?.url).toBe(DEFAULT_UPDATES_URL);
         expect(exp.extra?.app?.variant).toBe('development');
         expect(exp.extra?.app?.identityVariant).toBe('internaldev');
-        expect(exp.owner).toBe('happier-dev');
-        expect(exp.slug).toBe('happier');
+        expect(exp.owner).toBe('erikaalk');
+        expect(exp.slug).toBe('happiest');
         expect(exp.ios?.bundleIdentifier).toBe('dev.happier.app.dev.internal');
-        expect(exp.android?.package).toBe('dev.happier.app.internaldev');
+        expect(exp.android?.package).toBe(`${androidPackage}.internaldev`);
         expect(exp.scheme).toBe('happier-internaldev');
     });
 
@@ -157,7 +158,7 @@ describe('app.config.js', () => {
         expect(exp.extra?.app?.identityVariant).toBe('publicdev');
         expect(exp.name).toBe('Happiest (dev)');
         expect(exp.ios?.bundleIdentifier).toBe('dev.happier.app.publicdev');
-        expect(exp.android?.package).toBe('dev.happier.app.publicdev');
+        expect(exp.android?.package).toBe(`${androidPackage}.publicdev`);
         expect(exp.scheme).toBe('happier-dev');
         expect(featurePolicyEnv).toBe('preview');
         expect(exp.updates?.requestHeaders?.['expo-channel-name']).toBe('dev');
@@ -170,18 +171,18 @@ describe('app.config.js', () => {
         });
 
         expect(exp.ios?.bundleIdentifier).toBe('com.happier.local.leeroy.dev');
-        expect(exp.android?.package).toBe('dev.happier.app.internaldev');
+        expect(exp.android?.package).toBe(`${androidPackage}.internaldev`);
     });
 
     it('uses explicit Android package overrides independently from iOS bundle id overrides', () => {
         const exp = withCleanEnv(() => {
             process.env.EXPO_APP_BUNDLE_ID = 'com.happier.local.leeroy.dev';
-            process.env.EXPO_ANDROID_PACKAGE = 'dev.happier.app.internaldev.devclient';
+            process.env.EXPO_ANDROID_PACKAGE = `${androidPackage}.internaldev.devclient`;
             return getPublicConfig();
         });
 
         expect(exp.ios?.bundleIdentifier).toBe('com.happier.local.leeroy.dev');
-        expect(exp.android?.package).toBe('dev.happier.app.internaldev.devclient');
+        expect(exp.android?.package).toBe(`${androidPackage}.internaldev.devclient`);
     });
 
     it('enables Android cleartext traffic by default through expo-build-properties so native manifests allow LAN/local HTTP relays', () => {
@@ -230,7 +231,7 @@ describe('app.config.js', () => {
         expect(exp.extra?.app?.identityVariant).toBe('internalpreview');
         expect(exp.name).toBe('Happiest (internal preview)');
         expect(exp.ios?.bundleIdentifier).toBe('dev.happier.app.internalpreview');
-        expect(exp.android?.package).toBe('dev.happier.app.internalpreview');
+        expect(exp.android?.package).toBe(`${androidPackage}.internalpreview`);
         expect(exp.scheme).toBe('happier-internalpreview');
         expect(featurePolicyEnv).toBe('preview');
         expect(exp.updates?.requestHeaders?.['expo-channel-name']).toBe('internalpreview');

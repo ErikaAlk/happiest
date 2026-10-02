@@ -362,14 +362,6 @@ const baseExpoConfig = {
             require("./modules/happier-hardware-keyboard-shortcuts/app.plugin.js"),
             androidReleaseShrinkerPlugin,
             [
-                "@sentry/react-native/expo",
-                {
-                    url: "https://sentry.io/",
-                    project: "happier-ui",
-                    organization: "happier-devs"
-                }
-            ],
-            [
                 "expo-router",
                 {
                     root: "./sources/app"

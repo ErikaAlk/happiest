@@ -52,6 +52,12 @@ export const productIdentity = {
    * `dev.happier.app`.
    */
   desktopAppIdentifier: 'click.erikaalk.happiest',
+  /**
+   * Android application id of the stable mobile app; every other app variant appends `.<variant>`
+   * and its dev client `.<variant>.devclient`. It names the installed app and its Firebase client,
+   * so it differs from upstream's `dev.happier.app` and both apps install side by side.
+   */
+  androidPackage: 'click.erikaalk.happiest',
 } as const;
 
 export type ProductIdentity = typeof productIdentity;

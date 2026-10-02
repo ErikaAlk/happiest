@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 describe('mobileMaestroRunner', () => {
   it('fails fast when the app is not installed on the target device', async () => {
@@ -56,6 +57,32 @@ describe('mobileMaestroRunner', () => {
     expect(runMaestro).not.toHaveBeenCalled();
     expect(startServerLight).not.toHaveBeenCalled();
     expect(startDevClientMetro).not.toHaveBeenCalled();
+  });
+
+  it('targets the product internal dev Android app when no app id is given', async () => {
+    const { runMobileMaestro } = await import('./mobileMaestroRunner');
+    const isAppInstalled = vi.fn(async () => false);
+
+    await expect(
+      runMobileMaestro(
+        {
+          argv: ['node', 'script', '--platform', 'android', '--flows', 'suites/mobile-e2e/flows'],
+          cwd: process.cwd(),
+          env: {
+            ...process.env,
+            HAPPIER_E2E_MOBILE_APP_ID: '',
+            HAPPIER_E2E_MOBILE_APP_INSTALL_CHECK_ATTEMPTS: '1',
+            MAESTRO_CLI_NO_ANALYTICS: '1',
+            HAPPIER_E2E_MOBILE_MANAGE_METRO: '0',
+          },
+        },
+        { runMaestro: vi.fn(async () => ({ exitCode: 0 })), isAppInstalled },
+      ),
+    ).rejects.toThrow(/not installed/i);
+
+    expect(isAppInstalled).toHaveBeenCalledWith(
+      expect.objectContaining({ platform: 'android', appId: `${productIdentity.androidPackage}.internaldev` }),
+    );
   });
 
   it('retries the install probe once before failing fast', async () => {
@@ -1246,7 +1273,7 @@ describe('mobileMaestroRunner', () => {
           '--flows',
           'suites/mobile-e2e/flows/F13.populatedRelayRestoreAndOpenSessionPerformance.yaml',
           '--appId',
-          'dev.happier.app.publicdev.devclient',
+          `${productIdentity.androidPackage}.publicdev.devclient`,
           '--serverUrl',
           'http://127.0.0.1:26050',
         ],

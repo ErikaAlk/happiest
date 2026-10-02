@@ -5,6 +5,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 const repoRoot = path.resolve(import.meta.dirname, '..', '..');
 
 const ENV_KEYS = [
@@ -109,7 +111,7 @@ test('expo ota update passes the canonical EAS build-profile env that affects fi
   assert.match(envLog, /^EXPO_UPDATES_CHANNEL=internaldev$/m);
   assert.match(envLog, /^EXPO_APP_NAME=Happier \(internal dev\)$/m);
   assert.ok(envLog.split('\n').includes('EXPO_APP_BUNDLE_ID=dev.happier.app.dev.internal'));
-  assert.ok(envLog.split('\n').includes('EXPO_ANDROID_PACKAGE=dev.happier.app.internaldev'));
+  assert.ok(envLog.split('\n').includes(`EXPO_ANDROID_PACKAGE=${productIdentity.androidPackage}.internaldev`));
   assert.match(envLog, /^EXPO_APP_SCHEME=happier-internaldev$/m);
   assert.match(envLog, /^HAPPIER_UI_KEEP_CONSOLE_IN_RELEASE=1$/m);
   assert.match(envLog, /^HAPPIER_EXPO_DEVCLIENT_LAUNCH_MODE=most-recent$/m);
@@ -148,7 +150,7 @@ test('expo ota update passes identity env for publicdev without forcing internal
   assert.match(envLog, /^EXPO_UPDATES_CHANNEL=dev$/m);
   assert.match(envLog, /^EXPO_APP_NAME=Happier \(dev\)$/m);
   assert.ok(envLog.split('\n').includes('EXPO_APP_BUNDLE_ID=dev.happier.app.publicdev'));
-  assert.ok(envLog.split('\n').includes('EXPO_ANDROID_PACKAGE=dev.happier.app.publicdev'));
+  assert.ok(envLog.split('\n').includes(`EXPO_ANDROID_PACKAGE=${productIdentity.androidPackage}.publicdev`));
   assert.match(envLog, /^EXPO_APP_SCHEME=happier-dev$/m);
   assert.match(envLog, /^HAPPIER_UI_KEEP_CONSOLE_IN_RELEASE=1$/m);
   assert.doesNotMatch(envLog, /^HAPPIER_EXPO_DEVCLIENT_LAUNCH_MODE=/m);

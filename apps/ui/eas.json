@@ -35,7 +35,7 @@
         "EXPO_UPDATES_CHANNEL": "internaldev",
         "EXPO_APP_NAME": "Happier (internal dev)",
         "EXPO_APP_BUNDLE_ID": "dev.happier.app.dev.internal",
-        "EXPO_ANDROID_PACKAGE": "dev.happier.app.internaldev",
+        "EXPO_ANDROID_PACKAGE": "click.erikaalk.happiest.internaldev",
         "HAPPIER_EXPO_DEVCLIENT_LAUNCH_MODE": "most-recent",
         "HAPPIER_EXPO_DEVCLIENT_SILENT_LAUNCH": "true",
         "HAPPIER_EXPO_USE_NATIVE_DEBUG": "true",
@@ -46,7 +46,7 @@
       "extends": "internaldev",
       "env": {
         "EXPO_APP_BUNDLE_ID": "dev.happier.app.dev.internal.devclient",
-        "EXPO_ANDROID_PACKAGE": "dev.happier.app.internaldev.devclient",
+        "EXPO_ANDROID_PACKAGE": "click.erikaalk.happiest.internaldev.devclient",
         "EXPO_APP_SCHEME": "happier-internaldev-devclient"
       }
     },
@@ -62,7 +62,7 @@
         "EXPO_UPDATES_CHANNEL": "internaldev",
         "EXPO_APP_NAME": "Happier (internal dev)",
         "EXPO_APP_BUNDLE_ID": "dev.happier.app.dev.internal",
-        "EXPO_ANDROID_PACKAGE": "dev.happier.app.internaldev"
+        "EXPO_ANDROID_PACKAGE": "click.erikaalk.happiest.internaldev"
       }
     },
     "internalpreview": {
@@ -145,7 +145,7 @@
         "EXPO_UPDATES_CHANNEL": "dev",
         "EXPO_APP_NAME": "Happier (dev)",
         "EXPO_APP_BUNDLE_ID": "dev.happier.app.publicdev.devclient",
-        "EXPO_ANDROID_PACKAGE": "dev.happier.app.publicdev.devclient",
+        "EXPO_ANDROID_PACKAGE": "click.erikaalk.happiest.publicdev.devclient",
         "EXPO_APP_SCHEME": "happier-dev-devclient",
         "HAPPIER_EXPO_DEVCLIENT_LAUNCH_MODE": "most-recent",
         "HAPPIER_EXPO_DEVCLIENT_SILENT_LAUNCH": "true"

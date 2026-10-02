@@ -1,6 +1,7 @@
 import { join as joinPath, resolve as resolvePath } from 'node:path';
 import { createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { spawn, spawnSync } from 'node:child_process';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { createRunDirs } from '../runDir';
 import { resolveExpoDevClientDeepLink } from '../mobile/expoDevClientDeepLink';
@@ -701,7 +702,7 @@ export async function runMobileMaestro(
   const appId =
     (parsed.appId ? parsed.appId.trim() : '') ||
     (String(params.env.HAPPIER_E2E_MOBILE_APP_ID ?? '').trim()) ||
-    'dev.happier.app.internaldev';
+    `${productIdentity.androidPackage}.internaldev`;
   const platform = parsed.platform ? parsed.platform.trim() : '';
   const mobilePlatform = platform === 'android' || platform === 'ios' ? platform : null;
   const skipAppInstallCheck =

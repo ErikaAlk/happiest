@@ -16,6 +16,7 @@ const productIdentity = {
   systemDirName: 'happiest',
   relayDefaultPort: 3015,
   desktopAppIdentifier: 'click.erikaalk.happiest',
+  androidPackage: 'click.erikaalk.happiest',
 };
 
 module.exports = { productIdentity };

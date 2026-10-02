@@ -4,6 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 const repoRoot = path.resolve(import.meta.dirname, '..', '..');
 
 test('apps/ui/eas.json defines publicdev profiles for the public nightly dev lane', () => {
@@ -53,7 +55,7 @@ test('apps/ui/eas.json defines publicdev profiles for the public nightly dev lan
   assert.equal(publicdevDevClient?.env?.EXPO_UPDATES_CHANNEL, 'dev');
   assert.equal(publicdevDevClient?.env?.EXPO_APP_NAME, 'Happier (dev)');
   assert.equal(publicdevDevClient?.env?.EXPO_APP_BUNDLE_ID, 'dev.happier.app.publicdev.devclient');
-  assert.equal(publicdevDevClient?.env?.EXPO_ANDROID_PACKAGE, 'dev.happier.app.publicdev.devclient');
+  assert.equal(publicdevDevClient?.env?.EXPO_ANDROID_PACKAGE, `${productIdentity.androidPackage}.publicdev.devclient`);
   assert.equal(publicdevDevClient?.env?.EXPO_APP_SCHEME, 'happier-dev-devclient');
   assert.equal(publicdevDevClient?.env?.HAPPIER_EXPO_USE_NATIVE_DEBUG, undefined);
   assert.equal(publicdevDevClient?.env?.EX_UPDATES_NATIVE_DEBUG, undefined);

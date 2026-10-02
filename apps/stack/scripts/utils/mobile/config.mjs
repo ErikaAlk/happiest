@@ -5,19 +5,9 @@ export function resolveMobileExpoConfig({ env = process.env } = {}) {
   const defaultLocalBundleId = `com.happier.local.${user}.dev`;
 
   const appEnv = env.APP_ENV ?? env.HAPPIER_STACK_APP_ENV ?? 'development';
-  const androidPackagesByAppEnv = {
-    development: 'dev.happier.app.internaldev',
-    internaldev: 'dev.happier.app.internaldev',
-    internalpreview: 'dev.happier.app.internalpreview',
-    publicdev: 'dev.happier.app.publicdev',
-    preview: 'dev.happier.app.preview',
-    production: 'dev.happier.app',
-  };
-  const androidPackage =
-    env.HAPPIER_STACK_ANDROID_PACKAGE ??
-    env.EXPO_ANDROID_PACKAGE ??
-    androidPackagesByAppEnv[String(appEnv).trim().toLowerCase()] ??
-    androidPackagesByAppEnv.development;
+  // Without an explicit package, app.config.js derives the Android application id from APP_ENV
+  // (apps/ui/appVariantConfig.cjs), which is the id the Firebase config registers.
+  const androidPackage = env.HAPPIER_STACK_ANDROID_PACKAGE ?? env.EXPO_ANDROID_PACKAGE ?? '';
   // Prefer stack-scoped config, but also support generic Expo build env vars so users can
   // drive mobile identity purely via stack env files without learning hstack-specific keys.
   const iosAppName = (env.HAPPIER_STACK_IOS_APP_NAME ?? env.EXPO_APP_NAME ?? '').toString();

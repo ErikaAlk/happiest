@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "427065718939",
-    "project_id": "happier-4a4fd",
-    "storage_bucket": "happier-4a4fd.firebasestorage.app"
+    "project_number": "399400006742",
+    "project_id": "happiest-a0f70",
+    "storage_bucket": "happiest-a0f70.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:427065718939:android:4f30a784735abfe97aee3e",
+        "mobilesdk_app_id": "1:399400006742:android:d34344c420f8d53903b7f7",
         "android_client_info": {
-          "package_name": "dev.happier.app"
+          "package_name": "click.erikaalk.happiest"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC2umIeyGh-dCBrBhB3p2Z7FTjMCzqwUag"
+          "current_key": "AIzaSyDZYJIExlUROeVXFPXy5VCoKfjoGlS2GPE"
         }
       ],
       "services": {
@@ -26,15 +26,15 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:427065718939:android:d95397b56dcecbe17aee3e",
+        "mobilesdk_app_id": "1:399400006742:android:f4deb9f105b42f5f03b7f7",
         "android_client_info": {
-          "package_name": "dev.happier.app.internaldev"
+          "package_name": "click.erikaalk.happiest.internaldev"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC2umIeyGh-dCBrBhB3p2Z7FTjMCzqwUag"
+          "current_key": "AIzaSyDZYJIExlUROeVXFPXy5VCoKfjoGlS2GPE"
         }
       ],
       "services": {
@@ -45,15 +45,15 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:427065718939:android:d95397b56dcecbe17aee3e",
+        "mobilesdk_app_id": "1:399400006742:android:540c0bc7a59734e603b7f7",
         "android_client_info": {
-          "package_name": "dev.happier.app.internaldev.devclient"
+          "package_name": "click.erikaalk.happiest.internaldev.devclient"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC2umIeyGh-dCBrBhB3p2Z7FTjMCzqwUag"
+          "current_key": "AIzaSyDZYJIExlUROeVXFPXy5VCoKfjoGlS2GPE"
         }
       ],
       "services": {
@@ -64,15 +64,15 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:427065718939:android:fc6fcb803976fb987aee3e",
+        "mobilesdk_app_id": "1:399400006742:android:97817240b46ede0303b7f7",
         "android_client_info": {
-          "package_name": "dev.happier.app.preview"
+          "package_name": "click.erikaalk.happiest.internalpreview"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC2umIeyGh-dCBrBhB3p2Z7FTjMCzqwUag"
+          "current_key": "AIzaSyDZYJIExlUROeVXFPXy5VCoKfjoGlS2GPE"
         }
       ],
       "services": {
@@ -83,15 +83,15 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:427065718939:android:fc6fcb803976fb987aee3e",
+        "mobilesdk_app_id": "1:399400006742:android:88856df87d56222903b7f7",
         "android_client_info": {
-          "package_name": "dev.happier.app.internalpreview"
+          "package_name": "click.erikaalk.happiest.preview"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC2umIeyGh-dCBrBhB3p2Z7FTjMCzqwUag"
+          "current_key": "AIzaSyDZYJIExlUROeVXFPXy5VCoKfjoGlS2GPE"
         }
       ],
       "services": {
@@ -102,15 +102,15 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:427065718939:android:c44eecd728ca4f997aee3e",
+        "mobilesdk_app_id": "1:399400006742:android:a3c2e8ef6b70da9d03b7f7",
         "android_client_info": {
-          "package_name": "dev.happier.app.publicdev"
+          "package_name": "click.erikaalk.happiest.publicdev"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC2umIeyGh-dCBrBhB3p2Z7FTjMCzqwUag"
+          "current_key": "AIzaSyDZYJIExlUROeVXFPXy5VCoKfjoGlS2GPE"
         }
       ],
       "services": {
@@ -121,15 +121,15 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:427065718939:android:fc6fcb803976fb987aee3e",
+        "mobilesdk_app_id": "1:399400006742:android:0806fadc200b98d503b7f7",
         "android_client_info": {
-          "package_name": "dev.happier.app.publicdev.devclient"
+          "package_name": "click.erikaalk.happiest.publicdev.devclient"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC2umIeyGh-dCBrBhB3p2Z7FTjMCzqwUag"
+          "current_key": "AIzaSyDZYJIExlUROeVXFPXy5VCoKfjoGlS2GPE"
         }
       ],
       "services": {

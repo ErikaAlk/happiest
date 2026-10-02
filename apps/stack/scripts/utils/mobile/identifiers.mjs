@@ -1,3 +1,5 @@
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 function sanitizeToken(raw, { allowDots = false } = {}) {
   const s = (raw ?? '').toString().trim().toLowerCase();
   const re = allowDots ? /[^a-z0-9.-]+/g : /[^a-z0-9-]+/g;
@@ -38,7 +40,7 @@ const DEV_CLIENT_IDENTITIES = Object.freeze({
     appEnv: 'internaldev',
     iosAppName: 'Happier (internal dev)',
     iosBundleId: 'dev.happier.app.dev.internal.devclient',
-    androidPackage: 'dev.happier.app.internaldev.devclient',
+    androidPackage: `${productIdentity.androidPackage}.internaldev.devclient`,
     scheme: 'happier-internaldev',
     easBuildProfile: 'internaldev-dev-client',
   }),
@@ -47,7 +49,7 @@ const DEV_CLIENT_IDENTITIES = Object.freeze({
     appEnv: 'publicdev',
     iosAppName: 'Happier (dev)',
     iosBundleId: 'dev.happier.app.publicdev.devclient',
-    androidPackage: 'dev.happier.app.publicdev.devclient',
+    androidPackage: `${productIdentity.androidPackage}.publicdev.devclient`,
     scheme: 'happier-dev',
     easBuildProfile: 'publicdev-dev-client',
   }),
