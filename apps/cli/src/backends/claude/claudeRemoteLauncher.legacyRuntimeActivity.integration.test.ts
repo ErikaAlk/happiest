@@ -11,12 +11,15 @@ import type { SessionRuntimeActivityContributionHandle } from '@/session/runtime
 import type { SessionRuntimeActivitySnapshot } from '@happier-dev/protocol';
 import { AccountSettingsSchema } from '@happier-dev/protocol';
 
+import type { MessageBuffer } from '@/ui/ink/messageBuffer';
+
 import type { EnhancedMode } from './loop';
 import { claudeRemoteLauncher } from './claudeRemoteLauncher';
 import { hashClaudeEnhancedModeForQueue } from './remote/modeHash';
 import { Session } from './session';
 
 const mockQuery = vi.hoisted(() => vi.fn());
+const mockInkRender = vi.hoisted(() => vi.fn());
 const mockClaudeRemote = vi.hoisted(() => vi.fn());
 const mockClaudeRemoteAgentSdk = vi.hoisted(() => vi.fn());
 const mockRunClaudeUnifiedTerminalSession = vi.hoisted(() => vi.fn());
@@ -47,6 +50,12 @@ vi.mock('./unifiedTerminal/runClaudeUnifiedTerminalSession', async (importOrigin
   const actual = await importOriginal<typeof import('./unifiedTerminal/runClaudeUnifiedTerminalSession')>();
   return { ...actual, runClaudeUnifiedTerminalSession: mockRunClaudeUnifiedTerminalSession };
 });
+
+// Terminal drawing boundary: capture the display the launcher mounts instead of drawing it.
+vi.mock('ink', async (importOriginal) => ({
+  ...await importOriginal<typeof import('ink')>(),
+  render: mockInkRender,
+}));
 
 vi.mock('@/runtime/js/ensureJavaScriptRuntimeExecutable', () => ({
   ensureJavaScriptRuntimeExecutable: vi.fn(async () => '/managed/js-runtime'),
@@ -573,4 +582,59 @@ describe.sequential('claudeRemoteLauncher legacy Runtime Activity subscriber', (
       ]));
     }
   }, 60_000);
+});
+
+describe.sequential('claudeRemoteLauncher terminal display', () => {
+  const originalStdinIsTTY = process.stdin.isTTY;
+  const originalStdoutIsTTY = process.stdout.isTTY;
+  const originalSetRawMode = (process.stdin as { setRawMode?: unknown }).setRawMode;
+
+  afterEach(() => {
+    Object.defineProperty(process.stdin, 'isTTY', { value: originalStdinIsTTY, configurable: true });
+    Object.defineProperty(process.stdout, 'isTTY', { value: originalStdoutIsTTY, configurable: true });
+    Object.defineProperty(process.stdin, 'setRawMode', { value: originalSetRawMode, configurable: true, writable: true });
+    process.stdin.pause();
+  });
+
+  it('shows each prompt it takes from the queue alongside the replies', async () => {
+    Object.defineProperty(process.stdin, 'isTTY', { value: true, configurable: true });
+    Object.defineProperty(process.stdout, 'isTTY', { value: true, configurable: true });
+    Object.defineProperty(process.stdin, 'setRawMode', { value: vi.fn(), configurable: true, writable: true });
+    mockInkRender.mockImplementation(() => ({
+      unmount: vi.fn(),
+      rerender: vi.fn(),
+      clear: vi.fn(),
+      cleanup: vi.fn(),
+      waitUntilExit: async () => {},
+    }));
+    const { session, switchHandlerReady } = createHarness();
+    const promptTaken = createDeferred<void>();
+    const finishProvider = createDeferred<void>();
+    mockClaudeRemoteAgentSdk.mockImplementation(async (opts: Readonly<{
+      nextMessage: () => Promise<Readonly<{ message: string }> | null>;
+    }>) => {
+      await opts.nextMessage();
+      promptTaken.resolve(undefined);
+      await finishProvider.promise;
+    });
+    session.queue.push(
+      'what is the code word',
+      { permissionMode: 'default', claudeRemoteAgentSdkEnabled: true, claudeUnifiedTerminalEnabled: false },
+      { userMessageLocalId: 'local-display' },
+    );
+
+    const launcher = claudeRemoteLauncher(session);
+    const switchHandler = await switchHandlerReady;
+    try {
+      await promptTaken.promise;
+      const display = mockInkRender.mock.calls[0]?.[0] as { props: { messageBuffer: MessageBuffer } } | undefined;
+      expect(display?.props.messageBuffer.getMessages()).toEqual(expect.arrayContaining([
+        expect.objectContaining({ type: 'user', content: expect.stringContaining('what is the code word') }),
+      ]));
+    } finally {
+      const switching = Promise.resolve(switchHandler({ to: 'local' }));
+      finishProvider.resolve(undefined);
+      await Promise.all([switching, session.cleanup(), launcher]);
+    }
+  });
 });

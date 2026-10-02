@@ -73,7 +73,6 @@ describe('createCodexRemoteTerminalUi', () => {
       stdout: NodeJS.WriteStream;
     } = {
       messageBuffer: new MessageBuffer(),
-      hasTTY: false,
       surface: 'static',
       stdin: asReadStream(stdin),
       stdout: asWriteStream(stdout),

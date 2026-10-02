@@ -34,15 +34,28 @@ describe('resolveCodexStartingMode', () => {
     ).toBe('local');
   });
 
-  it('forces remote when started by daemon even with an explicit local override', () => {
+  it('forces remote when started by daemon outside a Windows window even with an explicit local override', () => {
     expect(
       resolveCodexStartingMode({
         explicitStartingMode: 'local',
         startedBy: 'daemon',
+        terminalMode: 'plain',
         hasTtyForLocal: true,
         localControlEnabled: true,
       }),
     ).toBe('remote');
+  });
+
+  it.each(['windows_console', 'windows_terminal'])('honors the daemon starting a %s window in local mode', (terminalMode) => {
+    expect(
+      resolveCodexStartingMode({
+        explicitStartingMode: 'local',
+        startedBy: 'daemon',
+        terminalMode,
+        hasTtyForLocal: true,
+        localControlEnabled: true,
+      }),
+    ).toBe('local');
   });
 
   it('defaults to remote when started by daemon', () => {

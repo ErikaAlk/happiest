@@ -26,3 +26,20 @@ export function resolveWindowsRemoteSessionLaunchMode(params: {
 }
 
 export const resolveWindowsRemoteSessionConsoleMode = resolveWindowsRemoteSessionLaunchMode;
+
+/**
+ * The starting mode of a session runner the daemon spawns outside tmux.
+ *
+ * A runner opened in a visible window starts in local mode, so the window shows the agent's own
+ * interface with the conversation so far and the user can continue there, as with a session started
+ * from a terminal; a message from another device switches it to remote mode. When the spawn carries
+ * input (a new session's first prompt or goal), the runner starts in remote mode, which runs that
+ * input at once. A hidden runner has no window and always starts in remote mode.
+ */
+export function resolveDaemonRunnerStartingMode(params: {
+  launchMode: WindowsRemoteSessionLaunchMode;
+  carriesInitialInput: boolean;
+}): 'local' | 'remote' {
+  const opensWindow = params.launchMode === 'console' || params.launchMode === 'windows_terminal';
+  return opensWindow && !params.carriesInitialInput ? 'local' : 'remote';
+}

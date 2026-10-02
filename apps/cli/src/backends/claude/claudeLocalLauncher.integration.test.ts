@@ -147,6 +147,7 @@ function hookWithTranscript(transcriptPath: string): SessionFoundHookData {
 function createLocalHarness(options?: {
   metadataSnapshot?: MetadataSnapshot;
   providerTasks?: NonNullable<ConstructorParameters<typeof Session>[0]['runtimeActivityContributions']>['providerTasks'];
+  startedBy?: 'daemon' | 'terminal';
 }): LocalHarness {
   const switchDeferred = createDeferred<RpcHandler>();
   const abortDeferred = createDeferred<RpcHandler>();
@@ -205,6 +206,7 @@ function createLocalHarness(options?: {
     messageQueue: new MessageQueue2<EnhancedMode>(() => 'mode'),
     onModeChange: () => {},
     hookSettingsPath: '/tmp/hooks.json',
+    startedBy: options?.startedBy,
     runtimeActivityContributions: options?.providerTasks
       ? { providerTasks: options.providerTasks }
       : undefined,
@@ -452,6 +454,30 @@ describe('claudeLocalLauncher', () => {
     mockClaudeLocal.mockImplementationOnce(async () => {});
 
     const result = await claudeLocalLauncher(session);
+    expect(result).toEqual({ type: 'exit', code: 0 });
+  });
+
+  it('hands input already waiting to remote mode instead of opening Claude in a daemon-opened window', async () => {
+    const { session, client } = createLocalHarness({ startedBy: 'daemon' });
+    client.peekPendingMessageQueueV2Count = vi.fn().mockResolvedValue(1);
+
+    const { claudeLocalLauncher } = await import('./claudeLocalLauncher');
+    const result = await claudeLocalLauncher(session);
+
+    expect(result).toEqual({ type: 'switch' });
+    expect(mockClaudeLocal).not.toHaveBeenCalled();
+    expect(client.discardPendingMessageQueueV2All).not.toHaveBeenCalled();
+  });
+
+  it('opens Claude in a daemon-opened window when no input is waiting', async () => {
+    const { session, client } = createLocalHarness({ startedBy: 'daemon' });
+    client.peekPendingMessageQueueV2Count = vi.fn().mockResolvedValue(0);
+    mockClaudeLocal.mockImplementationOnce(async () => {});
+
+    const { claudeLocalLauncher } = await import('./claudeLocalLauncher');
+    const result = await claudeLocalLauncher(session);
+
+    expect(mockClaudeLocal).toHaveBeenCalledTimes(1);
     expect(result).toEqual({ type: 'exit', code: 0 });
   });
 

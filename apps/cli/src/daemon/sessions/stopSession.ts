@@ -15,6 +15,7 @@ import {
   executeTerminalHostDisposition,
 } from '@/terminal/attachment/terminalHostDisposition';
 import { buildLegacyTerminalAttachmentHostHandle } from '@/terminal/attachment/legacyTerminalAttachmentHandle';
+import { isWindowsHostedTerminalMode } from '@/terminal/runtime/terminalConfig';
 import { evaluateTerminalHostLivenessForRecovery } from '@/integrations/terminalHost/livenessPolicy';
 import { configuration } from '@/configuration';
 import { killProcessTree } from '@/agent/runtime/process/killProcessTree';
@@ -477,6 +478,30 @@ export function createStopSession(params: Readonly<{
       });
       if (!safe) {
         logPidReuseRefusal(`[DAEMON RUN] Refusing to SIGTERM PID ${pid} for session ${normalizedSessionId} (PID reuse safety)`);
+        continue;
+      }
+
+      // A runner the daemon opened in a Windows window has no child handle here. SIGTERM on Windows
+      // ends only the runner, and the agent it runs in local mode would stay attached to the window.
+      if (process.platform === 'win32' && isWindowsHostedTerminalMode(session.hostedTerminal?.mode)) {
+        recordTerminalHostKillAudit({
+          actor: 'daemon.stop-session',
+          reason: 'stop-session',
+          sessionId: normalizedSessionId,
+          runnerPid: pid,
+          zellijName: null,
+          signal: 'SIGTERM',
+          callSite: 'daemon.sessions.stopSession.pid',
+        });
+        const result = spawnSync('taskkill', ['/F', '/T', '/PID', String(pid)], { stdio: 'ignore' });
+        if ((result.status ?? 1) !== 0) {
+          logger.debug(`[DAEMON RUN] taskkill failed for Windows-hosted session ${normalizedSessionId} (pid=${pid})`);
+          continue;
+        }
+        session.stopRequestedAtMs = Date.now();
+        logger.debug(`[DAEMON RUN] taskkill requested for Windows-hosted session process tree ${normalizedSessionId} (pid=${pid})`);
+        stoppedAny = true;
+        signaledPids.push(pid);
         continue;
       }
 

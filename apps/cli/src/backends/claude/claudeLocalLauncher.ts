@@ -392,6 +392,16 @@ export async function claudeLocalLauncher(
             }
         }
 
+        // The daemon opens a runner in local mode only to show Claude in the runner's window. A message
+        // already waiting (one that resumed the session) is the user's, and remote mode runs it.
+        if (remoteSwitchingEnabled && entry === 'initial' && session.startedBy === 'daemon') {
+            const waiting = session.queue.size() > 0
+                || await session.client.peekPendingMessageQueueV2Count({ reconcileWhenEmpty: 'force', reason: 'manual-check' }) > 0;
+            if (waiting) {
+                return { type: 'switch' };
+            }
+        }
+
         pendingQueueWatcher = remoteSwitchingEnabled ? startLocalPendingQueueRemoteSwitchWatcher({
             peekPendingCount: async () => {
                 const lifecycleSnapshot = turnLifecycle.snapshot();

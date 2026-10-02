@@ -1,6 +1,20 @@
 import { describe, expect, it } from 'vitest';
 
-import { resolveWindowsRemoteSessionLaunchMode } from './windowsSessionConsoleMode';
+import { resolveDaemonRunnerStartingMode, resolveWindowsRemoteSessionLaunchMode } from './windowsSessionConsoleMode';
+
+describe('resolveDaemonRunnerStartingMode', () => {
+  it.each(['console', 'windows_terminal'] as const)('opens a %s window in local mode when the spawn carries no input', (launchMode) => {
+    expect(resolveDaemonRunnerStartingMode({ launchMode, carriesInitialInput: false })).toBe('local');
+  });
+
+  it.each(['console', 'windows_terminal'] as const)('runs the first prompt of a %s window in remote mode', (launchMode) => {
+    expect(resolveDaemonRunnerStartingMode({ launchMode, carriesInitialInput: true })).toBe('remote');
+  });
+
+  it('keeps hidden runners in remote mode', () => {
+    expect(resolveDaemonRunnerStartingMode({ launchMode: 'hidden', carriesInitialInput: false })).toBe('remote');
+  });
+});
 
 describe('resolveWindowsRemoteSessionLaunchMode', () => {
   it('defaults to hidden on non-Windows platforms', () => {

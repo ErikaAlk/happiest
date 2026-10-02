@@ -38,6 +38,7 @@ import { startOfflineReconnection, connectionState } from '@/api/offline/serverC
 import { claudeLocal } from '@/backends/claude/claudeLocal';
 import { createSessionScanner } from '@/backends/claude/utils/sessionScanner';
 import type { TerminalRuntimeFlags } from '@/terminal/runtime/terminalRuntimeFlags';
+import { isWindowsHostedTerminalMode } from '@/terminal/runtime/terminalConfig';
 import { buildTerminalMetadataFromRuntimeFlags } from '@/terminal/runtime/terminalMetadata';
 import { persistTerminalAttachmentInfoIfNeeded, reportSessionToDaemonIfRunning, sendTerminalFallbackMessageIfNeeded } from '@/agent/runtime/startupSideEffects';
 import { applyStartupMetadataUpdateToSession, buildModelOverride, buildPermissionModeOverride } from '@/agent/runtime/startupMetadataUpdate';
@@ -283,9 +284,14 @@ export async function runClaude(credentials: Credentials, options: StartOptions 
     logger.debugLargeJson('[START] Happier process started', getEnvironmentInfo());
     logger.debug(`[START] Options: startedBy=${options.startedBy}, startingMode=${options.startingMode}`);
 
-    // Validate daemon spawn requirements - fail fast on invalid config
-    if (options.startedBy === 'daemon' && options.startingMode === 'local') {
-        throw new Error('Daemon-spawned sessions cannot use local/interactive mode. Use --happy-starting-mode remote or spawn sessions directly from terminal.');
+    // Validate daemon spawn requirements - fail fast on invalid config. Local mode needs a window
+    // of its own, which the daemon gives only a runner opened in a Windows console or Windows Terminal.
+    if (
+        options.startedBy === 'daemon'
+        && options.startingMode === 'local'
+        && !isWindowsHostedTerminalMode(options.terminalRuntime?.mode)
+    ) {
+        throw new Error('Daemon-spawned sessions can use local mode only in a Windows console or Windows Terminal window. Use --happy-starting-mode remote or spawn sessions directly from terminal.');
     }
 
     // Set backend for offline warnings (before any API calls)

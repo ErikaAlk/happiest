@@ -1,3 +1,5 @@
+import { isWindowsHostedTerminalMode } from '@/terminal/runtime/terminalConfig';
+
 export type RemoteModeConfirmation = 'exit' | 'switch' | null;
 export type RemoteModeActionInProgress = 'exiting' | 'switching' | null;
 
@@ -33,7 +35,7 @@ export function resolveRemoteModeControlSurface(params: Readonly<{
   terminalMode?: string | null;
 }>): RemoteModeControlSurface {
   if (!params.stdoutIsTTY || !params.stdinIsTTY) return 'none';
-  if (params.startedBy === 'daemon') {
+  if (params.startedBy === 'daemon' && !isWindowsHostedTerminalMode(params.terminalMode)) {
     return params.terminalMode === 'tmux' ? 'static' : 'none';
   }
   return 'ink';

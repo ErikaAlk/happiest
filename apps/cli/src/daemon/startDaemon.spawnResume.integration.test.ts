@@ -608,7 +608,8 @@ vi.mock('./connectedServices/recovery/providerActivityProofRecorder', async (imp
   };
 });
 
-vi.mock('./platform/windows/windowsSessionConsoleMode', () => ({
+vi.mock('./platform/windows/windowsSessionConsoleMode', async (importOriginal) => ({
+  ...await importOriginal<typeof import('./platform/windows/windowsSessionConsoleMode')>(),
   resolveWindowsRemoteSessionConsoleMode: vi.fn(() => 'hidden'),
 }));
 
@@ -5897,7 +5898,7 @@ describe('startDaemon spawn resume wiring (integration)', () => {
 
       expect(startHappySessionInVisibleWindowsConsole).toHaveBeenCalledWith(expect.objectContaining({
         filePath: 'node',
-        args: expect.arrayContaining([immutableEntrypoint, 'codex', '--happy-starting-mode', 'remote']),
+        args: expect.arrayContaining([immutableEntrypoint, 'codex', '--happy-starting-mode', 'local']),
         workingDirectory: '/tmp',
         env: expect.objectContaining({ HAPPIER_TEST_ADMITTED_CLOSURE: '0123456789abcdef' }),
       }));
@@ -5974,7 +5975,7 @@ describe('startDaemon spawn resume wiring (integration)', () => {
 
       expect(startHappySessionInWindowsTerminal).toHaveBeenCalledWith(expect.objectContaining({
         filePath: 'node',
-        args: expect.arrayContaining([immutableEntrypoint, 'codex', '--happy-starting-mode', 'remote']),
+        args: expect.arrayContaining([immutableEntrypoint, 'codex', '--happy-starting-mode', 'local']),
         workingDirectory: '/tmp',
         env: expect.objectContaining({ HAPPIER_TEST_ADMITTED_CLOSURE: 'fedcba9876543210' }),
       }));

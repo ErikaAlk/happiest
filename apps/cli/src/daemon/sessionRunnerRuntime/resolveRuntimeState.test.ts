@@ -269,6 +269,27 @@ describe('resolveSessionRunnerRuntimeState', () => {
     expect(state.plannedRestart.disabledReason).toBe('windows_hosted_runner');
   });
 
+  it('reports a Windows-hosted runner the daemon started in local mode like any Windows-hosted runner', () => {
+    const base = trackedSession();
+    if (!base.spawnOptions) throw new Error('Expected spawn options fixture');
+    const state = resolveSessionRunnerRuntimeState({
+      sessionId: 'sess-1',
+      tracked: trackedSession({
+        processCommand:
+          'node /Users/alice/.happiest/cli-dev/versions/0.2.10/happiest-runtime/index.mjs claude --happy-starting-mode local --started-by daemon --happy-terminal-mode windows_console',
+        spawnOptions: {
+          ...base.spawnOptions,
+          windowsRemoteSessionLaunchMode: 'console',
+        } satisfies SpawnSessionOptions,
+      }),
+      currentIdentity: currentIdentity('0.2.11'),
+      observedAtMs: 100,
+    });
+
+    expect(state.runner.startingMode).toBe('local');
+    expect(state.plannedRestart.disabledReason).toBe('windows_hosted_runner');
+  });
+
   it('marks otherwise eligible runners ineligible while a turn is in progress', () => {
     const state = resolveSessionRunnerRuntimeState({
       sessionId: 'sess-1',

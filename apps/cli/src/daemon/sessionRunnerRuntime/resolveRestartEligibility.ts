@@ -45,7 +45,12 @@ export function resolveSessionRunnerRestartEligibility(
 ): SessionRunnerRestartEligibility {
   if (!tracked) return { eligible: false, disabledReason: 'no_tracked_process' };
   if (tracked.startedBy !== 'daemon') return { eligible: false, disabledReason: 'not_daemon_started' };
-  if (readSessionRunnerStartingModeFromProcessCommand(tracked.processCommand) !== 'remote') {
+  // The daemon starts a runner it opens in a window in local mode; that runner goes on to the checks
+  // below and to `windows_hosted_runner` like every Windows-hosted runner.
+  if (
+    readSessionRunnerStartingModeFromProcessCommand(tracked.processCommand) !== 'remote'
+    && !isWindowsHostedRunner(tracked)
+  ) {
     return { eligible: false, disabledReason: 'not_remote_started' };
   }
   if (!isActiveTrackedRunner(tracked)) return { eligible: false, disabledReason: 'not_active' };

@@ -33,6 +33,8 @@ This is usually the best choice when:
 - you want app-started sessions to later continue in a Windows Terminal window,
 - you expect to use `happier attach <session-id>` to bring that host back into focus.
 
+The option is available when the daemon finds `wt.exe` on its `PATH`, including the app execution alias that Microsoft Store and winget installs place in `%LOCALAPPDATA%\Microsoft\WindowsApps`.
+
 ### Console
 
 Choose **Console** when you want a visible local terminal host but do not want to rely on Windows Terminal being installed or detected.
@@ -42,6 +44,15 @@ This is a good fallback when:
 - Windows Terminal is unavailable,
 - you prefer a plain console host,
 - you still want a visible local session you can come back to later.
+
+## What the window shows
+
+A session in a **Windows Terminal** or **Console** window behaves like one started from a terminal. This applies to Claude and Codex sessions.
+
+- When the window opens with nothing waiting to run (you continued the session on the computer, or resumed it), it shows the agent's own interface with the conversation so far, and you can type there.
+- When the window opens to run a message from the app (the first prompt of a new session, or a message that resumed it), it shows each prompt and reply as the session runs. Press Space twice or Ctrl-T to switch the window to the agent's own interface with the whole conversation. Press Ctrl-C twice to end the session.
+- A message sent from the app while the agent's interface is open switches the window back, and the window shows that exchange. Switching restarts the agent, so that message takes a few seconds longer to arrive than in a session that is already showing app activity.
+- Stopping the session from the app also closes the agent running in the window.
 
 ## Where to configure it
 

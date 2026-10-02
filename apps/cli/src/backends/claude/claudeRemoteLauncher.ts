@@ -86,7 +86,6 @@ import { createWorkflowAgentTranscriptRegistrar } from './remote/sidechains/crea
 import { resolveClaudeSubagentJsonlPathForRemoteSession } from './remote/sidechains/resolveClaudeSubagentJsonlPathForRemoteSession';
 import { reportSessionToDaemonIfRunning } from '@/agent/runtime/startupSideEffects';
 import { createClaudeRemoteTeamInboxBridge } from './remote/teamInbox/claudeRemoteTeamInboxBridge';
-import { resolveHasTTY } from '@/ui/tty/resolveHasTTY';
 import { createNonBlockingStdout } from '@/ui/ink/nonBlockingStdout';
 import { updateMetadataBestEffort } from '@/api/session/sessionWritesBestEffort';
 import type { ReadyNotificationTurnContext } from '@/agent/runtime/runPermissionModePromptLoop';
@@ -394,27 +393,21 @@ export async function claudeRemoteLauncher(
         env: process.env,
     }).state === 'enabled';
 
-    // Check if we have a TTY for UI rendering
-    const terminalInkAvailable = resolveHasTTY({
+    const controlSurface = resolveRemoteModeControlSurface({
         stdoutIsTTY: process.stdout.isTTY,
         stdinIsTTY: process.stdin.isTTY,
         startedBy: session.startedBy,
+        terminalMode: readRemoteControlTerminalMode(session),
     });
-    const controlSurface = session.startedBy === 'daemon'
-        ? resolveRemoteModeControlSurface({
-            stdoutIsTTY: process.stdout.isTTY,
-            stdinIsTTY: process.stdin.isTTY,
-            startedBy: session.startedBy,
-            terminalMode: readRemoteControlTerminalMode(session),
-        })
-        : terminalInkAvailable
-            ? 'ink'
-            : 'none';
     const shouldRenderInkUi = controlSurface === 'ink';
     logger.debug(`[claudeRemoteLauncher] remote control surface: ${controlSurface}`);
 
     // Configure terminal
     let messageBuffer = new MessageBuffer();
+    // Claude does not echo a prompt back, so the terminal display adds each one as it is sent.
+    const showPromptInTerminal = (text: string): void => {
+        messageBuffer.addMessage(`👤 User: ${text}`, 'user');
+    };
     let inkInstance: any = null;
     let staticControl: RemoteModeStaticControl | null = null;
     // Handle abort
@@ -1617,6 +1610,7 @@ export async function claudeRemoteLauncher(
                                 : null;
                             permissionHandler.handleModeChange(p.mode.permissionMode);
                             const providerMessage = await resolveQueuedPromptForProvider(p);
+                            showPromptInTerminal(p.message);
                             if (p.pendingProviderAction !== 'steer' && !shouldDeferTurnStartUntilTerminalInjection(p.mode)) {
                                 await beginPromptTurn();
                             } else {
@@ -1658,6 +1652,7 @@ export async function claudeRemoteLauncher(
                         unifiedTerminalLaunchOptionsHash = nextUnifiedTerminalLaunchOptionsHash;
                         permissionHandler.handleModeChange(nextMode.permissionMode);
                         const providerMessage = await resolveQueuedPromptForProvider(msg);
+                        showPromptInTerminal(msg.message);
                         if (msg.pendingProviderAction !== 'steer' && !shouldDeferTurnStartUntilTerminalInjection(nextMode)) {
                             await beginPromptTurn();
                         } else {

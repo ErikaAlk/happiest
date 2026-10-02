@@ -206,7 +206,7 @@ import { createConnectedServiceRecoverySupersessionCleaner } from './connectedSe
 import { buildCgroupSelfMigratingHappyCliLaunchSpec } from './platform/linux/buildCgroupSelfMigratingHappyCliLaunchSpec';
 import { shouldUseSystemdUserSessionResourceGovernor } from './platform/linux/systemdUserResourceGovernor';
 import { applySpawnedChildOomScoreAdjustment } from './platform/linux/applySpawnedChildOomScoreAdjustment';
-import { resolveWindowsRemoteSessionConsoleMode } from './platform/windows/windowsSessionConsoleMode';
+import { resolveDaemonRunnerStartingMode, resolveWindowsRemoteSessionConsoleMode } from './platform/windows/windowsSessionConsoleMode';
 import { startHappySessionInVisibleWindowsConsole } from './platform/windows/spawnHappyCliVisibleConsole';
 import { startHappySessionInWindowsTerminal } from './platform/windows/spawnHappyCliWindowsTerminal';
 import {
@@ -3944,9 +3944,17 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
               logger.debug(`[DAEMON RUN] Using regular process spawning`);
 
           const agentCommand = resolveCliSubcommandFromBackendTarget(backendTarget);
+              const windowsLaunchMode = resolveWindowsRemoteSessionConsoleMode({
+                platform: process.platform,
+                requested: normalizedOptions.windowsRemoteSessionLaunchMode ?? normalizedOptions.windowsRemoteSessionConsole,
+                env: process.env,
+              });
               const args = [
                 agentCommand,
-                '--happy-starting-mode', 'remote',
+                '--happy-starting-mode', resolveDaemonRunnerStartingMode({
+                  launchMode: windowsLaunchMode,
+                  carriesInitialInput: Boolean(pendingFirstInput || initialGoal),
+                }),
                 '--started-by', 'daemon'
               ];
 
@@ -3973,11 +3981,6 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
                 modelId,
                 modelUpdatedAt,
               }));
-              const windowsLaunchMode = resolveWindowsRemoteSessionConsoleMode({
-                platform: process.platform,
-                requested: normalizedOptions.windowsRemoteSessionLaunchMode ?? normalizedOptions.windowsRemoteSessionConsole,
-                env: process.env,
-              });
 
               const waitForWindowsHostedSession = async (params: {
                 pid: number;

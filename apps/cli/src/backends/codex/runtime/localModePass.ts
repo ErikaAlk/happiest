@@ -14,6 +14,8 @@ type DiscardController = (args: Parameters<typeof discardQueuedAndPendingForLoca
 
 export type CodexLocalModePassResult =
   | { type: 'remote'; resumeId: string | null }
+  /** Local mode did not start; remote mode continues as if it had never been left. */
+  | { type: 'handed_to_remote' }
   | { type: 'exit' };
 
 export async function runCodexLocalModePass<Mode extends QueueModeWithLocalId>(opts: {
@@ -25,6 +27,13 @@ export async function runCodexLocalModePass<Mode extends QueueModeWithLocalId>(o
   resumeId: string | null;
   codexArgs?: readonly string[];
   formatError: (error: unknown) => string;
+  /**
+   * What to do with input already waiting when local mode would start. `confirm_discard` (the
+   * default) is for a user switching to local mode. `hand_to_remote` is for a runner the daemon
+   * opened in a window in local mode: a message that arrived meanwhile is the user's, and remote mode
+   * runs it.
+   */
+  waitingInput?: 'confirm_discard' | 'hand_to_remote';
   launchLocal?: (args: {
     path: string;
     api: unknown;
@@ -44,6 +53,9 @@ export async function runCodexLocalModePass<Mode extends QueueModeWithLocalId>(o
   };
 
   if (opts.messageQueue.size() > 0 || (await getServerPendingCount()) > 0) {
+    if (opts.waitingInput === 'hand_to_remote') {
+      return { type: 'handed_to_remote' };
+    }
     const discardController = opts.discardController ?? discardQueuedAndPendingForLocalSwitch;
     const discardResult = await discardController({
       queue: opts.messageQueue,

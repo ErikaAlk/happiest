@@ -1012,6 +1012,49 @@ describe('runClaude fast-start', () => {
     if (testError) throw testError;
   });
 
+  it('opens a Windows console runner the daemon started in local mode', async () => {
+    vi.resetModules();
+    loopStarted = createDeferred<void>();
+    loopExit = createDeferred<number>();
+    lastLoopOpts = null;
+    autoSessionReady = true;
+    getOrCreateSessionSpy.mockImplementation(async () => ({ id: 'sess_daemon_window', metadataVersion: 1 }));
+
+    const { runClaude } = await import('./runClaude');
+    let testError: unknown = null;
+    const runPromise = runClaude(createLegacyCredentials(), {
+      startedBy: 'daemon',
+      startingMode: 'local',
+      terminalRuntime: { mode: 'windows_console', requested: 'console' },
+    }).catch((error) => {
+      testError = error;
+      loopStarted.resolve();
+    });
+
+    try {
+      await waitFor(loopStarted.promise, loopStartWaitMs);
+      if (testError) throw testError;
+      expect(lastLoopOpts?.startingMode).toBe('local');
+      expect(lastLoopOpts?.startedBy).toBe('daemon');
+    } finally {
+      loopExit.resolve(0);
+      await runPromise;
+    }
+
+    if (testError) throw testError;
+  });
+
+  it('rejects a daemon-started local runner that has no window of its own', async () => {
+    vi.resetModules();
+    const { runClaude } = await import('./runClaude');
+
+    await expect(runClaude(createLegacyCredentials(), {
+      startedBy: 'daemon',
+      startingMode: 'local',
+      terminalRuntime: { mode: 'plain' },
+    })).rejects.toThrow();
+  });
+
   it('fails before terminal host or prompt ownership when retained hook refresh cannot commit', async () => {
     vi.resetModules();
     loopCalls = 0;

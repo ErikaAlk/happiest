@@ -1500,4 +1500,42 @@ describe('createStopSession', () => {
       killSpy.mockRestore();
     });
   });
+
+  it('ends the whole process tree of a runner in a Windows window, so the agent shown there stops with it', async () => {
+    await withProcessPlatform('win32', async () => {
+      vi.resetModules();
+      spawnSyncMock.mockReset();
+      isPidSafeHappySessionProcess.mockReset();
+      spawnSyncMock.mockReturnValueOnce({ status: 0, stdout: '', stderr: '' });
+      isPidSafeHappySessionProcess.mockResolvedValueOnce(true);
+      // On Windows SIGTERM ends only the runner; the agent UI it started would stay in the window.
+      const killSpy = vi.spyOn(process, 'kill').mockImplementation(() => true);
+
+      const { createStopSession } = await import('./stopSession');
+      const pidToTrackedSession = new Map<number, any>([
+        [
+          779,
+          {
+            startedBy: 'daemon',
+            pid: 779,
+            happySessionId: 'sess-win-window',
+            hostedTerminal: { mode: 'windows_console', requested: 'console', windows: { host: 'console', pid: 779 } },
+            processCommandHash: 'expected-hash',
+          },
+        ],
+      ]);
+
+      const stop = createStopSession({
+        pidToTrackedSession,
+        waitForTrackedRunnersExit: vi.fn(async () => true),
+      });
+
+      await expect(stop('sess-win-window')).resolves.toEqual({ status: 'stopped' });
+      expect(spawnSyncMock).toHaveBeenCalledWith('taskkill', ['/F', '/T', '/PID', '779'], expect.objectContaining({
+        stdio: 'ignore',
+      }));
+      expect(killSpy).not.toHaveBeenCalledWith(779, 'SIGTERM');
+      killSpy.mockRestore();
+    });
+  });
 });

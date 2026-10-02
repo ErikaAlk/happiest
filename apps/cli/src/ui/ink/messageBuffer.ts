@@ -3,6 +3,8 @@ export interface BufferedMessage {
     timestamp: Date
     content: string
     type: 'user' | 'assistant' | 'system' | 'tool' | 'result' | 'status'
+    /** Set by `upsertMessage`: the source's own id for content that is written again as it grows. */
+    key?: string
 }
 
 export const DEFAULT_MESSAGE_BUFFER_MAX_MESSAGES = 500
@@ -47,6 +49,21 @@ export class MessageBuffer {
         // If no message of this type exists, create a new one
         // This can happen if updateLastMessage is called before the first message is added
         this.addMessage(contentDelta, type)
+    }
+
+    /**
+     * Replace the content of the message added under `key`, or add it when there is none yet.
+     * For a source that writes the same message again as it grows (a streamed reply's segment).
+     */
+    upsertMessage(key: string, content: string, type: BufferedMessage['type']): void {
+        const index = this.messages.findIndex((message) => message.key === key)
+        if (index === -1) {
+            this.messages.push({ id: `msg-${this.nextId++}`, timestamp: new Date(), content, type, key })
+            this.trimToMaxMessages()
+        } else {
+            this.messages[index] = { ...this.messages[index], content, type }
+        }
+        this.notifyListeners()
     }
 
     /**

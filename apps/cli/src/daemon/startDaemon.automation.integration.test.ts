@@ -631,7 +631,8 @@ vi.mock('./platform/tmux/spawnConfig', () => ({
   buildTmuxWindowEnv: vi.fn(),
 }));
 
-vi.mock('./platform/windows/windowsSessionConsoleMode', () => ({
+vi.mock('./platform/windows/windowsSessionConsoleMode', async (importOriginal) => ({
+  ...await importOriginal<typeof import('./platform/windows/windowsSessionConsoleMode')>(),
   resolveWindowsRemoteSessionConsoleMode: vi.fn(),
 }));
 

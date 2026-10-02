@@ -137,14 +137,16 @@ export const RemoteControlDisplay: React.FC<RemoteControlDisplayProps> = ({
           </Text>
         </Box>
 
-        <Box flexDirection="column" height={terminalHeight - 10} overflow="hidden">
+        {/* Messages keep their full height and the newest stay at the bottom; older lines are
+            clipped at the top. A shrunk message would still draw all its lines over the next ones. */}
+        <Box flexDirection="column" height={terminalHeight - 10} overflow="hidden" justifyContent="flex-end">
           {messages.length === 0 ? (
             <Text color="gray" dimColor>
               Waiting for messages...
             </Text>
           ) : (
             messages.slice(-Math.max(1, terminalHeight - 10)).map((msg) => (
-              <Box key={msg.id} flexDirection="column" marginBottom={1}>
+              <Box key={msg.id} flexDirection="column" flexShrink={0} marginBottom={1}>
                 <Text color={getMessageColor(msg.type)} dimColor>
                   {formatMessage(msg)}
                 </Text>

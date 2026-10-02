@@ -2,6 +2,15 @@ import { posix as pathPosix } from 'node:path';
 
 export type TerminalMode = 'plain' | 'tmux' | 'windows_terminal' | 'windows_console';
 
+/**
+ * Whether a session runner has a visible Windows window of its own (a console window or a Windows
+ * Terminal tab). A daemon-started runner in one behaves like a terminal-started runner: the window
+ * shows the agent and the conversation, and the user can continue there.
+ */
+export function isWindowsHostedTerminalMode(mode: string | null | undefined): mode is 'windows_terminal' | 'windows_console' {
+  return mode === 'windows_terminal' || mode === 'windows_console';
+}
+
 export type TerminalTmuxSpawnOptions = {
   /**
    * tmux session to create/select.

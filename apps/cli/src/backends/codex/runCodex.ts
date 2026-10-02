@@ -5,7 +5,6 @@ import { randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { logger } from '@/ui/logger';
 import { formatCliCommand } from '@/cli/runtime/cliCommand';
-import { resolveHasTTY } from '@/ui/tty/resolveHasTTY';
 import { Credentials } from '@/persistence';
 import type { Metadata } from '@/api/types';
 import { initialMachineMetadata } from '@/daemon/machine/metadata';
@@ -154,6 +153,7 @@ import {
 } from './runtime/sessionTurnLifecycle';
 import { createLocalRemoteModeController } from '@/agent/localControl/createLocalRemoteModeController';
 import { createCodexRemoteTerminalUi } from './runtime/createCodexRemoteTerminalUi';
+import { mirrorCommittedRepliesToTerminal } from './runtime/mirrorCommittedRepliesToTerminal';
 import { resolveCodexStartingMode } from './utils/resolveCodexStartingMode';
 import { resolveRemoteModeControlSurface } from '@/ui/remoteControl/remoteModeControl';
 import { abortAcpRuntimeTurnIfNeeded } from '@/agent/acp/runtime/createAcpRuntime';
@@ -575,6 +575,7 @@ export async function runCodex(opts: {
     let mode: 'local' | 'remote' = resolveCodexStartingMode({
         explicitStartingMode: opts.startingMode,
         startedBy: startedByForLocalControl,
+        terminalMode: opts.terminalRuntime?.mode ?? null,
         hasTtyForLocal,
         localControlEnabled,
 	    });
@@ -1606,21 +1607,12 @@ export async function runCodex(opts: {
     // Initialize Ink UI
     //
 
-    const hasTTY = resolveHasTTY({
+    const remoteControlSurface = resolveRemoteModeControlSurface({
         stdoutIsTTY: process.stdout.isTTY,
         stdinIsTTY: process.stdin.isTTY,
         startedBy: opts.startedBy,
+        terminalMode: opts.terminalRuntime?.mode ?? null,
     });
-    const remoteControlSurface = opts.startedBy === 'daemon'
-        ? resolveRemoteModeControlSurface({
-            stdoutIsTTY: process.stdout.isTTY,
-            stdinIsTTY: process.stdin.isTTY,
-            startedBy: opts.startedBy,
-            terminalMode: opts.terminalRuntime?.mode ?? null,
-        })
-        : hasTTY
-            ? 'ink'
-            : 'none';
     let requestedSwitchToLocal = false;
     const createSwitchToLocalBarrier = (): { promise: Promise<void>; resolve: () => void } => {
         let resolve!: () => void;
@@ -1666,7 +1658,6 @@ export async function runCodex(opts: {
     remoteTerminalUi = createCodexRemoteTerminalUi({
         messageBuffer,
         logPath: process.env.DEBUG ? logger.getLogPath() : undefined,
-        hasTTY,
         surface: remoteControlSurface,
         stdin: process.stdin,
         onExit: async () => {
@@ -1892,7 +1883,7 @@ export async function runCodex(opts: {
             ...(codexSharedAppServer ? { createClient: codexSharedAppServer.createClient } : {}),
             initialConnectedServiceRuntimeIdentity: resolveCodexInitialConnectedServiceRuntimeIdentity(codexAppServerProcessEnv, session),
             session,
-            transcriptSession: createCurrentSessionTranscriptPort(() => session),
+            transcriptSession: mirrorCommittedRepliesToTerminal(createCurrentSessionTranscriptPort(() => session), messageBuffer),
             onThinkingChange: (value) => { thinking = value; },
             permissionHandler,
             getPermissionMode: () => runtimePermissionModeRef.current,
@@ -2308,6 +2299,7 @@ export async function runCodex(opts: {
             mode = 'remote';
         }
 
+        let isFirstLocalPass = true;
         while (!shouldExit) {
             if (mode === 'local' && !useCodexSharedControl) {
                 await localRemoteSwitchController!.publishModeState('local');
@@ -2320,12 +2312,20 @@ export async function runCodex(opts: {
                     resumeId: storedSessionIdForResume,
                     codexArgs: opts.codexArgs ?? [],
                     formatError: formatErrorForUi,
+                    waitingInput: isFirstLocalPass && startedByForLocalControl === 'daemon'
+                        ? 'hand_to_remote'
+                        : 'confirm_discard',
                     launchLocal: codexLocalLauncher,
                 });
+                isFirstLocalPass = false;
 
                 if (localPass.type === 'exit') {
                     shouldExit = true;
                     break;
+                }
+                if (localPass.type === 'handed_to_remote') {
+                    mode = 'remote';
+                    continue;
                 }
 
                 storedSessionIdForResume = localPass.resumeId;

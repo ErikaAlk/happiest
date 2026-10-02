@@ -14,8 +14,7 @@ import {
 export function createCodexRemoteTerminalUi(params: {
     messageBuffer: MessageBuffer;
     logPath?: string;
-    hasTTY: boolean;
-    surface?: RemoteModeControlSurface;
+    surface: RemoteModeControlSurface;
     stdin: NodeJS.ReadStream;
     stdout?: NodeJS.WriteStream;
     onExit: () => Promise<void>;
@@ -24,7 +23,7 @@ export function createCodexRemoteTerminalUi(params: {
     let inkInstance: ReturnType<typeof render> | null = null;
     let staticControl: RemoteModeStaticControl | null = null;
     let allowSwitchToLocal = false;
-    const surface: RemoteModeControlSurface = params.surface ?? (params.hasTTY ? 'ink' : 'none');
+    const surface = params.surface;
 
     const renderRemoteUi = () => React.createElement(CodexTerminalDisplay, {
         messageBuffer: params.messageBuffer,
@@ -48,7 +47,7 @@ export function createCodexRemoteTerminalUi(params: {
             }
             return;
         }
-        if (surface !== 'ink' || !params.hasTTY) return;
+        if (surface !== 'ink') return;
         if (!inkInstance) {
             console.clear();
             inkInstance = render(renderRemoteUi(), {
@@ -72,7 +71,7 @@ export function createCodexRemoteTerminalUi(params: {
             await staticControl.stop();
             staticControl = null;
         }
-        if (surface !== 'ink' || !params.hasTTY) return;
+        if (surface !== 'ink') return;
         if (params.stdin.isTTY) {
             try {
                 params.stdin.setRawMode(false);

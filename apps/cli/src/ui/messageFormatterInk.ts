@@ -4,6 +4,17 @@ import { logger } from './logger'
 
 export type OnAssistantResultInkCallback = (result: SDKResultMessage, messageBuffer: MessageBuffer) => void | Promise<void>
 
+const ASSISTANT_HEADER = '🤖 Assistant:'
+
+function isShownSinceLastPrompt(messageBuffer: MessageBuffer, text: string): boolean {
+    const messages = messageBuffer.getMessages()
+    let lastPromptIndex = -1
+    messages.forEach((entry, index) => {
+        if (entry.type === 'user') lastPromptIndex = index
+    })
+    return messages.slice(lastPromptIndex + 1).some((entry) => entry.type === 'assistant' && entry.content.trim() === text)
+}
+
 /**
  * Formats Claude SDK messages for Ink display
  */
@@ -18,14 +29,7 @@ export function formatClaudeMessageForInk(
         case 'system': {
             const sysMsg = message as SDKSystemMessage
             if (sysMsg.subtype === 'init') {
-                messageBuffer.addMessage('─'.repeat(40), 'status')
-                messageBuffer.addMessage(`🚀 Session initialized: ${sysMsg.session_id}`, 'system')
-                messageBuffer.addMessage(`  Model: ${sysMsg.model}`, 'status')
-                messageBuffer.addMessage(`  CWD: ${sysMsg.cwd}`, 'status')
-                if (sysMsg.tools && sysMsg.tools.length > 0) {
-                    messageBuffer.addMessage(`  Tools: ${sysMsg.tools.join(', ')}`, 'status')
-                }
-                messageBuffer.addMessage('─'.repeat(40), 'status')
+                messageBuffer.addMessage(`🚀 Session ${sysMsg.session_id} · ${sysMsg.model} · ${sysMsg.cwd}`, 'system')
             }
             break
         }
@@ -67,12 +71,15 @@ export function formatClaudeMessageForInk(
 
         case 'assistant': {
             const assistantMsg = message as SDKAssistantMessage
-            if (assistantMsg.message && assistantMsg.message.content) {
-                messageBuffer.addMessage('🤖 Assistant:', 'assistant')
-                
-                for (const block of assistantMsg.message.content) {
+            const displayable = (assistantMsg.message?.content ?? []).filter(
+                (block) => (block.type === 'text' && Boolean(block.text)) || block.type === 'tool_use',
+            )
+            if (displayable.length > 0) {
+                messageBuffer.addMessage(ASSISTANT_HEADER, 'assistant')
+
+                for (const block of displayable) {
                     if (block.type === 'text') {
-                        messageBuffer.addMessage(block.text || '', 'assistant')
+                        messageBuffer.addMessage(block.text ?? '', 'assistant')
                     } else if (block.type === 'tool_use') {
                         messageBuffer.addMessage(`🔧 Tool: ${block.name}`, 'tool')
                         if (block.input) {
@@ -93,24 +100,18 @@ export function formatClaudeMessageForInk(
         case 'result': {
             const resultMsg = message as SDKResultMessage
             if (resultMsg.subtype === 'success') {
-                if ('result' in resultMsg && resultMsg.result) {
-                    messageBuffer.addMessage('✨ Summary:', 'result')
-                    messageBuffer.addMessage(resultMsg.result || '', 'result')
+                // With streamed output the assistant messages can arrive without their text; the
+                // result carries the final reply, shown unless an assistant message already showed it.
+                const reply = 'result' in resultMsg && typeof resultMsg.result === 'string' ? resultMsg.result.trim() : ''
+                if (reply && !isShownSinceLastPrompt(messageBuffer, reply)) {
+                    messageBuffer.addMessage(ASSISTANT_HEADER, 'assistant')
+                    messageBuffer.addMessage(reply, 'assistant')
                 }
-                
+
                 if (resultMsg.usage) {
-                    messageBuffer.addMessage('📊 Session Stats:', 'status')
-                    messageBuffer.addMessage(`  • Turns: ${resultMsg.num_turns}`, 'status')
-                    messageBuffer.addMessage(`  • Input tokens: ${resultMsg.usage.input_tokens}`, 'status')
-                    messageBuffer.addMessage(`  • Output tokens: ${resultMsg.usage.output_tokens}`, 'status')
-                    if (resultMsg.usage.cache_read_input_tokens) {
-                        messageBuffer.addMessage(`  • Cache read tokens: ${resultMsg.usage.cache_read_input_tokens}`, 'status')
-                    }
-                    if (resultMsg.usage.cache_creation_input_tokens) {
-                        messageBuffer.addMessage(`  • Cache creation tokens: ${resultMsg.usage.cache_creation_input_tokens}`, 'status')
-                    }
-                    messageBuffer.addMessage(`  • Cost: $${resultMsg.total_cost_usd.toFixed(4)}`, 'status')
-                    messageBuffer.addMessage(`  • Duration: ${resultMsg.duration_ms}ms`, 'status')
+                    const turns = `${resultMsg.num_turns} turn${resultMsg.num_turns === 1 ? '' : 's'}`
+                    const seconds = `${(resultMsg.duration_ms / 1000).toFixed(1)}s`
+                    messageBuffer.addMessage(`✓ Done · ${turns} · ${seconds} · $${resultMsg.total_cost_usd.toFixed(4)}`, 'status')
 
                     if (onAssistantResult) {
                         Promise.resolve(onAssistantResult(resultMsg, messageBuffer)).catch(err => {

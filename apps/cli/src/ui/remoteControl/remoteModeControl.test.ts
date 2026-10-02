@@ -72,6 +72,17 @@ describe('resolveRemoteModeControlSurface', () => {
     ).toBe('static');
   });
 
+  it.each(['windows_console', 'windows_terminal'])('shows the conversation in a %s window the daemon opened, as in a terminal', (terminalMode) => {
+    expect(
+      resolveRemoteModeControlSurface({
+        stdoutIsTTY: true,
+        stdinIsTTY: true,
+        startedBy: 'daemon',
+        terminalMode,
+      }),
+    ).toBe('ink');
+  });
+
   it('keeps daemon-started plain sessions non-interactive', () => {
     expect(
       resolveRemoteModeControlSurface({
