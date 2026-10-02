@@ -2,14 +2,15 @@ import chalk from 'chalk';
 
 import type { CommandContext } from '@/cli/commandRegistry';
 import { printJsonEnvelope, wantsJson, writeJsonStdout } from '@/cli/output/jsonEnvelope';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { createCliCapabilitiesService } from '@/rpc/handlers/capabilities';
 
 function usage(): string {
   return [
-    `${chalk.bold('happier capabilities')} - Inspect local capability metadata`,
+    `${chalk.bold(formatCliCommand('capabilities'))} - Inspect local capability metadata`,
     '',
     `${chalk.bold('Usage:')}`,
-    '  happier capabilities [describe] [--json]',
+    `  ${formatCliCommand('capabilities [describe] [--json]')}`,
     '',
   ].join('\n');
 }

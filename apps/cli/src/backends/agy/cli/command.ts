@@ -2,6 +2,7 @@ import { parseArgs } from 'node:util';
 
 import type { CommandContext } from '@/cli/commandRegistry';
 import { authenticateAcpAgent } from '@/agent/acp/authenticateAcpAgent';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 import { ensureAgyAcpServerForLaunch } from '../acp/ensureAgyAcpServerForLaunch';
 
 export async function handleAgyCliCommand(context: CommandContext): Promise<void> {
@@ -13,10 +14,10 @@ export async function handleAgyCliCommand(context: CommandContext): Promise<void
 
   const action = context.args[2];
   if (!action || ['help', '--help', '-h'].includes(action) || context.args.includes('--help')) {
-    console.log('happier agy auth login [--method <oauth-personal|oauth-business|gemini-api-key|agent-platform>]');
+    console.log(formatCliCommand('agy auth login [--method <oauth-personal|oauth-business|gemini-api-key|agent-platform>]'));
     return;
   }
-  if (action !== 'login') throw new Error('Unknown AGY auth command. Run "happier agy auth --help".');
+  if (action !== 'login') throw new Error(`Unknown AGY auth command. Run "${formatCliCommand('agy auth --help')}".`);
   const { values } = parseArgs({
     args: context.args.slice(3),
     options: { method: { type: 'string', default: 'oauth-personal' } },

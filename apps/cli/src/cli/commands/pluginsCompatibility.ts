@@ -2,13 +2,14 @@ import chalk from 'chalk';
 
 import type { CommandContext } from '@/cli/commandRegistry';
 import { printJsonEnvelope, wantsJson } from '@/cli/output/jsonEnvelope';
+import { formatCliCommand } from '@/cli/runtime/cliCommand';
 
 function usage(): string {
   return [
-    `${chalk.bold('happier plugins')} - Plugin compatibility commands`,
+    `${chalk.bold(formatCliCommand('plugins'))} - Plugin compatibility commands`,
     '',
     `${chalk.bold('Usage:')}`,
-    '  happier plugins list [--json]',
+    `  ${formatCliCommand('plugins list [--json]')}`,
     '',
     'This Happier version does not support installing plugins.',
   ].join('\n');
