@@ -180,7 +180,7 @@ Stack-scoped env vars:
 
 Optional overrides:
 
-- `HAPPIER_STACK_TOOL_TRACE_DIR=/path/to/dir` (defaults to `$HAPPIER_HOME_DIR/tool-traces`)
+- `HAPPIER_STACK_TOOL_TRACE_DIR=/path/to/dir` (defaults to `$HAPPIEST_HOME_DIR/tool-traces`)
 - `HAPPIER_STACK_TOOL_TRACE_FILE=/path/to/file.jsonl` (forces a single file)
 
 Implementation:

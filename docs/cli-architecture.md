@@ -14,7 +14,7 @@ graph TB
         Persist[Persistence]
     end
 
-    subgraph "~/.happy"
+    subgraph "~/.happiest"
         Settings[settings.json]
         AccessKey[access.key]
         DaemonState[daemon.state.json]
@@ -42,14 +42,14 @@ graph TB
 - **Entry point:** `src/index.ts` parses subcommands and routes execution.
 - **API client:** `src/api` handles HTTP + Socket.IO, encryption, and RPC.
 - **Daemon:** `src/daemon` runs in the background, spawns sessions, and maintains machine state.
-- **Persistence/config:** `src/persistence.ts` + `src/configuration.ts` manage local state in `~/.happy`.
+- **Persistence/config:** `src/persistence.ts` + `src/configuration.ts` manage local state in `~/.happiest`.
 - **Agents:** `src/claude`, `src/codex`, `src/gemini` provide provider-specific runners.
 
 ## CLI entry flow
 
 ```mermaid
 flowchart TD
-    Start([happier ...]) --> Parse[Parse subcommand]
+    Start([happiest ...]) --> Parse[Parse subcommand]
 
     Parse --> Doctor{doctor?}
     Parse --> Auth{auth?}
@@ -87,11 +87,11 @@ is bundled inside the desktop app, not a separately released component.
 sequenceDiagram
     participant App as Desktop app
     participant Hsetup as hsetup (bundled)
-    participant CLI as happier CLI
+    participant CLI as happiest CLI
     participant Relay
 
     App->>Hsetup: setup.thisComputer.v1 { relay, ring, account }
-    Hsetup->>CLI: acquire/install managed CLI, happier --version
+    Hsetup->>CLI: acquire/install managed CLI, happiest --version
     Hsetup->>CLI: daemon service install --dry-run --json
     Hsetup-->>App: prompt setup.serviceConsent (only if the CLI reports a conflict)
     App-->>Hsetup: respond { approved }
@@ -142,9 +142,9 @@ identity is unaffected because the comparable key ignores userinfo on both sides
 Approving a pairing hands the requesting CLI the account content key, so the app decides **how** to
 approve from install ownership. `apps/bootstrap/src/systemTasks/localFirstPartyCommand.ts` reports
 provenance `managed` when this machine's managed install layout claims the binary: the
-`current.version` marker that `installVersionedPayload` writes under `~/.happier`, plus the payload
+`current.version` marker that `installVersionedPayload` writes under `~/.happiest`, plus the payload
 it names under `versions/<versionId>`. Everything else is `override` — an explicit env override
-(`HAPPIER_BOOTSTRAP_CLI_PATH`, `HAPPIER_BOOTSTRAP_HAPPIER_PATH`), a repo-local checkout, or a binary
+(`HAPPIEST_BOOTSTRAP_CLI_PATH`, `HAPPIER_BOOTSTRAP_HAPPIER_PATH`), a repo-local checkout, or a binary
 that merely exists at `<installRoot>/current` with no install behind it.
 
 **`managed` is an ownership record, not verified publisher provenance.** The marker is a plain text
@@ -202,11 +202,11 @@ that channel's `~/.happiest/bin/happiest` shim). Two rules keep a second channel
   compares the running daemon with the CLI its service actually runs, and the install dry-run never
   proposes replacing the default channel's service. With no managed CLI of the default channel, the
   app's own channel is acquired (and, being the first install, becomes the default). An env override
-  (`HAPPIER_BOOTSTRAP_CLI_PATH`) still wins over both.
+  (`HAPPIEST_BOOTSTRAP_CLI_PATH`) still wins over both.
 
 `daemon.service.status.v1` reports the answering CLI's update state as `cli.update`
 (`{ currentVersion, latestVersion, updateAvailable, managed }` plus the K5 facts below, from
-`happier daemon status --json` → `cliUpdate` — never a network read on that path; a stale cache is
+`happiest daemon status --json` → `cliUpdate` — never a network read on that path; a stale cache is
 refreshed by the existing detached `self check`). A `start` issued while the service's own daemon
 still runs another CLI version is promoted to `restart` on every platform (`systemctl start` on an
 active unit is a no-op).
@@ -214,7 +214,7 @@ active unit is a no-op).
 ### One CLI update transaction (plan R13 f)
 
 `runManagedCliUpdate` (`packages/cli-common/src/firstPartyRuntime/runManagedCliUpdate.ts`) is the
-only way a managed first-party CLI is updated in place. `happier self update`, the desktop's
+only way a managed first-party CLI is updated in place. `happiest self update`, the desktop's
 bootstrap `cli.update.v1` and the daemon-hosted remote `cli.update.v1` all run it, always from the
 version being replaced:
 
@@ -275,7 +275,7 @@ label, never a manual daemon or another channel's service); bootstrap reads `dae
 through `createSelectedCliInvocation` (inherited relay selectors cleared, so the daemon it verifies
 is the one the service runs).
 
-**Windows.** The two local paths differ. `happier self update` stops the payload's processes before
+**Windows.** The two local paths differ. `happiest self update` stops the payload's processes before
 activation (`quiesceInstalledCliWindowsPayloadOwners`: `service stop`, `daemon stop --all
 --kill-sessions`, `taskkill /T` — **running sessions are ended**), as the installer does. The
 desktop's `cli.update.v1` does not pass that step: it relies on the launcher move-aside and does
@@ -332,9 +332,9 @@ app persists its own server profiles and the CLI persists its own; pairing is th
 
 Every command a setup run issues goes through one relay context built once from the target
 (`createSetupCliScope`, `apps/bootstrap/src/systemTasks/localDaemonCli.ts`, plan R13 a). Both of its
-invocations clear every server selector the app process inherited (`HAPPIER_SERVER_URL`,
-`HAPPIER_WEBAPP_URL`, `HAPPIER_LOCAL_SERVER_URL`, `HAPPIER_PUBLIC_SERVER_URL`,
-`HAPPIER_ACTIVE_SERVER_ID`, `HAPPIER_DAEMON_LIFECYCLE_SCOPE_ID` — a stack/dev launch exports them,
+invocations clear every server selector the app process inherited (`HAPPIEST_SERVER_URL`,
+`HAPPIEST_WEBAPP_URL`, `HAPPIEST_LOCAL_SERVER_URL`, `HAPPIEST_PUBLIC_SERVER_URL`,
+`HAPPIEST_ACTIVE_SERVER_ID`, `HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID` — a stack/dev launch exports them,
 and the CLI prefers an env-selected profile over a URL it does not match), so a launch pinned to one
 relay can never preview another and then write to its own. `target` adds the selected relay through
 the CLI's env server selection for the reads made before the run may select it; `selected` answers
@@ -349,7 +349,7 @@ exposure keeps the process environment (it is not relay-scoped).
 
 The install dry-run that decides consent runs **before** `server set` (no mutation before consent),
 so hsetup scopes it to the relay the app selected through the CLI's env server selection
-(`HAPPIER_SERVER_URL`/`HAPPIER_WEBAPP_URL`/`HAPPIER_LOCAL_SERVER_URL`, nothing persisted): ownership,
+(`HAPPIEST_SERVER_URL`/`HAPPIEST_WEBAPP_URL`/`HAPPIEST_LOCAL_SERVER_URL`, nothing persisted): ownership,
 takeover and conflicts are per-relay facts, and judging them against the CLI's previous relay would
 block on a pinned service that does not conflict or offer to take over a manual daemon the apply can
 never reach. The same dry-run reports an installed service whose definition would switch between a
@@ -365,7 +365,7 @@ desktop's quiet start of a stopped service (D6) runs the CLI the service already
 goes through the install dry-run's consent and the strict install.
 
 **One CLI per computer (plan R12).** That consent is asked at most once per decision: when the
-executor has asked "Let Happier manage it / Keep my own" (prompt `setup.cliChoice`, before any write;
+executor has asked "Let Happiest manage it / Keep my own" (prompt `setup.cliChoice`, before any write;
 see [One CLI per computer](binary-runtime.md#one-cli-per-computer-plan-r12)), a recorded **manage**
 answer — **manage** or **own** — is the consent for a dry-run whose only change is
 `runtimeReplacement` (no competing services, nothing to remove, no takeover), and the apply runs
@@ -375,17 +375,17 @@ skipped (plan R13 b). Account and relay consent stay separate. After **Keep my o
 CLI's `service install` targets that CLI itself, and a service that ran the managed shim is reported
 as the `runtimeReplacement` toward it and switched by that install — never by a start/restart
 refresh. Settings ›
-This computer › Command line names the answer ("Managed by Happier" / "Your own — path"), shows the
+This computer › Command line names the answer ("Managed by Happiest" / "Your own — path"), shows the
 old copy's removal command after **manage**, and its change action reruns the same setup run with
 `reconsiderCli: true`.
 
-`auth status` and the daemon status block of `happier daemon status` name the relay by host and the
+`auth status` and the daemon status block of `happiest daemon status` name the relay by host and the
 signed-in account by its readable label (profile username, else display name) and a short id, and
 their JSON carries `accountLabel`/`relayHost` (`auth status`) and `auth.accountLabel` (`daemon
 status`), so a person can compare this computer's identity with the app's.
 
 Readiness is never claimed from the executor's success. It is re-read afterwards from
-`happier daemon status --json`, whose `runtimeConvergence` block describes the *running* daemon —
+`happiest daemon status --json`, whose `runtimeConvergence` block describes the *running* daemon —
 authenticated control reachable, the installed service owning that process, machine id and CLI
 version matching. Host-visible PID equality is never required, so a daemon in a container whose
 PID is hidden still reports ready when its authenticated control answers.
@@ -402,7 +402,7 @@ The same block carries `autostart` — `at-login` or `on-demand`, the CLI's own
 (`readInstalledDaemonServiceAutostartMode`), and on macOS it reads the **platform's own trigger**:
 the LaunchAgent's `RunAtLoad`, which is what launchd will actually do, so a hand-edited plist
 reports honestly instead of echoing a stale declaration. Linux and Windows keep the declaration the
-installer recorded in the definition (`HAPPIER_DAEMON_SERVICE_AUTOSTART`), because their real
+installer recorded in the definition (`HAPPIEST_DAEMON_SERVICE_AUTOSTART`), because their real
 trigger is a `systemd` enable symlink / a scheduled-task trigger and reading either needs a
 subprocess this synchronous reader runs on the healthy status fast path. It is `null` when nothing
 proved a mode, and absent from CLIs that predate the field; as with `targetMode`, neither may be
@@ -440,8 +440,8 @@ that extend the existing `daemon.service.*` family (`apps/bootstrap/src/systemTa
 
 | Kind | CLI command | Proof |
 | --- | --- | --- |
-| `daemon.service.autostart.set.v1` | `happier daemon service install --autostart=<at-login\|on-demand> --json` | Re-reads `service.autostart`; a CLI that cannot report it fails as `daemon_service_autostart_unsupported`. |
-| `daemon.service.stop.v1` | `happier daemon service stop --json` | Re-reads status; a still-running daemon fails as `daemon_service_still_running`. |
+| `daemon.service.autostart.set.v1` | `happiest daemon service install --autostart=<at-login\|on-demand> --json` | Re-reads `service.autostart`; a CLI that cannot report it fails as `daemon_service_autostart_unsupported`. |
+| `daemon.service.stop.v1` | `happiest daemon service stop --json` | Re-reads status; a still-running daemon fails as `daemon_service_still_running`. |
 
 Neither kind restates a platform rule — the CLI owns every one of them (INV9) — and neither trusts
 a command's own success.
@@ -467,8 +467,8 @@ call `app.exit` twice for one Quit and the second exit would find the handoff al
 
 | Gesture | Platforms | Reaches the handoff |
 | --- | --- | --- |
-| Tray → **Quit Happier** | macOS, Windows, Linux | Yes |
-| App menu → **Quit Happier** / Cmd+Q | macOS | Yes |
+| Tray → **Quit Happiest** | macOS, Windows, Linux | Yes |
+| App menu → **Quit Happiest** / Cmd+Q | macOS | Yes |
 | Window close / Alt+F4 / titlebar X | all | No quit at all — the main window hides; the tray brings it back |
 | Dock → Quit, OS logout, OS shutdown, force quit | macOS | **No** |
 | Taskbar → Close window, session end | Windows | **No** |
@@ -484,12 +484,12 @@ mark, with no title and no status colour: a template image on macOS, and on Wind
 full-colour mark on a light tray or a white silhouette on a dark one (Windows reads the taskbar's
 system mode, Linux the settings portal's `color-scheme`, unknown meaning dark); clicking it on any
 platform opens its menu: a disabled status line (`label · detail` from `buildDesktopTrayState`),
-**Open Happier**, and **Quit Happier** (`src-tauri/src/tray.rs`).
+**Open Happiest**, and **Quit Happiest** (`src-tauri/src/tray.rs`).
 
 The gestures marked **No** terminate the process without an `ExitRequested`, so the background service
 is left exactly where it was — the same safe direction as a crash, and the reason the handoff never
 stops the service on a path it cannot confirm. An `on-demand` service left running that way is stopped
-by the next in-app quit, `happier daemon service stop`, or the settings control.
+by the next in-app quit, `happiest daemon service stop`, or the settings control.
 
 ### What may repoint this computer's daemon
 
@@ -512,7 +512,7 @@ A and into C in one run still asks), and it is asked on an explicit "Connect thi
 (`desktopSetupCoordinator.startSetup`). The executor is the enforcement point: **before any write** (before `server set` and
 PATH exposure) it reads `auth status` for the target relay's saved credentials — the ones
 `--replace-existing` would replace — through the same `target` invocation as the dry-run (the CLI resolves
-the persisted profile matching `HAPPIER_SERVER_URL` and its credential directory), and when they are
+the persisted profile matching `HAPPIEST_SERVER_URL` and its credential directory), and when they are
 validated for another account (`setupReplacesValidatedAccount`,
 `@happier-dev/protocol`, the one rule the app's early question also uses) it asks through the
 `setup.accountConsent` prompt, answered by the app's one account question, and stops with
@@ -568,7 +568,7 @@ runs beside it and never holds accounts, other machines, sessions or settings be
 
 ```mermaid
 graph LR
-    subgraph "~/.happier"
+    subgraph "~/.happiest"
         direction TB
         settings["settings.json<br/><i>profile, onboarding</i>"]
         access["access.key<br/><i>encryption keys</i>"]
@@ -578,9 +578,9 @@ graph LR
 
     subgraph "Environment Overrides"
         direction TB
-        E1[HAPPIER_HOME_DIR]
-        E2[HAPPIER_SERVER_URL]
-        E3[HAPPIER_WEBAPP_URL]
+        E1[HAPPIEST_HOME_DIR]
+        E2[HAPPIEST_SERVER_URL]
+        E3[HAPPIEST_WEBAPP_URL]
         E4[HAPPIER_VARIANT]
         E5[HAPPIER_EXPERIMENTAL]
         E6[HAPPIER_DISABLE_CAFFEINATE]
@@ -589,14 +589,14 @@ graph LR
     E1 -.-> settings & access & daemon & logs
 ```
 
-Local state lives under `~/.happier` (or `HAPPIER_HOME_DIR`):
+Local state lives under `~/.happiest` (or `HAPPIEST_HOME_DIR`):
 - `settings.json`: onboarding and profile settings (validated/migrated).
 - `access.key`: local key material for encryption/auth.
 - `daemon.state.json`: daemon PID + control port + version.
 - `logs/`: CLI/daemon logs.
 
 Configuration lives in `src/configuration.ts`:
-- `HAPPIER_SERVER_URL` and `HAPPIER_WEBAPP_URL` override defaults.
+- `HAPPIEST_SERVER_URL` and `HAPPIEST_WEBAPP_URL` override defaults.
 - `HAPPIER_VARIANT`, `HAPPIER_EXPERIMENTAL`, `HAPPIER_DISABLE_CAFFEINATE` control behavior.
 
 ## API client architecture

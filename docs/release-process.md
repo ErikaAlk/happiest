@@ -1,11 +1,14 @@
 # Release process
 
-This repo uses a simple three-branch model:
+Happiest publishes GitHub Releases on `ErikaAlk/happiest`, cut from this fork's `dev` branch and
+recorded on `main`. Only the stable channel is published.
 
 - `dev` is the integration branch where changes land first (default branch; can be unstable).
-- `preview` is the release candidate branch used for preview builds/deploys.
-- `main` is the stable/production release branch.
-- `deploy/**` branches are managed by automation for deployments (do not push to these manually).
+- `main` is the stable release branch. A release fast-forwards it to the exact `dev` commit it
+  publishes.
+- `preview` is not used. The release workflow still accepts `environment=preview`, but Happiest does
+  not publish a preview channel.
+- `deploy/**` branches are not used: Happiest deploys no hosted service.
 
 ## Contributing flow (recommended)
 
@@ -18,285 +21,80 @@ Notes:
 - Maintainers may push directly to `dev` when needed (depending on branch rules).
 - External contributors should assume **PRs must target `dev`**, not `main`.
 
-## Release flow (maintainers)
+## What a release publishes
 
-### Public contract, private operation, and human go-ahead
+Each product gets an immutable `<product>-v<version>` Release and a rolling `<product>-stable`
+Release that always points at the newest stable bytes. Versions start at `0.1.0`.
 
-The public, versioned release contract is machine-readable:
+| Product | Tags | Platforms | Published by |
+| --- | --- | --- | --- |
+| CLI binaries, plus `install.sh`, `install.ps1`, `install-server.sh` and the minisign public key `happier-release.pub` | `cli-v<version>`, `cli-stable` | Linux x64, Linux arm64, Windows x64 | `publish-cli-binaries.yml` |
+| Relay server runtime | `server-v<version>`, `server-stable` | Linux x64, Linux arm64, Windows x64 | `publish-server-runtime.yml` |
+| UI web bundle (served by self-hosted relays) | `ui-web-v<version>`, `ui-web-stable` | platform independent | `publish-ui-web.yml` |
+| Desktop app | `ui-desktop-v<version>`, `ui-desktop-stable` | Windows x64, Linux x64 | `promote-ui.yml` → `build-tauri.yml` |
 
-```bash
-node scripts/pipeline/run.mjs release-contract
-```
+Product names, release titles and targets come from
+`scripts/pipeline/release/publishing/product-specs.mjs`, which repeats the product identity and the
+component catalog and is checked against them by
+`scripts/release/publish_binary_product_specs.contract.test.mjs`. Installer scripts, Tauri configs,
+Dockerfiles and workflows carry identity literals checked by
+`scripts/release/product_identity_literals.contract.test.mjs`.
 
-It names the canonical versioned release targets, executable validation suites,
-and three profiles:
+Not published: npm packages, Homebrew formulae or casks, Docker images (the repository `Dockerfile`
+and `docker/dev-box/Dockerfile` download these releases and can be built locally), hstack binaries
+(its command name is the same as upstream's), mobile builds and Expo updates, and hosted
+deployments of the web app, website, docs or server.
 
-- `integrated` and `stable` expose the same eligible automatic suite catalog.
-  The registry selects inexpensive artifact/binary facts for applicable
-  products and selects heavy upgrade scenarios only when the actual diff
-  changes their seam: daemon/update continuity, session/restart ownership, or
-  relay persistence/startup. Candidate existence alone does not select every
-  heavy scenario.
-- `stable` additionally selects the full source-check profile and requires the
-  private release agent to review preview candidate equivalence and soak,
-  breaking changes, reachable version-skew directions, persistence, and
-  accidental lockstep requirements.
-- `deep` is manual comprehensive source certification. The manual `deep`
-  profile in `tests-dispatch.yml` fans out every non-mutating in-repository
-  lane: extended databases, stress, WSREPL, mobile device E2E, cross-OS
-  service/self-host checks, local daemon/session continuity, installer/binary
-  smoke, and Docker release-asset compatibility. It does not publish, deploy,
-  promote, submit to stores, or run credentialed live-provider scenarios.
-  Those provider scenarios remain an explicit custom/provider-contract run,
-  and native/store publication remains owned by release automation. `deep` is
-  never a normal-release dispatch.
+Signing:
 
-The workflow derives source-check depth from the selected public profile; a
-caller cannot select a second checks profile. MySQL, cross-platform service,
-and installer/updater trust-root gates are selected by the affected diff rather
-than every server, CLI, preview, or stable candidate.
+- CLI, server runtime and UI web artifacts are signed with minisign. The workflows read
+  `MINISIGN_SECRET_KEY` and `MINISIGN_PASSPHRASE`; installers and the CLI's self-update verify with
+  the public key embedded in the installers and shipped as `happier-release.pub`.
+- Desktop updates are signed with the Tauri updater key (`TAURI_SIGNING_PRIVATE_KEY`,
+  `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`); the matching public key is in the Tauri configs, which
+  update from `ui-desktop-stable/latest.json`.
+- The Windows desktop installer is not code-signed.
 
-An explicit maintainer may refine the heavy upgrade/continuity suite selection
-or waive exact-SHA source certification with a bounded reason. That source
-waiver also skips the source-only MySQL and platform-service gates; the workflow
-reports the evidence as `WAIVED`, never `PASS`. Candidate identity, artifact
-integrity, binary smoke, signing/notarization, release authorization, and
-installer/updater trust-root checks remain hard contracts on this shipping line.
+## Cutting a release
 
-Waivers are deliberately narrow and recorded in the terminal release status:
+Run **RELEASE — Publish (preview + production)** (`release.yml`) from the Actions tab on `dev`.
+Writes use the workflow's own `github.token` with `contents: write`, and `release_actor_guard`
+admits only actors with admin permission on the repository.
+
+1. Add the release entry to `apps/ui/CHANGELOG.md`; its id is the `release_notes_id` input.
+2. Dispatch once with `dry_run=true` to see the plan without pushing or publishing.
+3. Dispatch the release:
+   - `environment=production`, `confirm=release dev to main`;
+   - `authorized_promotion_source_sha` — the exact 40-character `dev` SHA you reviewed (required
+     whenever `dry_run` is false);
+   - `deploy_targets=ui,cli,server_runner` and `desktop_mode=build_and_publish`;
+   - `release_notes_id` from step 1;
+   - `waive_ci=true` with an `override_reason`, because the fork does not run upstream's push CI
+     (most of its lanes need provider API keys and Android emulators);
+   - leave `hmaint_operation_id` and `workflow_control_sha` empty; they belong to upstream's private
+     release conductor;
+   - `qualified_v4_activation_approval` stays false.
+4. The workflow binds that SHA, fast-forwards `main` to it, builds and publishes each product as an
+   immutable Release, verifies the published bytes, promotes them to the rolling Releases, and
+   fast-forwards `dev` back onto `main`.
+
+`validation_profile` selects the evidence contract (`node scripts/pipeline/run.mjs release-contract`
+prints it): `integrated` is the default and `stable` adds full source checks. Waivers are narrow and
+recorded in the terminal release status:
 
 | Approval | May bypass | Never bypasses |
 | --- | --- | --- |
 | `waive_ci` with a reason | exact-SHA source CI plus source-only MySQL and platform-service checks | trust-root checks, candidate identity, signing, artifact verification, binary smoke, or publication authorization |
 | `waive_validation_suites` with a reason | selected risk-based suites such as installer, continuity, or Docker compatibility checks | `artifact-verify` and `binary-smoke` |
 | guarded branch reset | fast-forward-only branch topology | release admission, candidate verification, or publication checks |
-| Qualified V4 activation approval | only the separately named irreversible activation | ordinary release approval or any other validation |
 
-Do not translate “test-only failure” into a blanket waiver. First identify the
-incorrect test or harness at its owner; use a bounded waiver only when the human
-explicitly accepts the missing evidence for this exact candidate.
-
-The slow test lane contains two pinned server-v0.2.1 regressions for pending
-queue and first-prompt behavior. They are exact tests, not a general
-compatibility verdict. The release agent selects them when the actual diff can
-affect those seams and reports precisely what they prove.
-Broader installer, platform, provider, mobile, and historical-version checks
-remain risk-selected deep certification. No suite name emits a general
-compatibility verdict.
-
-The contract is public so callers can select and verify the right evidence;
-the operating procedure is private. Resolve it for an absolute checkout with:
-
-```bash
-hmaint release bootstrap --repo <absolute checkout> --json
-```
-
-Use the returned private skill rather than copying a private release policy
-into this repository. A human go-ahead is required before any non-dry release
-dispatch. Qualified V4 activation is not implemented in this release line; its
-separate approval input must remain false. That go-ahead must name the selected profile and the exact SHA of the
-candidate whose evidence was reviewed. Do not substitute a branch name or a
-moving channel pointer for the exact SHA.
-
-Run private release authority on the configured macOS host, where Keychain and
-native release prerequisites live. An agent already operating on that host may
-invoke the provisioned `hmaint` executable directly even when the repository
-path is a mounted VM workspace. An agent operating inside the managed Linux VM
-must keep source work in the VM and use the configured Stack `mac-host`
-execution/broker path; credentials must never be copied into the VM. Confirm
-the transport with `yarn ghops auth status` and confirm repository identity with
-real paths and exact Git SHAs—similarly named host and VM checkouts are not
-interchangeable.
-
-On the Mac host, use
-`/Users/leeroy/Documents/Development/happier/maintainers-tools/bin/hmaint`
-directly and prove that exact wrapper with
-`/Users/leeroy/Documents/Development/happier/maintainers-tools/bin/hmaint --help`;
-there is intentionally no required `hmaint --version` command. Do not resolve a
-different copy from `PATH`, invoke the maintainer CLI's internal JavaScript
-entry point, or install a second conductor inside the VM. This 0.2 checkout
-does not contain `hstack-exec`. From the managed Linux VM, first enter an
-existing configured 0.3 checkout and invoke its launcher there, not from a 0.2
-working directory. The launcher projects the invocation directory remotely;
-its optional `--cwd` selects only a directory within the synchronized 0.3
-checkout, not a different release repository:
-
-```bash
-cd <absolute-0.3-checkout>
-./apps/stack/bin/hstack-exec --target=mac-host -- \
-  /Users/leeroy/Documents/Development/happier/maintainers-tools/bin/hmaint release bootstrap \
-  --repo <macOS-mounted-absolute-checkout> --json
-```
-
-The launcher's owning checkout and `hmaint --repo` target are independent.
-`--repo` may name a 0.2 checkout, but must use its independently verified absolute
-path on the Mac execution host, not an inferred translation of a VM path.
-If the launcher, configured `mac-host`, Mac wrapper, or Mac-visible target path
-cannot be proved, fail closed; do not translate paths by inspection or fall back
-to a VM-local conductor.
-
-Before changelog/version materialization, the release agent runs
-`node scripts/pipeline/run.mjs release-analyze ...` over the actual source
-range and completes the semantic compatibility review while inspecting that
-same diff for notes and version recommendations. After commit/push, only an
-unexpected runtime-reachable delta invalidates the affected analysis.
-
-`node scripts/pipeline/run.mjs release --release-profile integrated` is the
-normal preview path; preview and dev default to `integrated`, while production
-defaults to `stable`. `stable` remains a normal dispatch only after its
-additional manual evidence is complete. `deep` is deliberately rejected by the
-normal dispatcher.
-
-The profile contract describes self-hosted independent upgrade evidence; it
-does not require a fleet wait, global cutover, or synchronized deployment.
-
-### Preview release (dev → preview)
-
-When you want to publish/deploy a new preview build:
-
-1. Run **RELEASE — Publish (preview + production)** with:
-   - `environment=preview`
-   - `confirm=release dev to preview`
-2. The workflow runs the configured checks against already materialized release-note/version source, then promotes `dev` → `preview` (fast-forward).
-3. Deploy/publish steps for the preview environment build from `preview` (not `dev`).
-4. After post-promotion verification, the workflow advances its pre-promotion snapshots of open `stage:source` and `stage:dev` issues to `stage:preview`.
-
-### Production release (preview → main)
-
-When you want to ship what’s currently in `preview` to production:
-
-1. Run **RELEASE — Publish (preview + production)** with:
-   - `environment=production`
-   - `confirm=release preview to main`
-2. The workflow promotes `preview` → `main` (fast-forward by default; guarded reset is available), then deploys/publishes from `main`.
-3. After post-promotion verification, the workflow advances its pre-promotion snapshot of `stage:preview` issues to `stage:stable`.
-
-Notes:
-
-- Urgent path (avoid preview): `confirm=release dev to main` (or `reset main from dev`). Because that candidate comes from `dev`, it advances only snapshotted `stage:source` and `stage:dev` issues to `stage:stable`; it does not claim that unrelated preview-only corrections were included.
-
-### Combined preview and production release (dev → both)
-
-When the same approved source must ship to preview and production without a
-second operator cycle, use the private conductor target
-`preview-and-production`. The target dispatches
-`release-preview-and-production.yml`, which snapshots source/dev issue
-eligibility once and invokes the canonical `release.yml` for both channels in
-parallel.
-
-The two calls share the exact authorized source, release notes, and successful
-CI run. Source-only MySQL, platform-service, and installer/updater trust-root
-checks are selected from the union of both release ranges and execute once in
-the combined parent. Each channel retains its own planning and final admission,
-which verifies that the shared evidence covers that channel's selected risks.
-They deliberately do not share built artifacts: preview and production
-embed different feature-policy environments and therefore require distinct
-candidate bytes. Same-channel releases still serialize, while the two channel
-calls use separate non-cancelling concurrency groups. Issues advance directly
-to `stage:stable` only after both channel workflows succeed.
-
-Use GitHub's failed-job rerun when workflow control is unchanged. If control
-changes, resume the combined operation from its prior run; each channel reads
-its own terminal status artifact and reuses only the verified work for that
-channel.
-
-For a same-SHA transient failure, retain successful jobs and rerun only the
-failed jobs and their dependents:
-
-```bash
-gh run rerun <run-id> --repo happier-dev/happier --failed
-```
-
-For a control/test-only correction, wait until the origin run is terminal and
-then resume the existing conductor operation. Prefer the completed origin with
-the richest individually verified candidate and downstream evidence; the most
-recent run can be a worse origin when it failed during admission before
-re-verifying candidates.
-
-```bash
-hmaint release resume \
-  --repo <absolute-checkout> \
-  --operation-id <operation-id> \
-  --origin-run-id <completed-origin-run-id> \
-  --confirm "resume <operation-id> from run <completed-origin-run-id>" \
-  --json
-```
-
-Resume is valid only when source, package/build inputs, signing inputs, and
-immutable candidate bytes are unchanged. A candidate-reachable change requires
-a new prepared release. Never dispatch the privileged release workflow
-directly as a substitute for the conductor.
-
-Issue availability is tracked by the mutually exclusive `stage:source`, `stage:dev`, `stage:preview`, and `stage:stable` labels documented in `docs/issue-triage.md`. Ordinary current-`dev` nightlies perform `source → dev`; preview, production, and combined releases perform the transitions above. Failed and dry-run releases move nothing. The reconciler re-reads each snapshotted issue, preserves unrelated labels, and skips closed or manually restaged issues. It never comments on or closes an issue.
-
-Deploy branches typically include `deploy/<env>/ui`, `deploy/<env>/server`, `deploy/<env>/website`, and `deploy/<env>/docs` (depending on what changed and which options you select).
-
-`website` and `docs` are independent release targets. Either may be selected
-without the other, and each has its own change decision, deploy job, status
-surface, and recovery evidence. The combined preview-and-production mode
-combines channels; it forwards the selected target set to both channels and
-does not couple website and docs publication.
+Do not translate "test-only failure" into a blanket waiver. First identify the incorrect test or
+harness at its owner; use a bounded waiver only when you explicitly accept the missing evidence for
+this exact candidate.
 
 ### Release authority and binary integrity
 
-The default privileged conductor dispatches the hosted workflow, but the
-semantic release phases remain script-owned. `release-analyze` performs
-changed-seam planning, `release-validate` runs selected evidence, and
-`release-local-candidates` can publish, verify, and promote the same immutable
-CLI/stack/server/UI-web candidates directly when appropriate credentials and
-native platform prerequisites are available. GitHub YAML supplies triggers,
-permissions, runners, secrets/OIDC, matrices, and typed job wiring; it must not
-become a second owner of release policy.
-
-Local `--dry-run` planning uses
-remote-advertised identities and object-only fetches, so it does not update or
-prune local branch, remote-tracking, or tag refs.
-
-When a hosted run fails, use native failed-job rerun if workflow code and
-candidate bytes are unchanged. If workflow control changed, resume the failed
-operation through `hmaint release resume`; a new attempt may reuse only
-individually verified immutable candidates from the exact prior run. Any
-release-output-affecting source change requires new release outputs.
-
-Use this decision table instead of restarting the full graph:
-
-| Evidence | Recovery |
-| --- | --- |
-| Same control SHA; transient runner, download, read-only API, or safely recoverable external failure | `gh run rerun <run-id> --failed` |
-| Corrected workflow control, tests, or validation; unchanged candidate bytes; terminal origin with verified candidates | `hmaint release resume` from the richest valid origin |
-| Changed source, package/build dependency, signing input, or immutable candidate bytes | Prepare a fresh release |
-| Ambiguous publication mutation | Inspect the canonical remote state, then use the owning recovery-aware job; never blind-retry |
-
-Independent jobs should be allowed to finish so one attempt exposes every
-reachable failure. Publication and trust-dependent jobs still remain gated by
-their real prerequisites: a consumer cannot be tested before its candidate
-exists. Poll long builds, notarization, store submission, and publication every
-5–20 minutes and use step-level progress plus the owning timeout; duration alone
-is not failure evidence.
-
-For a corrected non-secret Linux lane, follow the exact manual-dispatch,
-exact-SHA binding, runner-pool, and failed-job rerun recipes in
-`.agents/skills/happier-ci-stabilize/SKILL.md`. Focused dispatch remains
-diagnostic evidence and does not replace the final canonical exact-SHA CI
-required by release policy.
-
-### npm trusted-publishing identity
-
-npm validates the top-level calling workflow identity for an OIDC publication
-through a reusable workflow. Every npm package published by this release graph
-must therefore trust both supported callers in `happier-dev/happier`:
-
-- `release.yml` for an individual preview or production operation;
-- `release-preview-and-production.yml` for the coordinated combined operation.
-
-Both use the `release-shared` GitHub environment. Register the workflow filename
-without `.github/workflows/`; do not add a long-lived `NPM_TOKEN` fallback.
-`ENEEDAUTH` in all npm publisher jobs while the release actor and OIDC steps are
-otherwise healthy usually means the top-level caller is absent or mismatched in
-npm's trusted-publisher configuration. Verify the package/version in the npm
-registry after publication rather than relying only on the workflow badge.
-
-For CLI, stack, server-runtime, and UI-web binary releases:
+For CLI, server-runtime, and UI-web binary releases:
 
 1. The hosted workflow binds the authorized source commit once.
 2. It creates or resumes the version-tagged Release as a draft, uploads missing
@@ -336,55 +134,23 @@ artifact is corrupt. Authorization failures and other permanent errors stop
 immediately. Byte, checksum, and signature verification remain outside retries,
 and a read retry never repeats a publication mutation.
 
-### Desktop macOS build tooling
+### Recovering a failed release
 
-Repository desktop builds use the shared UI tooling adapter
-`apps/ui/scripts/tauriActoolEnvironment.mjs`: the release pipeline's build/bundle
-commands, `hstack build --tauri`, and UI `tauri:build:*` scripts all consume it.
-It temporarily wraps the resolved Xcode `actool` executable to reopen stdin on
-`/dev/null`, preserving arguments, environment, exit status, and layered icons.
-The native Node Tauri CLI otherwise closes inherited stdin at exec, which can
-leave Apple's persistent `ibtoold` helper failing on later invocations too.
-The adapter warns when active and removes its private executable directory when
-the command settles; it does not restart shared Apple helpers or set private
-Apple process-registry options. Raw third-party `tauri` invocations are unchanged.
-Remove the adapter and its callers once the pinned CLI includes
-[the upstream captured-command stdin fix](https://github.com/tauri-apps/tauri/pull/15991),
-then verify a real layered-icon bundle with a fresh macOS build worker.
-
-### Best-effort TestFlight distribution
-
-The native iOS build/submission and App Store processing/group attachment are
-separate phases. After the signed build is submitted, the mobile workflow writes
-its exact EAS build id or local IPA build identity and dispatches the existing
-`retry_testflight_distribution` recovery action from the current trusted control
-checkout. Release promotion therefore does not hold a runner or the whole release
-open while Apple processes a build.
-
-The reconciliation run validates the source ref, environment, profile, app id,
-and build identity before querying App Store Connect. A skipped fingerprint build
-is an explicit no-op. A failed reconciliation remains visible and can be retried
-with the same recovery action; it must not trigger another native build or cause
-already verified product candidates to be rebuilt.
-
-A successful dispatch proves only that reconciliation was requested, not that
-Apple processed or distributed the build. Attachment errors remain failures in
-the follow-up run: a relationship 404 is reconciled against the current build
-and app groups, and an absent group is not silently treated as success. Recover
-an uploaded local IPA with its build number and app version; an EAS submission
-id is not an EAS build id.
+| Evidence | Recovery |
+| --- | --- |
+| Same control SHA; transient runner, download, read-only API, or safely recoverable external failure | `gh run rerun <run-id> --repo ErikaAlk/happiest --failed` |
+| Corrected workflow control, tests, or validation; unchanged candidate bytes; terminal origin with verified candidates | dispatch the release again with `resume_run_id` set to the richest valid completed run |
+| Changed source, package/build dependency, signing input, or immutable candidate bytes | Prepare a fresh release |
+| Ambiguous publication mutation | Inspect the canonical remote state, then use the owning recovery-aware job; never blind-retry |
 
 If a rolling upload is interrupted after the immutable Release was published,
-rerun the owning publisher with the same `channel` and its version as
+rerun the owning publisher with `channel=stable` and its version as
 `retry_version`. Leave `source_ref=auto`: recovery derives the exact authorized
-SHA from the product's immutable version tag, so it remains valid after the
-channel branch and current control-checkout package base advance. Recovery
-accepts only the latest published immutable Release for that product and
-channel; it does not permit rollback to an arbitrary older version. The
-supported publishers are:
+SHA from the product's immutable version tag. Recovery accepts only the latest
+published immutable Release for that product; it does not permit rollback to an
+arbitrary older version. The supported publishers are:
 
 - **PUBLISH — CLI Binaries (GitHub)** (`publish-cli-binaries.yml`)
-- **PUBLISH — Stack Binaries (GitHub)** (`publish-hstack-binaries.yml`)
 - **PUBLISH — Server Runtime (GitHub)** (`publish-server-runtime.yml`)
 - **PUBLISH — UI Web Bundle (GitHub)** (`publish-ui-web.yml`)
 
@@ -394,54 +160,34 @@ example:
 
 ```bash
 gh workflow run publish-server-runtime.yml \
-  --repo OWNER/REPOSITORY \
+  --repo ErikaAlk/happiest \
   --ref dev \
-  -f channel=preview \
+  -f channel=stable \
   -f source_ref=auto \
-  -f allow_stable=false \
-  -f retry_version=0.2.2-preview.123
+  -f allow_stable=true \
+  -f retry_version=0.1.0
 ```
 
-## Deploy branches → production infrastructure
+Independent jobs should be allowed to finish so one attempt exposes every
+reachable failure. Publication and trust-dependent jobs still remain gated by
+their real prerequisites: a consumer cannot be tested before its candidate
+exists. Poll long builds and publication every 5–20 minutes and use step-level
+progress plus the owning timeout; duration alone is not failure evidence.
 
-Pushes to `deploy/<env>/*` are intended to trigger deployment automation (for example, calling a protected deploy hook behind Cloudflare Access). How deployments are performed is intentionally decoupled from how code is promoted into deploy branches.
+### Desktop macOS build tooling
 
-In this repo, the deploy hook is implemented by the **DEPLOY — Deploy Branch** workflow:
-
-- Trigger: pushes to `deploy/<env>/<component>` (or a manual workflow dispatch).
-- Action: sends `POST` requests to one or more configured deploy webhook URLs for that component.
-- Auth: adds Cloudflare Access service-token headers (`CF-Access-Client-Id` / `CF-Access-Client-Secret`).
-- Server deploy order: API first, then worker.
-
-Configuration (recommended as GitHub *Environment* secrets/vars for `production` / `preview`):
-
-- `CF_WEBHOOK_DEPLOY_CLIENT_ID`, `CF_WEBHOOK_DEPLOY_CLIENT_SECRET`
-- `DEPLOY_WEBHOOK_URL`: base URL (e.g. `https://ci.leecloud.ch/api/deploy/`)
-- Newline-separated webhook URL lists:
-  - `HAPPIER_UI_DEPLOY_WEBHOOKS`
-  - `HAPPIER_WEBSITE_DEPLOY_WEBHOOKS`
-  - `HAPPIER_DOCS_DEPLOY_WEBHOOKS`
-  - `HAPPIER_SERVER_API_DEPLOY_WEBHOOKS`
-  - `HAPPIER_SERVER_WORKER_DEPLOY_WEBHOOKS`
-  - `HAPPIER_CLI_DEPLOY_WEBHOOKS`
-
-Repository variables used for exact hosted-server completion proof:
-
-- `HAPPIER_SERVER_API_PREVIEW_VERSION_URL`
-- `HAPPIER_SERVER_API_PRODUCTION_VERSION_URL`
-
-Each value must be the public `https://.../v1/version` endpoint for that
-environment. A selected server deployment fails release verification unless
-the endpoint reports the approved release `source_sha`; webhook acceptance alone
-is not deployment completion.
-
-The `HAPPIER_*_DEPLOY_WEBHOOKS` values can be either:
-- webhook IDs (recommended), which will be called as `${DEPLOY_WEBHOOK_URL}/{id}`
-- full `https://…` URLs (supported for backwards compatibility)
-
-If you only need to move branches (no deploy/publish):
-
-- Use **PROMOTE — Branch (fast-forward or reset)** to move `source` → `target` in a safe, explicit way.
+Happiest releases build no macOS desktop app; this matters only for local macOS builds. Repository
+desktop builds use the shared UI tooling adapter `apps/ui/scripts/tauriActoolEnvironment.mjs`: the
+release pipeline's build/bundle commands, `hstack build --tauri`, and UI `tauri:build:*` scripts all
+consume it. It temporarily wraps the resolved Xcode `actool` executable to reopen stdin on
+`/dev/null`, preserving arguments, environment, exit status, and layered icons. The native Node
+Tauri CLI otherwise closes inherited stdin at exec, which can leave Apple's persistent `ibtoold`
+helper failing on later invocations too. The adapter warns when active and removes its private
+executable directory when the command settles; it does not restart shared Apple helpers or set
+private Apple process-registry options. Raw third-party `tauri` invocations are unchanged. Remove
+the adapter and its callers once the pinned CLI includes
+[the upstream captured-command stdin fix](https://github.com/tauri-apps/tauri/pull/15991), then
+verify a real layered-icon bundle with a fresh macOS build worker.
 
 ## Why fast-forward?
 

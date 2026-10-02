@@ -12,7 +12,7 @@ Apply this policy when a change affects a cross-component wire shape or semantic
 
 - Active stable and preview releases count because both can exist on user machines or deployed infrastructure.
 - Resolve each component independently. UI, CLI/daemon, server, desktop/mobile, and stack tags may point to different commits.
-- Discover the current channel through rolling tags such as `cli-preview`, then record the immutable component version tag, commit, and relevant artifact/deploy evidence used by the check.
+- Discover the current channel through rolling tags such as `cli-stable`, then record the immutable component version tag, commit, and relevant artifact/deploy evidence used by the check.
 - Older releases count only when explicitly supported by policy or task scope; tag existence alone does not imply indefinite support.
 
 ### Non-obligations
