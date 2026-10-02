@@ -1,5 +1,5 @@
 /**
- * Japanese translations for the Happier app
+ * Japanese translations for the Happiest app
  * Values can be:
  * - String constants for static text
  * - Functions with typed object parameters for dynamic text
@@ -9,10 +9,10 @@ import type { TranslationStructure } from "../_types";
 
 const mcpServersUxTranslationExtension = {
   mcpServersConfiguredEmptySubtitle: 'サーバーを作成し、ホスト JSON をインポートするか、推奨プリセットをインストールしてください。',
-  mcpServersHeroSubtitle: ({ configuredCount }: { configuredCount: number }) => `Happier で ${configuredCount} 件が設定済み`,
+  mcpServersHeroSubtitle: ({ configuredCount }: { configuredCount: number }) => `Happiest で ${configuredCount} 件が設定済み`,
   mcpServersHeroSubtitleEmpty: 'サーバーは一度作成すれば、適用先をプレビューでき、他のツールで既に使っているものも取り込めます。',
   mcpServersSegmentConfigured: '設定済み',
-  mcpServersSegmentConfiguredSubtitle: 'Happier のカタログ',
+  mcpServersSegmentConfiguredSubtitle: 'Happiest のカタログ',
   mcpServersSegmentDetected: '検出済み',
   mcpServersSegmentDetectedSubtitle: 'プロバイダー設定ファイルで見つかりました',
   mcpServersSegmentPreview: 'プレビュー',
@@ -29,12 +29,12 @@ const mcpServersUxTranslationExtension = {
   mcpServersPreviewDirectorySubtitle: 'セッションを開始する予定のフォルダーを選択してください',
   mcpServersPreviewDirectoryPlaceholder: '/workspace/パス',
   mcpServersPreviewRefreshTitle: 'プレビューを更新',
-  mcpServersPreviewRefreshSubtitle: 'このコンテキスト向けの Happier とプロバイダー固有の MCP サーバーを解決します',
+  mcpServersPreviewRefreshSubtitle: 'このコンテキスト向けの Happiest とプロバイダー固有の MCP サーバーを解決します',
   mcpServersPreviewEmptyTitle: 'まだプレビューがありません',
   mcpServersPreviewEmptySubtitle: 'バックエンド、マシン、ディレクトリを選んでから更新すると、実際に有効になる MCP セットを確認できます。',
   mcpServersPreviewDirectoryRequired: 'このセッションをプレビューするにはディレクトリを選択してください。',
-  mcpServersBuiltInDescription: 'Happier セッションでは常に利用できます。',
-  mcpServersSourceHappier: 'Happier',
+  mcpServersBuiltInDescription: 'Happiest セッションでは常に利用できます。',
+  mcpServersSourceHappier: 'Happiest',
   mcpServersSourceBuiltIn: '組み込み',
   mcpServersSourceDetected: '検出済み',
   mcpServersQuickInstallTitle: 'クイックインストール',
@@ -95,17 +95,17 @@ const mcpServersUxTranslationExtension = {
   mcpServersStatusDetected: ({ provider }: { provider: string }) => `${provider} で有効`,
   mcpServersStatusDisabledInProvider: ({ provider }: { provider: string }) => `${provider} で無効`,
   mcpServersEditorAppliesTo: '適用先',
-  mcpServersEditorAppliesToSubtitle: 'Happier がこのサーバーを既定で追加する場所を選んでください。',
+  mcpServersEditorAppliesToSubtitle: 'Happiest がこのサーバーを既定で追加する場所を選んでください。',
   mcpServersAddApplyRule: '適用先ルールを追加',
   mcpServersAddApplyRuleSubtitle: 'このサーバーを既定で適用する場所を選んでください。',
   mcpServersAddApplyRuleHelp: 'この適用先ルールを保存して、このサーバー設定の一部にしてください。',
   mcpServersAddApplyRuleSave: '適用先ルールを保存',
   mcpServersDeliveryNativeTitle: 'ネイティブ MCP',
-  mcpServersDeliveryNativeSubtitle: 'このバックエンドは Happier のツールをネイティブ MCP サーバーとして受け取ります。',
-  mcpServersDeliveryShellBridgeTitle: 'Happier シェルブリッジ',
-  mcpServersDeliveryShellBridgeSubtitle: 'このバックエンドは `happier tools` ブリッジ経由で Happier のツールを呼び出します。',
+  mcpServersDeliveryNativeSubtitle: 'このバックエンドは Happiest のツールをネイティブ MCP サーバーとして受け取ります。',
+  mcpServersDeliveryShellBridgeTitle: 'Happiest シェルブリッジ',
+  mcpServersDeliveryShellBridgeSubtitle: 'このバックエンドは `happiest tools` ブリッジ経由で Happiest のツールを呼び出します。',
   mcpServersDeliveryUnsupportedTitle: '非対応',
-  mcpServersDeliveryUnsupportedSubtitle: 'このバックエンドは現在 Happier のツールを受け取りません。',
+  mcpServersDeliveryUnsupportedSubtitle: 'このバックエンドは現在 Happiest のツールを受け取りません。',
 } as const;
 
 const newSessionMcpTranslationExtension = {
@@ -128,9 +128,9 @@ const newSessionMcpTranslationExtension = {
   mcpDetectedEmptyTitle: '検出された MCP サーバーはありません',
   mcpDetectedEmptySubtitle: '更新して、このマシン上のプロバイダー設定ファイルをスキャンしてください。',
   mcpDetectedUnsupportedTitle: '検出された MCP サーバーは利用できません',
-  mcpDetectedUnsupportedSubtitle: 'このマシンで Happier を更新して、プロバイダー設定のスキャンを有効にしてください。',
-  mcpHappierSectionTitle: 'Happier MCP サーバー',
-  mcpHappierEmptyTitle: 'Happier に MCP サーバーが定義されていません',
+  mcpDetectedUnsupportedSubtitle: 'このマシンで Happiest を更新して、プロバイダー設定のスキャンを有効にしてください。',
+  mcpHappierSectionTitle: 'Happiest MCP サーバー',
+  mcpHappierEmptyTitle: 'Happiest に MCP サーバーが定義されていません',
   mcpHappierEmptySubtitle: '設定で MCP サーバーを定義してセッションで利用できます。',
   mcpReasonActiveByDefault: '既定で含まれる',
   mcpReasonForcedIncluded: '設定により必須',
@@ -152,7 +152,7 @@ const settingsAppearanceTranslationExtension = {
     customGroup: 'Custom themes',
     customFooter: 'Tap a theme to activate it, or use row actions to edit, duplicate, or delete it.',
     defaultTheme: 'Default theme',
-    defaultThemeSubtitle: 'Use Happier theme colors without a custom profile',
+    defaultThemeSubtitle: 'Use Happiest theme colors without a custom profile',
     active: 'Active',
     customProfileSubtitle: 'Custom local theme profile',
     tapToActivate: 'Tap to activate',
@@ -160,7 +160,7 @@ const settingsAppearanceTranslationExtension = {
     createProfile: 'Create theme',
     createProfileSubtitle: 'Start from any built-in or custom theme',
     importProfile: 'Import theme',
-    importProfileSubtitle: 'Paste JSON or choose a Happier theme profile file',
+    importProfileSubtitle: 'Paste JSON or choose a Happiest theme profile file',
     exportProfile: 'Export theme',
     exportProfileSubtitle: 'Export this theme as JSON',
     presetsGroup: 'Built-in presets',
@@ -364,7 +364,7 @@ const memoryEmbeddingsTranslationExtension = {
       title: 'プロバイダ',
       options: {
         localTitle: 'ローカルモデル',
-        localSubtitle: 'Happier によって管理され、初回使用時にダウンロードされます',
+        localSubtitle: 'Happiest によって管理され、初回使用時にダウンロードされます',
         openAiCompatibleTitle: 'OpenAI 互換エンドポイント',
         openAiCompatibleSubtitle: '独自の埋め込みサーバーと API キーを使用します',
       },
@@ -457,7 +457,7 @@ const promptLibraryUxRefinementTranslationExtension = {
     externalAssetsInstallMethodCopy: 'ファイルをコピー',
     externalAssetsInstallMethodCopySubtitle: '選択した保存先に独立したコピーを書き込みます',
     externalAssetsInstallMethodSymlink: 'シンボリックリンク（推奨）',
-    externalAssetsInstallMethodSymlinkSubtitle: '更新しやすいように保存先を Happier 管理のコピーへリンクします',
+    externalAssetsInstallMethodSymlinkSubtitle: '更新しやすいように保存先を Happiest 管理のコピーへリンクします',
     registriesAddGitSourceSubtitle: 'Git リポジトリまたはローカルチェックアウトをレジストリソースとして追加',
     registriesSourceTitleLabel: 'ソース名',
     registriesSourceUrlLabel: 'リポジトリ URL またはローカルパス',
@@ -468,7 +468,7 @@ const promptLibraryUxRefinementTranslationExtension = {
     registriesItemFiles: '補助ファイル',
     registriesItemPreview: 'SKILL.md プレビュー',
     registriesItemPreviewUnavailable: 'このレジストリアイテムでは SKILL.md のプレビューを利用できません。',
-    registriesItemImportSubtitle: 'このスキルバンドルを Happier ライブラリに取り込む',
+    registriesItemImportSubtitle: 'このスキルバンドルを Happiest ライブラリに取り込む',
     registriesItemInstallAction: 'マシンにインストール',
     registriesItemInstallConfirmTitle: 'レジストリアイテムをインストールしますか？',
     registriesItemInstallConfirmBody: 'このスキルをライブラリに取り込み、選択したマシンの保存先へインストールします。',
@@ -514,7 +514,7 @@ const sessionHandoffTranslationExtensions = {
     recovery: {
       title: 'ハンドオフ完了前にこのマシンでセッションが停止されました',
       messageAfterSourceStop:
-        'Happier はこのマシン上のセッションをすでに停止しましたが、転送先マシンでの起動を完了できませんでした。ここで再起動するか、転送先マシンの復旧中は停止したままにしてください。',
+        'Happiest はこのマシン上のセッションをすでに停止しましたが、転送先マシンでの起動を完了できませんでした。ここで再起動するか、転送先マシンの復旧中は停止したままにしてください。',
       restartOnSource: '元の環境で再開',
       keepStopped: '停止したままにする',
     },
@@ -567,8 +567,8 @@ const settingsSessionHandoffTranslationExtensions = {
       groupFooter: '元のセッションが現在ダイレクトのときだけ適用されます。',
       keepDirectTitle: 'ダイレクトのまま',
       keepDirectSubtitle: 'プロバイダーが対応していれば、移行先をダイレクトセッションとして再開します。',
-      convertToPersistedTitle: 'Happier に変換',
-      convertToPersistedSubtitle: 'トランスクリプトを取り込み、Happier セッションとして続けます。',
+      convertToPersistedTitle: 'Happiest に変換',
+      convertToPersistedSubtitle: 'トランスクリプトを取り込み、Happiest セッションとして続けます。',
     },
   },
 } as const;
@@ -840,7 +840,7 @@ export const ja: TranslationStructure = {
     codingStack: "コーディングスタック",
     codingStackSubtitle: "コーディングセッションに適用",
     voiceStack: "音声スタック",
-    voiceStackSubtitle: "Happier Voice に適用",
+    voiceStackSubtitle: "Happiest Voice に適用",
     profileStacks: "プロフィールスタック",
     profileStacksSubtitle: ({ count }: { count: number }) => `${count}件のプロフィール`,
     profileStackCount: ({ count }: { count: number }) => `${count}件`,
@@ -1136,7 +1136,7 @@ export const ja: TranslationStructure = {
   appCrash: {
     title: "問題が発生しました",
     subtitle:
-      "Happierで予期しないエラーが発生しました。アプリUIを再起動するか、サポート用に詳細をコピーできます。",
+      "Happiestで予期しないエラーが発生しました。アプリUIを再起動するか、サポート用に詳細をコピーできます。",
     detailsTitle: "エラーの詳細",
     restart: "アプリを再起動",
     restartAndReportIssue: "再起動して不具合を報告",
@@ -1336,7 +1336,7 @@ export const ja: TranslationStructure = {
     duplicateName: "同じ名前のプロファイルが既に存在します",
     setupInstructions: {
       title: "セットアップ手順",
-      viewCloudGuide: "公式セットアップガイドを表示",
+      viewCloudGuide: "セットアップガイドを表示",
     },
     machineLogin: {
       title: "マシンでのログインが必要",
@@ -1465,7 +1465,7 @@ export const ja: TranslationStructure = {
     defaultStorage: {
       title: "既定のセッションタイプ",
       footer:
-        "このプロフィールを選択したとき、新しいセッションに対してアカウント既定の Happier/直接セッションタイプを上書きします。",
+        "このプロフィールを選択したとき、新しいセッションに対してアカウント既定の Happiest/直接セッションタイプを上書きします。",
       accountDefaultSubtitle: ({ label }: { label: string }) => `アカウント既定: ${label}`,
       useAccountDefault: "アカウント既定を使用",
       currently: ({ label }: { label: string }) => `現在: ${label}`,
@@ -1677,11 +1677,11 @@ export const ja: TranslationStructure = {
     scanComputerQrUnavailableTitle: "PCのQRスキャンは利用できません",
     scanComputerQrUnavailableBody:
       "このサーバーではこのサインイン方法が無効になっています。下の別の方法でアカウントを復元してください。",
-    scanComputerQrInstructions: "パソコンの Happier（設定 → スマホを追加）に表示されたQRコードをスキャンします。",
+    scanComputerQrInstructions: "パソコンの Happiest（設定 → スマホを追加）に表示されたQRコードをスキャンします。",
     scanComputerQrButton: "QRをスキャンしてサインイン",
     waitingForApproval: "承認待ち…",
     showQrInstead: "代わりにQRコードを表示",
-    addPhoneQrInstructions: "Happier モバイルアプリでこのQRコードをスキャンして、スマホでサインインします。",
+    addPhoneQrInstructions: "Happiest モバイルアプリでこのQRコードをスキャンして、スマホでサインインします。",
     serverUrlNotEmbeddedTitle: "スマホでサーバーを設定",
     serverUrlNotEmbeddedBody:
       "このQRコードにはサーバーのURLを含められません（localhost に設定されているため）。スマホで「設定 → サーバー」を開き、スマホから到達できるURL（LANのIPやTailscaleのURLなど）を追加してから、もう一度スキャンしてください。",
@@ -1703,14 +1703,14 @@ export const ja: TranslationStructure = {
     externalAuthVerifiedTitle: ({ provider }: { provider: string }) =>
       `${provider} の認証が完了しました`,
     externalAuthVerifiedBody: ({ provider }: { provider: string }) =>
-      `${provider} に紐づく既存の Happier アカウントが見つかりました。この端末でサインインを完了するには、QRコードまたはシークレットキーでアカウントキーを復元してください。`,
+      `${provider} に紐づく既存の Happiest アカウントが見つかりました。この端末でサインインを完了するには、QRコードまたはシークレットキーでアカウントキーを復元してください。`,
     restoreWithSecretKeyInstead: "秘密鍵で復元する",
     restoreWithSecretKeyDescription:
       "アカウントへのアクセスを復元するには秘密鍵を入力してください。",
     lostAccessLink: "アクセスを失いましたか？",
     lostAccessTitle: "アカウントへのアクセスを失いましたか？",
     lostAccessBody:
-      "このアカウントに紐づいた端末がなく、シークレットキーを失った場合は、本人確認プロバイダーでアカウントをリセットできます。新しい Happier アカウントが作成されます。以前の暗号化された履歴は復元できません。",
+      "このアカウントに紐づいた端末がなく、シークレットキーを失った場合は、本人確認プロバイダーでアカウントをリセットできます。新しい Happiest アカウントが作成されます。以前の暗号化された履歴は復元できません。",
     lostAccessContinue: ({ provider }: { provider: string }) =>
       `${provider} で続行`,
     lostAccessConfirmTitle: "アカウントをリセットしますか？",
@@ -1720,14 +1720,13 @@ export const ja: TranslationStructure = {
     secretKeyPlaceholder: "XXXXX-XXXXX-XXXXX...",
     linkNewDeviceTitle: "新しいデバイスをリンク",
     linkNewDeviceSubtitle: "新しいデバイスに表示されているQRコードをスキャンしてこのアカウントにリンクしてください",
-    linkNewDeviceQrInstructions: "新しいデバイスでHappierを開いてQRコードを表示してください",
+    linkNewDeviceQrInstructions: "新しいデバイスでHappiestを開いてQRコードを表示してください",
     scanQrCodeOnDevice: "QRコードをスキャン",
     unsupported: {
       connectTitle: ({ name }: { name: string }) => `${name} を接続`,
       runCommandInTerminal: "ターミナルで次のコマンドを実行してください:",
       runCommandInTerminalWithCommand: ({ command }: { command: string }) =>
         `ターミナルで次のコマンドを実行してください:\n\n${command}`,
-      command: ({ name }: { name: string }) => `happier connect ${name}`,
     },
   },
 
@@ -1757,7 +1756,7 @@ export const ja: TranslationStructure = {
         pasteDoctorJson: {
           title: "CLI doctor JSON（任意）",
           subtitle:
-            "UIからマシンに接続できない場合、PCで `happier doctor --json` を実行してここに貼り付けてください。",
+            "UIからマシンに接続できない場合、PCで `happiest doctor --json` を実行してここに貼り付けてください。",
           placeholder: '{ "capturedAt": "...", ... }',
           invalid: ({ error }: { error: string }) => `無効な doctor JSON: ${error}`,
           valid: "doctor JSON は有効に見えます。レポートに添付されます。",
@@ -1808,7 +1807,7 @@ export const ja: TranslationStructure = {
         expectedBehaviorPlaceholder: "代わりにどうなるべきですか？",
         reproductionStepsLabel: "再現手順（任意）",
         reproductionStepsPlaceholder:
-          "1. Happier を開く\n2. セッションを開始\n3. ...",
+          "1. Happiest を開く\n2. セッションを開始\n3. ...",
         whatChangedLabel: "最近の変更点（任意）",
         whatChangedPlaceholder:
           "アップデート、設定変更、新しいセットアップ手順…",
@@ -1887,7 +1886,7 @@ export const ja: TranslationStructure = {
       title: "有効",
       subtitle: "このマシン上でローカルインデックスを構築・維持します",
       footer:
-        "有効にすると、Happier は復号されたトランスクリプトから端末内インデックスを作成し、すばやい想起と検索を可能にします。",
+        "有効にすると、Happiest は復号されたトランスクリプトから端末内インデックスを作成し、すばやい想起と検索を可能にします。",
     },
     budgets: {
       groupTitle: "ディスク予算",
@@ -2147,8 +2146,8 @@ export const ja: TranslationStructure = {
         backendsSubtitle: "設定済みバックエンドとカスタム起動先。",
       },
       enableInjection: {
-        title: "Happier 実行の指示",
-        subtitle: "オフにすると、ネイティブ優先ルーティングと Happier 実行の仕組みがコーディングエージェントのシステムプロンプトから削除されます。",
+        title: "Happiest 実行の指示",
+        subtitle: "オフにすると、ネイティブ優先ルーティングと Happiest 実行の仕組みがコーディングエージェントのシステムプロンプトから削除されます。",
       },
       notifyParentOnCompletion: { title: '実行完了時に親へ通知', subtitle: '親エージェントに構造化された完了イベントを送信します。' },
       characterBudget: {
@@ -2227,7 +2226,7 @@ export const ja: TranslationStructure = {
     addYourPhoneSubtitle: "スマホでサインインするためのQRコードを表示します",
     addMachine: "マシンを追加",
     machineSetupCurrentMachineTitle: "このコンピューター",
-    machineSetupCurrentMachineSubtitle: "このデバイスに Happier を直接セットアップします",
+    machineSetupCurrentMachineSubtitle: "このデバイスに Happiest を直接セットアップします",
     machineSetupAdoptExistingTitle: "既存のインストールを使用",
     machineSetupAdoptExistingSubtitle: "このコンピューターの既存のデーモン/サービス設定を使います",
     machineSetupAdoptExistingProgressTitle: "既存のインストールを確認しています",
@@ -2236,7 +2235,7 @@ export const ja: TranslationStructure = {
     machineSetupSshMachineSubtitle: "SSH で開発用ボックス、VM、またはサーバーに接続します",
     machineSetupStagesTitle: "手順",
     machineSetupStageConnect: "接続してアクセスを検証",
-    machineSetupStageInstall: "Happier をインストールしてマシンをペアリング",
+    machineSetupStageInstall: "Happiest をインストールしてマシンをペアリング",
     machineSetupStageFinish: "内蔵ターミナルでセットアップを完了",
     machineSetupComingSoon: "マシンのセットアップは近日対応予定です。",
     machineSetupTaskWaitingForInput: "入力待ち",
@@ -2255,7 +2254,7 @@ export const ja: TranslationStructure = {
     machineSetupRemoteRelaySwitchSubtitle: "今すぐ切り替えて、新しい Relay でセットアップを続行します。",
     machineSetupRemoteRelaySwitchConfirmTitle: "Relay を切り替えますか？",
     machineSetupRemoteRelaySwitchConfirmBody: ({ relayUrl }: { relayUrl: string }) =>
-      `Happier を ${relayUrl} に切り替えてセットアップを続行しますか？`,
+      `Happiest を ${relayUrl} に切り替えてセットアップを続行しますか？`,
     machineSetupRemotePromptTrustAction: "ホストキーを信頼する",
     machineSetupRemotePromptReplaceAction: "保存済みキーを置き換える",
     machineSetupRemotePromptApproveAction: "ペアリングを承認",
@@ -2347,13 +2346,13 @@ localTailscale: {
     actionsSettingsAboutSubtitle:
       "アクションをグローバルに、サーフェス（UI/音声/MCP）別、配置（UI 内の表示場所）別に有効/無効にできます。無効化されたアクションは実行時に安全側（フェイルクローズ）でブロックされます。",
     aboutFooter:
-      "Happier CoderはCodexとClaude Codeのモバイルクライアントです。デフォルトでエンドツーエンド暗号化され、他のデバイスでもアカウントを復元できます。Anthropicとは提携していません。",
+      "Happiest CoderはCodexとClaude Codeのモバイルクライアントです。デフォルトでエンドツーエンド暗号化され、他のデバイスでもアカウントを復元できます。Anthropicとは提携していません。",
     whatsNew: "新機能",
     whatsNewSubtitle: "最新のアップデートと改善を確認",
     reportIssue: "問題を報告",
     privacyPolicy: "プライバシーポリシー",
     termsOfService: "利用規約",
-    rateUs: "Happier を評価する",
+    rateUs: "Happiest を評価する",
     rateUsSubtitle: "アプリを気に入っていただけたら、短い評価で応援してください",
     eula: "使用許諾契約",
     supportUs: "開発を支援",
@@ -2678,7 +2677,7 @@ localTailscale: {
       copyReportSubtitle: "サポート向けの安全なJSONレポートをコピー",
     },
     pasteDoctorJson: {
-      footer: "ヒント: PCで `happier doctor --json` を実行して貼り付けてください。",
+      footer: "ヒント: PCで `happiest doctor --json` を実行して貼り付けてください。",
       placeholder: '{ "capturedAt": "...", ... }',
       parse: "貼り付けたJSONを検証",
       ok: "貼り付けた doctor JSON は有効に見えます。",
@@ -2918,23 +2917,23 @@ localTailscale: {
             `The daemon could not verify ${agentId} resume state because required resume inputs were missing. Reported reason: ${reason}. Start fresh under the selected account or continue with the current account.`,
         metadata_update_failed: "セッションは新しい認証選択を保存できませんでした。セッションの同期が完了してからもう一度お試しください。",
         no_eligible_group_member: "このプールには現在フォールバック対象のアカウントがありません。接続済みアカウントを確認し、必要に応じてプロファイルを再接続してください。",
-        recovery_retry_scheduled: "Happier はプロバイダー復旧の再試行を予定しました。今すぐ再試行するか、接続済みアカウントを確認できます。",
-        recovery_dead_lettered: "Happier はプロバイダー復旧の自動再試行を使い切りました。接続済みアカウントを確認するか、選択したプロファイルを再接続してください。",
-        runtime_auth_recovery_superseded: "このプロバイダー復旧の試行は、より新しい接続サービス状態に置き換えられました。Happier は古いアカウントを再試行し続けません。",
+        recovery_retry_scheduled: "Happiest はプロバイダー復旧の再試行を予定しました。今すぐ再試行するか、接続済みアカウントを確認できます。",
+        recovery_dead_lettered: "Happiest はプロバイダー復旧の自動再試行を使い切りました。接続済みアカウントを確認するか、選択したプロファイルを再接続してください。",
+        runtime_auth_recovery_superseded: "このプロバイダー復旧の試行は、より新しい接続サービス状態に置き換えられました。Happiest は古いアカウントを再試行し続けません。",
         runtime_auth_generation_stale: "このプロバイダー復旧の試行は、古い接続サービス世代に属しています。最新の切り替えを待つか、接続済みアカウントを確認してください。",
-        hot_apply_unavailable: "このプロバイダーは実行中のセッションで安全に認証を切り替えられません。Happier は安全な再起動または次の利用可能な復旧経路を待ちます。",
+        hot_apply_unavailable: "このプロバイダーは実行中のセッションで安全に認証を切り替えられません。Happiest は安全な再起動または次の利用可能な復旧経路を待ちます。",
         app_server_unavailable: "プロバイダーのアプリサーバーは、認証切り替えの確認または適用に利用できませんでした。セッションの準備ができたら再試行してください。",
         provider_account_adoption_mismatch: "切り替え後もプロバイダーは別のアカウントのままでした。接続済みアカウントを確認するか、切り替えを再試行してください。",
-        provider_account_identity_unverified: "Happier は現在のプロバイダーアカウントの本人性を証明できませんでした。より強い証明が得られるまで、同一アカウントへの分岐を避けます。",
-        post_switch_verification_failed: "Happier は、プロバイダーが選択したアカウントを採用したことを確認できませんでした。接続済みアカウントを確認するか、切り替えを再試行してください。",
-        quota_snapshot_stale: "最新のクォータスナップショットが古すぎるため、予防的な切り替えには使えません。新しいクォータが利用可能になるまで、Happier はリアクティブ復旧を使い続けます。",
-        quota_fetch_disabled: "このプロバイダーでは現在クォータ確認が無効です。Happier はリアクティブ復旧を使い続けます。",
-        quota_fetch_backoff: "プロバイダーまたはネットワークの応答後、クォータ確認は一時的にバックオフ中です。Happier は後でクォータ更新を再試行します。",
-        auth_surface_weakly_verified: "Happier は選択された認証ファイルが書き換えられたことを確認しましたが、このプロバイダーは現在の正確なアカウント本人性を公開していません。",
-        connected_service_restart_requested: "選択した接続済みアカウントを反映するため、Happier が安全なセッション再起動を要求しました。",
+        provider_account_identity_unverified: "Happiest は現在のプロバイダーアカウントの本人性を証明できませんでした。より強い証明が得られるまで、同一アカウントへの分岐を避けます。",
+        post_switch_verification_failed: "Happiest は、プロバイダーが選択したアカウントを採用したことを確認できませんでした。接続済みアカウントを確認するか、切り替えを再試行してください。",
+        quota_snapshot_stale: "最新のクォータスナップショットが古すぎるため、予防的な切り替えには使えません。新しいクォータが利用可能になるまで、Happiest はリアクティブ復旧を使い続けます。",
+        quota_fetch_disabled: "このプロバイダーでは現在クォータ確認が無効です。Happiest はリアクティブ復旧を使い続けます。",
+        quota_fetch_backoff: "プロバイダーまたはネットワークの応答後、クォータ確認は一時的にバックオフ中です。Happiest は後でクォータ更新を再試行します。",
+        auth_surface_weakly_verified: "Happiest は選択された認証ファイルが書き換えられたことを確認しましたが、このプロバイダーは現在の正確なアカウント本人性を公開していません。",
+        connected_service_restart_requested: "選択した接続済みアカウントを反映するため、Happiest が安全なセッション再起動を要求しました。",
         connected_service_credential_reconnect_required: "このセッションを再開するには、選択した接続済みアカウントを再接続する必要があります。プロファイルを再接続してから再試行してください。",
         claude_subscription_missing_claude_code_scope: "この Claude プロファイルは Claude Code のスコープが付与される前に接続されました。再接続してから、セッションまたはプール切り替えを再試行してください。",
-        claude_subscription_native_auth_materialization_failed: "Happier はこのプロファイル用の Claude Code ネイティブ認証情報ファイルを作成できませんでした。プロファイルを再接続するか、別のプールメンバーを選択してください。",
+        claude_subscription_native_auth_materialization_failed: "Happiest はこのプロファイル用の Claude Code ネイティブ認証情報ファイルを作成できませんでした。プロファイルを再接続するか、別のプールメンバーを選択してください。",
         claude_subscription_setup_token_not_supported_for_unified: "Claude Unified モードでは、ネイティブ OAuth 認証情報で Claude CLI を起動する必要があります。セットアップトークンではなく OAuth でこのプロファイルを再接続してください。",
       },
       actions: {
@@ -3063,7 +3062,7 @@ localTailscale: {
       invalidConfig: "接続済みサービスの設定が無効です。",
       connectWebGroupTitle: "接続（Web）",
       connectWebDescription:
-        "認可URLを開き、ブラウザでOAuthを完了したら、最終的にリダイレクトされたURLをコピーしてHappierに貼り付けてください。",
+        "認可URLを開き、ブラウザでOAuthを完了したら、最終的にリダイレクトされたURLをコピーしてHappiestに貼り付けてください。",
       openAuthorizationUrl: "認可 URL を開く",
       opensInNewTab: "新しいタブで開きます",
       preparing: "準備中…",
@@ -3166,7 +3165,7 @@ localTailscale: {
       connectAccessTokenTitle: "アクセストークンで接続",
       connectAccessTokenSubtitle: "GitHub personal access token を貼り付け",
       openGithubTokenTemplateTitle: "GitHub トークンを作成",
-      openGithubTokenTemplateSubtitle: "Happier に必要な権限を事前入力して GitHub を開く",
+      openGithubTokenTemplateSubtitle: "Happiest に必要な権限を事前入力して GitHub を開く",
       disconnectConfirmBody: ({ service, profileId }: { service: string; profileId: string }) =>
         `「${service}（${profileId}）」を切断しますか？`,
       disconnectGroupCleanupConfirmBody: ({ service, profileId, groups }: { service: string; profileId: string; groups: string }) =>
@@ -3338,7 +3337,7 @@ localTailscale: {
         staleProbeTitle: "古いクォータを再確認",
         staleProbeSubtitle: ({ minutes }: { minutes: string }) => `クォータデータが ${minutes} 分より古い場合に再確認します。`,
         staleProbePromptTitle: "古いクォータを再確認",
-        staleProbePromptBody: "Happier が再確認するまでクォータデータを再利用できる分数を入力してください。",
+        staleProbePromptBody: "Happiest が再確認するまでクォータデータを再利用できる分数を入力してください。",
         invalidStaleProbeTitle: "確認間隔が無効です",
         invalidStaleProbeBody: "1 分以上を入力してください。",
         switchBudgetTitle: "自動切り替えの上限",
@@ -3471,7 +3470,7 @@ localTailscale: {
       groupUnknownSubtitle: "準備状況をまだ同期中です",
       groupUnsupportedSubtitle: "このランタイムではアカウントプールを切り替えられません",
       connectedServicesTitle: "接続済みサービスを使用",
-      connectedServicesSubtitle: "Happierクラウドから取得して反映",
+      connectedServicesSubtitle: "Happiestサーバーから取得して反映",
       notConnectedTitle: "接続済みサービスなし",
       notConnectedSubtitle: "タップして設定を開く",
       profileLabel: "プロファイル",
@@ -3691,7 +3690,7 @@ localTailscale: {
               "web/desktop で最高の diff 表示。worker パイプラインを使用し、利用できない場合は安全にフォールバックします。",
           },
           happier: {
-            title: "Diff レンダラー: Happier",
+            title: "Diff レンダラー: Happiest",
             subtitle: "互換性とトラブルシューティング向けのフォールバック表示です。",
           },
         },
@@ -3760,20 +3759,20 @@ localTailscale: {
 
   settingsDesktop: {
     title: 'デスクトップ',
-    footer: 'このコンピューターでの Happier の動作を設定します。',
+    footer: 'このコンピューターでの Happiest の動作を設定します。',
     startOnLoginTitle: 'ログイン時に起動',
-    startOnLoginSubtitle: 'このコンピューターにサインインしたときに Happier を自動的に起動します。',
+    startOnLoginSubtitle: 'このコンピューターにサインインしたときに Happiest を自動的に起動します。',
     backgroundServiceTitle: 'バックグラウンドで接続を維持',
-    backgroundServiceSubtitle: 'Happier を閉じたあともこのコンピューターが応答し続けます。オフにすると、アプリを再び開くまでスマートフォンやブラウザーからこのコンピューターに接続できません。',
-    backgroundServiceUnknown: 'このコンピューターの Happier コマンドラインは、バックグラウンドサービスがログイン時に起動するかどうかを報告しません。',
+    backgroundServiceSubtitle: 'Happiest を閉じたあともこのコンピューターが応答し続けます。オフにすると、アプリを再び開くまでスマートフォンやブラウザーからこのコンピューターに接続できません。',
+    backgroundServiceUnknown: 'このコンピューターの Happiest コマンドラインは、バックグラウンドサービスがログイン時に起動するかどうかを報告しません。',
     backgroundServiceNotSetUp: 'このコンピューターのセットアップ後に利用できます。',
     backgroundServiceChangeFailed: '変更を適用できませんでした。もう一度お試しください。',
-    trayOpen: 'Happier を開く',
-    trayQuit: 'Happier を終了',
+    trayOpen: 'Happiest を開く',
+    trayQuit: 'Happiest を終了',
     closeStopTitle: 'エージェントのセッションがまだ実行中です',
-    closeStopBody: 'Happier を閉じるとこのコンピューターのバックグラウンドサービスが停止し、ここで実行中のセッションが終了します。',
+    closeStopBody: 'Happiest を閉じるとこのコンピューターのバックグラウンドサービスが停止し、ここで実行中のセッションが終了します。',
     closeStopUnknownTitle: 'バックグラウンドサービスを停止しますか？',
-    closeStopUnknownBody: 'Happier はこのコンピューターで実行中のセッションを確認できません。閉じるとバックグラウンドサービスが停止し、実行中のセッションがあれば終了します。',
+    closeStopUnknownBody: 'Happiest はこのコンピューターで実行中のセッションを確認できません。閉じるとバックグラウンドサービスが停止し、実行中のセッションがあれば終了します。',
     closeStopConfirm: 'それでも停止',
     closeStopKeep: '実行したままにする',
   },
@@ -3795,7 +3794,7 @@ localTailscale: {
     deviceOverrideTitle: 'このデバイスで使用',
     deviceOverrideSubtitle: 'アカウントのペット設定をローカルで上書きします。',
     sourceTitle: 'ペットのソース',
-    builtInSubtitle: 'Happier に組み込まれています。',
+    builtInSubtitle: 'Happiest に組み込まれています。',
     builtInBlinkSubtitle: 'セッションの合図を落ち着いた小さなステータスライトに変えます。',
     builtInFurySubtitle: '本番に届く前に難しいワークフローをストレステストします。',
     builtInMiloSubtitle: 'UI を整え、失敗したテストの上で昼寝します。',
@@ -3804,7 +3803,7 @@ localTailscale: {
     localLibraryTitle: 'このデバイス',
     localLibraryFooter: 'ローカルのペットは、アカウントにインポートしない限りこのデバイスに留まります。',
     helpDocsTitle: 'ペットのヘルプ',
-    helpDocsSubtitle: 'セットアップとトラブルシューティング用の Happier ドキュメントを開きます。',
+    helpDocsSubtitle: 'セットアップとトラブルシューティング用の Happiest ドキュメントを開きます。',
     detectCodexPetsTitle: 'Codex ペットを検出',
     detectCodexPetsSubtitle: 'ローカルの Codex homes から互換ペットを探します。',
     detectedCodexPetsTileSubtitle: 'Codex で見つかり、このデバイスに参加する準備ができています。',
@@ -3813,7 +3812,7 @@ localTailscale: {
     detectedCodexPetsErrorTitle: 'Codex ペットを検出できませんでした',
     detectedCodexPetsErrorSubtitle: 'daemon が接続されていることを確認してから、もう一度お試しください。',
     detectedCodexPetsNoTargetTitle: '利用できる daemon がありません',
-    detectedCodexPetsNoTargetSubtitle: 'このコンピュータで Happier を起動してから、Codex ペットをもう一度検出してください。',
+    detectedCodexPetsNoTargetSubtitle: 'このコンピュータで Happiest を起動してから、Codex ペットをもう一度検出してください。',
     detectedCodexPetsDaemonMismatchTitle: 'ペット検出のため daemon を更新してください',
     detectedCodexPetsDaemonMismatchSubtitle: 'この daemon はまだペット検出を公開していません。スタックを更新してからもう一度お試しください。',
     useOnThisDeviceTitle: 'このデバイスで使用',
@@ -3916,7 +3915,7 @@ localTailscale: {
       footer: "アカウント切り替えとクォータ復旧の通知を制御します。",
       accountSwitch: {
         title: "アカウント切り替え",
-        subtitle: "Happier がプロバイダーを別の接続済みアカウントへ自動的に切り替えたときに通知します",
+        subtitle: "Happiest がプロバイダーを別の接続済みアカウントへ自動的に切り替えたときに通知します",
       },
       quotaBlocked: {
         title: "クォータでブロック",
@@ -3929,7 +3928,7 @@ localTailscale: {
     },
     pushPriming: {
         title: '通知をオンにしますか？',
-        body: 'エージェントの作業完了、権限の確認が必要なとき、応答待ちのときに Happier がお知らせします。設定でいつでも変更できます。',
+        body: 'エージェントの作業完了、権限の確認が必要なとき、応答待ちのときに Happiest がお知らせします。設定でいつでも変更できます。',
         accept: 'オンにする',
         decline: '後で',
         blockedTitle: '通知がブロックされています',
@@ -4189,7 +4188,7 @@ localTailscale: {
       cliSourcePreference: {
         title: "CLI ソースの優先順位",
         subtitle:
-          "両方が存在する場合に、システムの CLI と Happier 管理インストールのどちらを優先するかを選択します。",
+          "両方が存在する場合に、システムの CLI と Happiest 管理インストールのどちらを優先するかを選択します。",
         options: {
           systemFirst: {
             title: "システムのインストールを優先",
@@ -4197,7 +4196,7 @@ localTailscale: {
           },
           managedFirst: {
             title: "管理インストールを優先",
-            subtitle: "このプロバイダー用に Happier がインストールした CLI を優先します。",
+            subtitle: "このプロバイダー用に Happiest がインストールした CLI を優先します。",
           },
         },
       },
@@ -4281,15 +4280,15 @@ localTailscale: {
                 sections: {
                     claudeModelDiscovery: {
                         title: "モデルの検出",
-                        footer: "選択した Claude アカウントで利用できるモデルを Happier が Anthropic に問い合わせるかどうかを設定します。"
+                        footer: "選択した Claude アカウントで利用できるモデルを Happiest が Anthropic に問い合わせるかどうかを設定します。"
                     },
                     claudeUnifiedTerminal: {
                         title: "統合ターミナルランタイム",
-                        footer: "有効にすると、Happier は別の Agent SDK ランナーを起動せず、同じ Claude Code ターミナルセッションにプロンプトを送信します。"
+                        footer: "有効にすると、Happiest は別の Agent SDK ランナーを起動せず、同じ Claude Code ターミナルセッションにプロンプトを送信します。"
                     },
                     claudeCodeExperiments: {
                         title: "Claude Code の実験機能",
-                        footer: "これらの設定は、Happier から開始する Claude のローカル（ターミナル）およびリモート（Agent SDK）セッションの両方に適用されます。"
+                        footer: "これらの設定は、Happiest から開始する Claude のローカル（ターミナル）およびリモート（Agent SDK）セッションの両方に適用されます。"
                     },
                     claudeRemoteSdk: {
                         title: "クラシックランタイム（Agent SDK フォールバック）",
@@ -4299,7 +4298,7 @@ localTailscale: {
                 fields: {
                     claudeDynamicModelProbeEnabled: {
                         title: "利用可能なモデルを検出",
-                        subtitle: "選択した Claude アカウントを使って Happier が Anthropic に問い合わせることを許可します。オフにすると、Claude Code のネイティブ認証情報を読み取らずに Happier の組み込みモデルカタログを使用します。"
+                        subtitle: "選択した Claude アカウントを使って Happiest が Anthropic に問い合わせることを許可します。オフにすると、Claude Code のネイティブ認証情報を読み取らずに Happiest の組み込みモデルカタログを使用します。"
                     },
                     claudeUnifiedTerminalEnabled: {
                         title: "統合ターミナルランタイムを使用",
@@ -4307,7 +4306,7 @@ localTailscale: {
                     },
                     claudeUnifiedTerminalHost: {
                         title: "ターミナルホスト",
-                        subtitle: "共有 Claude ターミナルセッションを Happier がどのようにホストするかを選択します。",
+                        subtitle: "共有 Claude ターミナルセッションを Happiest がどのようにホストするかを選択します。",
                         options: {
                             auto: {
                                 title: "自動",
@@ -4319,13 +4318,13 @@ localTailscale: {
                             },
                             zellij: {
                                 title: "zellij",
-                                subtitle: "Happier に同梱された zellij ホストを使用します。"
+                                subtitle: "Happiest に同梱された zellij ホストを使用します。"
                             }
                         }
                     },
                     claudeUnifiedTerminalResumeChoice: {
                         title: "大規模セッションの再開",
-                        subtitle: "大きなセッションの再開方法を Claude が尋ねたときの Happier の応答を選択します。",
+                        subtitle: "大きなセッションの再開方法を Claude が尋ねたときの Happiest の応答を選択します。",
                         options: {
                             ask_every_time: {
                                 title: "毎回確認",
@@ -4343,29 +4342,29 @@ localTailscale: {
                     },
                     claudeUnifiedTerminalWorkspaceTrust: {
                         title: "ワークスペースの信頼",
-                        subtitle: "Claude がワークスペースを信頼するか尋ねたときの Happier の応答方法を選択します。",
+                        subtitle: "Claude がワークスペースを信頼するか尋ねたときの Happiest の応答方法を選択します。",
                         options: {
                             ask_every_time: {
                                 title: "毎回確認する",
                                 subtitle: "ワークスペースの信頼に関する質問をそのままセッションに表示します。"
                             },
                             always_trust_happier_workspaces: {
-                                title: "Happier のワークスペースを常に信頼する",
-                                subtitle: "Happier が開いたワークスペースでは、再取得された現在の Claude プロンプトを信頼します。"
+                                title: "Happiest のワークスペースを常に信頼する",
+                                subtitle: "Happiest が開いたワークスペースでは、再取得された現在の Claude プロンプトを信頼します。"
                             },
                             always_reject_happier_workspaces: {
-                                title: "Happier のワークスペースを常に拒否する",
-                                subtitle: "Happier が開いたワークスペースでは、再取得された現在の Claude プロンプトを拒否します。"
+                                title: "Happiest のワークスペースを常に拒否する",
+                                subtitle: "Happiest が開いたワークスペースでは、再取得された現在の Claude プロンプトを拒否します。"
                             }
                         }
                     },
                     claudeCodeExperimentalAgentTeamsEnabled: {
                         title: "Agent Teams を強制的に有効化",
-                        subtitle: "Happier から開始するすべての Claude セッションで、Claude Code の実験的 Agent Teams（エージェント群）を有効にします。"
+                        subtitle: "Happiest から開始するすべての Claude セッションで、Claude Code の実験的 Agent Teams（エージェント群）を有効にします。"
                     },
                     claudeRemoteAgentSdkEnabled: {
                         title: "Agent SDK フォールバックを使用",
-                        subtitle: "統合ターミナルランタイムがオフの場合、Happier が制御する Claude セッションを Agent SDK 経由で実行します。"
+                        subtitle: "統合ターミナルランタイムがオフの場合、Happiest が制御する Claude セッションを Agent SDK 経由で実行します。"
                     },
                     claudeRemoteDebugEnabled: {
                         title: "デバッグモード",
@@ -4421,15 +4420,15 @@ localTailscale: {
                     },
                     claudeLocalPermissionBridgeEnabled: {
                         title: "実験的: ローカル権限ブリッジ",
-                        subtitle: "Claude のローカルモード権限プロンプトを Happier に転送し、UI から承認または拒否できるようにします。"
+                        subtitle: "Claude のローカルモード権限プロンプトを Happiest に転送し、UI から承認または拒否できるようにします。"
                     },
                     claudeLocalPermissionBridgeWaitIndefinitely: {
                         title: "応答があるまで要求を開いたままにする",
-                        subtitle: "有効にすると、Happier は UI から承認または拒否するまで Claude のローカル権限要求を保留のまま維持します。"
+                        subtitle: "有効にすると、Happiest は UI から承認または拒否するまで Claude のローカル権限要求を保留のまま維持します。"
                     },
                     claudeLocalPermissionBridgeTimeoutSeconds: {
                         title: "任意の権限タイムアウト（秒）",
-                        subtitle: "無期限待機をオフにした場合にのみ使用されます。この時間を過ぎると、Happier は Claude のターミナルプロンプトにフォールバックします。"
+                        subtitle: "無期限待機をオフにした場合にのみ使用されます。この時間を過ぎると、Happiest は Claude のターミナルプロンプトにフォールバックします。"
                     },
                     claudeRemoteEnableFileCheckpointing: {
                         title: "ファイルチェックポイント + /rewind",
@@ -4458,7 +4457,7 @@ localTailscale: {
                 sections: {
                     cliGeneration: {
                         title: "OpenCode のバージョン",
-                        footer: "自動では opencode を優先し、なければ opencode2 を使い、起動後にサーバー API を検出します。安定版は常に opencode を選びますが、V1 または V2 の検出は引き続き行います。V2 は opencode2 を優先し、なければ V2 を選択して opencode を使います。Happier の MCP ツールは V2 の ACP モードで利用できますが、サーバー API は動的 MCP 登録にまだ対応していません。"
+                        footer: "自動では opencode を優先し、なければ opencode2 を使い、起動後にサーバー API を検出します。安定版は常に opencode を選びますが、V1 または V2 の検出は引き続き行います。V2 は opencode2 を優先し、なければ V2 を選択して opencode を使います。Happiest の MCP ツールは V2 の ACP モードで利用できますが、サーバー API は動的 MCP 登録にまだ対応していません。"
                     },
                     backendMode: {
                         title: "バックエンドモード",
@@ -4466,13 +4465,13 @@ localTailscale: {
                     },
                     server: {
                         title: "サーバー接続",
-                        footer: "空のままにすると、Happier 管理の OpenCode サーバーライフサイクルを使います。既存の OpenCode サーバーに接続するには絶対 http(s) URL を設定します。"
+                        footer: "空のままにすると、Happiest 管理の OpenCode サーバーライフサイクルを使います。既存の OpenCode サーバーに接続するには絶対 http(s) URL を設定します。"
                     }
                 },
                 fields: {
                     opencodeCliGeneration: {
                         title: "CLI 世代",
-                        subtitle: "Happier が起動するインストール済み OpenCode コマンドを選択します。",
+                        subtitle: "Happiest が起動するインストール済み OpenCode コマンドを選択します。",
                         options: {
                             auto: { title: "自動（推奨）", subtitle: "opencode を優先し、なければ opencode2 を使います。" },
                             stable: { title: "安定版", subtitle: "常に opencode を起動し、起動後にサーバー API を検出します。" },
@@ -4510,7 +4509,7 @@ localTailscale: {
                 sections: {
                     cli: {
                         title: "Cursor CLI ツール",
-                        footer: "自動検出だけでは不十分な場合に特定の Cursor バイナリを使用します。Happier は cursor-agent を優先し、有効な場合は agent にフォールバックできます。"
+                        footer: "自動検出だけでは不十分な場合に特定の Cursor バイナリを使用します。Happiest は cursor-agent を優先し、有効な場合は agent にフォールバックできます。"
                     }
                 },
                 fields: {
@@ -4851,13 +4850,13 @@ localTailscale: {
     expConnectedServicesQuotasSubtitle:
       "連携サービスのクォータバッジと使用量メーターを表示",
     expChannelBridges: "チャンネルブリッジ",
-    expChannelBridgesSubtitle: "Telegram などのチャットチャンネルを Happier セッションに接続（実験的）",
+    expChannelBridgesSubtitle: "Telegram などのチャットチャンネルを Happiest セッションに接続（実験的）",
     expMemorySearch: "メモリ検索",
     expMemorySearchSubtitle: "ローカルメモリ検索の画面と設定を有効化",
     expSessionsDirect: "ダイレクトセッション",
     expSessionsDirectSubtitle: "サイドバーでプロバイダー直結のダイレクトセッションを一覧表示して開く",
     expSessionsFolders: "セッションフォルダー",
-    expSessionsFoldersSubtitle: "Happier サイドバーセッションをワークスペースのフォルダーで整理",
+    expSessionsFoldersSubtitle: "Happiest サイドバーセッションをワークスペースのフォルダーで整理",
     expPetsCompanion: "ペット",
     expPetsCompanionSubtitle: "Blink コンパニオン画面とローカルペット選択を有効化",
     expFriends: "友だち",
@@ -4902,7 +4901,7 @@ localTailscale: {
       "非アクティブなチャットをプロジェクトごとに整理",
     environmentBadge: "環境バッジ",
     environmentBadgeSubtitle:
-      "Happier のタイトル横に現在のアプリ環境を示す小さなバッジを表示",
+      "Happiest のタイトル横に現在のアプリ環境を示す小さなバッジを表示",
     enhancedSessionWizard: "拡張セッションウィザード",
     enhancedSessionWizardEnabled: "プロファイル優先セッションランチャーが有効",
     enhancedSessionWizardDisabled: "標準セッションランチャーを使用",
@@ -4951,7 +4950,7 @@ localTailscale: {
     tokenStorageFailed: "認証トークンの保存に失敗しました",
     oauthStateMismatch: "セキュリティ検証に失敗しました。再試行してください",
     providerAlreadyLinked: ({ provider }: { provider: string }) =>
-      `${provider} は既存の Happier アカウントにすでにリンクされています。この端末でサインインするには、すでにサインイン済みの端末からこの端末をリンクしてください。`,
+      `${provider} は既存の Happiest アカウントにすでにリンクされています。この端末でサインインするには、すでにサインイン済みの端末からこの端末をリンクしてください。`,
     tokenExchangeFailed: "認可コードの交換に失敗しました",
     oauthAuthorizationDenied: "認可が拒否されました",
     webViewLoadFailed: "認証ページの読み込みに失敗しました",
@@ -5014,7 +5013,7 @@ localTailscale: {
 
   deps: {
     installNotSupported:
-      "この依存関係をインストールするには Happier CLI を更新してください。",
+      "この依存関係をインストールするには Happiest CLI を更新してください。",
     installFailed: "インストールに失敗しました",
     installed: "インストールしました",
     installLog: ({ path }: { path: string }) => `インストールログ: ${path}`,
@@ -5151,7 +5150,7 @@ localTailscale: {
       "シンプルなセッション、またはGitのワークツリーに紐づくセッションを選択してください。",
     searchPathsPlaceholder: "パスを検索…",
     noMachinesFound:
-      "マシンが見つかりません。まずコンピューターでHappierセッションを起動してください。",
+      "マシンが見つかりません。まずコンピューターでHappiestセッションを起動してください。",
     allMachinesOffline: "すべてのマシンがオフラインです",
     machineOfflineInlineTitle: "マシンがオフラインです",
     machineOfflineInlineBody:
@@ -5185,7 +5184,7 @@ localTailscale: {
     createdWithSetupIssueTitle: "セッションを作成しました",
     createdWithSetupIssueBody: "セッションは作成されましたが、初期設定が完了しませんでした。この画面から再試行しても、新しいセッションは作成されません。",
     launchStillPendingBody:
-      "Happier はまだ新しいセッションを確認できていません。起動リクエストは保存されています。重複するセッションを作成せずに同じ起動を続けるには、再試行してください。",
+      "Happiest はまだ新しいセッションを確認できていません。起動リクエストは保存されています。重複するセッションを作成せずに同じ起動を続けるには、再試行してください。",
     connectedServiceSwitchUnavailable: {
       title: "切り替えできません",
       body: ({ reason, agentId }: { reason: string; agentId: string }) =>
@@ -5382,7 +5381,7 @@ localTailscale: {
       updateTitle: "GitHub CLI を更新しますか？",
       reinstallTitle: "GitHub CLI を再インストールしますか？",
       description:
-        "Happier が pull request ワークフローでローカルの GitHub 認証を使用できるように GitHub CLI をインストールします。",
+        "Happiest が pull request ワークフローでローカルの GitHub 認証を使用できるように GitHub CLI をインストールします。",
     },
   },
 
@@ -5568,8 +5567,8 @@ localTailscale: {
           empty: "引き継がれた内容はありません。再生できる以前の会話がありませんでした。",
           unavailableOperation: "これを再構築するには、このマシンの CLI を更新するか接続し直してください。",
           notRebuildable: "ここではコンテキストが引き継がれましたが、このセッションのトランスクリプトにはもう残っていないため、再構築できません。",
-          unavailableSource: "Happier はこのセッションのトランスクリプトを読み取れなかったため、これを再構築できません。",
-          unreachable: "Happier はこのセッションをホストしているマシンに接続できませんでした。",
+          unavailableSource: "Happiest はこのセッションのトランスクリプトを読み取れなかったため、これを再構築できません。",
+          unreachable: "Happiest はこのセッションをホストしているマシンに接続できませんでした。",
           retryAction: "再試行",
           jumpAction: "含まれている最後のメッセージへ移動",
       },
@@ -5598,7 +5597,7 @@ localTailscale: {
         badgeLabel: 'エージェントの切り替え',
         /** Delegates to the Session’s existing resume owner; never a second start path. */
         resumeAction: 'セッションを再開',
-        unknown: 'Happier は結果を確認できませんでした。もう一度送信する前にこのセッションを確認してください。',
+        unknown: 'Happiest は結果を確認できませんでした。もう一度送信する前にこのセッションを確認してください。',
       },
     },
     sourceContext: {
@@ -5611,7 +5610,7 @@ localTailscale: {
         removeAction: "削除",
         removeA11y: "元の会話を削除",
         keepAction: "そのままにする",
-        serverMismatch: "その会話は別の Happier サーバーにあります。そのサーバーに切り替えるか、元の会話を削除して新規に開始してください。",
+        serverMismatch: "その会話は別の Happiest サーバーにあります。そのサーバーに切り替えるか、元の会話を削除して新規に開始してください。",
     },
     forking: {
       dividerTitle: "以前のコンテキストから分岐しました",
@@ -5631,7 +5630,7 @@ localTailscale: {
           },
           replay: {
               title: "Replay 分岐",
-              subtitle: "Happier がここまでの会話を再生し、新しいセッションのコンテキストにします。",
+              subtitle: "Happiest がここまでの会話を再生し、新しいセッションのコンテキストにします。",
           },
           configure: {
               title: "新しいセッションを設定",
@@ -5652,7 +5651,7 @@ localTailscale: {
               openAction: "分岐を開く",
           },
           unknown: {
-              title: "Happier は分岐を確認できませんでした",
+              title: "Happiest は分岐を確認できませんでした",
               body: "リクエストは送信済みなので、分岐がすでに存在する可能性があります。もう一度分岐せずに確認してください。二度目の試行は重複を作るおそれがあります。",
               checkAction: "分岐を確認",
               checking: "分岐を探しています…",
@@ -5661,7 +5660,7 @@ localTailscale: {
           },
           failure: {
               updateRequired: "このセッションを分岐するには、このマシンの CLI を更新するか再接続してください。",
-              generic: "Happier は分岐を作成できませんでした。",
+              generic: "Happiest は分岐を作成できませんでした。",
           },
       },
 	    },
@@ -5689,13 +5688,13 @@ localTailscale: {
 	    },
 	    staleRunner: {
 	      title: "セッションは古い CLI で実行中です",
-	      body: "更新された daemon CLI で続行するには、このセッションランナーを再起動します。Happier のセッションは変わりません。",
+	      body: "更新された daemon CLI で続行するには、このセッションランナーを再起動します。Happiest のセッションは変わりません。",
 	      busyBody: "セッションランナーは処理中です。現在のアクティビティが終わってから再試行してください。",
-	      failureBody: "Happier はこのセッションランナーを再起動できませんでした。セッションの更新後に再試行してください。",
+	      failureBody: "Happiest はこのセッションランナーを再起動できませんでした。セッションの更新後に再試行してください。",
 	      identityChangedBody: "再起動の要求中にセッションランナーが変更されました。セッションを更新して再試行してください。",
 	      ineligibleBody: "このセッションランナーは計画的な再起動の対象外になりました。",
 	      unsupportedBody: "この daemon はまだセッションランナー再起動操作を公開していません。",
-	      versionUnknownBody: "Happier はこのランナーが使っている CLI バージョンをまだ確認できません。",
+	      versionUnknownBody: "Happiest はこのランナーが使っている CLI バージョンをまだ確認できません。",
 	      restartAction: "ランナーを再起動",
 	      restartPendingAction: "再起動中...",
 	      statusBadge: "古い CLI",
@@ -5707,7 +5706,7 @@ localTailscale: {
 	    mcpRestartRequired: {
 	        title: "MCP サーバーの変更を適用するには再起動してください",
 	        body: "MCP サーバーはセッション開始時に適用されます。更新した選択を使うには、このランナーを再起動してください。",
-	        failureBody: "Happier はこのランナーを再起動できませんでした。MCP の選択は保存され、次回の開始時に適用されます。",
+	        failureBody: "Happiest はこのランナーを再起動できませんでした。MCP の選択は保存され、次回の開始時に適用されます。",
 	        restartAction: "セッションを再起動",
 	        restartPendingAction: "再起動中…",
 	        badgeLabel: "MCP の変更",
@@ -5719,9 +5718,9 @@ localTailscale: {
 	    invalidLinkTitle: "無効なセッションリンク",
 	    invalidLinkDescription: "セッションリンクが見つからないか無効です。URL を確認してもう一度お試しください。",
 	    resumeSupportNoteChecking:
-	      "注: Happier はこのマシンでプロバイダーのセッションを再開できるか確認中です。",
+	      "注: Happiest はこのマシンでプロバイダーのセッションを再開できるか確認中です。",
 	    resumeSupportNoteUnverified:
-	      "注: Happier はこのマシンでの再開サポートを確認できませんでした。",
+	      "注: Happiest はこのマシンでの再開サポートを確認できませんでした。",
     resumeSupportDetails: {
       cliNotDetected: "このマシンで CLI が検出されませんでした。",
       capabilityProbeFailed: "機能の確認に失敗しました。",
@@ -5737,7 +5736,7 @@ localTailscale: {
       `このセッションは終了しており、${provider} がここでコンテキストの復元をサポートしていないため再開できません。続けるには新しいセッションを開始してください。`,
     machineOfflineNoticeTitle: "マシンがオフラインです",
     machineOfflineNoticeBody: ({ machine }: { machine: string }) =>
-      `“${machine}” はオフラインです。今すぐメッセージをキューに追加でき、マシンがオンラインに戻ると Happier が続行します。`,
+      `“${machine}” はオフラインです。今すぐメッセージをキューに追加でき、マシンがオンラインに戻ると Happiest が続行します。`,
       machineOfflineCannotResume:
         "マシンがオフラインです。オンラインに戻してこのセッションを再開してください。",
         openRuns: "セッションの実行を開く",
@@ -6064,15 +6063,15 @@ localTailscale: {
         },
         discardConfirm: {
           title: "保留中メッセージを破棄しますか？",
-          body: "破棄済みのコピーを残し、Happier がこの保留中メッセージを配信しないようにします。",
+          body: "破棄済みのコピーを残し、Happiest がこの保留中メッセージを配信しないようにします。",
         },
         markHandledConfirm: {
           title: "保留中メッセージを処理済みにしますか？",
-          body: "プロバイダーがすでに処理した場合、または Happier に配信させる必要がなくなった場合にのみ使用してください。",
+          body: "プロバイダーがすでに処理した場合、または Happiest に配信させる必要がなくなった場合にのみ使用してください。",
         },
         dismissDeliveryConfirm: {
           title: "不確かな配信を破棄しますか？",
-          body: "元のメッセージを再送せずにアーカイブします。後でプロバイダーが配信を確認した場合、Happier は元のメッセージをトランスクリプトに追加できます。",
+          body: "元のメッセージを再送せずにアーカイブします。後でプロバイダーが配信を確認した場合、Happiest は元のメッセージをトランスクリプトに追加できます。",
         },
         sendAsNewConfirm: {
           title: "このメッセージを新規として送信しますか？",
@@ -6110,7 +6109,7 @@ localTailscale: {
           retrySendFailed: 'メッセージの再送信に失敗しました',
           markHandledFailed: "保留中の配信を処理済みにできませんでした",
           clearTerminalComposerFailed: "ターミナルの入力欄を消去できませんでした",
-          clearTerminalComposerUnsupported: "このセッションでは Happier からターミナル入力欄を消去できません。",
+          clearTerminalComposerUnsupported: "このセッションでは Happiest からターミナル入力欄を消去できません。",
           clearTerminalComposerUnsafe: "現在、ターミナルの入力欄を安全に消去できません。",
         },
       },
@@ -6354,7 +6353,7 @@ localTailscale: {
     // Used by Server Configuration screen (app/(app)/server.tsx)
     serverConfiguration: "Relay 設定",
     enterServerUrl: "Relay URLを入力してください",
-    notValidHappyServer: "有効なHappier Relayではありません",
+    notValidHappyServer: "有効なHappiest Relayではありません",
     changeServer: "Relayを変更",
     continueWithServer: "このRelayで続行しますか？",
     resetToDefault: "デフォルトにリセット",
@@ -6504,7 +6503,7 @@ localTailscale: {
   },
   sessionsList: {
     serverHeader: ({ server }: { server: string }) => `サーバー: ${server}`,
-    storagePersistedTab: "Happier",
+    storagePersistedTab: "Happiest",
     storageDirectTab: "ダイレクト",
     renameWorkspace: 'ワークスペース名を変更',
     renameWorkspacePromptTitle: 'ワークスペース名を変更',
@@ -6694,9 +6693,9 @@ localTailscale: {
     locationLabel: "場所",
     checkoutLabel: "チェックアウト",
     happySessionIdCopied:
-      "Happier セッション ID をクリップボードにコピーしました",
-    failedToCopySessionId: "Happier セッション ID のコピーに失敗しました",
-    happySessionId: "Happier セッション ID",
+      "Happiest セッション ID をクリップボードにコピーしました",
+    failedToCopySessionId: "Happiest セッション ID のコピーに失敗しました",
+    happySessionId: "Happiest セッション ID",
     claudeCodeSessionId: "Claude Code セッション ID",
     claudeCodeSessionIdCopied:
       "Claude Code セッション ID をクリップボードにコピーしました",
@@ -6773,7 +6772,6 @@ localTailscale: {
         unpinSession: "ピン留め解除",
         pinLimitExceeded: ({ count }: { count: number }) => `${count.toLocaleString()} 件までセッションをピン留めできます。別のセッションのピン留めを解除して、もう一度お試しください。`,
     copyResumeCommand: "再開コマンドをコピー",
-    resumeCommand: ({ sessionId }: { sessionId: string }) => `happier resume ${sessionId}`,
     viewMachine: "マシンを表示",
     viewMachineSubtitle: "マシンの詳細とセッションを表示",
     killSessionSubtitle: "セッションを即座に終了",
@@ -6790,7 +6788,7 @@ localTailscale: {
     path: "パス",
     operatingSystem: "オペレーティングシステム",
     processId: "プロセスID",
-    happyHome: "Happier のホーム",
+    happyHome: "Happiest のホーム",
     attachFromTerminal: "ターミナルからアタッチ",
     tmuxTarget: "tmux ターゲット",
     tmuxFallback: "tmux フォールバック",
@@ -6819,7 +6817,7 @@ localTailscale: {
     }) =>
       `バージョン ${currentVersion} がインストールされています。${requiredVersion} 以降に更新してください`,
     updateCliInstructions:
-      "happier self update を実行してください",
+      "happiest self update を実行してください",
     deleteSession: "セッションを削除",
     deleteSessionSubtitle: "このセッションを完全に削除",
     deleteSessionConfirm: "セッションを完全に削除しますか？",
@@ -6846,11 +6844,10 @@ localTailscale: {
     emptyMainScreen: {
       // Used by SessionGettingStartedGuidance component
       readyToCode: "コーディングを始めますか？",
-      installCli: "Happier CLIをインストール",
+      installCli: "Happiest CLIをインストール",
       runIt: "実行する",
       scanQrCode: "QRコードをスキャン",
       openCamera: "カメラを開く",
-      runCommand: "$ happier",
     },
     emptyMessages: {
       noMessagesYet: "まだメッセージはありません",
@@ -7127,7 +7124,7 @@ localTailscale: {
   },
 
   sidebar: {
-    sessionsTitle: "Happier",
+    sessionsTitle: "Happiest",
   },
 
   toolView: {
@@ -7261,7 +7258,7 @@ localTailscale: {
     acpHistoryImport: {
       title: "セッション履歴をインポートしますか？",
       defaultNote:
-        "このセッション履歴は、Happier に既にある内容と異なります。インポートすると重複が作成される可能性があります。",
+        "このセッション履歴は、Happiest に既にある内容と異なります。インポートすると重複が作成される可能性があります。",
       counts: {
         local: ({ count }: { count: number }) => `ローカル: ${count}`,
         remote: ({ count }: { count: number }) => `リモート: ${count}`,
@@ -7279,7 +7276,7 @@ localTailscale: {
     askUserQuestion: {
         submit: "回答を送信",
         submissionFailures: {
-            update: "Happier CLI を更新して、もう一度お試しください。",
+            update: "Happiest CLI を更新して、もう一度お試しください。",
             reconnect: "このセッションに再接続して、もう一度お試しください。",
             retry: "回答を受け付けられませんでした。内容を確認して、もう一度お試しください。",
         },
@@ -7532,7 +7529,7 @@ localTailscale: {
       },
       indexLock: {
         title: "古い Git ロックを削除しますか？",
-        body: "Git がインデックスロックを報告しました。他の Git コマンドが実行中でなければ、Happier が古いロックを削除して再試行できます。",
+        body: "Git がインデックスロックを報告しました。他の Git コマンドが実行中でなければ、Happiest が古いロックを削除して再試行できます。",
         confirm: "ロックを削除して再試行",
         recoveryFailed: "Git インデックスロックの削除に失敗しました。",
       },
@@ -7677,7 +7674,7 @@ localTailscale: {
         frontmatterReadOnly: "フロントマター (読み取り専用)",
       },
       fileEditingUnsupported:
-        "接続されたデーモンはファイル編集をサポートしていません。書き込み操作を有効にするには、マシン上のHappierを更新してください。",
+        "接続されたデーモンはファイル編集をサポートしていません。書き込み操作を有効にするには、マシン上のHappiestを更新してください。",
       fileChangedExternally:
         "編集中にこのファイルがディスク上で変更されました。下書きは変更していません。保存する前に最新のファイルを確認してください。",
       selectionFailed: "選択を更新できませんでした",
@@ -7960,7 +7957,7 @@ localTailscale: {
           createFeatureBranch: "機能ブランチを作成",
           createFeatureBranchAndOpen: "ブランチを作成してPRを開く",
           featureBranchPromptTitle: "機能ブランチ名",
-          featureBranchPromptBody: "Happier は続行する前にこのブランチをチェックアウトします。",
+          featureBranchPromptBody: "Happiest は続行する前にこのブランチをチェックアウトします。",
           defaultBranchRequiresFeature: "デフォルトブランチからプルリクエストを開く前に、機能ブランチを作成してください。",
           defaultBranchDenied: "デフォルトブランチから直接プルリクエストを開くことはできません。",
           states: {
@@ -8054,7 +8051,7 @@ localTailscale: {
         crossSession: ({ sessionId }: { sessionId: string }) => `セッション ${sessionId} から開始`,
         externalCli: "CLI から外部で開始",
         externalMcp: "MCP 経由で外部から開始",
-        externalAction: "Happier アクション経由で外部から開始",
+        externalAction: "Happiest アクション経由で外部から開始",
         externalUnknown: "外部から開始（開始元不明）",
         legacyUnknown: "開始元不明",
       },
@@ -8106,7 +8103,7 @@ localTailscale: {
       },
       spawnPolicy: {
           title: "AI セッション作成ポリシー",
-          footer: "これらの設定は、Happier セッション内のアシスタントが別のセッションを作成するときだけ適用されます。親から継承した設定は引き続き許可され、拒否された項目は明確なエラーで明示的な上書きを拒否します。",
+          footer: "これらの設定は、Happiest セッション内のアシスタントが別のセッションを作成するときだけ適用されます。親から継承した設定は引き続き許可され、拒否された項目は明確なエラーで明示的な上書きを拒否します。",
           toggles: {
               allowCustomDirectory: { title: "カスタムディレクトリ", subtitle: "別の作業ディレクトリをアシスタントが選べるようにします。" },
               allowCrossMachine: { title: "別マシンの対象", subtitle: "利用可能な別のマシンでセッションを作成できるようにします。" },
@@ -8211,11 +8208,11 @@ localTailscale: {
             },
             session_agent: {
                 title: "AI セッション",
-                subtitle: "Happier セッション内で実行中のアシスタントが利用できるツールを制御します。",
+                subtitle: "Happiest セッション内で実行中のアシスタントが利用できるツールを制御します。",
             },
             mcp: {
                 title: 'MCP',
-                subtitle: "Happier MCP アクションカタログを使用する外部 MCP クライアントを制御します。",
+                subtitle: "Happiest MCP アクションカタログを使用する外部 MCP クライアントを制御します。",
             },
             cli: {
                 title: "セッション制御 CLI",
@@ -8408,7 +8405,7 @@ settingsSession: {
     },
     messageSending: {
       inactiveResumePolicyTitle: "送信後の自動再開",
-      inactiveResumePolicySubtitle: "非アクティブなセッションへ送信した後の Happier の動作を選択します。",
+      inactiveResumePolicySubtitle: "非アクティブなセッションへ送信した後の Happiest の動作を選択します。",
       inactiveResumePolicy: {
         whenAvailableTitle: "今すぐ、またはマシン復帰時",
         whenAvailableSubtitle: "到達可能ならすぐ再開し、そうでなければデーモン再接続時に処理します。",
@@ -8475,7 +8472,7 @@ settingsSession: {
       usageLimitRecovery: {
         title: "使用制限の回復",
         footer:
-          "プロバイダーが続行前の待機を求めたときの Happier の動作を選びます。",
+          "プロバイダーが続行前の待機を求めたときの Happiest の動作を選びます。",
         modeTitle: "使用制限に達したとき",
         askTitle: "毎回確認",
         askSubtitle: "待機または再試行の前にセッション操作を表示します。",
@@ -8843,7 +8840,7 @@ settingsSession: {
           "Auto は短いセクションをリストのままにし、長いセクションを検索可能なドロップダウンに切り替えます。",
         wizardPresentationAutoTitle: "Auto",
         wizardPresentationAutoSubtitle:
-          "コンテンツ量に応じて Happier が最適なレイアウトを選びます。",
+          "コンテンツ量に応じて Happiest が最適なレイアウトを選びます。",
         wizardPresentationListTitle: "リスト",
         wizardPresentationListSubtitle: "すべての行をウィザード内に直接表示します。",
         wizardPresentationDropdownTitle: "ドロップダウン",
@@ -8851,7 +8848,7 @@ settingsSession: {
       },
           promptPersonalization: {
               title: 'Prompt personalization',
-              footer: 'Choose which built-in instructions Happier adds to new agent sessions. This does not hide options an agent already sends.',
+              footer: 'Choose which built-in instructions Happiest adds to new agent sessions. This does not hide options an agent already sends.',
               askAgentToRenameSessionsTitle: 'Session title updates',
               askAgentToRenameSessionsNeverTitle: 'Never',
               askAgentToRenameSessionsNeverSubtitle: 'Do not prompt agents to set session titles.',
@@ -8877,9 +8874,9 @@ settingsSession: {
       },
           defaultStorage: {
       title: "既定のセッションタイプ",
-              footer: "新しいセッションを、Happier セッションとして開始するか、プロバイダー直結の直接セッションとして開始するかを選択します。",
+              footer: "新しいセッションを、Happiest セッションとして開始するか、プロバイダー直結の直接セッションとして開始するかを選択します。",
               globalTitle: "グローバル既定",
-              persistedSubtitle: "新しいセッションを Happier に保存し、既定でデバイス間で同期します。",
+              persistedSubtitle: "新しいセッションを Happiest に保存し、既定でデバイス間で同期します。",
               directSubtitle: "プロバイダーが対応している場合は、マシンに紐づく直接セッションを開始します。",
               globalSubtitle: ({ label }: { label: string }) => `グローバル既定: ${label}`,
               useGlobalDefault: "グローバル既定を使用",
@@ -8964,12 +8961,12 @@ settingsSession: {
     // Voice settings screen
     modeTitle: "音声",
     modeDescription:
-      "音声機能を設定します。音声を完全に無効にするか、Happier Voice（サブスクリプションが必要）を使用するか、ご自身のElevenLabsアカウントを使用できます。",
+      "音声機能を設定します。サーバーの対応状況に応じて、ローカル音声またはご自身のElevenLabsアカウントを選択できます。",
     mode: {
       off: "オフ",
       offSubtitle: "すべての音声機能を無効化",
-      happier: "Happier Voice",
-      happierSubtitle: "Happier Voiceを使用（サブスクリプションが必要）",
+      happier: "Happiest Voice",
+      happierSubtitle: "Happiest Voiceを使用（サブスクリプションが必要）",
       local: "ローカル OSS 音声",
       localSubtitle: "ローカルの OpenAI 互換 STT/TTS エンドポイントを使用",
       byo: "自分のElevenLabsを使用",
@@ -9034,7 +9031,7 @@ settingsSession: {
     byo: {
       title: "自分のElevenLabsを使用",
 	      agentReuseDialog: {
-	        title: "Happier エージェントは既に存在します",
+	        title: "Happiest エージェントは既に存在します",
 	        messageWithId: ({ name, id }: { name: string; id: string }) =>
 	          `既存の ElevenLabs エージェント（「${name}」、id: ${id}）が見つかりました。\n\n更新しますか？それとも新しく作成しますか？`,
 	        messageNoId: ({ name }: { name: string }) =>
@@ -9058,12 +9055,12 @@ settingsSession: {
       apiKeyHelpDialogTitle: "ElevenLabs APIキーを作成",
       apiKeyHelpDialogBody:
         "Open ElevenLabs → Developers → API Keys → Create API key → Copy the key.",
-      autoprovCreate: "Happier エージェントを作成",
+      autoprovCreate: "Happiest エージェントを作成",
       autoprovCreateSubtitle:
-        "APIキーを使ってElevenLabsアカウントにHappierエージェントを作成・設定します",
+        "APIキーを使ってElevenLabsアカウントにHappiestエージェントを作成・設定します",
       autoprovUpdate: "エージェントを更新",
       autoprovUpdateSubtitle:
-        "エージェントを最新のHappierテンプレートに更新します",
+        "エージェントを最新のHappiestテンプレートに更新します",
       autoprovCreated: ({ agentId }: { agentId: string }) =>
         `作成したエージェント: ${agentId}`,
       autoprovUpdated: "エージェントを更新しました",
@@ -9301,7 +9298,7 @@ settingsSession: {
         manifest: {
           title: "モデルパックのマニフェスト",
           subtitle:
-            "既定では Happier のモデルパックを使用します（EXPO_PUBLIC_HAPPIER_MODEL_PACK_MANIFESTS で上書き可能）。",
+            "既定では Happiest のモデルパックを使用します（EXPO_PUBLIC_HAPPIER_MODEL_PACK_MANIFESTS で上書き可能）。",
           detailResolved: "解決済み",
           detailMissing: "見つかりません",
         },
@@ -9494,7 +9491,7 @@ settingsSession: {
         },
         backend: {
           daemonSubtitle:
-            "Happier backend を使用し、provider resume をサポートします。",
+            "Happiest backend を使用し、provider resume をサポートします。",
           openAiSubtitle:
             "OpenAI 互換の HTTP エンドポイントに接続します。",
         },
@@ -9573,7 +9570,7 @@ settingsSession: {
           providerResumeTitle: "プロバイダ再開",
           providerResumeSubtitle:
             "プロバイダのセッション状態で再開します（対応時）。",
-          disabledVoiceAgent: "Happier Voice Agent が必要です。",
+          disabledVoiceAgent: "Happiest Voice Agent が必要です。",
           disabledDaemonBackend: "Daemon backend が必要です。",
           disabledAgentNoProviderResume:
             "選択したエージェントはプロバイダ再開に対応していません。",
@@ -9625,7 +9622,7 @@ settingsSession: {
       },
       mediatorBackend: "メディエーター backend",
       mediatorBackendSubtitle:
-        "Daemon（Happier の backend）または OpenAI 互換 HTTP",
+        "Daemon（Happiest の backend）または OpenAI 互換 HTTP",
       mediatorBackendDaemon: "デーモン",
       mediatorBackendOpenAi: "OpenAI 互換 HTTP",
       mediatorAgentSource: "メディエーター エージェントのソース",
@@ -9742,7 +9739,7 @@ settingsSession: {
       testTtsSubtitle:
         "設定したローカルTTS（デバイスTTSまたはエンドポイント）で短いサンプルを再生",
       testTtsSample:
-        "Happier からこんにちは。これはローカルTTSのテストです。",
+        "Happiest からこんにちは。これはローカルTTSのテストです。",
       testTtsMissingBaseUrl: "先に TTS ベースURL を設定してください。",
       testTtsFailed:
         "TTSテストに失敗しました。ベースURL、APIキー、モデル、ボイスを確認してください。",
@@ -9884,8 +9881,8 @@ settingsSession: {
 
   updates: {
     title: "アップデート",
-    thisAppTitle: "Happier",
-    happierCliTitle: "Happier CLI",
+    thisAppTitle: "Happiest",
+    happierCliTitle: "Happiest CLI",
     sections: {
       thisApp: "このアプリ",
       thisComputer: "このコンピュータ",
@@ -9917,7 +9914,7 @@ settingsSession: {
       updatingBatch: ({ done, total }: { done: number; total: number }) => `${total} 件中 ${Math.min(done + 1, total)} 件目をアップデート中…`,
       updating: "アップデート中…",
       keepWorking: "そのまま作業を続けられます。",
-      ready: "再起動して Happier のアップデートを完了",
+      ready: "再起動して Happiest のアップデートを完了",
       failedCount: ({ count }: { count: number }) => `${count} 件のアップデートが完了しませんでした`,
       notCheckedYet: "未確認",
       required: "アップデートが必要です",
@@ -9927,7 +9924,7 @@ settingsSession: {
       uncheckedMeta: "まだ確認していないツールがあります。",
       offline: "一部のマシンがオフラインです",
       checkedAt: ({ time }: { time: string }) => `最終確認: ${time}`,
-      upToDateDescription: "Happier、コマンドライン、エージェントはすべて最新です。",
+      upToDateDescription: "Happiest、コマンドライン、エージェントはすべて最新です。",
       unknownDescription: "確認できたものはすべて最新です。残りは接続できたときに再確認します。",
       offlineDescription: "接続できるものはすべて最新です。オフラインのマシンは戻ったときに確認します。",
     },
@@ -9969,8 +9966,8 @@ settingsSession: {
       restartingService: "バックグラウンドサービスを再起動中…",
       readyVersion: ({ version }: { version: string }) => `${version} の準備ができました`,
       ready: "アップデートの準備完了",
-      webNewBuild: "Happier の新しいバージョンの準備ができました",
-      requiredApp: "このバージョンはサポートが終了しました。Happier を使い続けるにはアップデートしてください。",
+      webNewBuild: "Happiest の新しいバージョンの準備ができました",
+      requiredApp: "このバージョンはサポートが終了しました。Happiest を使い続けるにはアップデートしてください。",
       appCheckFailed: "新しいバージョンを確認できませんでした。",
       appDownloadFailed: "ダウンロードが完了しませんでした。",
       appInstallFailed: "アップデートをインストールできませんでした。",
@@ -9992,7 +9989,7 @@ settingsSession: {
       othersUpToDate: ({ count }: { count: number }) => `ほか ${count} 件は最新`,
       waitingOffline: ({ count }: { count: number }) => `${count} 件のアップデートがオンライン復帰を待っています`,
     },
-    footer: "アップデートはマシンごとにインストールされます。コマンドラインのアップデート後、Happier はそのマシンのバックグラウンドサービスを再起動します。",
+    footer: "アップデートはマシンごとにインストールされます。コマンドラインのアップデート後、Happiest はそのマシンのバックグラウンドサービスを再起動します。",
     confirmVendor: {
       title: "ベンダーのアップデーターを実行しますか？",
       message: ({ names }: { names: string }) => `${names} は、そのマシン上で独自のアップデーターによってアップデートされます。`,
@@ -10005,7 +10002,7 @@ settingsSession: {
     tray: {
       available: ({ count }: { count: number }) => `アップデートがあります (${count})…`,
       running: "アップデート中…",
-      ready: "再起動して Happier をアップデート",
+      ready: "再起動して Happiest をアップデート",
       required: "アップデートが必要です…",
       failed: "完了しなかったアップデートがあります…",
     },
@@ -10027,17 +10024,17 @@ settingsSession: {
     },
     defaultTitle: "新着情報",
     onboardingShowcase: {
-                "title": "Happierへようこそ",
+                "title": "Happiestへようこそ",
                 "subtitle": "あなたのAIエージェントを、働くすべての場所で。",
                 "cards": {
                     "welcome": {
-                        "title": "Happierへようこそ",
+                        "title": "Happiestへようこそ",
                         "everywhereTitle": "あなたのAIエージェントを、働くすべての場所で",
                         "everywhereBody": "Claude Code、Codex、OpenCode、Piなどを、スマートフォン、タブレット、ブラウザ、デスクトップで使えます。",
                         "cockpitTitle": "モバイル cockpit",
                         "cockpitBody": "チャット、ファイル、Git、エディタ、ターミナル。次のプロジェクトを作って出荷するために必要なものが、すべて手元にあります。",
                         "existingTitle": "既存のセッションも、そのまま表示",
-                        "existingBody": "あなたのマシンで動いているClaude、Codex、OpenCodeのセッションを、Happierでライブに開けます。",
+                        "existingBody": "あなたのマシンで動いているClaude、Codex、OpenCodeのセッションを、Happiestでライブに開けます。",
                         "voiceTitle": "一緒に考えられる音声アシスタント",
                         "voiceBody": "エージェントが何をしているかを聞き、権限リクエストを承認し、メッセージを送信できます。ハンズフリーで。",
                         "reviewTitle": "diffをレビューしてコメント",
@@ -10045,7 +10042,7 @@ settingsSession: {
                         "subagentsTitle": "プロバイダー横断のsubagents",
                         "subagentsBody": "ClaudeセッションからCodex subagentsを起動できます。作業をエージェント間で分担し、セッション間でメッセージをルーティングできます。",
                         "tuisTitle": "お気に入りのTUIをそのまま使う",
-                        "tuisBody": "Claude Code、Codex、OpenCodeをネイティブなターミナルUIで実行できます。Happierがそれをキャプチャし、すべてのデバイスへ同期します。",
+                        "tuisBody": "Claude Code、Codex、OpenCodeをネイティブなターミナルUIで実行できます。Happiestがそれをキャプチャし、すべてのデバイスへ同期します。",
                         "inboxTitle": "1つのinbox。すべてのセッション。",
                         "inboxBody": "保留中の承認、権限リクエスト、レビュー待ちのセッションを、すべてのマシンから1か所に集約します。",
                         "mcpTitle": "1つのMCP設定。すべてのプロバイダー。",
@@ -10110,7 +10107,7 @@ settingsSession: {
                     "mcp": {
                         "title": "1つの設定。すべてのプロバイダー。",
                         "wideTitle": "1つの設定。\nすべてのプロバイダー。",
-                        "body": "HappierでMCPを一度定義すれば、MCPをネイティブ対応していないものを含むすべてのbackendで動作します。Skills、promptsなどを管理できます！",
+                        "body": "HappiestでMCPを一度定義すれば、MCPをネイティブ対応していないものを含むすべてのbackendで動作します。Skills、promptsなどを管理できます！",
                         "alt": "共有MCP設定用の抽象的なプレースホルダー画像。"
                     },
                     "queue": {
@@ -10155,7 +10152,7 @@ settingsSession: {
       "接続リンクが見つからないか無効です。URLを確認して再試行してください。",
     connectTerminal: "ターミナルを接続",
     terminalRequestDescription:
-      "ターミナルがHappier Coderアカウントへの接続を要求しています。これにより、ターミナルは安全にメッセージを送受信できるようになります。",
+      "ターミナルがHappiest Coderアカウントへの接続を要求しています。これにより、ターミナルは安全にメッセージを送受信できるようになります。",
     connectionDetails: "接続の詳細",
     publicKey: "公開鍵",
     encryption: "暗号化",
@@ -10219,9 +10216,9 @@ settingsSession: {
     invalidAuthUrl: "無効な認証URL",
     microphoneAccessRequiredTitle: "マイクへのアクセスが必要です",
     microphoneAccessRequiredRequestPermission:
-      "Happier は音声チャットのためにマイクへのアクセスが必要です。求められたら許可してください。",
+      "Happiest は音声チャットのためにマイクへのアクセスが必要です。求められたら許可してください。",
     microphoneAccessRequiredEnableInSettings:
-      "Happier は音声チャットのためにマイクへのアクセスが必要です。端末の設定でマイクのアクセスを有効にしてください。",
+      "Happiest は音声チャットのためにマイクへのアクセスが必要です。端末の設定でマイクのアクセスを有効にしてください。",
     microphoneAccessRequiredBrowserInstructions:
       "ブラウザの設定でマイクへのアクセスを許可してください。アドレスバーの鍵アイコンをクリックし、このサイトのマイク権限を有効にする必要がある場合があります。",
     openSettings: "設定を開く",
@@ -10301,12 +10298,12 @@ settingsSession: {
     // Unified onboarding redesign — welcome decision (right pane)
     welcomeQuestionTitle: "ようこそ。",
     welcomeQuestionSubtitle: "初めてですか?",
-    welcomeQuestionBody: "Happier は AI コーディングエージェントのコントロールルームです。メールアドレスは不要。アカウントはこのデバイスで生成される秘密鍵です。",
+    welcomeQuestionBody: "Happiest は AI コーディングエージェントのコントロールルームです。メールアドレスは不要。アカウントはこのデバイスで生成される秘密鍵です。",
 
     welcomePrimaryButton: "初めてですか — はじめましょう",
     welcomePrimarySubtitle: "ワンタップ。フォーム不要。鍵はこの端末に保管されます。",
 
-    welcomeSecondaryButton: "ログイン — すでに Happier を使っています",
+    welcomeSecondaryButton: "ログイン — すでに Happiest を使っています",
     welcomeSecondarySubtitle: "QRコードをスキャンするか、シークレットキーを入力してください",
 
     // Unified onboarding redesign — returning-user copy variants.
@@ -10336,8 +10333,8 @@ settingsSession: {
     // Returning-user buttons. For returning users we invert the visual
     // hierarchy: Login becomes the filled primary action (probability of
     // intent is high), Start fresh becomes the bordered secondary action.
-    // "I already use Happier" is dropped from the login button title for
-    // returning users because — they obviously do already use Happier.
+    // "I already use Happiest" is dropped from the login button title for
+    // returning users because — they obviously do already use Happiest.
     welcomeReturningLoginButton: "ログイン — 続きから始めましょう",
     welcomeReturningStartFreshButton: "新しく始める — 新しいアカウントを作成",
     welcomeReturningStartFreshSubtitle: "この端末で新しい鍵を生成します。",
@@ -10346,7 +10343,7 @@ settingsSession: {
     welcomeFooterRelay: "セルフホスティング?",
     welcomeFooterRelayAction: "自分の Relay を使う",
     // Shown in place of welcomeFooterRelay when the active server is a
-    // custom (non-Happier-Cloud) relay. The action below the label is the
+    // custom (non-default) relay. The action below the label is the
     // relay's host (optionally with :port) followed by a small pencil
     // icon so the user can tap to edit. Long hostnames are truncated with
     // a tail-ellipsis to avoid colliding with the right-side Docs group.
@@ -10355,7 +10352,6 @@ settingsSession: {
     welcomeFooterDocs: "ヘルプが必要ですか?",
     welcomeFooterDocsAction: "ドキュメント",
     welcomeFooterGithubLabel: "GitHub リポジトリ",
-    welcomeFooterDiscordLabel: "Discord コミュニティ",
 
     // Mobile brand hero CTA
     brandHeroGetStarted: "はじめる",
@@ -10391,8 +10387,8 @@ settingsSession: {
               startDaemon: ({ targetLabel }: { targetLabel: string }) =>
 
                   `デスクトップのセットアップフローを使って、${targetLabel} のバックグラウンドサービスを再接続します。すでにそのコンピューターにいる場合のみ、手動手順を開いてください。`,
-              connectMachineElsewhere: ({ targetLabel }: { targetLabel: string }) => `${targetLabel} に接続したいコンピューターで Happier を開くか、そのコンピューターで下のターミナル手順を実行してください。`,
-              startDaemonElsewhere: ({ targetLabel }: { targetLabel: string }) => `そのコンピューターで Happier を開いてバックグラウンドサービスを ${targetLabel} に再接続するか、そのコンピューターで下のターミナル手順を実行してください。`,
+              connectMachineElsewhere: ({ targetLabel }: { targetLabel: string }) => `${targetLabel} に接続したいコンピューターで Happiest を開くか、そのコンピューターで下のターミナル手順を実行してください。`,
+              startDaemonElsewhere: ({ targetLabel }: { targetLabel: string }) => `そのコンピューターで Happiest を開いてバックグラウンドサービスを ${targetLabel} に再接続するか、そのコンピューターで下のターミナル手順を実行してください。`,
 
               createSession: '+ ボタン、またはターミナルから新しいセッションを開始します。',
 
@@ -10452,7 +10448,7 @@ settingsSession: {
 
                   title: 'バックグラウンドサービスをインストール（推奨）',
 
-                  description: 'Happier をバックグラウンドで待機させ、リモート起動できるようにします。',
+                  description: 'Happiest をバックグラウンドで待機させ、リモート起動できるようにします。',
 
                   copyLabel: 'デーモンのインストール',
 
@@ -10500,15 +10496,15 @@ settingsSession: {
 
 
     setupSurface: {
-        acquisitionResolvingReleaseStatus: "Happier コマンドラインのリリースを探しています。",
-        acquisitionDownloadingStatus: "Happier コマンドラインをダウンロードしています。",
+        acquisitionResolvingReleaseStatus: "Happiest コマンドラインのリリースを探しています。",
+        acquisitionDownloadingStatus: "Happiest コマンドラインをダウンロードしています。",
         acquisitionVerifyingStatus: "ダウンロードしたファイルを検証しています。",
-        acquisitionUnpackingStatus: "Happier コマンドラインを展開しています。",
-        acquisitionInstallingStatus: "Happier コマンドラインをインストールしています。",
+        acquisitionUnpackingStatus: "Happiest コマンドラインを展開しています。",
+        acquisitionInstallingStatus: "Happiest コマンドラインをインストールしています。",
         acquisitionFinalizingStatus: "コマンドラインのインストールを仕上げています。",
-        acquisitionCheckingCliStatus: "Happier コマンドラインを確認しています。",
+        acquisitionCheckingCliStatus: "Happiest コマンドラインを確認しています。",
         acquisitionCheckingDaemonStatus: "バックグラウンドサービスを確認しています。",
-        acquisitionReleaseFailed: "Happier コマンドラインのリリースが見つかりませんでした。もう一度お試しください。",
+        acquisitionReleaseFailed: "Happiest コマンドラインのリリースが見つかりませんでした。もう一度お試しください。",
         acquisitionDownloadFailed: "コマンドラインのダウンロードが完了しませんでした。もう一度お試しください。",
         acquisitionVerificationFailed: "ダウンロードしたファイルを検証できませんでした。もう一度お試しください。",
         acquisitionInstallFailed: "コマンドラインのインストールが完了しませんでした。もう一度お試しください。",
@@ -10517,7 +10513,7 @@ settingsSession: {
     checkingTitle: 'このコンピュータを確認しています',
     checkingStatus: ({ relay }: { relay: string }) => `${relay} 用にこのコンピュータに何が揃っているかを確認しています。`,
     workingTitle: 'このコンピュータをセットアップしています',
-    stagePrepareStatus: 'このコンピュータで Happier のコマンドラインを準備しています。',
+    stagePrepareStatus: 'このコンピュータで Happiest のコマンドラインを準備しています。',
     stageConnectStatus: ({ relay }: { relay: string }) => `このコンピュータを ${relay} に接続しています。操作は不要です。`,
     stageConnectStatusAs: ({ relay, account }: { relay: string; account: string }) => `このコンピューターを ${account} として ${relay} に接続しています。操作は必要ありません。`,
     stageServiceStatus: 'セッションに到達し続けるためのバックグラウンドサービスをインストールしています。',
@@ -10530,11 +10526,11 @@ settingsSession: {
     blockedAccountChangedStatus: 'セットアップ中にこのコンピュータが別のアカウントにサインインしたため、ペアリングの前にセットアップを停止しました。もう一度お試しください。',
     blockedPairingDeclinedStatus: 'このコンピュータは接続を承認されませんでした。アカウントとセッションはそのままです。',
     blockedPairingIncompleteStatus: 'このコンピュータの接続が完了しませんでした。',
-    blockedCliOutdatedStatus: 'このコンピュータの Happier コマンドラインはセットアップに必要なバージョンより古いです。Happier を更新してからもう一度お試しください。',
+    blockedCliOutdatedStatus: 'このコンピュータの Happiest コマンドラインはセットアップに必要なバージョンより古いです。Happiest を更新してからもう一度お試しください。',
     blockedCliChannelOutdatedStatus: ({ channel }: { channel: string }) => `このコンピュータは ${channel} の CLI を使っていますが、このアプリに必要なバージョンより古いです。`,
     blockedCliChannelOutdatedVersionStatus: ({ channel, version }: { channel: string; version: string }) => `このコンピュータは ${channel} の CLI を使っています。最新バージョンの ${version} は、このアプリに必要なバージョンより古いです。`,
-    blockedCliUnresponsiveStatus: 'Happier のコマンドラインが応答しなくなりました。',
-        blockedCliUnavailableStatus: "このコンピューターで Happier コマンドラインを起動できませんでした。",
+    blockedCliUnresponsiveStatus: 'Happiest のコマンドラインが応答しなくなりました。',
+        blockedCliUnavailableStatus: "このコンピューターで Happiest コマンドラインを起動できませんでした。",
     blockedCliFailedStatus: 'このコンピュータのセットアップを最後まで読み取れませんでした。',
     unreachableStatus: ({ relay }: { relay: string }) => `このコンピュータはまだ ${relay} で応答していません。`,
     notConvergedStatus: ({ relay }: { relay: string }) => `このコンピュータのバックグラウンドサービスは ${relay} 向けの起動をまだ完了していません。`,
@@ -10543,7 +10539,7 @@ settingsSession: {
     stepOfTotal: ({ step, total }: { step: number; total: number }) => `ステップ ${step}/${total}`,
     hideDetails: '詳細を隠す',
     consentTitle: 'このコンピュータのバックグラウンドサービスを置き換えますか？',
-    consentBodyFallback: 'このコンピュータには、このアプリが管理していない Happier のバックグラウンドサービスがすでにあります。',
+    consentBodyFallback: 'このコンピュータには、このアプリが管理していない Happiest のバックグラウンドサービスがすでにあります。',
     consentServicesList: ({ services }: { services: string }) => `対象のサービス: ${services}`,
     consentConfirm: '置き換える',
     consentKeep: '既存のサービスを残す',
@@ -10557,27 +10553,27 @@ settingsSession: {
     accountMoveBody: ({ from, to, relay }: { from: string; to: string; relay: string }) => `このコンピューターは ${relay} に ${from} としてサインインしています。${to} に切り替えると、${from} からはこのコンピューターに接続できなくなります。`,
     accountMoveBodyAcrossRelays: ({ from, fromRelay, to, toRelay }: { from: string; fromRelay: string; to: string; toRelay: string }) => `このコンピューターは ${fromRelay} に ${from} としてサインインしています。${toRelay} の ${to} に切り替えると、${from} からはこのコンピューターに接続できなくなります。`,
     accountMoveConfirm: '切り替える',
-    consentTakeoverTitle: 'ここのバックグラウンドサービスを Happier に任せますか？',
+    consentTakeoverTitle: 'ここのバックグラウンドサービスを Happiest に任せますか？',
     consentTakeoverConfirm: '引き継ぐ',
     continueWithoutAction: 'このコンピューターなしで続ける',
     updateCliAction: 'アップデート',
-    cliChoiceTitle: ({ version }: { version: string }) => `Happier CLI ${version} はすでにインストールされています`,
-    cliChoiceTitleUnknownVersion: 'Happier CLI はすでにインストールされています',
-    cliChoiceBody: ({ path }: { path: string }) => `場所は ${path} です。Happier が独自のコピーをインストールして最新に保ち、PATH の先頭に置くこともできますし、このまま使い続けることもできます。`,
-    cliChoiceBodyOutdated: ({ path }: { path: string }) => `場所は ${path} ですが、セットアップには古すぎます。Happier が最新のコピーをインストールして PATH の先頭に置くこともできますし、今のものを残してご自身で更新することもできます。`,
-    cliChoiceTitleMissing: 'お使いの Happier CLI はインストールされていません',
-    cliChoiceBodyMissing: ({ path }: { path: string }) => `${path} にあるものを使い続けるよう選択していましたが、見つかりません。Happier が独自のコピーをインストールして最新に保つことも、ご自身で再インストールして使い続けることもできます。`,
-    cliChoiceBodyKeepBlocked: ({ path, link }: { path: string; link: string }) => `場所は ${path} ですが、新しいターミナルでは Happier が追加していない ${link} を通じて Happier の CLI が先に実行されます。Happier に管理を任せるか、${link} を削除してからセットアップをやり直すと自分のものを使えます。`,
+    cliChoiceTitle: ({ version }: { version: string }) => `Happiest CLI ${version} はすでにインストールされています`,
+    cliChoiceTitleUnknownVersion: 'Happiest CLI はすでにインストールされています',
+    cliChoiceBody: ({ path }: { path: string }) => `場所は ${path} です。Happiest が独自のコピーをインストールして最新に保ち、PATH の先頭に置くこともできますし、このまま使い続けることもできます。`,
+    cliChoiceBodyOutdated: ({ path }: { path: string }) => `場所は ${path} ですが、セットアップには古すぎます。Happiest が最新のコピーをインストールして PATH の先頭に置くこともできますし、今のものを残してご自身で更新することもできます。`,
+    cliChoiceTitleMissing: 'お使いの Happiest CLI はインストールされていません',
+    cliChoiceBodyMissing: ({ path }: { path: string }) => `${path} にあるものを使い続けるよう選択していましたが、見つかりません。Happiest が独自のコピーをインストールして最新に保つことも、ご自身で再インストールして使い続けることもできます。`,
+    cliChoiceBodyKeepBlocked: ({ path, link }: { path: string; link: string }) => `場所は ${path} ですが、新しいターミナルでは Happiest が追加していない ${link} を通じて Happiest の CLI が先に実行されます。Happiest に管理を任せるか、${link} を削除してからセットアップをやり直すと自分のものを使えます。`,
     cliChoiceNotNow: '今はしない',
-    cliChoiceManage: 'Happier に管理を任せる',
+    cliChoiceManage: 'Happiest に管理を任せる',
     cliChoiceKeep: '自分のものを使う',
     blockedCliChoiceStatus: '何も変更せずにセットアップを停止しました。続けるには、コマンドラインを誰が管理するか選んでください。',
     blockedCliOwnOutdatedStatus: ({ command }: { command: string }) => `お使いのコマンドラインはセットアップには古すぎます。${command} で更新してください`,
     blockedCliOwnOutdatedUnknownStatus: 'お使いのコマンドラインはセットアップには古すぎます。インストールした方法で更新してください。',
-    blockedCliOwnMissingStatus: '使い続けるよう選んだコマンドラインが見つかりません。再インストールするか、Happier に管理を任せてください。',
+    blockedCliOwnMissingStatus: '使い続けるよう選んだコマンドラインが見つかりません。再インストールするか、Happiest に管理を任せてください。',
     cliTrustTitle: 'このコマンドラインを承認しますか？',
-    cliTrustBody: ({ command }: { command: string }) => `${command} のコマンドラインは Happier がインストールしたものではありません。承認すると、このアカウントのセッションを読み書きできるようになります。自分で配置したものだけを承認してください。`,
-    cliTrustBodyUnknownCommand: 'このコマンドラインは Happier がインストールしたものではありません。承認すると、このアカウントのセッションを読み書きできるようになります。自分で配置したものだけを承認してください。',
+    cliTrustBody: ({ command }: { command: string }) => `${command} のコマンドラインは Happiest がインストールしたものではありません。承認すると、このアカウントのセッションを読み書きできるようになります。自分で配置したものだけを承認してください。`,
+    cliTrustBodyUnknownCommand: 'このコマンドラインは Happiest がインストールしたものではありません。承認すると、このアカウントのセッションを読み書きできるようになります。自分で配置したものだけを承認してください。',
     cliTrustApprove: '承認',
   },
 
@@ -10625,7 +10621,7 @@ settingsSession: {
     launchNewSessionInDirectory: "ディレクトリで新しいセッションを起動",
     offlineUnableToSpawn: "マシンがオフラインのためランチャーは無効です",
     offlineHelp:
-      "• コンピューターがオンラインであることを確認してください\n• `happier daemon status`を実行して診断してください\n• 最新のCLIバージョンを使用していますか？`happier self update`を実行してください",
+      "• コンピューターがオンラインであることを確認してください\n• `happiest daemon status`を実行して診断してください\n• 最新のCLIバージョンを使用していますか？`happiest self update`を実行してください",
     customPathPlaceholder: "カスタムパスを入力",
     tools: {
       title: "ツール",
@@ -10637,7 +10633,7 @@ settingsSession: {
       screenTitle: "インストール可能",
       aboutGroupTitle: "概要",
       aboutSubtitle:
-        "このマシンで、Happier がインストールし最新状態に保てるツールを管理します。",
+        "このマシンで、Happiest がインストールし最新状態に保てるツールを管理します。",
       experimentalGroupTitle: ({ title }: { title: string }) =>
         `${title}（実験的）`,
       autoInstallTitle: "必要時に自動インストール",
@@ -10664,9 +10660,9 @@ settingsSession: {
         notSetUp: 'このコンピューターはまだセットアップされていません。',
         connectedAs: ({ relay, account }: { relay: string; account: string }) => `${relay} に ${account} として接続済み。`,
         cliTitle: 'コマンドライン',
-        cliManaged: ({ version }: { version: string }) => `Happier ${version}（このアプリがインストール）`,
+        cliManaged: ({ version }: { version: string }) => `Happiest ${version}（このアプリがインストール）`,
         cliManagedOnChannel: ({ channel, version }: { channel: string; version: string }) => `${channel} CLI ${version}（このアプリがインストール）`,
-        cliChoiceManaged: 'Happier が管理',
+        cliChoiceManaged: 'Happiest が管理',
         cliChoiceOwn: ({ path }: { path: string }) => `自分のもの — ${path}`,
         cliChoiceChange: 'コマンドラインの管理者を変更',
         cliOldCopyTitle: '古いコマンドライン',
@@ -10678,24 +10674,24 @@ settingsSession: {
         cliManagedUnknownVersion: 'このアプリがインストール',
         cliFromPath: ({ version, path }: { version: string; path: string }) => `${version}（${path}）`,
         updateCliTitle: 'コマンドラインをアップデート',
-        updateCliAvailable: ({ version }: { version: string }) => `Happier ${version} を利用できます。`,
+        updateCliAvailable: ({ version }: { version: string }) => `Happiest ${version} を利用できます。`,
         updatingCli: 'コマンドラインをアップデート中',
-        cliNotManaged: 'このコマンドラインは Happier がインストールしたものではないため、置き換えません。',
+        cliNotManaged: 'このコマンドラインは Happiest がインストールしたものではないため、置き換えません。',
         cliUpdateFailed: 'アップデートが完了しませんでした。もう一度お試しください。',
         cliUpdateRestartNotConverged: 'コマンドラインは更新されましたが、バックグラウンドサービスはまだ以前のバージョンで動作しています。もう一度お試しください。',
     },
     cliPath: {
       title: "ターミナル",
-      footer: "Happier Desktop は自身が作成した PATH エントリのみを追加・削除します。シェルインストーラーが書き込んだエントリには触れません。",
-      addTitle: "happier を PATH に追加",
-      addSubtitle: "新しいターミナルで happier コマンドを使えるようにします。",
-      removeTitle: "happier を PATH から削除",
-      removeSubtitle: "Happier Desktop が追加した PATH エントリのみを削除します。",
-      added: "追加しました。happier を使うには新しいターミナルを開いてください。",
-      alreadyPresent: "happier はすでに PATH に含まれています。",
-      existingCommand: ({ path }: { path: string }) => `別の happier（${path}）がすでにターミナルで使われているため、何も追加しませんでした。`,
-      removed: "Happier Desktop が追加した PATH エントリを削除しました。",
-      nothingToRemove: "Happier Desktop は PATH エントリを追加していません。",
+      footer: "Happiest Desktop は自身が作成した PATH エントリのみを追加・削除します。シェルインストーラーが書き込んだエントリには触れません。",
+      addTitle: "happiest を PATH に追加",
+      addSubtitle: "新しいターミナルで happiest コマンドを使えるようにします。",
+      removeTitle: "happiest を PATH から削除",
+      removeSubtitle: "Happiest Desktop が追加した PATH エントリのみを削除します。",
+      added: "追加しました。happiest を使うには新しいターミナルを開いてください。",
+      alreadyPresent: "happiest はすでに PATH に含まれています。",
+      existingCommand: ({ path }: { path: string }) => `別の happiest（${path}）がすでにターミナルで使われているため、何も追加しませんでした。`,
+      removed: "Happiest Desktop が追加した PATH エントリを削除しました。",
+      nothingToRemove: "Happiest Desktop は PATH エントリを追加していません。",
     },
     stopDaemon: "デーモンを停止",
     stopDaemonConfirmTitle: "デーモンを停止しますか？",
@@ -10760,7 +10756,7 @@ settingsSession: {
     detectedCliDetected: "検出済み",
     detectedCliNotDetected: "未検出",
     detectedCliUnknown: "不明",
-    detectedCliNotSupported: "未対応（@happier-dev/cliを更新してください）",
+    detectedCliNotSupported: "未対応（Happiest CLI を更新してください）",
     untitledSession: "無題のセッション",
     back: "戻る",
     notFound: "マシンが見つかりません",
@@ -10853,26 +10849,26 @@ settingsSession: {
     switchToRemote: "リモートに切り替え",
     detachLocalTerminal: "ターミナルを切り離す",
     directSessionTakeoverAvailable:
-      "この直接セッションはあなたのマシンで利用できます。ここで操作するために Happier で引き継いでください。",
+      "この直接セッションはあなたのマシンで利用できます。ここで操作するために Happiest で引き継いでください。",
     directSessionMachineOffline:
       "この直接セッションは、マシンがオフラインのため現在利用できません。",
     switchingToDirectTakeover: "この直接セッションを引き継いでいます…",
     switchingToPersistedTakeover: "このセッションを引き継いでインポートしています…",
     takeOverDirect: "引き継ぐ",
     takeOverPersist: "引き継いでインポート",
-    directTakeoverDialogTitle: "この直接セッションを Happier で続けますか？",
-    directTakeoverDialogBody: "どのように Happier が制御を引き継ぐかを選択してください。Direct はプロバイダーのトランスクリプトをそのまま使い続けます。インポートはトランスクリプトを Happier に取り込みます。",
+    directTakeoverDialogTitle: "この直接セッションを Happiest で続けますか？",
+    directTakeoverDialogBody: "どのように Happiest が制御を引き継ぐかを選択してください。Direct はプロバイダーのトランスクリプトをそのまま使い続けます。インポートはトランスクリプトを Happiest に取り込みます。",
     directTakeoverDialogDirectTitle: "引き継ぐ",
-    directTakeoverDialogDirectBody: "トランスクリプトを Happier にインポートせずに、このセッションを Happier で操作します。",
+    directTakeoverDialogDirectBody: "トランスクリプトを Happiest にインポートせずに、このセッションを Happiest で操作します。",
     directTakeoverDialogPersistTitle: "引き継いでインポート",
-    directTakeoverDialogPersistBody: "トランスクリプトを Happier に取り込み、Happier セッションの機能をすべて使って続けます。",
+    directTakeoverDialogPersistBody: "トランスクリプトを Happiest に取り込み、Happiest セッションの機能をすべて使って続けます。",
     directTakeoverDialogForceStopTitle: "最初にローカル プロセスの停止を試す",
-    directTakeoverDialogForceStopBody: "Happier はこのセッションに対応する信頼済みローカル プロセスを見つけました。引き継ぐ前に停止したい場合はこれを有効にしてください。",
+    directTakeoverDialogForceStopBody: "Happiest はこのセッションに対応する信頼済みローカル プロセスを見つけました。引き継ぐ前に停止したい場合はこれを有効にしてください。",
     directTakeoverForceStopConfirmTitle: "最初にローカル プロセスを停止しますか？",
-    directTakeoverForceStopConfirmBody: "Happier はこの直接セッションに対応する信頼済みローカル プロセスを見つけました。ここで引き継ぐ前に停止しますか？",
+    directTakeoverForceStopConfirmBody: "Happiest はこの直接セッションに対応する信頼済みローカル プロセスを見つけました。ここで引き継ぐ前に停止しますか？",
     directTakeoverForceStopConfirmAction: "停止して引き継ぐ",
     directSessionRunningOnComputerTitle: "このセッションはまだコンピューターで実行中です",
-    directSessionRunningOnComputerBody: "そのコンピューター上の別のプログラムが、まだこのセッションで作業しています。ここで続けると、そのプログラムを先に停止します（実行中の処理も中断されます）。以降は Happier だけがこのセッションに書き込みます。",
+    directSessionRunningOnComputerBody: "そのコンピューター上の別のプログラムが、まだこのセッションで作業しています。ここで続けると、そのプログラムを先に停止します（実行中の処理も中断されます）。以降は Happiest だけがこのセッションに書き込みます。",
     directSessionRunningOnComputerAction: "停止して続ける",
   },
 

@@ -61,7 +61,7 @@ const ALLOW_SAME_STRING_VALUES = new Set<string>([
     'SSH',
     'TCP',
     'UDP',
-    'Happier',
+    'Happiest',
     // Proper nouns / product feature names that are intentionally not localized.
     'Zen',
     'Codex',
@@ -73,7 +73,7 @@ const ALLOW_SAME_STRING_VALUES = new Set<string>([
     'Telegram',
     'Windows',
     'Windows Terminal',
-    'Happier Voice',
+    'Happiest Voice',
     'happier',
     // Technical ids that should remain unchanged across locales.
     'Xenova/all-MiniLM-L6-v2',

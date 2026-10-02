@@ -2,10 +2,10 @@ import type { TranslationStructure } from '../_types';
 
 const mcpServersUxTranslationExtension = {
   mcpServersConfiguredEmptySubtitle: 'Crea un servidor, importa JSON de l’amfitrió o instal·la un preajust recomanat.',
-  mcpServersHeroSubtitle: ({ configuredCount }: { configuredCount: number }) => `${configuredCount} configurats a Happier`,
+  mcpServersHeroSubtitle: ({ configuredCount }: { configuredCount: number }) => `${configuredCount} configurats a Happiest`,
   mcpServersHeroSubtitleEmpty: 'Crea servidors una vegada, previsualitza on s’apliquen i importa el que altres eines ja fan servir.',
   mcpServersSegmentConfigured: 'Configurat',
-  mcpServersSegmentConfiguredSubtitle: 'El teu catàleg de Happier',
+  mcpServersSegmentConfiguredSubtitle: 'El teu catàleg de Happiest',
   mcpServersSegmentDetected: 'Detectat',
   mcpServersSegmentDetectedSubtitle: 'Trobat en fitxers de configuració del proveïdor',
   mcpServersSegmentPreview: 'Previsualització',
@@ -22,12 +22,12 @@ const mcpServersUxTranslationExtension = {
   mcpServersPreviewDirectorySubtitle: 'Tria la carpeta on planeges iniciar la sessió',
   mcpServersPreviewDirectoryPlaceholder: '/camí/al/workspace',
   mcpServersPreviewRefreshTitle: 'Actualitza la previsualització',
-  mcpServersPreviewRefreshSubtitle: 'Resol els servidors MCP de Happier i els natius del proveïdor per a aquest context',
+  mcpServersPreviewRefreshSubtitle: 'Resol els servidors MCP de Happiest i els natius del proveïdor per a aquest context',
   mcpServersPreviewEmptyTitle: 'Encara no hi ha previsualització',
   mcpServersPreviewEmptySubtitle: 'Tria un backend, una màquina i un directori, i després actualitza per inspeccionar el conjunt MCP efectiu.',
   mcpServersPreviewDirectoryRequired: 'Tria un directori per previsualitzar aquesta sessió.',
-  mcpServersBuiltInDescription: 'Sempre disponible a les sessions de Happier.',
-  mcpServersSourceHappier: 'Happier',
+  mcpServersBuiltInDescription: 'Sempre disponible a les sessions de Happiest.',
+  mcpServersSourceHappier: 'Happiest',
   mcpServersSourceBuiltIn: 'Integrat',
   mcpServersSourceDetected: 'Detectat',
   mcpServersQuickInstallTitle: 'Instal·lació ràpida',
@@ -88,17 +88,17 @@ const mcpServersUxTranslationExtension = {
   mcpServersStatusDetected: ({ provider }: { provider: string }) => `Habilitat a ${provider}`,
   mcpServersStatusDisabledInProvider: ({ provider }: { provider: string }) => `Deshabilitat a ${provider}`,
   mcpServersEditorAppliesTo: 'S’aplica a',
-  mcpServersEditorAppliesToSubtitle: 'Tria on Happier ha d’afegir aquest servidor per defecte.',
+  mcpServersEditorAppliesToSubtitle: 'Tria on Happiest ha d’afegir aquest servidor per defecte.',
   mcpServersAddApplyRule: 'Afegeix una regla d’aplicació',
   mcpServersAddApplyRuleSubtitle: 'Tria on s’ha d’aplicar aquest servidor per defecte.',
   mcpServersAddApplyRuleHelp: 'Desa aquesta regla d’aplicació per fer-la part d’aquesta configuració de servidor.',
   mcpServersAddApplyRuleSave: 'Desa la regla d’aplicació',
   mcpServersDeliveryNativeTitle: 'MCP natiu',
-  mcpServersDeliveryNativeSubtitle: 'Aquest backend rep les eines de Happier com a servidors MCP natius.',
-  mcpServersDeliveryShellBridgeTitle: 'Pont de shell de Happier',
-  mcpServersDeliveryShellBridgeSubtitle: 'Aquest backend crida les eines de Happier a través del pont `happier tools`.',
+  mcpServersDeliveryNativeSubtitle: 'Aquest backend rep les eines de Happiest com a servidors MCP natius.',
+  mcpServersDeliveryShellBridgeTitle: 'Pont de shell de Happiest',
+  mcpServersDeliveryShellBridgeSubtitle: 'Aquest backend crida les eines de Happiest a través del pont `happiest tools`.',
   mcpServersDeliveryUnsupportedTitle: 'No compatible',
-  mcpServersDeliveryUnsupportedSubtitle: 'Aquest backend encara no rep eines de Happier.',
+  mcpServersDeliveryUnsupportedSubtitle: 'Aquest backend encara no rep eines de Happiest.',
 } as const;
 
 const newSessionMcpTranslationExtension = {
@@ -121,9 +121,9 @@ const newSessionMcpTranslationExtension = {
   mcpDetectedEmptyTitle: 'No s’han detectat servidors MCP',
   mcpDetectedEmptySubtitle: 'Actualitza per escanejar els fitxers de configuració del proveïdor en aquesta màquina.',
   mcpDetectedUnsupportedTitle: 'Els servidors MCP detectats no estan disponibles',
-  mcpDetectedUnsupportedSubtitle: 'Actualitza Happier en aquesta màquina per habilitar l’escaneig de configuració del proveïdor.',
-  mcpHappierSectionTitle: 'Servidors MCP de Happier',
-  mcpHappierEmptyTitle: 'No hi ha servidors MCP definits a Happier',
+  mcpDetectedUnsupportedSubtitle: 'Actualitza Happiest en aquesta màquina per habilitar l’escaneig de configuració del proveïdor.',
+  mcpHappierSectionTitle: 'Servidors MCP de Happiest',
+  mcpHappierEmptyTitle: 'No hi ha servidors MCP definits a Happiest',
   mcpHappierEmptySubtitle: 'Defineix servidors MCP als ajustos per utilitzar-los a les sessions.',
   mcpReasonActiveByDefault: 'Inclosos per defecte',
   mcpReasonForcedIncluded: 'Requerits per la configuració',
@@ -145,7 +145,7 @@ const settingsAppearanceTranslationExtension = {
     customGroup: 'Custom themes',
     customFooter: 'Tap a theme to activate it, or use row actions to edit, duplicate, or delete it.',
     defaultTheme: 'Default theme',
-    defaultThemeSubtitle: 'Use Happier theme colors without a custom profile',
+    defaultThemeSubtitle: 'Use Happiest theme colors without a custom profile',
     active: 'Active',
     customProfileSubtitle: 'Custom local theme profile',
     tapToActivate: 'Tap to activate',
@@ -153,7 +153,7 @@ const settingsAppearanceTranslationExtension = {
     createProfile: 'Create theme',
     createProfileSubtitle: 'Start from any built-in or custom theme',
     importProfile: 'Import theme',
-    importProfileSubtitle: 'Paste JSON or choose a Happier theme profile file',
+    importProfileSubtitle: 'Paste JSON or choose a Happiest theme profile file',
     exportProfile: 'Export theme',
     exportProfileSubtitle: 'Export this theme as JSON',
     presetsGroup: 'Built-in presets',
@@ -357,7 +357,7 @@ const memoryEmbeddingsTranslationExtension = {
       title: 'Proveïdor',
       options: {
         localTitle: 'Model local',
-        localSubtitle: 'Gestionat per Happier i baixat en el primer ús',
+        localSubtitle: 'Gestionat per Happiest i baixat en el primer ús',
         openAiCompatibleTitle: 'Endpoint compatible amb OpenAI',
         openAiCompatibleSubtitle: 'Fes servir el teu propi servidor d’embeddings i clau API',
       },
@@ -450,7 +450,7 @@ const promptLibraryUxRefinementTranslationExtension = {
     externalAssetsInstallMethodCopy: 'Copia fitxers',
     externalAssetsInstallMethodCopySubtitle: 'Escriu una còpia independent al destí seleccionat',
     externalAssetsInstallMethodSymlink: 'Enllaç simbòlic (recomanat)',
-    externalAssetsInstallMethodSymlinkSubtitle: 'Enllaça el destí a una còpia gestionada per Happier per facilitar les actualitzacions',
+    externalAssetsInstallMethodSymlinkSubtitle: 'Enllaça el destí a una còpia gestionada per Happiest per facilitar les actualitzacions',
     registriesAddGitSourceSubtitle: 'Afegeix un repositori Git o una còpia local com a font de registre',
     registriesSourceTitleLabel: 'Títol de la font',
     registriesSourceUrlLabel: 'URL del repositori o camí local',
@@ -461,7 +461,7 @@ const promptLibraryUxRefinementTranslationExtension = {
     registriesItemFiles: 'Fitxers de suport',
     registriesItemPreview: 'Vista prèvia de SKILL.md',
     registriesItemPreviewUnavailable: 'No hi ha cap vista prèvia de SKILL.md disponible per a aquest element del registre.',
-    registriesItemImportSubtitle: 'Importa aquest paquet d’habilitat a la biblioteca de Happier',
+    registriesItemImportSubtitle: 'Importa aquest paquet d’habilitat a la biblioteca de Happiest',
     registriesItemInstallAction: 'Instal·lar a la màquina',
     registriesItemInstallConfirmTitle: 'Instal·lar element del registre?',
     registriesItemInstallConfirmBody: 'Això importa l’habilitat a la teva biblioteca i la instal·la al destí de màquina seleccionat.',
@@ -507,7 +507,7 @@ const sessionHandoffTranslationExtensions = {
     recovery: {
       title: 'La sessió s’ha aturat aquí abans de completar la transferència',
       messageAfterSourceStop:
-        'Happier ja ha aturat aquesta sessió en aquesta màquina, però no ha pogut acabar d’iniciar-la a la màquina de destinació. Reinicia-la aquí o mantén-la aturada mentre recuperes la màquina de destinació.',
+        'Happiest ja ha aturat aquesta sessió en aquesta màquina, però no ha pogut acabar d’iniciar-la a la màquina de destinació. Reinicia-la aquí o mantén-la aturada mentre recuperes la màquina de destinació.',
       restartOnSource: 'Reinicia a l origen',
       keepStopped: 'Mantingues-la aturada',
     },
@@ -560,8 +560,8 @@ const settingsSessionHandoffTranslationExtensions = {
       groupFooter: 'S aplica nomes quan la sessio d origen es actualment directa.',
       keepDirectTitle: 'Mantingues directa',
       keepDirectSubtitle: 'Repren la destinacio com a sessio directa quan el proveidor ho admeti.',
-      convertToPersistedTitle: 'Converteix a Happier',
-      convertToPersistedSubtitle: 'Importa la transcripció i continua com a sessió Happier.',
+      convertToPersistedTitle: 'Converteix a Happiest',
+      convertToPersistedSubtitle: 'Importa la transcripció i continua com a sessió Happiest.',
     },
   },
 } as const;
@@ -577,7 +577,7 @@ function plural({ count, singular, plural }: { count: number; singular: string; 
 }
 
 /**
- * Catalan translations for the Happier app
+ * Catalan translations for the Happiest app
  * Must match the exact structure of the English translations
  */
 export const ca: TranslationStructure = {
@@ -809,7 +809,7 @@ export const ca: TranslationStructure = {
         codingStack: 'Pila de codi',
         codingStackSubtitle: 'S\'aplica a les sessions de codi',
         voiceStack: 'Pila de veu',
-        voiceStackSubtitle: 'S\'aplica a Happier Voice',
+        voiceStackSubtitle: 'S\'aplica a Happiest Voice',
         profileStacks: 'Piles de perfil',
         profileStacksSubtitle: ({ count }: { count: number }) => `${count} perfil${count === 1 ? '' : 's'}`,
         profileStackCount: ({ count }: { count: number }) => `${count} element${count === 1 ? '' : 's'}`,
@@ -1098,7 +1098,7 @@ export const ca: TranslationStructure = {
     appCrash: {
         title: 'Alguna cosa ha fallat',
         subtitle:
-            'Happier ha patit un error inesperat. Pots reiniciar la interfície de l\'app o copiar els detalls per al suport.',
+            'Happiest ha patit un error inesperat. Pots reiniciar la interfície de l\'app o copiar els detalls per al suport.',
         detailsTitle: 'Detalls de l\'error',
         restart: 'Reinicia l\'app',
         restartAndReportIssue: 'Reinicia i obre l\'informe d\'error',
@@ -1303,11 +1303,11 @@ export const ca: TranslationStructure = {
         scanComputerQrUnavailableTitle: 'No es pot escanejar el QR de l’ordinador',
         scanComputerQrUnavailableBody:
             'Aquest mètode d’inici de sessió està desactivat en aquest servidor. Fes servir una altra opció a continuació per restaurar el compte.',
-        scanComputerQrInstructions: 'Escaneja el codi QR que es mostra a Happier al teu ordinador (Configuració → Afegeix el teu telèfon).',
+        scanComputerQrInstructions: 'Escaneja el codi QR que es mostra a Happiest al teu ordinador (Configuració → Afegeix el teu telèfon).',
         scanComputerQrButton: 'Escanejar QR per iniciar sessió',
         waitingForApproval: 'Esperant aprovació…',
         showQrInstead: 'Mostra un codi QR en el seu lloc',
-        addPhoneQrInstructions: 'Escaneja aquest codi QR amb l’app mòbil de Happier per iniciar sessió al teu telèfon.',
+        addPhoneQrInstructions: 'Escaneja aquest codi QR amb l’app mòbil de Happiest per iniciar sessió al teu telèfon.',
         serverUrlNotEmbeddedTitle: 'Configura el servidor al teu telèfon',
         serverUrlNotEmbeddedBody:
             'Aquest codi QR no pot incloure l’adreça del servidor perquè està configurada com a localhost. Al teu telèfon, ves a Configuració → Servidors i afegeix una URL a la qual el telèfon pugui accedir (IP de la LAN o Tailscale) i després torna a escanejar.',
@@ -1327,13 +1327,13 @@ export const ca: TranslationStructure = {
         restoreQrInstructions: 'En un dispositiu on ja hagis iniciat sessió, ves a Configuració → Compte i escaneja aquest codi QR.',
         externalAuthVerifiedTitle: ({ provider }: { provider: string }) => `${provider} verificat`,
         externalAuthVerifiedBody: ({ provider }: { provider: string }) =>
-            `Hem trobat un compte de Happier existent vinculat a ${provider}. Per acabar d'iniciar sessió en aquest dispositiu, restaura la clau del teu compte amb el codi QR o amb la teva clau secreta.`,
+            `Hem trobat un compte de Happiest existent vinculat a ${provider}. Per acabar d'iniciar sessió en aquest dispositiu, restaura la clau del teu compte amb el codi QR o amb la teva clau secreta.`,
         restoreWithSecretKeyInstead: 'Restaura amb clau secreta',
         restoreWithSecretKeyDescription: 'Introdueix la teva clau secreta per recuperar l’accés al teu compte.',
         lostAccessLink: 'Sense accés?',
         lostAccessTitle: 'Has perdut l’accés al teu compte?',
         lostAccessBody:
-            'Si ja no tens cap dispositiu enllaçat a aquest compte i has perdut la clau secreta, pots restablir el compte amb el teu proveïdor d’identitat. Això crea un nou compte de Happier. No es pot recuperar l’historial xifrat anterior.',
+            'Si ja no tens cap dispositiu enllaçat a aquest compte i has perdut la clau secreta, pots restablir el compte amb el teu proveïdor d’identitat. Això crea un nou compte de Happiest. No es pot recuperar l’historial xifrat anterior.',
         lostAccessContinue: ({ provider }: { provider: string }) => `Continua amb ${provider}`,
         lostAccessConfirmTitle: 'Restablir el compte?',
         lostAccessConfirmBody:
@@ -1342,14 +1342,13 @@ export const ca: TranslationStructure = {
         secretKeyPlaceholder: 'XXXXX-XXXXX-XXXXX...',
         linkNewDeviceTitle: 'Vincular Nou Dispositiu',
         linkNewDeviceSubtitle: 'Escaneja el codi QR que es mostra al teu nou dispositiu per vincular-lo a aquest compte',
-        linkNewDeviceQrInstructions: 'Obre Happier al teu nou dispositiu i mostra el codi QR',
+        linkNewDeviceQrInstructions: 'Obre Happiest al teu nou dispositiu i mostra el codi QR',
         scanQrCodeOnDevice: 'Escanejar codi QR',
         unsupported: {
             connectTitle: ({ name }: { name: string }) => `Connecta ${name}`,
             runCommandInTerminal: 'Executa l\'ordre següent al terminal:',
             runCommandInTerminalWithCommand: ({ command }: { command: string }) =>
                 `Executa l'ordre següent al terminal:\n\n${command}`,
-            command: ({ name }: { name: string }) => `happier connect ${name}`,
         },
     },
 
@@ -1377,7 +1376,7 @@ export const ca: TranslationStructure = {
                 disabledByServerSuffix: ' (desactivat pel servidor)',
                 pasteDoctorJson: {
                     title: 'JSON del doctor del CLI (opcional)',
-                    subtitle: 'Si la teva màquina no és accessible des de la UI, executa `happier doctor --json` a l’ordinador i enganxa’l aquí.',
+                    subtitle: 'Si la teva màquina no és accessible des de la UI, executa `happiest doctor --json` a l’ordinador i enganxa’l aquí.',
                     placeholder: '{ "capturedAt": "...", ... }',
                     invalid: ({ error }: { error: string }) => `JSON del doctor no vàlid: ${error}`,
                     valid: 'El JSON del doctor sembla vàlid i s’adjuntarà a l’informe.',
@@ -1422,7 +1421,7 @@ export const ca: TranslationStructure = {
                 expectedBehaviorLabel: 'Comportament esperat (opcional)',
                 expectedBehaviorPlaceholder: 'Què hauria de passar en lloc d’això?',
                 reproductionStepsLabel: 'Passos de reproducció (opcional)',
-                reproductionStepsPlaceholder: '1. Obre Happier\n2. Inicia una sessió\n3. ...',
+                reproductionStepsPlaceholder: '1. Obre Happiest\n2. Inicia una sessió\n3. ...',
                 whatChangedLabel: 'Què ha canviat recentment (opcional)',
                 whatChangedPlaceholder: 'Actualitzacions, canvis de configuració, nous passos de configuració...',
             },
@@ -1496,7 +1495,7 @@ export const ca: TranslationStructure = {
           enabled: {
               title: 'Activat',
               subtitle: 'Crea i mantén un índex local en aquesta màquina',
-              footer: 'Quan està activat, Happier crea un índex local al dispositiu a partir de transcripcions desxifrades per facilitar record i cerca ràpids.',
+              footer: 'Quan està activat, Happiest crea un índex local al dispositiu a partir de transcripcions desxifrades per facilitar record i cerca ràpids.',
           },
           budgets: {
               groupTitle: 'Pressupost de disc',
@@ -1739,8 +1738,8 @@ export const ca: TranslationStructure = {
                 backendsSubtitle: 'Backends configurats i destinacions d’inici personalitzades.',
             },
             enableInjection: {
-                title: 'Instruccions de les execucions de Happier',
-                subtitle: 'Desactivar-les elimina l’encaminament natiu prioritari i la mecànica d’execucions de Happier dels prompts del sistema dels agents de codi.',
+                title: 'Instruccions de les execucions de Happiest',
+                subtitle: 'Desactivar-les elimina l’encaminament natiu prioritari i la mecànica d’execucions de Happiest dels prompts del sistema dels agents de codi.',
             },
             notifyParentOnCompletion: { title: 'Notifica el pare quan acaben les execucions', subtitle: 'Envia un esdeveniment de finalització estructurat a l’agent pare.' },
             characterBudget: {
@@ -1817,7 +1816,7 @@ export const ca: TranslationStructure = {
         addYourPhoneSubtitle: 'Mostra un codi QR per iniciar la sessió al teu telèfon',
         addMachine: 'Afegeix una màquina',
         machineSetupCurrentMachineTitle: 'Aquest ordinador',
-        machineSetupCurrentMachineSubtitle: 'Inicialitza Happier directament en aquest dispositiu',
+        machineSetupCurrentMachineSubtitle: 'Inicialitza Happiest directament en aquest dispositiu',
         machineSetupAdoptExistingTitle: 'Adopta una instal·lació existent',
         machineSetupAdoptExistingSubtitle: 'Fes servir una configuració existent del dimoni/servei en aquest ordinador',
         machineSetupAdoptExistingProgressTitle: 'S’està comprovant la instal·lació existent',
@@ -1826,7 +1825,7 @@ export const ca: TranslationStructure = {
         machineSetupSshMachineSubtitle: 'Connecta un equip de desenvolupament, una VM o un servidor amb SSH',
         machineSetupStagesTitle: 'Què passa',
         machineSetupStageConnect: 'Connecta i valida l’accés',
-        machineSetupStageInstall: 'Instal·la Happier i vincula la màquina',
+        machineSetupStageInstall: 'Instal·la Happiest i vincula la màquina',
         machineSetupStageFinish: 'Acaba la configuració al terminal integrat',
         machineSetupComingSoon: 'La inicialització de màquines arribarà aviat.',
         machineSetupTaskWaitingForInput: 'Esperant entrada',
@@ -1845,7 +1844,7 @@ export const ca: TranslationStructure = {
         machineSetupRemoteRelaySwitchSubtitle: 'Canvia ara i continua la configuració amb el nou Relay.',
         machineSetupRemoteRelaySwitchConfirmTitle: 'Canviar de Relay?',
         machineSetupRemoteRelaySwitchConfirmBody: ({ relayUrl }: { relayUrl: string }) =>
-            `Canviar Happier a ${relayUrl} i continuar la configuració?`,
+            `Canviar Happiest a ${relayUrl} i continuar la configuració?`,
         machineSetupRemotePromptTrustAction: 'Confia en la clau de l’amfitrió',
         machineSetupRemotePromptReplaceAction: 'Substitueix la clau desada',
         machineSetupRemotePromptApproveAction: 'Aprova l’aparellament',
@@ -1935,13 +1934,13 @@ export const ca: TranslationStructure = {
         developerTools: 'Eines de desenvolupador',
         about: 'Quant a',
         actionsSettingsAboutSubtitle: 'Activa o desactiva accions globalment, per superfície (UI/veu/MCP) i per ubicació (on apareixen a la interfície). Les accions desactivades queden bloquejades de manera segura en temps d’execució.',
-        aboutFooter: 'Happier Coder és un client mòbil de Codex i Claude Code. Fa servir xifratge d\'extrem a extrem per defecte, amb restauració del compte als teus altres dispositius. No està afiliat amb Anthropic.',
+        aboutFooter: 'Happiest Coder és un client mòbil de Codex i Claude Code. Fa servir xifratge d\'extrem a extrem per defecte, amb restauració del compte als teus altres dispositius. No està afiliat amb Anthropic.',
         whatsNew: 'Novetats',
         whatsNewSubtitle: 'Mira les últimes actualitzacions i millores',
         reportIssue: 'Informa d\'un problema',
         privacyPolicy: 'Política de privadesa',
         termsOfService: 'Condicions del servei',
-        rateUs: 'Valora Happier',
+        rateUs: 'Valora Happiest',
         rateUsSubtitle: 'Si t\'agrada l\'app, una valoració ràpida ens ajuda molt',
         eula: 'EULA',
         supportUs: 'Dona\'ns suport',
@@ -2245,7 +2244,7 @@ export const ca: TranslationStructure = {
             copyReportSubtitle: 'Copia un informe JSON redactat per a suport',
         },
         pasteDoctorJson: {
-            footer: 'Consell: executa `happier doctor --json` a l\'ordinador i enganxa\'l aquí.',
+            footer: 'Consell: executa `happiest doctor --json` a l\'ordinador i enganxa\'l aquí.',
             placeholder: '{ "capturedAt": "...", ... }',
             parse: 'Valida el JSON enganxat',
             ok: 'El JSON del doctor sembla vàlid.',
@@ -2484,23 +2483,23 @@ export const ca: TranslationStructure = {
                     `The daemon could not verify ${agentId} resume state because required resume inputs were missing. Reported reason: ${reason}. Start fresh under the selected account or continue with the current account.`,
                 metadata_update_failed: 'La sessió no ha pogut desar la nova selecció d\'autenticació. Torna-ho a provar quan la sessió acabi de sincronitzar-se.',
                 no_eligible_group_member: 'Cap compte d\'aquest Pool és apte ara mateix com a alternativa. Revisa els comptes connectats i torna a connectar un perfil si cal.',
-                recovery_retry_scheduled: 'Happier ha programat un reintent de recuperació del proveïdor. Pots reintentar-ho ara o revisar els comptes connectats.',
-                recovery_dead_lettered: 'Happier ha esgotat els reintents automàtics de recuperació del proveïdor. Revisa els comptes connectats o torna a connectar el perfil seleccionat.',
-                runtime_auth_recovery_superseded: 'Aquest intent de recuperació del proveïdor ha estat substituït per un estat més recent del servei connectat. Happier no continuarà reintentant el compte obsolet.',
+                recovery_retry_scheduled: 'Happiest ha programat un reintent de recuperació del proveïdor. Pots reintentar-ho ara o revisar els comptes connectats.',
+                recovery_dead_lettered: 'Happiest ha esgotat els reintents automàtics de recuperació del proveïdor. Revisa els comptes connectats o torna a connectar el perfil seleccionat.',
+                runtime_auth_recovery_superseded: 'Aquest intent de recuperació del proveïdor ha estat substituït per un estat més recent del servei connectat. Happiest no continuarà reintentant el compte obsolet.',
                 runtime_auth_generation_stale: 'Aquest intent de recuperació del proveïdor pertany a una generació anterior del servei connectat. Espera el darrer canvi o revisa els comptes connectats.',
-                hot_apply_unavailable: 'Aquest proveïdor no pot canviar l’autenticació de manera segura a la sessió en curs. Happier esperarà un reinici segur o la següent ruta de recuperació apta.',
+                hot_apply_unavailable: 'Aquest proveïdor no pot canviar l’autenticació de manera segura a la sessió en curs. Happiest esperarà un reinici segur o la següent ruta de recuperació apta.',
                 app_server_unavailable: 'El servidor de l’app del proveïdor no estava disponible per verificar o aplicar el canvi d’autenticació. Torna-ho a provar quan la sessió estigui preparada.',
                 provider_account_adoption_mismatch: 'El proveïdor ha continuat en un altre compte després del canvi. Revisa els comptes connectats o reintenta el canvi.',
-                provider_account_identity_unverified: 'Happier no ha pogut demostrar la identitat del compte actiu del proveïdor. Evitarà distribuir al mateix compte fins que hi hagi una prova més sòlida.',
-                post_switch_verification_failed: 'Happier no ha pogut verificar que el proveïdor adoptés el compte seleccionat. Revisa els comptes connectats o reintenta el canvi.',
-                quota_snapshot_stale: 'La darrera instantània de quota és massa antiga per impulsar un canvi proactiu. Happier continuarà utilitzant recuperació reactiva fins que hi hagi quota actualitzada.',
-                quota_fetch_disabled: 'Les comprovacions de quota estan desactivades actualment per a aquest proveïdor. Happier continuarà utilitzant recuperació reactiva.',
-                quota_fetch_backoff: 'Les comprovacions de quota estan temporalment en espera després d’una resposta del proveïdor o de la xarxa. Happier tornarà a actualitzar la quota més tard.',
-                auth_surface_weakly_verified: 'Happier ha verificat que els fitxers d’autenticació seleccionats s’han reescrit, però aquest proveïdor no exposa la identitat exacta del compte actiu.',
-                connected_service_restart_requested: 'Happier ha sol·licitat un reinici segur de la sessió perquè el compte connectat seleccionat tingui efecte.',
+                provider_account_identity_unverified: 'Happiest no ha pogut demostrar la identitat del compte actiu del proveïdor. Evitarà distribuir al mateix compte fins que hi hagi una prova més sòlida.',
+                post_switch_verification_failed: 'Happiest no ha pogut verificar que el proveïdor adoptés el compte seleccionat. Revisa els comptes connectats o reintenta el canvi.',
+                quota_snapshot_stale: 'La darrera instantània de quota és massa antiga per impulsar un canvi proactiu. Happiest continuarà utilitzant recuperació reactiva fins que hi hagi quota actualitzada.',
+                quota_fetch_disabled: 'Les comprovacions de quota estan desactivades actualment per a aquest proveïdor. Happiest continuarà utilitzant recuperació reactiva.',
+                quota_fetch_backoff: 'Les comprovacions de quota estan temporalment en espera després d’una resposta del proveïdor o de la xarxa. Happiest tornarà a actualitzar la quota més tard.',
+                auth_surface_weakly_verified: 'Happiest ha verificat que els fitxers d’autenticació seleccionats s’han reescrit, però aquest proveïdor no exposa la identitat exacta del compte actiu.',
+                connected_service_restart_requested: 'Happiest ha sol·licitat un reinici segur de la sessió perquè el compte connectat seleccionat tingui efecte.',
                 connected_service_credential_reconnect_required: 'Cal reconnectar el compte connectat seleccionat abans que aquesta sessió es pugui reprendre. Reconnecta el perfil i torna-ho a provar.',
                 claude_subscription_missing_claude_code_scope: 'Aquest perfil de Claude es va connectar abans que es concedissin els permisos de Claude Code. Torna’l a connectar i després reintenta la sessió o el canvi de Pool.',
-                claude_subscription_native_auth_materialization_failed: 'Happier no ha pogut crear el fitxer de credencials natives de Claude Code per a aquest perfil. Torna a connectar el perfil o tria un altre membre del Pool.',
+                claude_subscription_native_auth_materialization_failed: 'Happiest no ha pogut crear el fitxer de credencials natives de Claude Code per a aquest perfil. Torna a connectar el perfil o tria un altre membre del Pool.',
                 claude_subscription_setup_token_not_supported_for_unified: 'El mode Claude Unified ha d’iniciar la CLI de Claude amb credencials OAuth natives. Torna a connectar aquest perfil amb OAuth en lloc d’un testimoni de configuració.',
             },
             actions: {
@@ -2619,7 +2618,7 @@ export const ca: TranslationStructure = {
             invalidConfig: 'Configuració del servei connectat no vàlida.',
             connectWebGroupTitle: 'Connecta (web)',
             connectWebDescription:
-                'Obre l\'URL d\'autorització, completa OAuth al navegador i després copia/enganxa l\'URL final redirigida de tornada a Happier.',
+                'Obre l\'URL d\'autorització, completa OAuth al navegador i després copia/enganxa l\'URL final redirigida de tornada a Happiest.',
             openAuthorizationUrl: 'Obre l\'URL d\'autorització',
             opensInNewTab: 'S\'obre en una pestanya nova',
             preparing: 'Preparant…',
@@ -2719,7 +2718,7 @@ export const ca: TranslationStructure = {
             connectAccessTokenTitle: 'Connecta amb token d’accés',
             connectAccessTokenSubtitle: 'Enganxa un token d’accés personal de GitHub',
             openGithubTokenTemplateTitle: 'Crea un token de GitHub',
-            openGithubTokenTemplateSubtitle: 'Obre GitHub amb els permisos que Happier necessita ja emplenats',
+            openGithubTokenTemplateSubtitle: 'Obre GitHub amb els permisos que Happiest necessita ja emplenats',
             disconnectConfirmBody: ({ service, profileId }: { service: string; profileId: string }) =>
                 `Desconnectar ${service} (${profileId})?`,
             disconnectGroupCleanupConfirmBody: ({ service, profileId, groups }: { service: string; profileId: string; groups: string }) =>
@@ -2884,13 +2883,13 @@ export const ca: TranslationStructure = {
                 softSwitchThresholdTitle: 'Llindar de canvi suau',
                 softSwitchThresholdSubtitle: ({ percent }: { percent: string }) => `Canvia per sota del ${percent}% restant quan aquest Pool tingui un altre membre amb quota utilitzable més recent.`,
                 softSwitchThresholdPromptTitle: 'Llindar de canvi suau',
-                softSwitchThresholdPromptBody: 'Introdueix el percentatge restant en què Happier hauria de preferir un membre més segur d’aquest Pool amb diversos comptes. Fes servir 0 per desactivar el canvi preventiu.',
+                softSwitchThresholdPromptBody: 'Introdueix el percentatge restant en què Happiest hauria de preferir un membre més segur d’aquest Pool amb diversos comptes. Fes servir 0 per desactivar el canvi preventiu.',
                 invalidSoftSwitchThresholdTitle: 'Llindar no vàlid',
                 invalidSoftSwitchThresholdBody: 'Introdueix un número de 0 a 100.',
                 staleProbeTitle: 'Comprova quota antiga després de',
                 staleProbeSubtitle: ({ minutes }: { minutes: string }) => `Torna a comprovar quan les dades de quota tinguin més de ${minutes} min.`,
                 staleProbePromptTitle: 'Comprova quota antiga després de',
-                staleProbePromptBody: 'Introdueix quants minuts es poden reutilitzar les dades de quota abans que Happier torni a comprovar.',
+                staleProbePromptBody: 'Introdueix quants minuts es poden reutilitzar les dades de quota abans que Happiest torni a comprovar.',
                 invalidStaleProbeTitle: 'Interval de comprovació no vàlid',
                 invalidStaleProbeBody: 'Introdueix almenys 1 minut.',
                 switchBudgetTitle: 'Límits de canvi automàtic',
@@ -3023,7 +3022,7 @@ export const ca: TranslationStructure = {
             groupUnknownSubtitle: 'La disponibilitat encara se sincronitza',
             groupUnsupportedSubtitle: 'Aquest runtime no pot canviar Pools de comptes',
             connectedServicesTitle: 'Utilitza serveis connectats',
-            connectedServicesSubtitle: 'Obté i materialitza des del núvol de Happier',
+            connectedServicesSubtitle: 'Obté i materialitza des del teu servidor de Happiest',
             notConnectedTitle: 'Cap servei connectat',
             notConnectedSubtitle: 'Toca per obrir la configuració',
             profileLabel: 'Perfil',
@@ -3218,7 +3217,7 @@ export const ca: TranslationStructure = {
                         subtitle: 'Millor renderització de diffs a web/escriptori. Fa servir un pipeline amb worker i fa fallback de manera segura si no està disponible.',
                     },
                     happier: {
-                        title: 'Renderitzador de diff: Happier',
+                        title: 'Renderitzador de diff: Happiest',
                         subtitle: 'Renderitzador de fallback per compatibilitat i diagnosi.',
                     },
                 },
@@ -3279,20 +3278,20 @@ export const ca: TranslationStructure = {
 
     settingsDesktop: {
         title: 'Escriptori',
-        footer: 'Controla com es comporta el Happier en aquest ordinador.',
+        footer: 'Controla com es comporta el Happiest en aquest ordinador.',
         startOnLoginTitle: 'Inicia en entrar',
-        startOnLoginSubtitle: 'Inicia Happier automàticament quan iniciïs sessió en aquest ordinador.',
+        startOnLoginSubtitle: 'Inicia Happiest automàticament quan iniciïs sessió en aquest ordinador.',
         backgroundServiceTitle: 'Segueix disponible en segon pla',
-        backgroundServiceSubtitle: 'Aquest ordinador continua responent després que tanquis Happier. Si ho desactives, el telèfon i el navegador no podran arribar-hi fins que tornis a obrir l’app.',
-        backgroundServiceUnknown: 'La línia d’ordres de Happier d’aquest ordinador no indica si el servei en segon pla s’inicia en entrar.',
+        backgroundServiceSubtitle: 'Aquest ordinador continua responent després que tanquis Happiest. Si ho desactives, el telèfon i el navegador no podran arribar-hi fins que tornis a obrir l’app.',
+        backgroundServiceUnknown: 'La línia d’ordres de Happiest d’aquest ordinador no indica si el servei en segon pla s’inicia en entrar.',
         backgroundServiceNotSetUp: 'Disponible quan aquest ordinador estigui configurat.',
         backgroundServiceChangeFailed: 'No s’ha pogut aplicar el canvi. Torna-ho a provar.',
-        trayOpen: 'Obre Happier',
-        trayQuit: 'Surt de Happier',
+        trayOpen: 'Obre Happiest',
+        trayQuit: 'Surt de Happiest',
         closeStopTitle: 'Encara hi ha sessions d’agent en marxa',
-        closeStopBody: 'Tancar Happier atura el servei en segon pla d’aquest ordinador i finalitza les sessions que s’hi executen.',
+        closeStopBody: 'Tancar Happiest atura el servei en segon pla d’aquest ordinador i finalitza les sessions que s’hi executen.',
         closeStopUnknownTitle: 'Vols aturar el servei en segon pla?',
-        closeStopUnknownBody: 'Happier no pot veure quines sessions s’executen en aquest ordinador. Tancar-lo atura el servei en segon pla i finalitza les que hi hagi.',
+        closeStopUnknownBody: 'Happiest no pot veure quines sessions s’executen en aquest ordinador. Tancar-lo atura el servei en segon pla i finalitza les que hi hagi.',
         closeStopConfirm: 'Atura-ho igualment',
         closeStopKeep: 'Deixa-ho en marxa',
     },
@@ -3314,7 +3313,7 @@ export const ca: TranslationStructure = {
         deviceOverrideTitle: 'Fes servir en aquest dispositiu',
         deviceOverrideSubtitle: 'Sobreescriu localment l’ajust de mascota del compte.',
         sourceTitle: 'Origen de la mascota',
-        builtInSubtitle: 'Inclòs a Happier.',
+        builtInSubtitle: 'Inclòs a Happiest.',
         builtInBlinkSubtitle: 'Converteix els senyals de sessió en petites llums d’estat tranquil·les.',
         builtInFurySubtitle: 'Prova fluxos difícils abans que arribin a producció.',
         builtInMiloSubtitle: 'Manté la UI endreçada i fa migdiades sobre tests fallits.',
@@ -3323,7 +3322,7 @@ export const ca: TranslationStructure = {
         localLibraryTitle: 'Aquest dispositiu',
         localLibraryFooter: 'Les mascotes locals resten en aquest dispositiu tret que les importis al compte.',
         helpDocsTitle: 'Ajuda de mascotes',
-        helpDocsSubtitle: 'Obre la documentació de Happier per configurar i diagnosticar la companya.',
+        helpDocsSubtitle: 'Obre la documentació de Happiest per configurar i diagnosticar la companya.',
         detectCodexPetsTitle: 'Detecta mascotes de Codex',
         detectCodexPetsSubtitle: 'Cerca mascotes compatibles als Codex homes locals.',
         detectedCodexPetsTileSubtitle: 'Trobada a Codex i a punt d’unir-se a aquest dispositiu.',
@@ -3332,7 +3331,7 @@ export const ca: TranslationStructure = {
         detectedCodexPetsErrorTitle: 'No s’han pogut detectar mascotes de Codex',
         detectedCodexPetsErrorSubtitle: 'Comprova que el daemon estigui connectat i torna-ho a provar.',
         detectedCodexPetsNoTargetTitle: 'No hi ha cap daemon disponible',
-        detectedCodexPetsNoTargetSubtitle: 'Inicia Happier en aquest ordinador i torna a detectar mascotes de Codex.',
+        detectedCodexPetsNoTargetSubtitle: 'Inicia Happiest en aquest ordinador i torna a detectar mascotes de Codex.',
         detectedCodexPetsDaemonMismatchTitle: 'Actualitza el daemon per detectar mascotes',
         detectedCodexPetsDaemonMismatchSubtitle: 'Aquest daemon encara no exposa la detecció de mascotes. Refresca l’stack i torna-ho a provar.',
         useOnThisDeviceTitle: 'Fes servir en aquest dispositiu',
@@ -3434,7 +3433,7 @@ export const ca: TranslationStructure = {
             footer: 'Controla les notificacions de canvi de compte i recuperació de quota.',
             accountSwitch: {
                 title: 'Canvis de compte',
-                subtitle: 'Notifica quan Happier canviï automàticament un proveïdor a un altre compte connectat',
+                subtitle: 'Notifica quan Happiest canviï automàticament un proveïdor a un altre compte connectat',
             },
             quotaBlocked: {
                 title: 'Quota bloquejada',
@@ -3447,7 +3446,7 @@ export const ca: TranslationStructure = {
         },
         pushPriming: {
             title: 'Vols activar les notificacions?',
-            body: 'Happier et pot avisar quan un agent acaba, necessita una decisió de permís o està esperant-te. Ho pots canviar quan vulguis a Configuració.',
+            body: 'Happiest et pot avisar quan un agent acaba, necessita una decisió de permís o està esperant-te. Ho pots canviar quan vulguis a Configuració.',
             accept: 'Activa',
             decline: 'Ara no',
             blockedTitle: 'Les notificacions estan bloquejades',
@@ -3698,7 +3697,7 @@ export const ca: TranslationStructure = {
           cliSourcePreference: {
             title: 'Preferència de la font de la CLI',
             subtitle:
-              'Tria si Happier ha de prioritzar la CLI del sistema o la instal·lació gestionada quan totes dues existeixin.',
+              'Tria si Happiest ha de prioritzar la CLI del sistema o la instal·lació gestionada quan totes dues existeixin.',
             options: {
               systemFirst: {
                 title: 'Prioritza la instal·lació del sistema',
@@ -3706,7 +3705,7 @@ export const ca: TranslationStructure = {
               },
               managedFirst: {
                 title: 'Prioritza la instal·lació gestionada',
-                subtitle: 'Prioritza la CLI instal·lada per Happier per a aquest proveïdor.',
+                subtitle: 'Prioritza la CLI instal·lada per Happiest per a aquest proveïdor.',
               },
             },
           },
@@ -3789,15 +3788,15 @@ export const ca: TranslationStructure = {
                 sections: {
                     claudeModelDiscovery: {
                         title: "Descobriment de models",
-                        footer: "Controla si Happier pregunta a Anthropic quins models estan disponibles per al compte de Claude seleccionat."
+                        footer: "Controla si Happiest pregunta a Anthropic quins models estan disponibles per al compte de Claude seleccionat."
                     },
                     claudeUnifiedTerminal: {
                         title: "Entorn d'execució de terminal unificat",
-                        footer: "Quan està activat, Happier envia els missatges a la mateixa sessió de terminal de Claude Code en lloc d'iniciar un executor Agent SDK separat."
+                        footer: "Quan està activat, Happiest envia els missatges a la mateixa sessió de terminal de Claude Code en lloc d'iniciar un executor Agent SDK separat."
                     },
                     claudeCodeExperiments: {
                         title: "Experiments de Claude Code",
-                        footer: "Aquests paràmetres s’apliquen tant a les sessions locals de Claude (terminal) com a les remotes de Claude (Agent SDK) iniciades per Happier."
+                        footer: "Aquests paràmetres s’apliquen tant a les sessions locals de Claude (terminal) com a les remotes de Claude (Agent SDK) iniciades per Happiest."
                     },
                     claudeRemoteSdk: {
                         title: "Entorn clàssic (alternativa Agent SDK)",
@@ -3807,7 +3806,7 @@ export const ca: TranslationStructure = {
                 fields: {
                     claudeDynamicModelProbeEnabled: {
                         title: "Descobreix els models disponibles",
-                        subtitle: "Permet que Happier consulti Anthropic amb el compte de Claude seleccionat. Desactiva-ho per usar el catàleg integrat de Happier sense llegir les credencials natives de Claude Code."
+                        subtitle: "Permet que Happiest consulti Anthropic amb el compte de Claude seleccionat. Desactiva-ho per usar el catàleg integrat de Happiest sense llegir les credencials natives de Claude Code."
                     },
                     claudeUnifiedTerminalEnabled: {
                         title: "Usa l'entorn de terminal unificat",
@@ -3815,7 +3814,7 @@ export const ca: TranslationStructure = {
                     },
                     claudeUnifiedTerminalHost: {
                         title: "Amfitrió del terminal",
-                        subtitle: "Tria com Happier allotja la sessió de terminal compartida de Claude.",
+                        subtitle: "Tria com Happiest allotja la sessió de terminal compartida de Claude.",
                         options: {
                             auto: {
                                 title: "Automàtic",
@@ -3827,13 +3826,13 @@ export const ca: TranslationStructure = {
                             },
                             zellij: {
                                 title: "zellij",
-                                subtitle: "Usa l'amfitrió zellij inclòs amb Happier."
+                                subtitle: "Usa l'amfitrió zellij inclòs amb Happiest."
                             }
                         }
                     },
                     claudeUnifiedTerminalResumeChoice: {
                         title: "Represa de sessions grans",
-                        subtitle: "Tria com respon Happier quan Claude demana com reprendre una sessio gran.",
+                        subtitle: "Tria com respon Happiest quan Claude demana com reprendre una sessio gran.",
                         options: {
                             ask_every_time: {
                                 title: "Pregunta cada vegada",
@@ -3851,29 +3850,29 @@ export const ca: TranslationStructure = {
                     },
                     claudeUnifiedTerminalWorkspaceTrust: {
                         title: "Confiança en el workspace",
-                        subtitle: "Tria com respon Happier quan Claude pregunta si ha de confiar en un workspace.",
+                        subtitle: "Tria com respon Happiest quan Claude pregunta si ha de confiar en un workspace.",
                         options: {
                             ask_every_time: {
                                 title: "Pregunta cada vegada",
                                 subtitle: "Mostra a la sessió la pregunta exacta sobre la confiança en el workspace."
                             },
                             always_trust_happier_workspaces: {
-                                title: "Confia sempre en els workspaces de Happier",
-                                subtitle: "Confia en el prompt actual de Claude recapturat per als workspaces oberts per Happier."
+                                title: "Confia sempre en els workspaces de Happiest",
+                                subtitle: "Confia en el prompt actual de Claude recapturat per als workspaces oberts per Happiest."
                             },
                             always_reject_happier_workspaces: {
-                                title: "Rebutja sempre els workspaces de Happier",
-                                subtitle: "Rebutja el prompt actual de Claude recapturat per als workspaces oberts per Happier."
+                                title: "Rebutja sempre els workspaces de Happiest",
+                                subtitle: "Rebutja el prompt actual de Claude recapturat per als workspaces oberts per Happiest."
                             }
                         }
                     },
                     claudeCodeExperimentalAgentTeamsEnabled: {
                         title: "Força l’activació d’Agent Teams",
-                        subtitle: "Activa Agent Teams experimental de Claude Code (eixam d’agents) a totes les sessions de Claude iniciades per Happier."
+                        subtitle: "Activa Agent Teams experimental de Claude Code (eixam d’agents) a totes les sessions de Claude iniciades per Happiest."
                     },
                     claudeRemoteAgentSdkEnabled: {
                         title: "Usa l'alternativa Agent SDK",
-                        subtitle: "Quan l'entorn de terminal unificat està desactivat, encamina les sessions de Claude controlades per Happier a través de l'Agent SDK."
+                        subtitle: "Quan l'entorn de terminal unificat està desactivat, encamina les sessions de Claude controlades per Happiest a través de l'Agent SDK."
                     },
                     claudeRemoteDebugEnabled: {
                         title: "Mode de depuració",
@@ -3929,15 +3928,15 @@ export const ca: TranslationStructure = {
                     },
                     claudeLocalPermissionBridgeEnabled: {
                         title: "Experimental: pont local de permisos",
-                        subtitle: "Reenvia les sol·licituds de permisos del mode local de Claude a Happier perquè les puguis aprovar o rebutjar des de la interfície."
+                        subtitle: "Reenvia les sol·licituds de permisos del mode local de Claude a Happiest perquè les puguis aprovar o rebutjar des de la interfície."
                     },
                     claudeLocalPermissionBridgeWaitIndefinitely: {
                         title: "Mantén les sol·licituds obertes fins a respondre",
-                        subtitle: "Quan està activat, Happier manté pendents les sol·licituds locals de permisos de Claude fins que les aprovis o rebutgis des de la interfície."
+                        subtitle: "Quan està activat, Happiest manté pendents les sol·licituds locals de permisos de Claude fins que les aprovis o rebutgis des de la interfície."
                     },
                     claudeLocalPermissionBridgeTimeoutSeconds: {
                         title: "Temps d’espera opcional de permisos (segons)",
-                        subtitle: "Només s’utilitza quan l’espera indefinida està desactivada. Passat aquest temps, Happier torna al prompt de terminal de Claude."
+                        subtitle: "Només s’utilitza quan l’espera indefinida està desactivada. Passat aquest temps, Happiest torna al prompt de terminal de Claude."
                     },
                     claudeRemoteEnableFileCheckpointing: {
                         title: "Punts de control de fitxers + /rewind",
@@ -3966,7 +3965,7 @@ export const ca: TranslationStructure = {
                 sections: {
                     cliGeneration: {
                         title: "Versió d’OpenCode",
-                        footer: "Automàtic prefereix opencode, recorre a opencode2 i detecta l’API del servidor després d’iniciar-se. Estable sempre selecciona opencode, però igualment detecta V1 o V2. V2 prefereix opencode2 i, si no està disponible, usa opencode amb V2 seleccionat. Les eines MCP de Happier funcionen amb V2 en mode ACP; la seva API de servidor encara no permet el registre MCP dinàmic."
+                        footer: "Automàtic prefereix opencode, recorre a opencode2 i detecta l’API del servidor després d’iniciar-se. Estable sempre selecciona opencode, però igualment detecta V1 o V2. V2 prefereix opencode2 i, si no està disponible, usa opencode amb V2 seleccionat. Les eines MCP de Happiest funcionen amb V2 en mode ACP; la seva API de servidor encara no permet el registre MCP dinàmic."
                     },
                     backendMode: {
                         title: "Mode de backend",
@@ -3974,13 +3973,13 @@ export const ca: TranslationStructure = {
                     },
                     server: {
                         title: "Connexió del servidor",
-                        footer: "Deixa-ho buit per utilitzar el cicle de vida del servidor OpenCode gestionat per Happier. Defineix una URL http(s) absoluta per connectar-te a un servidor OpenCode existent."
+                        footer: "Deixa-ho buit per utilitzar el cicle de vida del servidor OpenCode gestionat per Happiest. Defineix una URL http(s) absoluta per connectar-te a un servidor OpenCode existent."
                     }
                 },
                 fields: {
                     opencodeCliGeneration: {
                         title: "Generació de CLI",
-                        subtitle: "Tria quina ordre d’OpenCode instal·lada inicia Happier.",
+                        subtitle: "Tria quina ordre d’OpenCode instal·lada inicia Happiest.",
                         options: {
                             auto: { title: "Automàtic (recomanat)", subtitle: "Prefereix opencode i recorre a opencode2." },
                             stable: { title: "Estable", subtitle: "Inicia sempre opencode i detecta l’API després d’iniciar-se." },
@@ -4018,7 +4017,7 @@ export const ca: TranslationStructure = {
                 sections: {
                     cli: {
                         title: "CLI de Cursor",
-                        footer: "Fes servir un binari específic de Cursor quan la detecció automàtica no sigui suficient. Happier prefereix cursor-agent i pot tornar a agent quan està activat."
+                        footer: "Fes servir un binari específic de Cursor quan la detecció automàtica no sigui suficient. Happiest prefereix cursor-agent i pot tornar a agent quan està activat."
                     }
                 },
                 fields: {
@@ -4324,13 +4323,13 @@ export const ca: TranslationStructure = {
         expConnectedServicesQuotas: 'Quotes de serveis connectats',
         expConnectedServicesQuotasSubtitle: 'Mostra insígnies de quota i mesuradors d’ús per als serveis connectats',
         expChannelBridges: 'Ponts de canals',
-        expChannelBridgesSubtitle: 'Connecta Telegram i altres canals de xat a sessions de Happier (experimental)',
+        expChannelBridgesSubtitle: 'Connecta Telegram i altres canals de xat a sessions de Happiest (experimental)',
         expMemorySearch: 'Cerca de memòria',
         expMemorySearchSubtitle: 'Activa pantalles i ajustos de cerca de memòria local',
         expSessionsDirect: 'Sessions directes',
         expSessionsDirectSubtitle: 'Mostra i obre sessions directes del proveïdor a la barra lateral',
         expSessionsFolders: 'Carpetes de sessions',
-        expSessionsFoldersSubtitle: 'Organitza les sessions Happier de la barra lateral en carpetes d’espai de treball',
+        expSessionsFoldersSubtitle: 'Organitza les sessions Happiest de la barra lateral en carpetes d’espai de treball',
         expPetsCompanion: 'Mascotes',
         expPetsCompanionSubtitle: 'Activa les superfícies de companyia de Blink i la selecció local de mascotes',
         expFriends: 'Amics',
@@ -4369,7 +4368,7 @@ export const ca: TranslationStructure = {
         groupInactiveSessionsByProject: 'Agrupa les sessions inactives per projecte',
         groupInactiveSessionsByProjectSubtitle: 'Organitza els xats inactius per projecte',
         environmentBadge: 'Insígnia d\'entorn',
-        environmentBadgeSubtitle: 'Mostra una petita insígnia al costat del títol Happier indicant l\'entorn actual de l\'app',
+        environmentBadgeSubtitle: 'Mostra una petita insígnia al costat del títol Happiest indicant l\'entorn actual de l\'app',
         enhancedSessionWizard: 'Assistent de sessió millorat',
         enhancedSessionWizardEnabled: 'Llançador de sessió amb perfil actiu',
         enhancedSessionWizardDisabled: 'Usant el llançador de sessió estàndard',
@@ -4401,7 +4400,7 @@ export const ca: TranslationStructure = {
         failedToForkSession: 'No s’ha pogut bifurcar la sessió',
         daemonUnavailableTitle: 'Dimoni no disponible',
         daemonUnavailableBody:
-            'Happier no pot connectar amb el dimoni en aquesta màquina. Pot estar fora de línia, iniciant-se o desconnectat del servidor.',
+            'Happiest no pot connectar amb el dimoni en aquesta màquina. Pot estar fora de línia, iniciant-se o desconnectat del servidor.',
         tryAgain: 'Torna-ho a provar',
         contactSupport: 'Contacta amb el suport si el problema persisteix',
         sessionNotFound: 'Sessió no trobada',
@@ -4415,7 +4414,7 @@ export const ca: TranslationStructure = {
         tokenStorageFailed: 'Ha fallat l\'emmagatzematge dels tokens d\'autenticació',
         oauthStateMismatch: 'Ha fallat la validació de seguretat. Si us plau, torna-ho a provar',
         providerAlreadyLinked: ({ provider }: { provider: string }) =>
-            `${provider} ja està enllaçat a un compte Happier existent. Per iniciar sessió en aquest dispositiu, enllaça’l des d’un dispositiu on ja hagis iniciat sessió.`,
+            `${provider} ja està enllaçat a un compte Happiest existent. Per iniciar sessió en aquest dispositiu, enllaça’l des d’un dispositiu on ja hagis iniciat sessió.`,
         tokenExchangeFailed: 'Ha fallat l\'intercanvi del codi d\'autorització',
         oauthAuthorizationDenied: 'L\'autorització ha estat denegada',
         webViewLoadFailed: 'Ha fallat la càrrega de la pàgina d\'autenticació',
@@ -4463,7 +4462,7 @@ export const ca: TranslationStructure = {
 },
 
 deps: {
-        installNotSupported: 'Actualitza Happier CLI per instal·lar aquesta dependència.',
+        installNotSupported: 'Actualitza Happiest CLI per instal·lar aquesta dependència.',
         installFailed: 'La instal·lació ha fallat',
         installed: 'Instal·lat',
         installLog: ({ path }: { path: string }) => `Registre d'instal·lació: ${path}`,
@@ -4574,7 +4573,7 @@ deps: {
 	        selectSessionTypeTitle: 'Selecciona el tipus de sessió',
 	        selectSessionTypeDescription: 'Tria una sessió simple o una lligada a un arbre de treball de Git.',
 	        searchPathsPlaceholder: 'Cerca camins...',
-	        noMachinesFound: 'No s\'han trobat màquines. Inicia una sessió de Happier al teu ordinador primer.',
+	        noMachinesFound: 'No s\'han trobat màquines. Inicia una sessió de Happiest al teu ordinador primer.',
 	        allMachinesOffline: 'Totes les màquines estan fora de línia',
 	        machineOfflineInlineTitle: 'La màquina està fora de línia',
 	        machineOfflineInlineBody: 'Inicia el dimoni en aquesta màquina o tria’n una altra abans de crear una sessió.',
@@ -4595,12 +4594,12 @@ deps: {
         notConnectedToServer: 'No connectat al servidor. Comprova la teva connexió a internet.',
         daemonRpcUnavailableTitle: 'Dimoni no disponible',
         daemonRpcUnavailableBody:
-            'Happier no pot connectar amb el dimoni en aquesta màquina. Pot estar fora de línia, iniciant-se o desconnectat del servidor.',
+            'Happiest no pot connectar amb el dimoni en aquesta màquina. Pot estar fora de línia, iniciant-se o desconnectat del servidor.',
         launchStillPendingTitle: 'L’inici encara està en curs',
         createdWithSetupIssueTitle: 'Sessió creada',
         createdWithSetupIssueBody: 'La sessió s’ha creat, però la configuració inicial no ha acabat. Pots tornar-ho a provar des d’aquesta pantalla sense crear una altra sessió.',
         launchStillPendingBody:
-            'Happier encara no ha confirmat la nova sessió. La sol·licitud d’inici continua desada. Torna-ho a provar per continuar el mateix inici sense crear una sessió duplicada.',
+            'Happiest encara no ha confirmat la nova sessió. La sol·licitud d’inici continua desada. Torna-ho a provar per continuar el mateix inici sense crear una sessió duplicada.',
         connectedServiceSwitchUnavailable: {
             title: 'Canvi no disponible',
             body: ({ reason, agentId }: { reason: string; agentId: string }) =>
@@ -4730,7 +4729,7 @@ deps: {
             save: 'Desa',
             clearAndRemove: 'Esborra',
             helpText: 'Pots trobar els IDs de sessió a la pantalla d’informació de sessió.',
-            cannotApplyBody: 'Aquest ID de represa no es pot aplicar ara mateix. Happier iniciarà una sessió nova.',
+            cannotApplyBody: 'Aquest ID de represa no es pot aplicar ara mateix. Happiest iniciarà una sessió nova.',
         },
         codexResumeBanner: {
             title: 'Servidor de represa de Codex',
@@ -4784,7 +4783,7 @@ deps: {
             installTitle: 'Instal·lar GitHub CLI?',
             updateTitle: 'Actualitzar GitHub CLI?',
             reinstallTitle: 'Reinstal·lar GitHub CLI?',
-            description: 'Això instal·la GitHub CLI perquè Happier pugui utilitzar la teva autenticació local de GitHub per als fluxos de pull request.',
+            description: 'Això instal·la GitHub CLI perquè Happiest pugui utilitzar la teva autenticació local de GitHub per als fluxos de pull request.',
         },
     },
 
@@ -4964,8 +4963,8 @@ deps: {
                 empty: "No s’ha transferit res. No hi havia cap conversa anterior per reproduir.",
                 unavailableOperation: "Actualitza o torna a connectar la CLI en aquesta màquina per reconstruir-ho.",
                 notRebuildable: "Aquí es va transmetre context, però la transcripció d’aquesta sessió ja no el conté, així que no es pot reconstruir.",
-                unavailableSource: "Happier no ha pogut llegir la transcripció d’aquesta sessió, així que no ho pot reconstruir.",
-                unreachable: "Happier no ha pogut contactar amb la màquina que allotja aquesta sessió.",
+                unavailableSource: "Happiest no ha pogut llegir la transcripció d’aquesta sessió, així que no ho pot reconstruir.",
+                unreachable: "Happiest no ha pogut contactar amb la màquina que allotja aquesta sessió.",
                 retryAction: "Torna-ho a provar",
                 jumpAction: "Ves al darrer missatge inclòs",
             },
@@ -4994,7 +4993,7 @@ deps: {
                 badgeLabel: 'Canvi d’Agent',
                 /** Delegates to the Session’s existing resume owner; never a second start path. */
                 resumeAction: 'Reprèn la sessió',
-                unknown: 'Happier no ha pogut confirmar què ha passat. Comprova aquesta sessió abans de tornar a enviar.',
+                unknown: 'Happiest no ha pogut confirmar què ha passat. Comprova aquesta sessió abans de tornar a enviar.',
             },
         },
         sourceContext: {
@@ -5007,7 +5006,7 @@ deps: {
             removeAction: 'Treu',
             removeA11y: 'Treu la conversa d’origen',
             keepAction: 'Mantén-la',
-            serverMismatch: 'Aquella conversa és en un altre servidor de Happier. Torna-hi o treu la conversa d’origen per començar de zero.',
+            serverMismatch: 'Aquella conversa és en un altre servidor de Happiest. Torna-hi o treu la conversa d’origen per començar de zero.',
         },
         forking: {
             dividerTitle: 'Bifurcat d’un context anterior',
@@ -5027,7 +5026,7 @@ deps: {
                 },
                 replay: {
                     title: 'Bifurcació amb Replay',
-                    subtitle: 'Happier reprodueix la conversa fins ara com a context de la sessió nova.',
+                    subtitle: 'Happiest reprodueix la conversa fins ara com a context de la sessió nova.',
                 },
                 configure: {
                     title: 'Configura una sessió nova',
@@ -5048,7 +5047,7 @@ deps: {
                     openAction: 'Obre la bifurcació',
                 },
                 unknown: {
-                    title: 'Happier no ha pogut confirmar la bifurcació',
+                    title: 'Happiest no ha pogut confirmar la bifurcació',
                     body: 'La sol·licitud s’ha enviat, així que potser ja existeix una bifurcació. Comprova-ho en lloc de tornar-ho a fer, perquè un segon intent en podria crear una de duplicada.',
                     checkAction: 'Comprova la bifurcació',
                     checking: 'Cercant la teva bifurcació…',
@@ -5057,7 +5056,7 @@ deps: {
                 },
                 failure: {
                     updateRequired: 'Actualitza o reconnecta la CLI d’aquesta màquina per bifurcar la sessió.',
-                    generic: 'Happier no ha pogut crear la bifurcació.',
+                    generic: 'Happiest no ha pogut crear la bifurcació.',
                 },
             },
 	        },
@@ -5085,13 +5084,13 @@ deps: {
 	        },
 	        staleRunner: {
 	            title: 'La sessió encara s’executa amb una CLI antiga',
-	            body: 'Reinicia el runner d’aquesta sessió per continuar amb la CLI del daemon actualitzada. La sessió de Happier es manté.',
+	            body: 'Reinicia el runner d’aquesta sessió per continuar amb la CLI del daemon actualitzada. La sessió de Happiest es manté.',
 	            busyBody: 'El runner de la sessió està ocupat. Torna-ho a provar quan acabi l’activitat actual.',
-	            failureBody: 'Happier no ha pogut reiniciar aquest runner de sessió. Torna-ho a provar després que la sessió s’actualitzi.',
+	            failureBody: 'Happiest no ha pogut reiniciar aquest runner de sessió. Torna-ho a provar després que la sessió s’actualitzi.',
 	            identityChangedBody: 'El runner de la sessió ha canviat mentre se sol·licitava el reinici. Actualitza la sessió i torna-ho a provar.',
 	            ineligibleBody: 'Aquest runner de sessió ja no és apte per a un reinici planificat.',
 	            unsupportedBody: 'Aquest daemon encara no exposa l’operació de reinici del runner de sessió.',
-	            versionUnknownBody: 'Happier encara no pot confirmar quina versió de la CLI fa servir aquest runner.',
+	            versionUnknownBody: 'Happiest encara no pot confirmar quina versió de la CLI fa servir aquest runner.',
 	            restartAction: 'Reinicia el runner',
 	            restartPendingAction: 'Reiniciant...',
 	            statusBadge: 'CLI antiga',
@@ -5103,7 +5102,7 @@ deps: {
 	        mcpRestartRequired: {
 	            title: 'Reinicia per aplicar els canvis d’MCP',
 	            body: 'Els servidors MCP s’apliquen quan s’inicia una sessió. Reinicia aquest executor per utilitzar la selecció actualitzada.',
-	            failureBody: 'Happier no ha pogut reiniciar aquest executor. La selecció d’MCP està desada i s’aplicarà al proper inici.',
+	            failureBody: 'Happiest no ha pogut reiniciar aquest executor. La selecció d’MCP està desada i s’aplicarà al proper inici.',
 	            restartAction: 'Reinicia la sessió',
 	            restartPendingAction: 'Reiniciant…',
 	            badgeLabel: 'Canvis d’MCP',
@@ -5114,8 +5113,8 @@ deps: {
 	        },
 	        invalidLinkTitle: 'Enllaç de sessió invàlid',
 	        invalidLinkDescription: 'L’enllaç de la sessió falta o no és vàlid. Comprova l’URL i torna-ho a provar.',
-	        resumeSupportNoteChecking: 'Nota: Happier encara està comprovant si aquesta màquina pot reprendre la sessió del proveïdor.',
-	        resumeSupportNoteUnverified: 'Nota: Happier no ha pogut verificar la compatibilitat de represa en aquesta màquina.',
+	        resumeSupportNoteChecking: 'Nota: Happiest encara està comprovant si aquesta màquina pot reprendre la sessió del proveïdor.',
+	        resumeSupportNoteUnverified: 'Nota: Happiest no ha pogut verificar la compatibilitat de represa en aquesta màquina.',
 	        resumeSupportDetails: {
             cliNotDetected: 'No s’ha detectat la CLI a la màquina.',
             capabilityProbeFailed: 'Ha fallat la comprovació de capacitats.',
@@ -5130,7 +5129,7 @@ deps: {
             `Aquesta sessió ha finalitzat i no es pot reprendre perquè ${provider} no admet restaurar el seu context aquí. Inicia una sessió nova per continuar.`,
         machineOfflineNoticeTitle: 'La màquina està fora de línia',
           machineOfflineNoticeBody: ({ machine }: { machine: string }) =>
-              `“${machine}” està fora de línia. Pots posar un missatge a la cua ara; Happier continuarà quan la màquina torni a estar en línia.`,
+              `“${machine}” està fora de línia. Pots posar un missatge a la cua ara; Happiest continuarà quan la màquina torni a estar en línia.`,
             machineOfflineCannotResume: 'La màquina està fora de línia. Torna-la a posar en línia per reprendre aquesta sessió.',
                 openRuns: 'Obre les execucions de la sessió',
                 openAutomations: 'Obre les automatitzacions de la sessió',
@@ -5454,15 +5453,15 @@ deps: {
               },
               discardConfirm: {
                   title: 'Vols descartar el missatge pendent?',
-                  body: 'Això conserva una còpia descartada i impedeix que Happier lliuri aquest missatge pendent.',
+                  body: 'Això conserva una còpia descartada i impedeix que Happiest lliuri aquest missatge pendent.',
               },
               markHandledConfirm: {
                   title: 'Vols marcar el missatge pendent com a gestionat?',
-                  body: 'Fes-ho servir només si el proveïdor ja ha gestionat el missatge o ja no vols que Happier el lliuri.',
+                  body: 'Fes-ho servir només si el proveïdor ja ha gestionat el missatge o ja no vols que Happiest el lliuri.',
               },
               dismissDeliveryConfirm: {
                   title: 'Vols descartar el lliurament incert?',
-                  body: 'Això arxiva el missatge original sense tornar-lo a enviar. Si el proveïdor confirma el lliurament més endavant, Happier encara pot afegir el missatge original a la transcripció.',
+                  body: 'Això arxiva el missatge original sense tornar-lo a enviar. Si el proveïdor confirma el lliurament més endavant, Happiest encara pot afegir el missatge original a la transcripció.',
               },
               sendAsNewConfirm: {
                   title: 'Vols enviar aquest missatge com a nou?',
@@ -5499,7 +5498,7 @@ deps: {
                   retrySendFailed: 'No s’ha pogut tornar a enviar el missatge',
                   markHandledFailed: 'No s’ha pogut marcar el lliurament pendent com a gestionat',
                   clearTerminalComposerFailed: 'No s’ha pogut esborrar el compositor del terminal',
-                  clearTerminalComposerUnsupported: 'Aquesta sessió no permet esborrar el compositor del terminal des de Happier.',
+                  clearTerminalComposerUnsupported: 'Aquesta sessió no permet esborrar el compositor del terminal des de Happiest.',
                   clearTerminalComposerUnsafe: 'El compositor del terminal no es pot esborrar amb seguretat ara mateix.',
               },
           },
@@ -5734,7 +5733,7 @@ deps: {
         // Used by Server Configuration screen (app/(app)/server.tsx)
         serverConfiguration: 'Configuració del Relay',
         enterServerUrl: 'Introdueix una URL del Relay',
-        notValidHappyServer: 'No és un Relay Happier vàlid',
+        notValidHappyServer: 'No és un Relay Happiest vàlid',
         changeServer: 'Canvia el Relay',
         continueWithServer: 'Continuar amb aquest Relay?',
         resetToDefault: 'Reinicia per defecte',
@@ -5880,7 +5879,7 @@ deps: {
     },
     sessionsList: {
         serverHeader: ({ server }: { server: string }) => `Servidor: ${server}`,
-        storagePersistedTab: 'Happier',
+        storagePersistedTab: 'Happiest',
         storageDirectTab: 'Directes',
         renameWorkspace: "Reanomena l'espai de treball",
         renameWorkspacePromptTitle: "Reanomena l'espai de treball",
@@ -6056,7 +6055,7 @@ deps: {
         continueInWindowsTerminalConfirmBody: 'El procés en segon pla de l’ordinador s’atura i la sessió continua en una finestra de Windows Terminal. L’historial es conserva.',
         continueInWindowsTerminalConfirmBodyRunning: 'La resposta actual s’interromprà. El procés en segon pla de l’ordinador s’atura i la sessió continua en una finestra de Windows Terminal. L’historial es conserva.',
         continueInWindowsTerminalConfirm: 'Continua al terminal',
-        stopSessionControlUnavailable: 'Happier no ha pogut contactar amb els controls de la sessió. Assegura\'t que la màquina de la sessió i el daemon estiguin en línia i torna-ho a provar.',
+        stopSessionControlUnavailable: 'Happiest no ha pogut contactar amb els controls de la sessió. Assegura\'t que la màquina de la sessió i el daemon estiguin en línia i torna-ho a provar.',
         archiveSession: 'Arxiva la sessió',
         archiveSessionConfirm: 'Segur que vols arxivar aquesta sessió?',
         workspaceTitle: 'Espai de treball',
@@ -6069,9 +6068,9 @@ deps: {
         createWorktreeSubtitle: 'Inicia una sessió nova que crearà un arbre de treball de Git en aquest espai de treball enllaçat.',
         locationLabel: 'Ubicació',
         checkoutLabel: 'Extracció',
-        happySessionIdCopied: 'ID de la sessió de Happier copiat al porta-retalls',
-        failedToCopySessionId: 'Ha fallat copiar l\'ID de la sessió de Happier',
-        happySessionId: 'ID de la sessió de Happier',
+        happySessionIdCopied: 'ID de la sessió de Happiest copiat al porta-retalls',
+        failedToCopySessionId: 'Ha fallat copiar l\'ID de la sessió de Happiest',
+        happySessionId: 'ID de la sessió de Happiest',
         claudeCodeSessionId: 'ID de la sessió de Claude Code',
         claudeCodeSessionIdCopied: 'ID de la sessió de Claude Code copiat al porta-retalls',
         aiProfile: 'Perfil d\'IA',
@@ -6139,7 +6138,6 @@ deps: {
         unpinSession: 'Desfixar sessió',
         pinLimitExceeded: ({ count }: { count: number }) => `Pots fixar fins a ${count.toLocaleString()} sessions. Desfixa'n una altra i torna-ho a provar.`,
         copyResumeCommand: 'Copia l’ordre de reprendre',
-        resumeCommand: ({ sessionId }: { sessionId: string }) => `happier resume ${sessionId}`,
         viewMachine: 'Veure la màquina',
         viewMachineSubtitle: 'Veure detalls de la màquina i sessions',
         killSessionSubtitle: 'Finalitzar immediatament la sessió',
@@ -6156,7 +6154,7 @@ deps: {
         path: 'Camí',
         operatingSystem: 'Sistema operatiu',
         processId: 'ID del procés',
-        happyHome: 'Directori de Happier',
+        happyHome: 'Directori de Happiest',
         attachFromTerminal: 'Adjunta des del terminal',
         tmuxTarget: 'Destí de tmux',
         tmuxFallback: 'Fallback de tmux',
@@ -6178,7 +6176,7 @@ deps: {
         cliVersionOutdated: 'Actualització del CLI requerida',
         cliVersionOutdatedMessage: ({ currentVersion, requiredVersion }: { currentVersion: string; requiredVersion: string }) =>
             `Versió ${currentVersion} instal·lada. Actualitzeu a ${requiredVersion} o posterior`,
-        updateCliInstructions: 'Si us plau executeu happier self update',
+        updateCliInstructions: 'Si us plau executeu happiest self update',
         deleteSession: 'Elimina la sessió',
         deleteSessionSubtitle: 'Elimina permanentment aquesta sessió',
         deleteSessionConfirm: 'Eliminar la sessió permanentment?',
@@ -6205,11 +6203,10 @@ deps: {
         emptyMainScreen: {
             // Used by SessionGettingStartedGuidance component
             readyToCode: 'Llest per programar?',
-            installCli: 'Instal·la el Happier CLI',
+            installCli: 'Instal·la el Happiest CLI',
             runIt: 'Executa\'l',
             scanQrCode: 'Escaneja el codi QR',
             openCamera: 'Obre la càmera',
-            runCommand: '$ happier',
         },
         emptyMessages: {
             noMessagesYet: 'Encara no hi ha missatges',
@@ -6456,7 +6453,7 @@ deps: {
     },
 
     sidebar: {
-        sessionsTitle: 'Happier',
+        sessionsTitle: 'Happiest',
     },
 
     toolView: {
@@ -6586,7 +6583,7 @@ deps: {
         },
         acpHistoryImport: {
             title: 'Importar l’historial de la sessió?',
-            defaultNote: 'Aquest historial de sessió difereix del que ja hi ha a Happier. Importar-lo pot crear duplicats.',
+            defaultNote: 'Aquest historial de sessió difereix del que ja hi ha a Happiest. Importar-lo pot crear duplicats.',
             counts: {
                 local: ({ count }: { count: number }) => `Local: ${count}`,
                 remote: ({ count }: { count: number }) => `Remot: ${count}`,
@@ -6658,7 +6655,7 @@ deps: {
         askUserQuestion: {
             submit: 'Envia resposta',
             submissionFailures: {
-                update: 'Actualitza el CLI de Happier i torna-ho a provar.',
+                update: 'Actualitza el CLI de Happiest i torna-ho a provar.',
                 reconnect: 'Torna a connectar aquesta sessió i torna-ho a provar.',
                 retry: 'No s’ha pogut acceptar la resposta. Revisa-la i torna-ho a provar.',
             },
@@ -6830,7 +6827,7 @@ deps: {
               },
               indexLock: {
                   title: 'Eliminar el bloqueig obsolet de Git?',
-                  body: 'Git ha informat d’un bloqueig de l’índex. Si no s’està executant cap altra ordre de Git, Happier pot eliminar el bloqueig obsolet i tornar-ho a provar.',
+                  body: 'Git ha informat d’un bloqueig de l’índex. Si no s’està executant cap altra ordre de Git, Happiest pot eliminar el bloqueig obsolet i tornar-ho a provar.',
                   confirm: 'Elimina el bloqueig i torna-ho a provar',
                   recoveryFailed: 'No s’ha pogut eliminar el bloqueig de l’índex de Git.',
               },
@@ -6958,7 +6955,7 @@ deps: {
                 frontmatterReadOnly: 'Frontmatter (només de lectura)',
             },
             fileEditingUnsupported:
-                "L'edició de fitxers no és compatible amb el dimoni connectat. Actualitza Happier a la màquina per habilitar operacions d'escriptura.",
+                "L'edició de fitxers no és compatible amb el dimoni connectat. Actualitza Happiest a la màquina per habilitar operacions d'escriptura.",
             fileChangedExternally:
                 "Aquest fitxer ha canviat al disc mentre l'editaves. L'esborrany s'ha mantingut sense canvis; revisa el fitxer més recent abans de desar.",
           selectionFailed: "No s'ha pogut actualitzar la selecció",
@@ -7206,7 +7203,7 @@ deps: {
                     createFeatureBranch: 'Crea branca de funcionalitat',
                     createFeatureBranchAndOpen: 'Crea branca i obre PR',
                     featureBranchPromptTitle: 'Nom de la branca de funcionalitat',
-                    featureBranchPromptBody: 'Happier canviarà a aquesta branca abans de continuar.',
+                    featureBranchPromptBody: 'Happiest canviarà a aquesta branca abans de continuar.',
                     defaultBranchRequiresFeature: 'Crea una branca de funcionalitat abans d’obrir una pull request des de la branca per defecte.',
                     defaultBranchDenied: 'No es poden obrir pull requests directament des de la branca per defecte.',
                     states: {
@@ -7297,7 +7294,7 @@ deps: {
                 crossSession: ({ sessionId }: { sessionId: string }) => `Iniciat des de la sessió ${sessionId}`,
                 externalCli: 'Iniciat externament des de la CLI',
                 externalMcp: 'Iniciat externament mitjançant MCP',
-                externalAction: 'Iniciat externament mitjançant una acció de Happier',
+                externalAction: 'Iniciat externament mitjançant una acció de Happiest',
                 externalUnknown: 'Iniciat externament (origen desconegut)',
                 legacyUnknown: 'Origen d’inici desconegut',
             },
@@ -7349,7 +7346,7 @@ deps: {
         },
         spawnPolicy: {
             title: 'Política de creació de sessions d’IA',
-            footer: 'Aquests controls només s’apliquen quan un assistent dins d’una sessió de Happier crea una altra sessió. La configuració heretada del pare continua permesa; els elements denegats rebutgen substitucions explícites amb un error clar.',
+            footer: 'Aquests controls només s’apliquen quan un assistent dins d’una sessió de Happiest crea una altra sessió. La configuració heretada del pare continua permesa; els elements denegats rebutgen substitucions explícites amb un error clar.',
             toggles: {
                 allowCustomDirectory: {
                     title: 'Directori personalitzat',
@@ -7514,11 +7511,11 @@ deps: {
             },
             session_agent: {
                 title: 'Sessió d’IA',
-                subtitle: 'Controla les eines disponibles per a l’assistent que s’executa dins d’una sessió de Happier.',
+                subtitle: 'Controla les eines disponibles per a l’assistent que s’executa dins d’una sessió de Happiest.',
             },
             mcp: {
                 title: 'MCP',
-                subtitle: 'Controla clients MCP externs que fan servir el catàleg d’accions MCP de Happier.',
+                subtitle: 'Controla clients MCP externs que fan servir el catàleg d’accions MCP de Happiest.',
             },
             cli: {
                 title: 'CLI de control de sessió',
@@ -7729,7 +7726,7 @@ settingsSession: {
             },
             messageSending: {
                 inactiveResumePolicyTitle: 'Represa automàtica després d’enviar',
-                inactiveResumePolicySubtitle: 'Tria què ha de fer Happier després d’enviar a una sessió inactiva.',
+                inactiveResumePolicySubtitle: 'Tria què ha de fer Happiest després d’enviar a una sessió inactiva.',
                 inactiveResumePolicy: {
                     whenAvailableTitle: 'Ara o quan torni la màquina',
                     whenAvailableSubtitle: 'Reprèn immediatament si és accessible; si no, processa quan el dimoni es reconnecti.',
@@ -7771,7 +7768,7 @@ settingsSession: {
                   queueForReviewSubtitle: 'Posa els missatges primer a En espera; envia’ls després amb "Guia ara".',
               },
               nonSteerablePromptTitle: 'Quan un missatge no pot dirigir el torn actiu',
-              nonSteerablePromptFooter: 'Els canvis de mode de permisos i /clear o /compact no es poden aplicar a mig torn. Tria què fa Happier amb aquests missatges mentre l\'agent està ocupat.',
+              nonSteerablePromptFooter: 'Els canvis de mode de permisos i /clear o /compact no es poden aplicar a mig torn. Tria què fa Happiest amb aquests missatges mentre l\'agent està ocupat.',
               nonSteerablePrompt: {
                 askTitle: 'Pregunta cada vegada',
                 askSubtitle: 'Ofereix “Interromp i envia ara” o “Posa a la cua per a després del torn”.',
@@ -7783,7 +7780,7 @@ settingsSession: {
           },
           usageLimitRecovery: {
               title: 'Recuperació del límit d’ús',
-              footer: 'Tria què fa Happier quan un proveïdor demana esperar abans de continuar.',
+              footer: 'Tria què fa Happiest quan un proveïdor demana esperar abans de continuar.',
               modeTitle: 'Quan s’arriba a un límit d’ús',
               askTitle: 'Pregunta cada vegada',
               askSubtitle: 'Mostra accions de sessió abans d’esperar o tornar-ho a provar.',
@@ -8132,7 +8129,7 @@ settingsSession: {
               wizardPresentationTitle: 'Disseny dels selectors de l’assistent',
               wizardPresentationFooter: 'Auto manté les seccions curtes com a llistes i canvia les llargues a desplegables amb cerca.',
               wizardPresentationAutoTitle: 'Auto',
-              wizardPresentationAutoSubtitle: 'Deixa que Happier triï el millor disseny segons la quantitat de contingut.',
+              wizardPresentationAutoSubtitle: 'Deixa que Happiest triï el millor disseny segons la quantitat de contingut.',
               wizardPresentationListTitle: 'Llista',
               wizardPresentationListSubtitle: 'Mostra totes les files directament a l’assistent.',
               wizardPresentationDropdownTitle: 'Desplegable',
@@ -8140,7 +8137,7 @@ settingsSession: {
           },
           promptPersonalization: {
               title: 'Prompt personalization',
-              footer: 'Choose which built-in instructions Happier adds to new agent sessions. This does not hide options an agent already sends.',
+              footer: 'Choose which built-in instructions Happiest adds to new agent sessions. This does not hide options an agent already sends.',
               askAgentToRenameSessionsTitle: 'Session title updates',
               askAgentToRenameSessionsNeverTitle: 'Never',
               askAgentToRenameSessionsNeverSubtitle: 'Do not prompt agents to set session titles.',
@@ -8164,9 +8161,9 @@ settingsSession: {
           },
           defaultStorage: {
               title: 'Tipus de sessió per defecte',
-              footer: 'Tria si les sessions noves comencen com a sessions Happier o com a sessions directes del proveïdor.',
+              footer: 'Tria si les sessions noves comencen com a sessions Happiest o com a sessions directes del proveïdor.',
               globalTitle: 'Predeterminat global',
-              persistedSubtitle: 'Desa les sessions noves a Happier i sincronitza-les entre dispositius per defecte.',
+              persistedSubtitle: 'Desa les sessions noves a Happiest i sincronitza-les entre dispositius per defecte.',
               directSubtitle: 'Inicia sessions directes lligades a la màquina quan el proveïdor ho admeti.',
               globalSubtitle: ({ label }: { label: string }) => `Predeterminat global: ${label}`,
               useGlobalDefault: 'Fes servir el predeterminat global',
@@ -8211,12 +8208,12 @@ settingsSession: {
     settingsVoice: {
         // Voice settings screen
         modeTitle: 'Veu',
-        modeDescription: 'Configura les funcions de veu. Pots desactivar la veu del tot, utilitzar Happier Voice (requereix subscripció) o utilitzar el teu compte d’ElevenLabs.',
+        modeDescription: 'Configura les funcions de veu. Segons les capacitats del servidor, tria la veu local o el teu compte d’ElevenLabs.',
         mode: {
             off: 'Desactivat',
             offSubtitle: 'Desactiva totes les funcions de veu',
-            happier: 'Happier Voice',
-            happierSubtitle: 'Utilitza Happier Voice (cal subscripció)',
+            happier: 'Happiest Voice',
+            happierSubtitle: 'Utilitza Happiest Voice (cal subscripció)',
             local: 'Veu OSS local',
             localSubtitle: 'Fes servir endpoints STT/TTS locals compatibles amb OpenAI',
             byo: 'Fes servir el meu ElevenLabs',
@@ -8281,7 +8278,7 @@ settingsSession: {
         byo: {
             title: 'Fes servir el meu ElevenLabs',
 	            agentReuseDialog: {
-	                title: 'Ja existeix un agent de Happier',
+	                title: 'Ja existeix un agent de Happiest',
 	                messageWithId: ({ name, id }: { name: string; id: string }) =>
 	                    `Hem trobat un agent d’ElevenLabs existent (“${name}”, id: ${id}).\n\nVols actualitzar-lo o crear-ne un de nou?`,
 	                messageNoId: ({ name }: { name: string }) =>
@@ -8293,7 +8290,7 @@ settingsSession: {
 	            },
             configured: 'Configurat. L’ús de veu es facturarà al teu compte d’ElevenLabs.',
             notConfigured:
-                'Configura la teva clau API d’ElevenLabs i després toca "Crea un agent Happier" per aprovisionar automàticament (omplirà l’ID de l’agent).',
+                'Configura la teva clau API d’ElevenLabs i després toca "Crea un agent Happiest" per aprovisionar automàticament (omplirà l’ID de l’agent).',
             createAccount: "Crea un compte d'ElevenLabs",
             createAccountSubtitle: "Registra't (o inicia sessió) abans de crear una clau d'API",
             openApiKeys: 'Obre les claus API d’ElevenLabs',
@@ -8302,10 +8299,10 @@ settingsSession: {
             apiKeyHelpSubtitle: 'Ajuda pas a pas per crear i copiar la teva clau API d’ElevenLabs',
             apiKeyHelpDialogTitle: 'Crear una clau API d’ElevenLabs',
             apiKeyHelpDialogBody: 'Open ElevenLabs → Settings → API keys → Create API key → Copy the key.',
-            autoprovCreate: 'Crea un agent Happier',
-            autoprovCreateSubtitle: 'Crea i configura un agent Happier al teu compte d’ElevenLabs amb la teva clau API',
+            autoprovCreate: 'Crea un agent Happiest',
+            autoprovCreateSubtitle: 'Crea i configura un agent Happiest al teu compte d’ElevenLabs amb la teva clau API',
             autoprovUpdate: 'Actualitza l’agent',
-            autoprovUpdateSubtitle: 'Actualitza l’agent al darrer template de Happier',
+            autoprovUpdateSubtitle: 'Actualitza l’agent al darrer template de Happiest',
             autoprovCreated: ({ agentId }: { agentId: string }) => `Agent creat: ${agentId}`,
             autoprovUpdated: 'Agent actualitzat',
             autoprovFailed: 'No s’ha pogut crear/actualitzar l’agent. Torna-ho a provar.',
@@ -8314,7 +8311,7 @@ settingsSession: {
             agentIdNotSet: 'No establert',
             agentIdTitle: 'ID de l’agent d’ElevenLabs',
             agentIdDescription:
-                'Si has fet servir "Crea un agent Happier", això s’emplena automàticament. Si no, copia l’ID de l’agent des d’ElevenLabs.',
+                'Si has fet servir "Crea un agent Happiest", això s’emplena automàticament. Si no, copia l’ID de l’agent des d’ElevenLabs.',
             agentIdPlaceholder: 'agent_...',
             apiKey: 'Clau API',
             apiKeySet: 'Establerta',
@@ -8531,7 +8528,7 @@ settingsSession: {
                 },
                 manifest: {
                     title: 'Manifest del paquet de model',
-                    subtitle: 'Per defecte usa els paquets de model de Happier (es pot substituir amb EXPO_PUBLIC_HAPPIER_MODEL_PACK_MANIFESTS).',
+                    subtitle: 'Per defecte usa els paquets de model de Happiest (es pot substituir amb EXPO_PUBLIC_HAPPIER_MODEL_PACK_MANIFESTS).',
                     detailResolved: 'Resolt',
                     detailMissing: 'Falta',
                 },
@@ -8702,7 +8699,7 @@ settingsSession: {
                     title: 'Agent de veu',
                 },
                 backend: {
-                    daemonSubtitle: 'Fa servir el backend de Happier i admet reprendre del proveïdor.',
+                    daemonSubtitle: 'Fa servir el backend de Happiest i admet reprendre del proveïdor.',
                     openAiSubtitle: 'Connecta a endpoints HTTP compatibles amb OpenAI.',
                 },
                 agentMachine: {
@@ -8763,7 +8760,7 @@ settingsSession: {
                     replaySubtitle: 'Reprèn reproduint missatges recents.',
                     providerResumeTitle: 'Reprendre del proveïdor',
                     providerResumeSubtitle: 'Reprèn amb l’estat de la sessió del proveïdor (si és compatible).',
-                    disabledVoiceAgent: 'Cal Happier Voice Agent.',
+                    disabledVoiceAgent: 'Cal Happiest Voice Agent.',
                     disabledDaemonBackend: 'Cal el backend Daemon.',
                     disabledAgentNoProviderResume: 'L’agent seleccionat no admet reprendre del proveïdor.',
                 },
@@ -8805,7 +8802,7 @@ settingsSession: {
                 },
             },
             mediatorBackend: 'Backend del mediador',
-            mediatorBackendSubtitle: 'Daemon (fa servir el backend de Happier) o OpenAI-compatible HTTP',
+            mediatorBackendSubtitle: 'Daemon (fa servir el backend de Happiest) o OpenAI-compatible HTTP',
             mediatorBackendDaemon: 'Dimoni',
             mediatorBackendOpenAi: 'HTTP compatible amb OpenAI',
             mediatorAgentSource: 'Font de l’agent del mediador',
@@ -8910,7 +8907,7 @@ settingsSession: {
             testTts: 'Prova TTS',
             testTtsSubtitle:
                 'Reprodueix una mostra curta amb el teu TTS local configurat (TTS del dispositiu o endpoint)',
-            testTtsSample: 'Hola des de Happier. Això és una prova del teu TTS local.',
+            testTtsSample: 'Hola des de Happiest. Això és una prova del teu TTS local.',
             testTtsMissingBaseUrl: 'Primer configura un URL base TTS.',
             testTtsFailed: 'TTS test failed. Check your base URL, API key, model, and voice.',
             autoSpeak: 'Auto-reprodueix respostes',
@@ -9032,8 +9029,8 @@ settingsSession: {
 
     updates: {
         title: 'Actualitzacions',
-        thisAppTitle: 'Happier',
-        happierCliTitle: 'Happier CLI',
+        thisAppTitle: 'Happiest',
+        happierCliTitle: 'Happiest CLI',
         sections: {
             thisApp: 'Aquesta app',
             thisComputer: 'Aquest ordinador',
@@ -9065,7 +9062,7 @@ settingsSession: {
             updatingBatch: ({ done, total }: { done: number; total: number }) => `Actualitzant ${Math.min(done + 1, total)} de ${total}…`,
             updating: 'Actualitzant…',
             keepWorking: 'Pots continuar treballant.',
-            ready: 'Reinicia per acabar d’actualitzar Happier',
+            ready: 'Reinicia per acabar d’actualitzar Happiest',
             failedCount: ({ count }: { count: number }) => plural({ count, singular: '1 actualització no ha acabat', plural: `${count} actualitzacions no han acabat` }),
             notCheckedYet: 'Encara no comprovat',
             required: 'Cal una actualització',
@@ -9075,7 +9072,7 @@ settingsSession: {
             uncheckedMeta: 'Algunes eines encara no s’han comprovat.',
             offline: 'Algunes màquines estan sense connexió',
             checkedAt: ({ time }: { time: string }) => `Última comprovació: ${time}`,
-            upToDateDescription: 'Happier, la seva línia d’ordres i els teus agents estan al dia.',
+            upToDateDescription: 'Happiest, la seva línia d’ordres i els teus agents estan al dia.',
             unknownDescription: 'Tot el que s’ha pogut comprovar està al dia. La resta es tornarà a comprovar quan sigui accessible.',
             offlineDescription: 'Tot el que és accessible està al dia. Les màquines sense connexió es comprovaran quan tornin.',
         },
@@ -9117,8 +9114,8 @@ settingsSession: {
             restartingService: 'Reiniciant el servei en segon pla…',
             readyVersion: ({ version }: { version: string }) => `${version} està a punt`,
             ready: 'Actualització a punt',
-            webNewBuild: 'Hi ha una versió més nova de Happier a punt',
-            requiredApp: 'Aquesta versió ja no és compatible. Actualitza per continuar fent servir Happier.',
+            webNewBuild: 'Hi ha una versió més nova de Happiest a punt',
+            requiredApp: 'Aquesta versió ja no és compatible. Actualitza per continuar fent servir Happiest.',
             appCheckFailed: 'No s’ha pogut comprovar si hi ha una versió més nova.',
             appDownloadFailed: 'La baixada no ha acabat.',
             appInstallFailed: 'No s’ha pogut instal·lar l’actualització.',
@@ -9140,7 +9137,7 @@ settingsSession: {
             othersUpToDate: ({ count }: { count: number }) => plural({ count, singular: '1 més està al dia', plural: `${count} més estan al dia` }),
             waitingOffline: ({ count }: { count: number }) => plural({ count, singular: '1 actualització esperant que torni a estar en línia', plural: `${count} actualitzacions esperant que torni a estar en línia` }),
         },
-        footer: 'Les actualitzacions s’instal·len a cada màquina. Després d’actualitzar la línia d’ordres, Happier reinicia el servei en segon pla d’aquella màquina.',
+        footer: 'Les actualitzacions s’instal·len a cada màquina. Després d’actualitzar la línia d’ordres, Happiest reinicia el servei en segon pla d’aquella màquina.',
         confirmVendor: {
             title: 'Vols executar l’actualitzador del proveïdor?',
             message: ({ names }: { names: string }) => `${names} s’actualitzarà amb el seu propi actualitzador en aquella màquina.`,
@@ -9153,7 +9150,7 @@ settingsSession: {
         tray: {
             available: ({ count }: { count: number }) => `Actualitzacions disponibles (${count})…`,
             running: 'Actualitzant…',
-            ready: 'Reinicia per actualitzar Happier',
+            ready: 'Reinicia per actualitzar Happiest',
             required: 'Cal actualitzar…',
             failed: 'Una actualització no ha acabat…',
         },
@@ -9175,17 +9172,17 @@ settingsSession: {
         },
         defaultTitle: 'Què hi ha de nou',
         onboardingShowcase: {
-                "title": "Benvingut a Happier",
+                "title": "Benvingut a Happiest",
                 "subtitle": "Els teus agents d’IA, a tot arreu on treballes.",
                 "cards": {
                     "welcome": {
-                        "title": "Benvingut a Happier",
+                        "title": "Benvingut a Happiest",
                         "everywhereTitle": "Els teus agents d’IA, a tot arreu on treballes",
                         "everywhereBody": "Claude Code, Codex, OpenCode, Pi i molt més: al telèfon, la tauleta, el navegador o l’escriptori.",
                         "cockpitTitle": "La teva cabina mòbil",
                         "cockpitBody": "Xat, fitxers, Git, editor, terminal. Tot el que necessites per crear i enviar el teu pròxim projecte, a l’abast dels dits.",
                         "existingTitle": "Sessions existents, ja disponibles",
-                        "existingBody": "Qualsevol sessió de Claude, Codex o OpenCode que s’executi a la teva màquina, obre-la a Happier en directe.",
+                        "existingBody": "Qualsevol sessió de Claude, Codex o OpenCode que s’executi a la teva màquina, obre-la a Happiest en directe.",
                         "voiceTitle": "Un assistent de veu per pensar-hi plegats",
                         "voiceBody": "Pregunta què fan els teus agents, aprova sol·licituds de permís i envia missatges. Sense mans.",
                         "reviewTitle": "Revisa diffs i deixa comentaris",
@@ -9193,7 +9190,7 @@ settingsSession: {
                         "subagentsTitle": "Subagents entre proveïdors",
                         "subagentsBody": "Llança subagents de Codex des d’una sessió de Claude. Divideix la feina entre agents. Encaminia missatges entre sessions.",
                         "tuisTitle": "Fes servir les teves TUI preferides",
-                        "tuisBody": "Executa Claude Code, Codex o OpenCode a la seva interfície de terminal nativa. Happier ho captura i ho sincronitza amb tots els dispositius.",
+                        "tuisBody": "Executa Claude Code, Codex o OpenCode a la seva interfície de terminal nativa. Happiest ho captura i ho sincronitza amb tots els dispositius.",
                         "inboxTitle": "Una safata d’entrada. Totes les sessions.",
                         "inboxBody": "Totes les aprovacions pendents, sol·licituds de permís i sessions preparades per revisar, de totes les màquines, en un sol lloc.",
                         "mcpTitle": "Una configuració MCP. Tots els proveïdors.",
@@ -9258,7 +9255,7 @@ settingsSession: {
                     "mcp": {
                         "title": "Una configuració. Tots els proveïdors.",
                         "wideTitle": "Una configuració.\nTots els proveïdors.",
-                        "body": "Defineix MCPs una sola vegada a Happier i funcionen amb tots els backends, fins i tot amb els que no admeten MCP nativament. Gestiona skills, prompts i més!",
+                        "body": "Defineix MCPs una sola vegada a Happiest i funcionen amb tots els backends, fins i tot amb els que no admeten MCP nativament. Gestiona skills, prompts i més!",
                         "alt": "Imatge abstracta de marcador per a configuració MCP compartida."
                     },
                     "queue": {
@@ -9300,7 +9297,7 @@ settingsSession: {
         invalidConnectionLink: 'Enllaç de connexió no vàlid',
         invalidConnectionLinkDescription: 'L\'enllaç de connexió falta o no és vàlid. Comprova l\'URL i torna-ho a provar.',
         connectTerminal: 'Connecta el terminal',
-        terminalRequestDescription: 'Un terminal està sol·licitant connectar-se al teu compte de Happier Coder. Això permetrà al terminal enviar i rebre missatges de forma segura.',
+        terminalRequestDescription: 'Un terminal està sol·licitant connectar-se al teu compte de Happiest Coder. Això permetrà al terminal enviar i rebre missatges de forma segura.',
         connectionDetails: 'Detalls de la connexió',
         publicKey: 'Clau pública',
         encryption: 'Xifratge',
@@ -9361,8 +9358,8 @@ settingsSession: {
         pleaseSignInFirst: 'Si us plau, inicia la sessió (o crea un compte) primer.',
         invalidAuthUrl: 'URL d\'autenticació no vàlida',
         microphoneAccessRequiredTitle: 'Cal accés al micròfon',
-        microphoneAccessRequiredRequestPermission: 'Happier necessita accés al micròfon per al xat de veu. Concedeix el permís quan se’t demani.',
-        microphoneAccessRequiredEnableInSettings: 'Happier necessita accés al micròfon per al xat de veu. Activa l’accés al micròfon a la configuració del dispositiu.',
+        microphoneAccessRequiredRequestPermission: 'Happiest necessita accés al micròfon per al xat de veu. Concedeix el permís quan se’t demani.',
+        microphoneAccessRequiredEnableInSettings: 'Happiest necessita accés al micròfon per al xat de veu. Activa l’accés al micròfon a la configuració del dispositiu.',
         microphoneAccessRequiredBrowserInstructions: 'Permet l’accés al micròfon a la configuració del navegador. Potser hauràs de fer clic a la icona del cadenat a la barra d’adreces i habilitar el permís del micròfon per a aquest lloc.',
         openSettings: 'Obre la configuració',
         developerMode: 'Mode desenvolupador',
@@ -9436,12 +9433,12 @@ settingsSession: {
         // Unified onboarding redesign — welcome decision (right pane)
         welcomeQuestionTitle: 'Et donem la benvinguda.',
         welcomeQuestionSubtitle: 'És el teu primer cop aquí?',
-        welcomeQuestionBody: 'Happier és el centre de control dels teus agents de codificació amb IA. No cal correu electrònic. El teu compte és una clau privada, generada en aquest dispositiu.',
+        welcomeQuestionBody: 'Happiest és el centre de control dels teus agents de codificació amb IA. No cal correu electrònic. El teu compte és una clau privada, generada en aquest dispositiu.',
 
         welcomePrimaryButton: 'Primera vegada aquí — comencem',
         welcomePrimarySubtitle: 'Un toc. Sense formulari. La teva clau viu aquí.',
 
-        welcomeSecondaryButton: 'Inicia sessió — ja faig servir Happier',
+        welcomeSecondaryButton: 'Inicia sessió — ja faig servir Happiest',
         welcomeSecondarySubtitle: 'Escaneja un codi QR o introdueix la teva clau secreta',
 
         // Unified onboarding redesign — returning-user copy variants.
@@ -9471,8 +9468,8 @@ settingsSession: {
         // Returning-user buttons. For returning users we invert the visual
         // hierarchy: Login becomes the filled primary action (probability of
         // intent is high), Start fresh becomes the bordered secondary action.
-        // "I already use Happier" is dropped from the login button title for
-        // returning users because — they obviously do already use Happier.
+        // "I already use Happiest" is dropped from the login button title for
+        // returning users because — they obviously do already use Happiest.
         welcomeReturningLoginButton: 'Inicia sessió — reprenem-ho',
         welcomeReturningStartFreshButton: 'Comença de nou — crea un compte nou',
         welcomeReturningStartFreshSubtitle: 'Genera una clau nova en aquest dispositiu.',
@@ -9481,7 +9478,7 @@ settingsSession: {
         welcomeFooterRelay: 'Autoallotjament?',
         welcomeFooterRelayAction: 'Fes servir el teu propi Relay',
         // Shown in place of welcomeFooterRelay when the active server is a
-        // custom (non-Happier-Cloud) relay. The action below the label is the
+        // custom (non-default) relay. The action below the label is the
         // relay's host (optionally with :port) followed by a small pencil
         // icon so the user can tap to edit. Long hostnames are truncated with
         // a tail-ellipsis to avoid colliding with the right-side Docs group.
@@ -9490,7 +9487,6 @@ settingsSession: {
         welcomeFooterDocs: 'Necessites ajuda?',
         welcomeFooterDocsAction: 'Documentació',
         welcomeFooterGithubLabel: 'Repositori de GitHub',
-        welcomeFooterDiscordLabel: 'Comunitat de Discord',
 
         // Mobile brand hero CTA
         brandHeroGetStarted: 'Comença',
@@ -9515,8 +9511,8 @@ settingsSession: {
                 `Fes servir el flux de configuració de l’escriptori per connectar aquest ordinador amb ${targetLabel}. Obre els passos manuals només si prefereixes el camí del terminal.`,
             startDaemon: ({ targetLabel }: { targetLabel: string }) =>
                 `Fes servir el flux de configuració de l’escriptori per reconnectar el servei en segon pla de ${targetLabel}. Obre els passos manuals només si ja ets en aquest ordinador.`,
-            connectMachineElsewhere: ({ targetLabel }: { targetLabel: string }) => `Obre Happier a l’ordinador que vols connectar a ${targetLabel}, o executa-hi els passos de terminal de sota.`,
-            startDaemonElsewhere: ({ targetLabel }: { targetLabel: string }) => `Obre Happier en aquest ordinador per tornar a connectar el seu servei en segon pla a ${targetLabel}, o executa-hi els passos de terminal de sota.`,
+            connectMachineElsewhere: ({ targetLabel }: { targetLabel: string }) => `Obre Happiest a l’ordinador que vols connectar a ${targetLabel}, o executa-hi els passos de terminal de sota.`,
+            startDaemonElsewhere: ({ targetLabel }: { targetLabel: string }) => `Obre Happiest en aquest ordinador per tornar a connectar el seu servei en segon pla a ${targetLabel}, o executa-hi els passos de terminal de sota.`,
             createSession: 'Comença una sessió nova amb el botó + o des del terminal.',
             selectSession: 'Tria una sessió de la barra lateral per veure-la aquí.',
             loading: 'S’estan recuperant les teves màquines i sessions…',
@@ -9546,7 +9542,7 @@ settingsSession: {
             },
             daemonInstall: {
                 title: 'Instal·la el servei en segon pla (recomanat)',
-                description: 'Manté Happier a punt en segon pla per a iniciades remotes.',
+                description: 'Manté Happiest a punt en segon pla per a iniciades remotes.',
                 copyLabel: 'Instal·lació del daemon',
             },
             startDaemonInstall: {
@@ -9571,24 +9567,24 @@ settingsSession: {
     },
 
     setupSurface: {
-        acquisitionResolvingReleaseStatus: "Cercant la versió de la línia d’ordres de Happier.",
-        acquisitionDownloadingStatus: "Descarregant la línia d’ordres de Happier.",
+        acquisitionResolvingReleaseStatus: "Cercant la versió de la línia d’ordres de Happiest.",
+        acquisitionDownloadingStatus: "Descarregant la línia d’ordres de Happiest.",
         acquisitionVerifyingStatus: "Verificant la descàrrega.",
-        acquisitionUnpackingStatus: "Descomprimint la línia d’ordres de Happier.",
-        acquisitionInstallingStatus: "Instal·lant la línia d’ordres de Happier.",
+        acquisitionUnpackingStatus: "Descomprimint la línia d’ordres de Happiest.",
+        acquisitionInstallingStatus: "Instal·lant la línia d’ordres de Happiest.",
         acquisitionFinalizingStatus: "Finalitzant la instal·lació de la línia d’ordres.",
-        acquisitionCheckingCliStatus: "Comprovant la línia d’ordres de Happier.",
+        acquisitionCheckingCliStatus: "Comprovant la línia d’ordres de Happiest.",
         acquisitionCheckingDaemonStatus: "Comprovant el servei en segon pla.",
-        acquisitionReleaseFailed: "Happier no ha pogut trobar la versió de la línia d’ordres. Torna-ho a provar.",
+        acquisitionReleaseFailed: "Happiest no ha pogut trobar la versió de la línia d’ordres. Torna-ho a provar.",
         acquisitionDownloadFailed: "La descàrrega de la línia d’ordres no s’ha completat. Torna-ho a provar.",
-        acquisitionVerificationFailed: "Happier no ha pogut verificar la descàrrega. Torna-ho a provar.",
+        acquisitionVerificationFailed: "Happiest no ha pogut verificar la descàrrega. Torna-ho a provar.",
         acquisitionInstallFailed: "La instal·lació de la línia d’ordres no s’ha completat. Torna-ho a provar.",
         acquisitionDownloadBytes: ({ received }: { received: string }) => `${received} descarregats`,
         acquisitionDownloadBytesTotal: ({ received, total }: { received: string; total: string }) => `${received} de ${total} descarregats`,
         checkingTitle: 'Comprovant aquest ordinador',
         checkingStatus: ({ relay }: { relay: string }) => `Estem mirant què té ja aquest ordinador per a ${relay}.`,
         workingTitle: 'Configurant aquest ordinador',
-        stagePrepareStatus: 'Preparant la línia d’ordres de Happier en aquest ordinador.',
+        stagePrepareStatus: 'Preparant la línia d’ordres de Happiest en aquest ordinador.',
         stageConnectStatus: ({ relay }: { relay: string }) => `Connectant aquest ordinador a ${relay}. No has de fer res.`,
         stageConnectStatusAs: ({ relay, account }: { relay: string; account: string }) => `S’està connectant aquest ordinador a ${relay} com a ${account}. No has de fer res.`,
         stageServiceStatus: 'Instal·lant el servei en segon pla que manté accessibles les teves sessions.',
@@ -9601,12 +9597,12 @@ settingsSession: {
         blockedAccountChangedStatus: 'Aquest ordinador ha iniciat sessió amb un altre compte mentre es configurava, i la configuració s’ha aturat abans de vincular-lo. Torna-ho a provar.',
         blockedPairingDeclinedStatus: 'Aquest ordinador no s’ha aprovat per connectar-s’hi. El teu compte i les teves sessions són intactes.',
         blockedPairingIncompleteStatus: 'La connexió d’aquest ordinador no ha acabat.',
-        blockedCliOutdatedStatus: 'La línia d’ordres del Happier d’aquest ordinador és més antiga del que necessita la configuració. Actualitza el Happier i torna-ho a provar.',
+        blockedCliOutdatedStatus: 'La línia d’ordres del Happiest d’aquest ordinador és més antiga del que necessita la configuració. Actualitza el Happiest i torna-ho a provar.',
         blockedCliChannelOutdatedStatus: ({ channel }: { channel: string }) => `Aquest ordinador fa servir el CLI ${channel}, que és més antic del que necessita aquesta app.`,
         blockedCliChannelOutdatedVersionStatus: ({ channel, version }: { channel: string; version: string }) => `Aquest ordinador fa servir el CLI ${channel}. La seva versió més nova, ${version}, és més antiga del que necessita aquesta app.`,
-        blockedCliUnresponsiveStatus: 'La línia d’ordres del Happier ha deixat de respondre.',
-        blockedCliUnavailableStatus: "Happier no ha pogut iniciar la seva línia d’ordres en aquest ordinador.",
-        blockedCliFailedStatus: 'El Happier no ha pogut acabar de llegir la configuració d’aquest ordinador.',
+        blockedCliUnresponsiveStatus: 'La línia d’ordres del Happiest ha deixat de respondre.',
+        blockedCliUnavailableStatus: "Happiest no ha pogut iniciar la seva línia d’ordres en aquest ordinador.",
+        blockedCliFailedStatus: 'El Happiest no ha pogut acabar de llegir la configuració d’aquest ordinador.',
         unreachableStatus: ({ relay }: { relay: string }) => `Aquest ordinador encara no respon a ${relay}.`,
         notConvergedStatus: ({ relay }: { relay: string }) => `El servei en segon pla d’aquest ordinador encara no ha acabat d’arrencar per a ${relay}.`,
         canceledTitle: 'Configuració cancel·lada',
@@ -9614,7 +9610,7 @@ settingsSession: {
         stepOfTotal: ({ step, total }: { step: number; total: number }) => `Pas ${step} de ${total}`,
         hideDetails: 'Amaga els detalls',
         consentTitle: 'Vols substituir el servei en segon pla d’aquest ordinador?',
-        consentBodyFallback: 'Ja hi ha un servei en segon pla de Happier en aquest ordinador que aquesta aplicació no gestiona.',
+        consentBodyFallback: 'Ja hi ha un servei en segon pla de Happiest en aquest ordinador que aquesta aplicació no gestiona.',
         consentServicesList: ({ services }: { services: string }) => `Serveis afectats: ${services}`,
         consentConfirm: 'Substitueix-lo',
         consentKeep: 'Mantén el servei existent',
@@ -9628,27 +9624,27 @@ settingsSession: {
         accountMoveBody: ({ from, to, relay }: { from: string; to: string; relay: string }) => `Aquest ordinador té la sessió iniciada a ${relay} com a ${from}. Quan canviïs a ${to}, ${from} ja no podrà arribar a aquest ordinador.`,
         accountMoveBodyAcrossRelays: ({ from, fromRelay, to, toRelay }: { from: string; fromRelay: string; to: string; toRelay: string }) => `Aquest ordinador té la sessió iniciada a ${fromRelay} com a ${from}. Quan canviïs a ${to} a ${toRelay}, ${from} ja no podrà arribar a aquest ordinador.`,
         accountMoveConfirm: 'Canvia',
-        consentTakeoverTitle: 'Vols que Happier gestioni aquí el servei en segon pla?',
+        consentTakeoverTitle: 'Vols que Happiest gestioni aquí el servei en segon pla?',
         consentTakeoverConfirm: 'Fes-te’n càrrec',
         continueWithoutAction: 'Continua sense aquest ordinador',
         updateCliAction: 'Actualitza',
-        cliChoiceTitle: ({ version }: { version: string }) => `La CLI de Happier ${version} ja està instal·lada`,
-        cliChoiceTitleUnknownVersion: 'La CLI de Happier ja està instal·lada',
-        cliChoiceBody: ({ path }: { path: string }) => `És a ${path}. Happier pot instal·lar-ne la seva pròpia còpia, mantenir-la al dia i posar-la la primera al PATH, o pots continuar fent servir aquesta.`,
-        cliChoiceBodyOutdated: ({ path }: { path: string }) => `És a ${path} i és massa antiga per a la configuració. Happier pot instal·lar-ne una còpia actualitzada i posar-la la primera al PATH, o pots conservar la teva i actualitzar-la tu mateix.`,
-        cliChoiceTitleMissing: 'La teva CLI de Happier ja no està instal·lada',
-        cliChoiceBodyMissing: ({ path }: { path: string }) => `Vas triar conservar la que hi havia a ${path}, i ja no hi és. Happier pot instal·lar-ne la seva pròpia còpia i mantenir-la al dia, o pots reinstal·lar la teva i continuar fent-la servir.`,
-        cliChoiceBodyKeepBlocked: ({ path, link }: { path: string; link: string }) => `És a ${path}, però els terminals nous executen primer la CLI de Happier a través de ${link}, que Happier no va afegir. Deixa que Happier gestioni la línia d’ordres, o elimina ${link} i torna a executar la configuració per conservar la teva.`,
+        cliChoiceTitle: ({ version }: { version: string }) => `La CLI de Happiest ${version} ja està instal·lada`,
+        cliChoiceTitleUnknownVersion: 'La CLI de Happiest ja està instal·lada',
+        cliChoiceBody: ({ path }: { path: string }) => `És a ${path}. Happiest pot instal·lar-ne la seva pròpia còpia, mantenir-la al dia i posar-la la primera al PATH, o pots continuar fent servir aquesta.`,
+        cliChoiceBodyOutdated: ({ path }: { path: string }) => `És a ${path} i és massa antiga per a la configuració. Happiest pot instal·lar-ne una còpia actualitzada i posar-la la primera al PATH, o pots conservar la teva i actualitzar-la tu mateix.`,
+        cliChoiceTitleMissing: 'La teva CLI de Happiest ja no està instal·lada',
+        cliChoiceBodyMissing: ({ path }: { path: string }) => `Vas triar conservar la que hi havia a ${path}, i ja no hi és. Happiest pot instal·lar-ne la seva pròpia còpia i mantenir-la al dia, o pots reinstal·lar la teva i continuar fent-la servir.`,
+        cliChoiceBodyKeepBlocked: ({ path, link }: { path: string; link: string }) => `És a ${path}, però els terminals nous executen primer la CLI de Happiest a través de ${link}, que Happiest no va afegir. Deixa que Happiest gestioni la línia d’ordres, o elimina ${link} i torna a executar la configuració per conservar la teva.`,
         cliChoiceNotNow: 'Ara no',
-        cliChoiceManage: 'Deixa que Happier la gestioni',
+        cliChoiceManage: 'Deixa que Happiest la gestioni',
         cliChoiceKeep: 'Conserva la meva',
         blockedCliChoiceStatus: 'La configuració s’ha aturat abans de canviar res. Tria qui gestiona la línia d’ordres per continuar.',
         blockedCliOwnOutdatedStatus: ({ command }: { command: string }) => `La teva línia d’ordres és massa antiga per a la configuració. Actualitza-la amb ${command}`,
         blockedCliOwnOutdatedUnknownStatus: 'La teva línia d’ordres és massa antiga per a la configuració. Actualitza-la allà on la vas instal·lar.',
-        blockedCliOwnMissingStatus: 'La línia d’ordres que vas conservar ja no està instal·lada. Torna-la a instal·lar o deixa que Happier gestioni la línia d’ordres.',
+        blockedCliOwnMissingStatus: 'La línia d’ordres que vas conservar ja no està instal·lada. Torna-la a instal·lar o deixa que Happiest gestioni la línia d’ordres.',
         cliTrustTitle: 'Voleu aprovar aquesta línia d’ordres?',
-        cliTrustBody: ({ command }: { command: string }) => `El Happier no ha installat la línia d’ordres a ${command}. Aprovar-la li permet llegir i escriure les sessions d’aquest compte. Aproveu només la que hi hagueu posat vosaltres.`,
-        cliTrustBodyUnknownCommand: 'El Happier no ha installat aquesta línia d’ordres. Aprovar-la li permet llegir i escriure les sessions d’aquest compte. Aproveu només la que hi hagueu posat vosaltres.',
+        cliTrustBody: ({ command }: { command: string }) => `El Happiest no ha installat la línia d’ordres a ${command}. Aprovar-la li permet llegir i escriure les sessions d’aquest compte. Aproveu només la que hi hagueu posat vosaltres.`,
+        cliTrustBodyUnknownCommand: 'El Happiest no ha installat aquesta línia d’ordres. Aprovar-la li permet llegir i escriure les sessions d’aquest compte. Aproveu només la que hi hagueu posat vosaltres.',
         cliTrustApprove: 'Aprova',
     },
 
@@ -9658,7 +9654,7 @@ settingsSession: {
         webDesktopOnlyBody: 'Obre l’app d’escriptori per configurar aquest ordinador. L’app web pot mostrar l’estat, però no pot instal·lar ni configurar el servei en segon pla.',
         preAuthTitle: 'Tria el teu Relay abans d’iniciar sessió',
         preAuthBody: 'Tria el Relay que vols fer servir en aquest ordinador abans de crear, restaurar o iniciar sessió en un compte.',
-        preAuthContinueHint: 'Quan continuïs, Happier et tornarà a la pantalla d’inici de sessió amb el Relay seleccionat i després et retornarà aquí per acabar la configuració.',
+        preAuthContinueHint: 'Quan continuïs, Happiest et tornarà a la pantalla d’inici de sessió amb el Relay seleccionat i després et retornarà aquí per acabar la configuració.',
         currentRelayTitle: 'Relay seleccionat',
         currentRelayDescription: ({ relayUrl }: { relayUrl: string }) => `Relay seleccionat: ${relayUrl}`,
         savedRelaysTitle: 'Relays desats',
@@ -9693,7 +9689,7 @@ settingsSession: {
 
       machine: {
           offlineUnableToSpawn: 'El llançador està desactivat mentre la màquina està fora de línia',
-          offlineHelp: '• Assegura\'t que l\'ordinador estigui en línia\n• Executa `happier daemon status` per diagnosticar\n• Fas servir l\'última versió del CLI? Executa `happier self update`',
+          offlineHelp: '• Assegura\'t que l\'ordinador estigui en línia\n• Executa `happiest daemon status` per diagnosticar\n• Fas servir l\'última versió del CLI? Executa `happiest self update`',
           launchNewSessionInDirectory: 'Inicia una nova sessió al directori',
             customPathPlaceholder: 'Introdueix un camí personalitzat',
             tools: {
@@ -9704,13 +9700,13 @@ settingsSession: {
             installables: {
                 screenTitle: 'Instal·lables',
                 aboutGroupTitle: 'Quant a',
-                aboutSubtitle: 'Gestiona les eines que Happier pot instal·lar i mantenir actualitzades en aquesta màquina.',
+                aboutSubtitle: 'Gestiona les eines que Happiest pot instal·lar i mantenir actualitzades en aquesta màquina.',
                 experimentalGroupTitle: ({ title }: { title: string }) => `${title} (experimental)`,
                 autoInstallTitle: 'Auto-instal·la quan cal',
                 autoInstallSubtitle: 'S\'instal·la en segon pla quan és necessari per a un backend seleccionat (millor esforç).',
                 autoUpdateTitle: 'Auto-actualització',
                 autoUpdatePromptTitle: 'Auto-actualització',
-                autoUpdatePromptBody: 'Tria com ha de gestionar Happier les actualitzacions d\'aquest instal·lable.',
+                autoUpdatePromptBody: 'Tria com ha de gestionar Happiest les actualitzacions d\'aquest instal·lable.',
                 autoUpdateModes: {
                     off: 'Desactivat',
                     notify: 'Notifica',
@@ -9728,9 +9724,9 @@ settingsSession: {
             notSetUp: 'Aquest ordinador encara no està configurat.',
             connectedAs: ({ relay, account }: { relay: string; account: string }) => `Connectat a ${relay} com a ${account}.`,
             cliTitle: 'Línia d’ordres',
-            cliManaged: ({ version }: { version: string }) => `Happier ${version}, instal·lat per aquesta app`,
+            cliManaged: ({ version }: { version: string }) => `Happiest ${version}, instal·lat per aquesta app`,
             cliManagedOnChannel: ({ channel, version }: { channel: string; version: string }) => `CLI ${channel} ${version}, instal·lat per aquesta app`,
-            cliChoiceManaged: 'Gestionada per Happier',
+            cliChoiceManaged: 'Gestionada per Happiest',
             cliChoiceOwn: ({ path }: { path: string }) => `La teva — ${path}`,
             cliChoiceChange: 'Canvia qui gestiona la línia d’ordres',
             cliOldCopyTitle: 'Línia d’ordres antiga',
@@ -9742,24 +9738,24 @@ settingsSession: {
             cliManagedUnknownVersion: 'Instal·lada per aquesta app',
             cliFromPath: ({ version, path }: { version: string; path: string }) => `${version} des de ${path}`,
             updateCliTitle: 'Actualitza la línia d’ordres',
-            updateCliAvailable: ({ version }: { version: string }) => `Happier ${version} està disponible.`,
+            updateCliAvailable: ({ version }: { version: string }) => `Happiest ${version} està disponible.`,
             updatingCli: 'S’està actualitzant la línia d’ordres',
-            cliNotManaged: 'Happier no ha instal·lat aquesta línia d’ordres, així que no la substituirà.',
+            cliNotManaged: 'Happiest no ha instal·lat aquesta línia d’ordres, així que no la substituirà.',
             cliUpdateFailed: 'L’actualització no ha acabat. Torna-ho a provar.',
             cliUpdateRestartNotConverged: 'La línia d’ordres s’ha actualitzat, però el servei en segon pla encara executa la versió anterior. Torna-ho a provar.',
         },
         cliPath: {
             title: 'Terminal',
-            footer: 'Happier Desktop només afegeix o elimina les entrades del PATH que ha creat; les escrites per l\'instal·lador del shell no es toquen.',
-            addTitle: 'Afegeix happier al PATH',
-            addSubtitle: 'Fes que l\'ordre happier estigui disponible als terminals nous.',
-            removeTitle: 'Elimina happier del PATH',
-            removeSubtitle: 'Elimina només les entrades del PATH que Happier Desktop ha afegit.',
-            added: 'Afegit. Obre un terminal nou per fer servir happier.',
-            alreadyPresent: 'happier ja és al teu PATH.',
-            existingCommand: ({ path }: { path: string }) => `Un altre happier a ${path} ja respon al teu terminal, així que no s’ha afegit res.`,
-            removed: 'S\'han eliminat les entrades del PATH que Happier Desktop havia afegit.',
-            nothingToRemove: 'Happier Desktop no ha afegit cap entrada al PATH.',
+            footer: 'Happiest Desktop només afegeix o elimina les entrades del PATH que ha creat; les escrites per l\'instal·lador del shell no es toquen.',
+            addTitle: 'Afegeix happiest al PATH',
+            addSubtitle: 'Fes que l\'ordre happiest estigui disponible als terminals nous.',
+            removeTitle: 'Elimina happiest del PATH',
+            removeSubtitle: 'Elimina només les entrades del PATH que Happiest Desktop ha afegit.',
+            added: 'Afegit. Obre un terminal nou per fer servir happiest.',
+            alreadyPresent: 'happiest ja és al teu PATH.',
+            existingCommand: ({ path }: { path: string }) => `Un altre happiest a ${path} ja respon al teu terminal, així que no s’ha afegit res.`,
+            removed: 'S\'han eliminat les entrades del PATH que Happiest Desktop havia afegit.',
+            nothingToRemove: 'Happiest Desktop no ha afegit cap entrada al PATH.',
         },
         stopDaemon: 'Atura el dimoni',
         stopDaemonConfirmTitle: 'Aturar el dimoni?',
@@ -9813,7 +9809,7 @@ settingsSession: {
         detectedCliDetected: 'Detectat',
         detectedCliNotDetected: 'No detectat',
         detectedCliUnknown: 'Desconegut',
-        detectedCliNotSupported: 'No compatible (actualitza @happier-dev/cli)',
+        detectedCliNotSupported: 'No compatible (actualitza el Happiest CLI)',
         untitledSession: 'Sessió sense títol',
         back: 'Enrere',
         notFound: 'Màquina no trobada',
@@ -9892,25 +9888,25 @@ settingsSession: {
           switchingToRemote: 'Canviant al mode remot…',
           switchToRemote: 'Canvia a remot',
           detachLocalTerminal: 'Desconnecta el terminal',
-        directSessionTakeoverAvailable: "Aquesta sessió directa està disponible a la teva màquina. Pren-ne el control a Happier per controlar-la aquí.",
+        directSessionTakeoverAvailable: "Aquesta sessió directa està disponible a la teva màquina. Pren-ne el control a Happiest per controlar-la aquí.",
         directSessionMachineOffline: "Aquesta sessió directa no està disponible ara mateix perquè la màquina està fora de línia.",
         switchingToDirectTakeover: "Prenent el control d'aquesta sessió directa…",
         switchingToPersistedTakeover: "Prenent el control i important aquesta sessió…",
         takeOverDirect: "Pren el control",
         takeOverPersist: "Pren el control + importa",
-        directTakeoverDialogTitle: "Vols continuar aquesta sessió directa a Happier?",
-        directTakeoverDialogBody: "Tria com vols que Happier en prengui el control. Directe continua fent servir la transcripció del proveïdor. Importar porta la transcripció a Happier.",
+        directTakeoverDialogTitle: "Vols continuar aquesta sessió directa a Happiest?",
+        directTakeoverDialogBody: "Tria com vols que Happiest en prengui el control. Directe continua fent servir la transcripció del proveïdor. Importar porta la transcripció a Happiest.",
         directTakeoverDialogDirectTitle: "Pren el control",
-        directTakeoverDialogDirectBody: "Controla aquesta sessió a Happier sense importar la transcripció a Happier.",
+        directTakeoverDialogDirectBody: "Controla aquesta sessió a Happiest sense importar la transcripció a Happiest.",
         directTakeoverDialogPersistTitle: "Pren el control + importa",
-        directTakeoverDialogPersistBody: "Importa la transcripció a Happier i continua amb totes les funcions d'una sessió Happier.",
+        directTakeoverDialogPersistBody: "Importa la transcripció a Happiest i continua amb totes les funcions d'una sessió Happiest.",
         directTakeoverDialogForceStopTitle: "Provar d'aturar primer el procés local",
-        directTakeoverDialogForceStopBody: "Happier ha trobat un procés local de confiança per a aquesta sessió. Activa-ho si vols que Happier l'aturi abans de prendre'n el control.",
+        directTakeoverDialogForceStopBody: "Happiest ha trobat un procés local de confiança per a aquesta sessió. Activa-ho si vols que Happiest l'aturi abans de prendre'n el control.",
         directTakeoverForceStopConfirmTitle: "Aturar primer el procés local?",
-        directTakeoverForceStopConfirmBody: "Happier ha trobat un procés local de confiança per a aquesta sessió directa. Vols aturar-lo abans de prendre'n el control aquí?",
+        directTakeoverForceStopConfirmBody: "Happiest ha trobat un procés local de confiança per a aquesta sessió directa. Vols aturar-lo abans de prendre'n el control aquí?",
         directTakeoverForceStopConfirmAction: "Atura i pren el control",
         directSessionRunningOnComputerTitle: "Aquesta sessió encara s'executa a l'ordinador",
-        directSessionRunningOnComputerBody: "Un altre programa d'aquell ordinador encara treballa en aquesta sessió. Si continues aquí, primer s'aturarà aquest programa, inclòs el que estigui fent ara mateix, perquè només Happier escrigui a la sessió.",
+        directSessionRunningOnComputerBody: "Un altre programa d'aquell ordinador encara treballa en aquesta sessió. Si continues aquí, primer s'aturarà aquest programa, inclòs el que estigui fent ara mateix, perquè només Happiest escrigui a la sessió.",
         directSessionRunningOnComputerAction: "Atura'l i continua",
     },
 
@@ -10187,7 +10183,7 @@ settingsSession: {
         duplicateName: 'Ja existeix un perfil amb aquest nom',
         setupInstructions: {
             title: 'Instruccions de configuració',
-            viewCloudGuide: 'Veure la guia oficial de configuració',
+            viewCloudGuide: 'Veure la guia de configuració',
         },
         machineLogin: {
             title: 'Inici de sessió CLI',
@@ -10295,7 +10291,7 @@ settingsSession: {
         },
     defaultStorage: {
       title: 'Tipus de sessió per defecte',
-      footer: 'Sobreescriu el tipus de sessió per defecte Happier/directe del compte per a sessions noves quan se selecciona aquest perfil.',
+      footer: 'Sobreescriu el tipus de sessió per defecte Happiest/directe del compte per a sessions noves quan se selecciona aquest perfil.',
       accountDefaultSubtitle: ({ label }: { label: string }) => `Predeterminat del compte: ${label}`,
       useAccountDefault: 'Fes servir el predeterminat del compte',
       currently: ({ label }: { label: string }) => `Actualment: ${label}`,

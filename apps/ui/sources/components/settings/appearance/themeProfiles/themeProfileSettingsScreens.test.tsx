@@ -687,7 +687,7 @@ describe('Theme profile import and export screens', () => {
     it('shows the supported import formats hint on the import screen', async () => {
         const screen = await renderImportScreen();
 
-        expect(screen.getTextContent()).toContain('Supported formats: Happier theme profile JSON, VS Code theme JSON');
+        expect(screen.getTextContent()).toContain('Supported formats: Happiest theme profile JSON, VS Code theme JSON');
     });
 
     it('keeps import warnings visible before leaving the import screen', async () => {

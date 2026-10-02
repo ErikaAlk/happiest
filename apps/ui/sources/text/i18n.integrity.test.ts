@@ -161,7 +161,6 @@ const IGNORED_UNTRANSLATED_KEYS_BY_LOCALE: Readonly<Record<string, ReadonlySet<s
         'common.ok',
         'common.urlPlaceholder',
         'common.version',
-        'components.emptyMainScreen.runCommand',
         'connect.accountUrlPlaceholder',
         'connect.secretKeyPlaceholder',
         'connect.terminalUrlPlaceholder',

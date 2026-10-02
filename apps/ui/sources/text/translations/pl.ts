@@ -2,10 +2,10 @@ import type { TranslationStructure } from "../_types";
 
 const mcpServersUxTranslationExtension = {
   mcpServersConfiguredEmptySubtitle: 'Utwórz serwer, zaimportuj JSON hosta albo zainstaluj zalecany preset.',
-  mcpServersHeroSubtitle: ({ configuredCount }: { configuredCount: number }) => `${configuredCount} skonfigurowano w Happier`,
+  mcpServersHeroSubtitle: ({ configuredCount }: { configuredCount: number }) => `${configuredCount} skonfigurowano w Happiest`,
   mcpServersHeroSubtitleEmpty: 'Utwórz serwery raz, sprawdź, gdzie mają zastosowanie, i zaimportuj to, czego już używają inne narzędzia.',
   mcpServersSegmentConfigured: 'Skonfigurowane',
-  mcpServersSegmentConfiguredSubtitle: 'Twój katalog Happier',
+  mcpServersSegmentConfiguredSubtitle: 'Twój katalog Happiest',
   mcpServersSegmentDetected: 'Wykryte',
   mcpServersSegmentDetectedSubtitle: 'Znalezione w plikach konfiguracyjnych dostawcy',
   mcpServersSegmentPreview: 'Podgląd',
@@ -22,12 +22,12 @@ const mcpServersUxTranslationExtension = {
   mcpServersPreviewDirectorySubtitle: 'Wybierz folder, w którym planujesz rozpocząć sesję',
   mcpServersPreviewDirectoryPlaceholder: '/ścieżka/do/workspace',
   mcpServersPreviewRefreshTitle: 'Odśwież podgląd',
-  mcpServersPreviewRefreshSubtitle: 'Rozwiąż serwery MCP Happier i natywne serwery MCP dostawcy dla tego kontekstu',
+  mcpServersPreviewRefreshSubtitle: 'Rozwiąż serwery MCP Happiest i natywne serwery MCP dostawcy dla tego kontekstu',
   mcpServersPreviewEmptyTitle: 'Brak podglądu',
   mcpServersPreviewEmptySubtitle: 'Wybierz backend, maszynę i katalog, a potem odśwież, aby sprawdzić rzeczywisty zestaw MCP.',
   mcpServersPreviewDirectoryRequired: 'Wybierz katalog, aby wyświetlić podgląd tej sesji.',
-  mcpServersBuiltInDescription: 'Zawsze dostępne w sesjach Happier.',
-  mcpServersSourceHappier: 'Happier',
+  mcpServersBuiltInDescription: 'Zawsze dostępne w sesjach Happiest.',
+  mcpServersSourceHappier: 'Happiest',
   mcpServersSourceBuiltIn: 'Wbudowane',
   mcpServersSourceDetected: 'Wykryte',
   mcpServersQuickInstallTitle: 'Szybka instalacja',
@@ -88,17 +88,17 @@ const mcpServersUxTranslationExtension = {
   mcpServersStatusDetected: ({ provider }: { provider: string }) => `Włączone w ${provider}`,
   mcpServersStatusDisabledInProvider: ({ provider }: { provider: string }) => `Wyłączone w ${provider}`,
   mcpServersEditorAppliesTo: 'Dotyczy',
-  mcpServersEditorAppliesToSubtitle: 'Wybierz, gdzie Happier ma domyślnie dodawać ten serwer.',
+  mcpServersEditorAppliesToSubtitle: 'Wybierz, gdzie Happiest ma domyślnie dodawać ten serwer.',
   mcpServersAddApplyRule: 'Dodaj regułę dotyczy',
   mcpServersAddApplyRuleSubtitle: 'Wybierz, gdzie ten serwer ma być domyślnie stosowany.',
   mcpServersAddApplyRuleHelp: 'Zapisz tę regułę dotyczy, aby stała się częścią tej konfiguracji serwera.',
   mcpServersAddApplyRuleSave: 'Zapisz regułę dotyczy',
   mcpServersDeliveryNativeTitle: 'Natywny MCP',
-  mcpServersDeliveryNativeSubtitle: 'Ten backend otrzymuje narzędzia Happier jako natywne serwery MCP.',
-  mcpServersDeliveryShellBridgeTitle: 'Most powłoki Happier',
-  mcpServersDeliveryShellBridgeSubtitle: 'Ten backend wywołuje narzędzia Happier przez most `happier tools`.',
+  mcpServersDeliveryNativeSubtitle: 'Ten backend otrzymuje narzędzia Happiest jako natywne serwery MCP.',
+  mcpServersDeliveryShellBridgeTitle: 'Most powłoki Happiest',
+  mcpServersDeliveryShellBridgeSubtitle: 'Ten backend wywołuje narzędzia Happiest przez most `happiest tools`.',
   mcpServersDeliveryUnsupportedTitle: 'Nieobsługiwane',
-  mcpServersDeliveryUnsupportedSubtitle: 'Ten backend obecnie nie otrzymuje narzędzi Happier.',
+  mcpServersDeliveryUnsupportedSubtitle: 'Ten backend obecnie nie otrzymuje narzędzi Happiest.',
 } as const;
 
 const newSessionMcpTranslationExtension = {
@@ -121,9 +121,9 @@ const newSessionMcpTranslationExtension = {
   mcpDetectedEmptyTitle: 'Brak wykrytych serwerów MCP',
   mcpDetectedEmptySubtitle: 'Odśwież, aby przeskanować pliki konfiguracyjne dostawcy na tej maszynie.',
   mcpDetectedUnsupportedTitle: 'Wykryte serwery MCP są niedostępne',
-  mcpDetectedUnsupportedSubtitle: 'Zaktualizuj Happier na tej maszynie, aby włączyć skanowanie konfiguracji dostawcy.',
-  mcpHappierSectionTitle: 'Serwery MCP Happier',
-  mcpHappierEmptyTitle: 'Brak serwerów MCP zdefiniowanych w Happier',
+  mcpDetectedUnsupportedSubtitle: 'Zaktualizuj Happiest na tej maszynie, aby włączyć skanowanie konfiguracji dostawcy.',
+  mcpHappierSectionTitle: 'Serwery MCP Happiest',
+  mcpHappierEmptyTitle: 'Brak serwerów MCP zdefiniowanych w Happiest',
   mcpHappierEmptySubtitle: 'Zdefiniuj serwery MCP w ustawieniach, aby używać ich w sesjach.',
   mcpReasonActiveByDefault: 'Dołączone domyślnie',
   mcpReasonForcedIncluded: 'Wymagane przez konfigurację',
@@ -145,7 +145,7 @@ const settingsAppearanceTranslationExtension = {
     customGroup: 'Custom themes',
     customFooter: 'Tap a theme to activate it, or use row actions to edit, duplicate, or delete it.',
     defaultTheme: 'Default theme',
-    defaultThemeSubtitle: 'Use Happier theme colors without a custom profile',
+    defaultThemeSubtitle: 'Use Happiest theme colors without a custom profile',
     active: 'Active',
     customProfileSubtitle: 'Custom local theme profile',
     tapToActivate: 'Tap to activate',
@@ -153,7 +153,7 @@ const settingsAppearanceTranslationExtension = {
     createProfile: 'Create theme',
     createProfileSubtitle: 'Start from any built-in or custom theme',
     importProfile: 'Import theme',
-    importProfileSubtitle: 'Paste JSON or choose a Happier theme profile file',
+    importProfileSubtitle: 'Paste JSON or choose a Happiest theme profile file',
     exportProfile: 'Export theme',
     exportProfileSubtitle: 'Export this theme as JSON',
     presetsGroup: 'Built-in presets',
@@ -357,7 +357,7 @@ const memoryEmbeddingsTranslationExtension = {
       title: 'Dostawca',
       options: {
         localTitle: 'Model lokalny',
-        localSubtitle: 'Zarządzany przez Happier i pobierany przy pierwszym użyciu',
+        localSubtitle: 'Zarządzany przez Happiest i pobierany przy pierwszym użyciu',
         openAiCompatibleTitle: 'Punkt końcowy zgodny z OpenAI',
         openAiCompatibleSubtitle: 'Użyj własnego serwera osadzeń i klucza API',
       },
@@ -450,7 +450,7 @@ const promptLibraryUxRefinementTranslationExtension = {
     externalAssetsInstallMethodCopy: 'Kopiuj pliki',
     externalAssetsInstallMethodCopySubtitle: 'Zapisuje samodzielną kopię w wybranym miejscu docelowym',
     externalAssetsInstallMethodSymlink: 'Dowiązanie symboliczne (zalecane)',
-    externalAssetsInstallMethodSymlinkSubtitle: 'Łączy miejsce docelowe z kopią zarządzaną przez Happier, aby łatwiej aktualizować',
+    externalAssetsInstallMethodSymlinkSubtitle: 'Łączy miejsce docelowe z kopią zarządzaną przez Happiest, aby łatwiej aktualizować',
     registriesAddGitSourceSubtitle: 'Dodaj repozytorium Git lub lokalny checkout jako źródło rejestru',
     registriesSourceTitleLabel: 'Tytuł źródła',
     registriesSourceUrlLabel: 'URL repozytorium lub ścieżka lokalna',
@@ -461,7 +461,7 @@ const promptLibraryUxRefinementTranslationExtension = {
     registriesItemFiles: 'Pliki pomocnicze',
     registriesItemPreview: 'Podgląd SKILL.md',
     registriesItemPreviewUnavailable: 'Brak podglądu SKILL.md dla tego elementu rejestru.',
-    registriesItemImportSubtitle: 'Importuj ten pakiet umiejętności do biblioteki Happier',
+    registriesItemImportSubtitle: 'Importuj ten pakiet umiejętności do biblioteki Happiest',
     registriesItemInstallAction: 'Zainstaluj na maszynie',
     registriesItemInstallConfirmTitle: 'Zainstalować element rejestru?',
     registriesItemInstallConfirmBody: 'To importuje umiejętność do biblioteki i instaluje ją w wybranym miejscu na maszynie.',
@@ -507,7 +507,7 @@ const sessionHandoffTranslationExtensions = {
     recovery: {
       title: 'Sesja została zatrzymana tutaj przed ukończeniem przekazania',
       messageAfterSourceStop:
-        'Happier już zatrzymał tę sesję na tym urządzeniu, ale nie mógł dokończyć jej uruchamiania na urządzeniu docelowym. Uruchom ją ponownie tutaj albo pozostaw zatrzymaną, dopóki nie przywrócisz urządzenia docelowego.',
+        'Happiest już zatrzymał tę sesję na tym urządzeniu, ale nie mógł dokończyć jej uruchamiania na urządzeniu docelowym. Uruchom ją ponownie tutaj albo pozostaw zatrzymaną, dopóki nie przywrócisz urządzenia docelowego.',
       restartOnSource: 'Uruchom ponownie na źródle',
       keepStopped: 'Pozostaw zatrzymaną',
     },
@@ -560,8 +560,8 @@ const settingsSessionHandoffTranslationExtensions = {
       groupFooter: 'Dotyczy tylko sytuacji, gdy sesja zrodlowa jest obecnie direct.',
       keepDirectTitle: 'Pozostaw direct',
       keepDirectSubtitle: 'Wznow sesje docelowa jako direct, jesli dostawca to obsluguje.',
-      convertToPersistedTitle: 'Przekształć w Happier',
-      convertToPersistedSubtitle: 'Zaimportuj transkrypt i kontynuuj jako sesję Happier.',
+      convertToPersistedTitle: 'Przekształć w Happiest',
+      convertToPersistedSubtitle: 'Zaimportuj transkrypt i kontynuuj jako sesję Happiest.',
     },
   },
 } as const;
@@ -598,7 +598,7 @@ function plural({
 }
 
 /**
- * Polish translations for the Happier app
+ * Polish translations for the Happiest app
  * Must match the exact structure of the English translations
  */
 export const pl: TranslationStructure = {
@@ -868,7 +868,7 @@ export const pl: TranslationStructure = {
     codingStack: "Stos kodowania",
     codingStackSubtitle: "Stosowany w sesjach kodowania",
     voiceStack: "Stos głosu",
-    voiceStackSubtitle: "Stosowany w Happier Voice",
+    voiceStackSubtitle: "Stosowany w Happiest Voice",
     profileStacks: "Stosy profili",
     profileStacksSubtitle: ({ count }: { count: number }) => {
       if (count === 1) return "1 profil";
@@ -1174,7 +1174,7 @@ export const pl: TranslationStructure = {
   appCrash: {
     title: "Coś poszło nie tak",
     subtitle:
-      "W Happier wystąpił nieoczekiwany błąd. Możesz ponownie uruchomić interfejs aplikacji lub skopiować szczegóły dla pomocy.",
+      "W Happiest wystąpił nieoczekiwany błąd. Możesz ponownie uruchomić interfejs aplikacji lub skopiować szczegóły dla pomocy.",
     detailsTitle: "Szczegóły błędu",
     restart: "Uruchom ponownie",
     restartAndReportIssue: "Uruchom ponownie i zgłoś błąd",
@@ -1382,11 +1382,11 @@ export const pl: TranslationStructure = {
     scanComputerQrUnavailableTitle: "Skanowanie QR z komputera niedostępne",
     scanComputerQrUnavailableBody:
       "Ta metoda logowania jest wyłączona na tym serwerze. Użyj poniżej innej opcji, aby odzyskać konto.",
-    scanComputerQrInstructions: "Zeskanuj kod QR wyświetlony w Happier na komputerze (Ustawienia → Dodaj telefon).",
+    scanComputerQrInstructions: "Zeskanuj kod QR wyświetlony w Happiest na komputerze (Ustawienia → Dodaj telefon).",
     scanComputerQrButton: "Zeskanuj QR, aby się zalogować",
     waitingForApproval: "Oczekiwanie na zatwierdzenie…",
     showQrInstead: "Zamiast tego pokaż kod QR",
-    addPhoneQrInstructions: "Zeskanuj ten kod QR w aplikacji mobilnej Happier, aby zalogować się na telefonie.",
+    addPhoneQrInstructions: "Zeskanuj ten kod QR w aplikacji mobilnej Happiest, aby zalogować się na telefonie.",
     serverUrlNotEmbeddedTitle: "Skonfiguruj serwer na telefonie",
     serverUrlNotEmbeddedBody:
       "Ten kod QR nie może zawierać adresu serwera, ponieważ jest ustawiony na localhost. Na telefonie przejdź do Ustawienia → Serwery i dodaj URL, do którego telefon ma dostęp (LAN IP lub Tailscale), a następnie zeskanuj ponownie.",
@@ -1408,14 +1408,14 @@ export const pl: TranslationStructure = {
     externalAuthVerifiedTitle: ({ provider }: { provider: string }) =>
       `${provider} zweryfikowano`,
     externalAuthVerifiedBody: ({ provider }: { provider: string }) =>
-      `Znaleźliśmy istniejące konto Happier powiązane z ${provider}. Aby dokończyć logowanie na tym urządzeniu, przywróć klucz konta za pomocą kodu QR lub klucza tajnego.`,
+      `Znaleźliśmy istniejące konto Happiest powiązane z ${provider}. Aby dokończyć logowanie na tym urządzeniu, przywróć klucz konta za pomocą kodu QR lub klucza tajnego.`,
     restoreWithSecretKeyInstead: "Przywróć za pomocą klucza tajnego",
     restoreWithSecretKeyDescription:
       "Wpisz swój klucz tajny, aby odzyskać dostęp do konta.",
     lostAccessLink: "Brak dostępu?",
     lostAccessTitle: "Straciłeś dostęp do konta?",
     lostAccessBody:
-      "Jeśli nie masz już żadnego urządzenia połączonego z tym kontem i zgubiłeś klucz tajny, możesz zresetować konto przez dostawcę tożsamości. Utworzy to nowe konto Happier. Nie da się odzyskać starej zaszyfrowanej historii.",
+      "Jeśli nie masz już żadnego urządzenia połączonego z tym kontem i zgubiłeś klucz tajny, możesz zresetować konto przez dostawcę tożsamości. Utworzy to nowe konto Happiest. Nie da się odzyskać starej zaszyfrowanej historii.",
     lostAccessContinue: ({ provider }: { provider: string }) =>
       `Kontynuuj z ${provider}`,
     lostAccessConfirmTitle: "Zresetować konto?",
@@ -1425,14 +1425,13 @@ export const pl: TranslationStructure = {
     secretKeyPlaceholder: "XXXXX-XXXXX-XXXXX...",
     linkNewDeviceTitle: "Połącz nowe urządzenie",
     linkNewDeviceSubtitle: "Zeskanuj kod QR wyświetlony na nowym urządzeniu, aby połączyć go z tym kontem",
-    linkNewDeviceQrInstructions: "Otwórz Happier na nowym urządzeniu i wyświetl kod QR",
+    linkNewDeviceQrInstructions: "Otwórz Happiest na nowym urządzeniu i wyświetl kod QR",
     scanQrCodeOnDevice: "Zeskanuj kod QR",
     unsupported: {
       connectTitle: ({ name }: { name: string }) => `Połącz ${name}`,
       runCommandInTerminal: "Uruchom poniższe polecenie w terminalu:",
       runCommandInTerminalWithCommand: ({ command }: { command: string }) =>
         `Uruchom poniższe polecenie w terminalu:\n\n${command}`,
-      command: ({ name }: { name: string }) => `happier connect ${name}`,
     },
   },
 
@@ -1474,7 +1473,7 @@ export const pl: TranslationStructure = {
         pasteDoctorJson: {
           title: "CLI doctor JSON (opcjonalnie)",
           subtitle:
-            "Jeśli Twoja maszyna jest nieosiągalna z UI, uruchom `happier doctor --json` na komputerze i wklej tutaj.",
+            "Jeśli Twoja maszyna jest nieosiągalna z UI, uruchom `happiest doctor --json` na komputerze i wklej tutaj.",
           placeholder: '{ "capturedAt": "...", ... }',
           invalid: ({ error }: { error: string }) => `Nieprawidłowy doctor JSON: ${error}`,
           valid: "Doctor JSON wygląda poprawnie i zostanie dołączony do zgłoszenia.",
@@ -1527,7 +1526,7 @@ export const pl: TranslationStructure = {
         expectedBehaviorPlaceholder: "Co powinno się dziać zamiast tego?",
         reproductionStepsLabel: "Kroki odtworzenia (opcjonalnie)",
         reproductionStepsPlaceholder:
-          "1. Otwórz Happier\n2. Uruchom sesję\n3. ...",
+          "1. Otwórz Happiest\n2. Uruchom sesję\n3. ...",
         whatChangedLabel: "Co ostatnio się zmieniło (opcjonalnie)",
         whatChangedPlaceholder:
           "Aktualizacje, zmiany konfiguracji, nowe kroki konfiguracji...",
@@ -1609,7 +1608,7 @@ export const pl: TranslationStructure = {
       title: "Włączone",
       subtitle: "Buduj i utrzymuj lokalny indeks na tej maszynie",
       footer:
-        "Gdy włączone, Happier buduje lokalny indeks na urządzeniu na podstawie odszyfrowanych transkryptów, aby wspierać szybkie wyszukiwanie i przypominanie.",
+        "Gdy włączone, Happiest buduje lokalny indeks na urządzeniu na podstawie odszyfrowanych transkryptów, aby wspierać szybkie wyszukiwanie i przypominanie.",
     },
     budgets: {
       groupTitle: "Limit dysku",
@@ -1870,8 +1869,8 @@ export const pl: TranslationStructure = {
             backendsSubtitle: "Skonfigurowane backendy i niestandardowe cele uruchamiania.",
           },
           enableInjection: {
-            title: "Instrukcje uruchomień Happier",
-            subtitle: "Wyłączenie usuwa routing z priorytetem natywnym i mechanikę uruchomień Happier z promptów systemowych agentów kodujących.",
+            title: "Instrukcje uruchomień Happiest",
+            subtitle: "Wyłączenie usuwa routing z priorytetem natywnym i mechanikę uruchomień Happiest z promptów systemowych agentów kodujących.",
           },
           notifyParentOnCompletion: { title: 'Powiadom agenta nadrzędnego po zakończeniu', subtitle: 'Wysyła do agenta nadrzędnego ustrukturyzowane zdarzenie zakończenia.' },
           characterBudget: {
@@ -1951,7 +1950,7 @@ export const pl: TranslationStructure = {
     addYourPhoneSubtitle: "Pokaż kod QR, aby zalogować się na telefonie",
     addMachine: "Dodaj maszynę",
     machineSetupCurrentMachineTitle: "Ten komputer",
-    machineSetupCurrentMachineSubtitle: "Uruchom Happier bezpośrednio na tym urządzeniu",
+    machineSetupCurrentMachineSubtitle: "Uruchom Happiest bezpośrednio na tym urządzeniu",
     machineSetupAdoptExistingTitle: "Użyj istniejącej instalacji",
     machineSetupAdoptExistingSubtitle: "Wykorzystaj istniejącą konfigurację demona/usługi na tym komputerze",
     machineSetupAdoptExistingProgressTitle: "Sprawdzanie istniejącej instalacji",
@@ -1960,7 +1959,7 @@ export const pl: TranslationStructure = {
     machineSetupSshMachineSubtitle: "Połącz przez SSH komputer deweloperski, VM lub serwer",
     machineSetupStagesTitle: "Co się stanie",
     machineSetupStageConnect: "Połącz i zweryfikuj dostęp",
-    machineSetupStageInstall: "Zainstaluj Happier i sparuj maszynę",
+    machineSetupStageInstall: "Zainstaluj Happiest i sparuj maszynę",
     machineSetupStageFinish: "Dokończ konfigurację we wbudowanym terminalu",
     machineSetupComingSoon: "Konfiguracja maszyny już wkrótce.",
     machineSetupTaskWaitingForInput: "Oczekiwanie na dane wejściowe",
@@ -1979,7 +1978,7 @@ export const pl: TranslationStructure = {
     machineSetupRemoteRelaySwitchSubtitle: "Przełącz teraz i kontynuuj konfigurację z nowym Relay.",
     machineSetupRemoteRelaySwitchConfirmTitle: "Przełączyć Relay?",
     machineSetupRemoteRelaySwitchConfirmBody: ({ relayUrl }: { relayUrl: string }) =>
-      `Przełączyć Happier na ${relayUrl} i kontynuować konfigurację?`,
+      `Przełączyć Happiest na ${relayUrl} i kontynuować konfigurację?`,
     machineSetupRemotePromptTrustAction: "Zaufaj kluczowi hosta",
     machineSetupRemotePromptReplaceAction: "Zastąp zapisany klucz",
     machineSetupRemotePromptApproveAction: "Zatwierdź parowanie",
@@ -2071,13 +2070,13 @@ export const pl: TranslationStructure = {
     actionsSettingsAboutSubtitle:
       "Włączaj lub wyłączaj akcje globalnie, dla powierzchni (UI/głos/MCP) oraz dla miejsc umieszczenia (gdzie pojawiają się w interfejsie). Wyłączone akcje są blokowane w trybie fail-closed w czasie działania.",
     aboutFooter:
-      "Happier Coder to mobilny klient Codex i Claude Code. Domyślnie używa szyfrowania end-to-end, z przywracaniem konta na innych Twoich urządzeniach. Nie jest powiązany z Anthropic.",
+      "Happiest Coder to mobilny klient Codex i Claude Code. Domyślnie używa szyfrowania end-to-end, z przywracaniem konta na innych Twoich urządzeniach. Nie jest powiązany z Anthropic.",
     whatsNew: "Co nowego",
     whatsNewSubtitle: "Zobacz najnowsze aktualizacje i ulepszenia",
     reportIssue: "Zgłoś problem",
     privacyPolicy: "Polityka prywatności",
     termsOfService: "Warunki użytkowania",
-    rateUs: "Oceń Happier",
+    rateUs: "Oceń Happiest",
     rateUsSubtitle: "Jeśli podoba Ci się aplikacja, krótka ocena bardzo nam pomaga",
     eula: "EULA",
     supportUs: "Wesprzyj nas",
@@ -2404,7 +2403,7 @@ export const pl: TranslationStructure = {
       copyReportSubtitle: "Kopiuj zredagowany raport JSON dla wsparcia",
     },
     pasteDoctorJson: {
-      footer: "Wskazówka: uruchom `happier doctor --json` na komputerze i wklej tutaj.",
+      footer: "Wskazówka: uruchom `happiest doctor --json` na komputerze i wklej tutaj.",
       placeholder: '{ "capturedAt": "...", ... }',
       parse: "Zweryfikuj wklejony JSON",
       ok: "Wklejony doctor JSON wygląda poprawnie.",
@@ -2695,7 +2694,7 @@ export const pl: TranslationStructure = {
       invalidConfig: "Nieprawidłowa konfiguracja połączonej usługi.",
       connectWebGroupTitle: "Połącz (web)",
       connectWebDescription:
-        "Otwórz URL autoryzacji, dokończ OAuth w przeglądarce, a następnie skopiuj i wklej końcowy przekierowany URL z powrotem do Happier.",
+        "Otwórz URL autoryzacji, dokończ OAuth w przeglądarce, a następnie skopiuj i wklej końcowy przekierowany URL z powrotem do Happiest.",
       openAuthorizationUrl: "Otwórz URL autoryzacji",
       opensInNewTab: "Otwiera się w nowej karcie",
       preparing: "Przygotowywanie…",
@@ -2827,23 +2826,23 @@ export const pl: TranslationStructure = {
             `The daemon could not verify ${agentId} resume state because required resume inputs were missing. Reported reason: ${reason}. Start fresh under the selected account or continue with the current account.`,
         metadata_update_failed: "Sesja nie mogła zapisać nowego wyboru uwierzytelniania. Spróbuj ponownie po zakończeniu synchronizacji sesji.",
         no_eligible_group_member: "Żadne konto w tej puli nie kwalifikuje się obecnie jako zapasowe. Sprawdź połączone konta i w razie potrzeby połącz profil ponownie.",
-        recovery_retry_scheduled: "Happier zaplanował ponowienie odzyskiwania dostawcy. Możesz ponowić teraz albo sprawdzić połączone konta.",
-        recovery_dead_lettered: "Happier wyczerpał automatyczne ponowienia odzyskiwania dostawcy. Sprawdź połączone konta albo połącz ponownie wybrany profil.",
-        runtime_auth_recovery_superseded: "Ta próba przywracania dostawcy została zastąpiona nowszym stanem połączonej usługi. Happier nie będzie ponawiać nieaktualnego konta.",
+        recovery_retry_scheduled: "Happiest zaplanował ponowienie odzyskiwania dostawcy. Możesz ponowić teraz albo sprawdzić połączone konta.",
+        recovery_dead_lettered: "Happiest wyczerpał automatyczne ponowienia odzyskiwania dostawcy. Sprawdź połączone konta albo połącz ponownie wybrany profil.",
+        runtime_auth_recovery_superseded: "Ta próba przywracania dostawcy została zastąpiona nowszym stanem połączonej usługi. Happiest nie będzie ponawiać nieaktualnego konta.",
         runtime_auth_generation_stale: "Ta próba przywracania dostawcy należy do starszej generacji połączonej usługi. Poczekaj na najnowsze przełączenie albo sprawdź połączone konta.",
-        hot_apply_unavailable: "Ten dostawca nie może bezpiecznie przełączyć uwierzytelniania w działającej sesji. Happier poczeka na bezpieczny restart albo następną odpowiednią ścieżkę odzyskiwania.",
+        hot_apply_unavailable: "Ten dostawca nie może bezpiecznie przełączyć uwierzytelniania w działającej sesji. Happiest poczeka na bezpieczny restart albo następną odpowiednią ścieżkę odzyskiwania.",
         app_server_unavailable: "Serwer aplikacji dostawcy nie był dostępny, aby zweryfikować lub zastosować przełączenie uwierzytelniania. Spróbuj ponownie, gdy sesja będzie gotowa.",
         provider_account_adoption_mismatch: "Dostawca pozostał na innym koncie po przełączeniu. Sprawdź połączone konta albo ponów przełączenie.",
-        provider_account_identity_unverified: "Happier nie mógł potwierdzić tożsamości aktywnego konta dostawcy. Będzie unikać rozgałęziania na to samo konto, dopóki nie będzie silniejszego potwierdzenia.",
-        post_switch_verification_failed: "Happier nie mógł zweryfikować, czy dostawca przyjął wybrane konto. Sprawdź połączone konta albo ponów przełączenie.",
-        quota_snapshot_stale: "Najnowszy zrzut limitu jest zbyt stary, aby wykonać proaktywne przełączenie. Happier będzie używać reaktywnego odzyskiwania, aż pojawią się świeże dane limitu.",
-        quota_fetch_disabled: "Sprawdzanie limitów jest obecnie wyłączone dla tego dostawcy. Happier będzie nadal używać reaktywnego odzyskiwania.",
-        quota_fetch_backoff: "Sprawdzanie limitów jest tymczasowo wstrzymane po odpowiedzi dostawcy lub sieci. Happier ponowi odświeżanie limitów później.",
-        auth_surface_weakly_verified: "Happier zweryfikował, że wybrane pliki uwierzytelniania zostały przepisane, ale ten dostawca nie ujawnia dokładnej tożsamości aktywnego konta.",
-        connected_service_restart_requested: "Happier zażądał bezpiecznego ponownego uruchomienia sesji, aby zastosować wybrane połączone konto.",
+        provider_account_identity_unverified: "Happiest nie mógł potwierdzić tożsamości aktywnego konta dostawcy. Będzie unikać rozgałęziania na to samo konto, dopóki nie będzie silniejszego potwierdzenia.",
+        post_switch_verification_failed: "Happiest nie mógł zweryfikować, czy dostawca przyjął wybrane konto. Sprawdź połączone konta albo ponów przełączenie.",
+        quota_snapshot_stale: "Najnowszy zrzut limitu jest zbyt stary, aby wykonać proaktywne przełączenie. Happiest będzie używać reaktywnego odzyskiwania, aż pojawią się świeże dane limitu.",
+        quota_fetch_disabled: "Sprawdzanie limitów jest obecnie wyłączone dla tego dostawcy. Happiest będzie nadal używać reaktywnego odzyskiwania.",
+        quota_fetch_backoff: "Sprawdzanie limitów jest tymczasowo wstrzymane po odpowiedzi dostawcy lub sieci. Happiest ponowi odświeżanie limitów później.",
+        auth_surface_weakly_verified: "Happiest zweryfikował, że wybrane pliki uwierzytelniania zostały przepisane, ale ten dostawca nie ujawnia dokładnej tożsamości aktywnego konta.",
+        connected_service_restart_requested: "Happiest zażądał bezpiecznego ponownego uruchomienia sesji, aby zastosować wybrane połączone konto.",
         connected_service_credential_reconnect_required: "Wybrane połączone konto musi zostać połączone ponownie, zanim będzie można wznowić tę sesję. Połącz profil ponownie, a potem spróbuj jeszcze raz.",
         claude_subscription_missing_claude_code_scope: "Ten profil Claude został połączony przed nadaniem zakresów Claude Code. Połącz go ponownie, a potem ponów sesję lub przełączenie puli.",
-        claude_subscription_native_auth_materialization_failed: "Happier nie mógł utworzyć natywnego pliku poświadczeń Claude Code dla tego profilu. Połącz profil ponownie albo wybierz innego członka puli.",
+        claude_subscription_native_auth_materialization_failed: "Happiest nie mógł utworzyć natywnego pliku poświadczeń Claude Code dla tego profilu. Połącz profil ponownie albo wybierz innego członka puli.",
         claude_subscription_setup_token_not_supported_for_unified: "Tryb Claude Unified musi uruchamiać CLI Claude z natywnymi poświadczeniami OAuth. Połącz ten profil ponownie przez OAuth zamiast tokenu konfiguracyjnego.",
       },
       actions: {
@@ -2896,7 +2895,7 @@ export const pl: TranslationStructure = {
       connectAccessTokenTitle: "Połącz token dostępu",
       connectAccessTokenSubtitle: "Wklej osobisty token dostępu GitHub",
       openGithubTokenTemplateTitle: "Utwórz token GitHub",
-      openGithubTokenTemplateSubtitle: "Otwórz GitHub z wypełnionymi uprawnieniami potrzebnymi Happier",
+      openGithubTokenTemplateSubtitle: "Otwórz GitHub z wypełnionymi uprawnieniami potrzebnymi Happiest",
       disconnectConfirmBody: ({ service, profileId }: { service: string; profileId: string }) =>
         `Odłączyć ${service} (${profileId})?`,
       disconnectGroupCleanupConfirmBody: ({ service, profileId, groups }: { service: string; profileId: string; groups: string }) =>
@@ -3062,13 +3061,13 @@ export const pl: TranslationStructure = {
         softSwitchThresholdTitle: "Próg miękkiego przełączenia",
         softSwitchThresholdSubtitle: ({ percent }: { percent: string }) => `Przełącz poniżej ${percent}% pozostałego limitu, gdy ta pula ma innego członka ze świeższym użytecznym limitem.`,
         softSwitchThresholdPromptTitle: "Próg miękkiego przełączenia",
-        softSwitchThresholdPromptBody: "Wpisz pozostały procent, przy którym Happier powinien preferować bezpieczniejszego członka w tej puli wielu kont. Użyj 0, aby wyłączyć przełączanie zapobiegawcze.",
+        softSwitchThresholdPromptBody: "Wpisz pozostały procent, przy którym Happiest powinien preferować bezpieczniejszego członka w tej puli wielu kont. Użyj 0, aby wyłączyć przełączanie zapobiegawcze.",
         invalidSoftSwitchThresholdTitle: "Nieprawidłowy próg",
         invalidSoftSwitchThresholdBody: "Wpisz liczbę od 0 do 100.",
         staleProbeTitle: "Sprawdzaj nieświeży limit po",
         staleProbeSubtitle: ({ minutes }: { minutes: string }) => `Sprawdź ponownie, gdy dane limitu są starsze niż ${minutes} min.`,
         staleProbePromptTitle: "Sprawdzaj nieświeży limit po",
-        staleProbePromptBody: "Wpisz, przez ile minut dane limitu mogą być ponownie używane, zanim Happier sprawdzi je ponownie.",
+        staleProbePromptBody: "Wpisz, przez ile minut dane limitu mogą być ponownie używane, zanim Happiest sprawdzi je ponownie.",
         invalidStaleProbeTitle: "Nieprawidłowy interwał sprawdzania",
         invalidStaleProbeBody: "Wpisz co najmniej 1 minutę.",
         switchBudgetTitle: "Limity automatycznego przełączania",
@@ -3201,7 +3200,7 @@ export const pl: TranslationStructure = {
       groupUnknownSubtitle: "Gotowość nadal się synchronizuje",
       groupUnsupportedSubtitle: "Ten runtime nie może przełączać pul kont",
       connectedServicesTitle: "Użyj połączonych usług",
-      connectedServicesSubtitle: "Pobierz i zmaterializuj z chmury Happier",
+      connectedServicesSubtitle: "Pobierz i zmaterializuj z serwera Happiest",
       notConnectedTitle: "Brak połączonych usług",
       notConnectedSubtitle: "Dotknij, aby otworzyć ustawienia",
       profileLabel: "Profil",
@@ -3422,7 +3421,7 @@ export const pl: TranslationStructure = {
               "Najlepsze renderowanie diffów na web/desktop. Używa pipeline z workerem i bezpiecznie przełącza się na fallback, gdy jest niedostępne.",
           },
           happier: {
-            title: "Renderowanie diff: Happier",
+            title: "Renderowanie diff: Happiest",
             subtitle:
               "Renderer zapasowy dla kompatybilności i rozwiązywania problemów.",
           },
@@ -3498,20 +3497,20 @@ export const pl: TranslationStructure = {
 
   settingsDesktop: {
     title: 'Pulpit',
-    footer: 'Określa, jak Happier działa na tym komputerze.',
+    footer: 'Określa, jak Happiest działa na tym komputerze.',
     startOnLoginTitle: 'Uruchamiaj przy logowaniu',
-    startOnLoginSubtitle: 'Uruchamiaj Happier automatycznie po zalogowaniu się na tym komputerze.',
+    startOnLoginSubtitle: 'Uruchamiaj Happiest automatycznie po zalogowaniu się na tym komputerze.',
     backgroundServiceTitle: 'Pozostań dostępny w tle',
-    backgroundServiceSubtitle: 'Ten komputer odpowiada dalej po zamknięciu Happier. Po wyłączeniu telefon i przeglądarka nie dosięgną tego komputera, dopóki nie otworzysz aplikacji ponownie.',
-    backgroundServiceUnknown: 'Wiersz poleceń Happier na tym komputerze nie zgłasza, czy usługa w tle uruchamia się przy logowaniu.',
+    backgroundServiceSubtitle: 'Ten komputer odpowiada dalej po zamknięciu Happiest. Po wyłączeniu telefon i przeglądarka nie dosięgną tego komputera, dopóki nie otworzysz aplikacji ponownie.',
+    backgroundServiceUnknown: 'Wiersz poleceń Happiest na tym komputerze nie zgłasza, czy usługa w tle uruchamia się przy logowaniu.',
     backgroundServiceNotSetUp: 'Dostępne po skonfigurowaniu tego komputera.',
     backgroundServiceChangeFailed: 'Nie udało się wprowadzić zmiany. Spróbuj ponownie.',
-    trayOpen: 'Otwórz Happier',
-    trayQuit: 'Zakończ Happier',
+    trayOpen: 'Otwórz Happiest',
+    trayQuit: 'Zakończ Happiest',
     closeStopTitle: 'Sesje agenta wciąż działają',
-    closeStopBody: 'Zamknięcie Happier zatrzymuje usługę w tle na tym komputerze i kończy działające tu sesje.',
+    closeStopBody: 'Zamknięcie Happiest zatrzymuje usługę w tle na tym komputerze i kończy działające tu sesje.',
     closeStopUnknownTitle: 'Zatrzymać usługę w tle?',
-    closeStopUnknownBody: 'Happier nie widzi, które sesje działają na tym komputerze. Zamknięcie zatrzyma usługę w tle i zakończy te, które działają.',
+    closeStopUnknownBody: 'Happiest nie widzi, które sesje działają na tym komputerze. Zamknięcie zatrzyma usługę w tle i zakończy te, które działają.',
     closeStopConfirm: 'Zatrzymaj mimo to',
     closeStopKeep: 'Zostaw uruchomioną',
   },
@@ -3533,7 +3532,7 @@ export const pl: TranslationStructure = {
     deviceOverrideTitle: 'Używaj na tym urządzeniu',
     deviceOverrideSubtitle: 'Lokalnie nadpisz ustawienie zwierzaka z konta.',
     sourceTitle: 'Źródło zwierzaka',
-    builtInSubtitle: 'Wbudowany w Happier.',
+    builtInSubtitle: 'Wbudowany w Happiest.',
     builtInBlinkSubtitle: 'Zamienia sygnały sesji w spokojne małe kontrolki statusu.',
     builtInFurySubtitle: 'Testuje trudne przepływy, zanim trafią na produkcję.',
     builtInMiloSubtitle: 'Pilnuje porządku w UI i drzemie na nieudanych testach.',
@@ -3542,7 +3541,7 @@ export const pl: TranslationStructure = {
     localLibraryTitle: 'To urządzenie',
     localLibraryFooter: 'Lokalne zwierzaki pozostają na tym urządzeniu, chyba że zaimportujesz je na konto.',
     helpDocsTitle: 'Pomoc zwierzaków',
-    helpDocsSubtitle: 'Otwórz dokumentację Happier dotyczącą konfiguracji i rozwiązywania problemów.',
+    helpDocsSubtitle: 'Otwórz dokumentację Happiest dotyczącą konfiguracji i rozwiązywania problemów.',
     detectCodexPetsTitle: 'Wykrywaj zwierzaki Codex',
     detectCodexPetsSubtitle: 'Szukaj zgodnych zwierzaków w lokalnych Codex homes.',
     detectedCodexPetsTileSubtitle: 'Znaleziony w Codex i gotowy do dołączenia do tego urządzenia.',
@@ -3551,7 +3550,7 @@ export const pl: TranslationStructure = {
     detectedCodexPetsErrorTitle: 'Nie udało się wykryć zwierzaków Codex',
     detectedCodexPetsErrorSubtitle: 'Sprawdź, czy daemon jest połączony, i spróbuj ponownie.',
     detectedCodexPetsNoTargetTitle: 'Brak dostępnego daemona',
-    detectedCodexPetsNoTargetSubtitle: 'Uruchom Happier na tym komputerze, a potem ponownie wykryj zwierzaki Codex.',
+    detectedCodexPetsNoTargetSubtitle: 'Uruchom Happiest na tym komputerze, a potem ponownie wykryj zwierzaki Codex.',
     detectedCodexPetsDaemonMismatchTitle: 'Zaktualizuj daemon, aby wykrywać zwierzaki',
     detectedCodexPetsDaemonMismatchSubtitle: 'Ten daemon nie udostępnia jeszcze wykrywania zwierzaków. Odśwież stack i spróbuj ponownie.',
     useOnThisDeviceTitle: 'Używaj na tym urządzeniu',
@@ -3654,7 +3653,7 @@ export const pl: TranslationStructure = {
       footer: "Kontroluje powiadomienia o przełączaniu kont i odzyskiwaniu limitu.",
       accountSwitch: {
         title: "Przełączenia kont",
-        subtitle: "Powiadamiaj, gdy Happier automatycznie przełączy dostawcę na inne połączone konto",
+        subtitle: "Powiadamiaj, gdy Happiest automatycznie przełączy dostawcę na inne połączone konto",
       },
       quotaBlocked: {
         title: "Limit zablokowany",
@@ -3667,7 +3666,7 @@ export const pl: TranslationStructure = {
     },
     pushPriming: {
         title: 'Włączyć powiadomienia?',
-        body: 'Happier może informować, gdy agent zakończy pracę, potrzebuje decyzji o uprawnieniach lub czeka na Ciebie. Możesz to zmienić w każdej chwili w Ustawieniach.',
+        body: 'Happiest może informować, gdy agent zakończy pracę, potrzebuje decyzji o uprawnieniach lub czeka na Ciebie. Możesz to zmienić w każdej chwili w Ustawieniach.',
         accept: 'Włącz',
         decline: 'Nie teraz',
         blockedTitle: 'Powiadomienia są zablokowane',
@@ -3927,7 +3926,7 @@ export const pl: TranslationStructure = {
       cliSourcePreference: {
         title: "Preferencja źródła CLI",
         subtitle:
-          "Wybierz, czy Happier ma preferować systemowe CLI czy zarządzaną instalację, gdy oba są dostępne.",
+          "Wybierz, czy Happiest ma preferować systemowe CLI czy zarządzaną instalację, gdy oba są dostępne.",
         options: {
           systemFirst: {
             title: "Najpierw instalacja systemowa",
@@ -3935,7 +3934,7 @@ export const pl: TranslationStructure = {
           },
           managedFirst: {
             title: "Najpierw instalacja zarządzana",
-            subtitle: "Preferuj CLI zainstalowane przez Happier dla tego dostawcy.",
+            subtitle: "Preferuj CLI zainstalowane przez Happiest dla tego dostawcy.",
           },
         },
       },
@@ -4022,15 +4021,15 @@ export const pl: TranslationStructure = {
                 sections: {
                     claudeModelDiscovery: {
                         title: "Wykrywanie modeli",
-                        footer: "Określa, czy Happier pyta Anthropic o modele dostępne dla wybranego konta Claude."
+                        footer: "Określa, czy Happiest pyta Anthropic o modele dostępne dla wybranego konta Claude."
                     },
                     claudeUnifiedTerminal: {
                         title: "Ujednolicony runtime terminala",
-                        footer: "Po włączeniu Happier wysyła prompty do tej samej sesji terminala Claude Code zamiast uruchamiać osobny runner Agent SDK."
+                        footer: "Po włączeniu Happiest wysyła prompty do tej samej sesji terminala Claude Code zamiast uruchamiać osobny runner Agent SDK."
                     },
                     claudeCodeExperiments: {
                         title: "Eksperymenty Claude Code",
-                        footer: "Te ustawienia dotyczą zarówno lokalnych sesji Claude (terminal), jak i zdalnych sesji Claude (Agent SDK) uruchamianych przez Happier."
+                        footer: "Te ustawienia dotyczą zarówno lokalnych sesji Claude (terminal), jak i zdalnych sesji Claude (Agent SDK) uruchamianych przez Happiest."
                     },
                     claudeRemoteSdk: {
                         title: "Klasyczny runtime (fallback Agent SDK)",
@@ -4040,7 +4039,7 @@ export const pl: TranslationStructure = {
                 fields: {
                     claudeDynamicModelProbeEnabled: {
                         title: "Wykrywaj dostępne modele",
-                        subtitle: "Pozwala Happier pytać Anthropic przy użyciu wybranego konta Claude. Wyłącz, aby używać wbudowanego katalogu Happier bez odczytywania natywnych poświadczeń Claude Code."
+                        subtitle: "Pozwala Happiest pytać Anthropic przy użyciu wybranego konta Claude. Wyłącz, aby używać wbudowanego katalogu Happiest bez odczytywania natywnych poświadczeń Claude Code."
                     },
                     claudeUnifiedTerminalEnabled: {
                         title: "Użyj ujednoliconego runtime terminala",
@@ -4048,7 +4047,7 @@ export const pl: TranslationStructure = {
                     },
                     claudeUnifiedTerminalHost: {
                         title: "Host terminala",
-                        subtitle: "Wybierz, jak Happier hostuje współdzieloną sesję terminala Claude.",
+                        subtitle: "Wybierz, jak Happiest hostuje współdzieloną sesję terminala Claude.",
                         options: {
                             auto: {
                                 title: "Automatycznie",
@@ -4060,13 +4059,13 @@ export const pl: TranslationStructure = {
                             },
                             zellij: {
                                 title: "zellij",
-                                subtitle: "Użyj hosta zellij dołączonego do Happier."
+                                subtitle: "Użyj hosta zellij dołączonego do Happiest."
                             }
                         }
                     },
                     claudeUnifiedTerminalResumeChoice: {
                         title: "Wznawianie duzych sesji",
-                        subtitle: "Wybierz, jak Happier odpowiada, gdy Claude pyta, jak wznowic duza sesje.",
+                        subtitle: "Wybierz, jak Happiest odpowiada, gdy Claude pyta, jak wznowic duza sesje.",
                         options: {
                             ask_every_time: {
                                 title: "Pytaj za kazdym razem",
@@ -4084,29 +4083,29 @@ export const pl: TranslationStructure = {
                     },
                     claudeUnifiedTerminalWorkspaceTrust: {
                         title: "Zaufanie do obszaru roboczego",
-                        subtitle: "Wybierz, jak Happier ma odpowiadać, gdy Claude pyta, czy zaufać obszarowi roboczemu.",
+                        subtitle: "Wybierz, jak Happiest ma odpowiadać, gdy Claude pyta, czy zaufać obszarowi roboczemu.",
                         options: {
                             ask_every_time: {
                                 title: "Pytaj za każdym razem",
                                 subtitle: "Pokaż w sesji dokładne pytanie o zaufanie do obszaru roboczego."
                             },
                             always_trust_happier_workspaces: {
-                                title: "Zawsze ufaj obszarom roboczym Happier",
-                                subtitle: "Ufaj bieżącemu ponownie przechwyconemu monitowi Claude dla obszarów roboczych otwartych przez Happier."
+                                title: "Zawsze ufaj obszarom roboczym Happiest",
+                                subtitle: "Ufaj bieżącemu ponownie przechwyconemu monitowi Claude dla obszarów roboczych otwartych przez Happiest."
                             },
                             always_reject_happier_workspaces: {
-                                title: "Zawsze odrzucaj obszary robocze Happier",
-                                subtitle: "Odrzucaj bieżący ponownie przechwycony monit Claude dla obszarów roboczych otwartych przez Happier."
+                                title: "Zawsze odrzucaj obszary robocze Happiest",
+                                subtitle: "Odrzucaj bieżący ponownie przechwycony monit Claude dla obszarów roboczych otwartych przez Happiest."
                             }
                         }
                     },
                     claudeCodeExperimentalAgentTeamsEnabled: {
                         title: "Wymuś włączenie Agent Teams",
-                        subtitle: "Włącza eksperymentalne Agent Teams w Claude Code (rój agentów) we wszystkich sesjach Claude uruchamianych przez Happier."
+                        subtitle: "Włącza eksperymentalne Agent Teams w Claude Code (rój agentów) we wszystkich sesjach Claude uruchamianych przez Happiest."
                     },
                     claudeRemoteAgentSdkEnabled: {
                         title: "Użyj fallbacku Agent SDK",
-                        subtitle: "Gdy ujednolicony runtime terminala jest wyłączony, kieruj sesje Claude kontrolowane przez Happier przez Agent SDK."
+                        subtitle: "Gdy ujednolicony runtime terminala jest wyłączony, kieruj sesje Claude kontrolowane przez Happiest przez Agent SDK."
                     },
                     claudeRemoteDebugEnabled: {
                         title: "Tryb debug",
@@ -4162,15 +4161,15 @@ export const pl: TranslationStructure = {
                     },
                     claudeLocalPermissionBridgeEnabled: {
                         title: "Eksperymentalne: lokalny most uprawnień",
-                        subtitle: "Przekazuje prośby o uprawnienia z lokalnego trybu Claude do Happier, aby można było je zatwierdzać lub odrzucać z interfejsu."
+                        subtitle: "Przekazuje prośby o uprawnienia z lokalnego trybu Claude do Happiest, aby można było je zatwierdzać lub odrzucać z interfejsu."
                     },
                     claudeLocalPermissionBridgeWaitIndefinitely: {
                         title: "Trzymaj żądania otwarte do odpowiedzi",
-                        subtitle: "Po włączeniu Happier utrzymuje lokalne prośby o uprawnienia Claude w oczekiwaniu, aż zatwierdzisz lub odrzucisz je w interfejsie."
+                        subtitle: "Po włączeniu Happiest utrzymuje lokalne prośby o uprawnienia Claude w oczekiwaniu, aż zatwierdzisz lub odrzucisz je w interfejsie."
                     },
                     claudeLocalPermissionBridgeTimeoutSeconds: {
                         title: "Opcjonalny limit czasu uprawnień (sekundy)",
-                        subtitle: "Używane tylko wtedy, gdy nieograniczone oczekiwanie jest wyłączone. Po tym czasie Happier wraca do terminalowego promptu Claude."
+                        subtitle: "Używane tylko wtedy, gdy nieograniczone oczekiwanie jest wyłączone. Po tym czasie Happiest wraca do terminalowego promptu Claude."
                     },
                     claudeRemoteEnableFileCheckpointing: {
                         title: "Punkty kontrolne plików + /rewind",
@@ -4199,7 +4198,7 @@ export const pl: TranslationStructure = {
                 sections: {
                     cliGeneration: {
                         title: "Wersja OpenCode",
-                        footer: "Tryb automatyczny preferuje opencode, przechodzi na opencode2 i wykrywa API serwera po uruchomieniu. Tryb stabilny zawsze wybiera opencode, ale nadal wykrywa V1 lub V2. V2 preferuje opencode2, a w przeciwnym razie używa opencode z wybranym V2. Narzędzia MCP Happier działają z V2 w trybie ACP; jego API serwera nie obsługuje jeszcze dynamicznej rejestracji MCP."
+                        footer: "Tryb automatyczny preferuje opencode, przechodzi na opencode2 i wykrywa API serwera po uruchomieniu. Tryb stabilny zawsze wybiera opencode, ale nadal wykrywa V1 lub V2. V2 preferuje opencode2, a w przeciwnym razie używa opencode z wybranym V2. Narzędzia MCP Happiest działają z V2 w trybie ACP; jego API serwera nie obsługuje jeszcze dynamicznej rejestracji MCP."
                     },
                     backendMode: {
                         title: "Tryb backendu",
@@ -4207,13 +4206,13 @@ export const pl: TranslationStructure = {
                     },
                     server: {
                         title: "Połączenie z serwerem",
-                        footer: "Pozostaw puste, aby użyć zarządzanego przez Happier cyklu życia serwera OpenCode. Ustaw bezwzględny adres URL http(s), aby połączyć się z istniejącym serwerem OpenCode."
+                        footer: "Pozostaw puste, aby użyć zarządzanego przez Happiest cyklu życia serwera OpenCode. Ustaw bezwzględny adres URL http(s), aby połączyć się z istniejącym serwerem OpenCode."
                     }
                 },
                 fields: {
                     opencodeCliGeneration: {
                         title: "Generacja CLI",
-                        subtitle: "Wybierz zainstalowane polecenie OpenCode uruchamiane przez Happier.",
+                        subtitle: "Wybierz zainstalowane polecenie OpenCode uruchamiane przez Happiest.",
                         options: {
                             auto: { title: "Automatycznie (zalecane)", subtitle: "Preferuje opencode i przechodzi na opencode2." },
                             stable: { title: "Stabilne", subtitle: "Zawsze uruchamia opencode i wykrywa API po uruchomieniu." },
@@ -4251,7 +4250,7 @@ export const pl: TranslationStructure = {
                 sections: {
                     cli: {
                         title: "CLI Cursor",
-                        footer: "Użyj konkretnego binarium Cursor, gdy automatyczne wykrywanie nie wystarcza. Happier preferuje cursor-agent i może użyć agent jako fallbacku, gdy jest włączony."
+                        footer: "Użyj konkretnego binarium Cursor, gdy automatyczne wykrywanie nie wystarcza. Happiest preferuje cursor-agent i może użyć agent jako fallbacku, gdy jest włączony."
                     }
                 },
                 fields: {
@@ -4599,14 +4598,14 @@ export const pl: TranslationStructure = {
       expConnectedServicesQuotasSubtitle:
         "Pokaż odznaki limitów i wskaźniki użycia dla połączonych usług",
       expChannelBridges: "Mosty kanałów",
-      expChannelBridgesSubtitle: "Połącz Telegram i inne kanały czatu z sesjami Happier (eksperymentalne)",
+      expChannelBridgesSubtitle: "Połącz Telegram i inne kanały czatu z sesjami Happiest (eksperymentalne)",
       expMemorySearch: "Wyszukiwanie pamięci",
       expMemorySearchSubtitle:
         "Włącz ekrany i ustawienia lokalnego wyszukiwania pamięci",
     expSessionsDirect: "Sesje bezpośrednie",
     expSessionsDirectSubtitle: "Wyświetlaj i otwieraj na pasku bocznym bezpośrednie sesje dostawcy",
     expSessionsFolders: "Foldery sesji",
-    expSessionsFoldersSubtitle: "Porządkuj sesje Happier z paska bocznego w folderach obszaru roboczego",
+    expSessionsFoldersSubtitle: "Porządkuj sesje Happiest z paska bocznego w folderach obszaru roboczego",
     expPetsCompanion: "Zwierzaki",
     expPetsCompanionSubtitle: "Włącz powierzchnie towarzysza Blink i lokalny wybór zwierzaków",
     expFriends: "Znajomi",
@@ -4653,7 +4652,7 @@ export const pl: TranslationStructure = {
       "Porządkuj nieaktywne czaty według projektu",
       environmentBadge: "Odznaka środowiska",
       environmentBadgeSubtitle:
-        "Pokaż małą odznakę obok tytułu Happier wskazującą bieżące środowisko aplikacji",
+        "Pokaż małą odznakę obok tytułu Happiest wskazującą bieżące środowisko aplikacji",
     enhancedSessionWizard: "Ulepszony kreator sesji",
     enhancedSessionWizardEnabled: "Aktywny launcher z profilem",
     enhancedSessionWizardDisabled: "Używanie standardowego launchera sesji",
@@ -4686,7 +4685,7 @@ export const pl: TranslationStructure = {
       failedToForkSession: "Nie udało się utworzyć gałęzi sesji",
       daemonUnavailableTitle: "Demon niedostępny",
       daemonUnavailableBody:
-        "Happier nie może połączyć się z demonem na tej maszynie. Może być offline, w trakcie uruchamiania lub odłączony od serwera.",
+        "Happiest nie może połączyć się z demonem na tej maszynie. Może być offline, w trakcie uruchamiania lub odłączony od serwera.",
       tryAgain: "Spróbuj ponownie",
       contactSupport:
         "Skontaktuj się z pomocą techniczną, jeśli problem będzie się powtarzał",
@@ -4705,7 +4704,7 @@ export const pl: TranslationStructure = {
     oauthStateMismatch:
       "Weryfikacja bezpieczeństwa nie powiodła się. Spróbuj ponownie",
     providerAlreadyLinked: ({ provider }: { provider: string }) =>
-      `${provider} jest już połączony z istniejącym kontem Happier. Aby zalogować się na tym urządzeniu, połącz je z urządzenia, na którym jesteś już zalogowany.`,
+      `${provider} jest już połączony z istniejącym kontem Happiest. Aby zalogować się na tym urządzeniu, połącz je z urządzenia, na którym jesteś już zalogowany.`,
     tokenExchangeFailed: "Nie udało się wymienić kodu autoryzacji",
     oauthAuthorizationDenied: "Autoryzacja została odrzucona",
     webViewLoadFailed: "Nie udało się załadować strony uwierzytelniania",
@@ -4771,7 +4770,7 @@ export const pl: TranslationStructure = {
 
   deps: {
     installNotSupported:
-      "Zaktualizuj Happier CLI, aby zainstalować tę zależność.",
+      "Zaktualizuj Happiest CLI, aby zainstalować tę zależność.",
     installFailed: "Instalacja nie powiodła się",
     installed: "Zainstalowano",
     installLog: ({ path }: { path: string }) => `Log instalacji: ${path}`,
@@ -4899,7 +4898,7 @@ export const pl: TranslationStructure = {
 	      "Wybierz sesję prostą albo sesję powiązaną z worktree Git.",
 	    searchPathsPlaceholder: "Szukaj ścieżek...",
 	    noMachinesFound:
-	      "Nie znaleziono maszyn. Najpierw uruchom sesję Happier na swoim komputerze.",
+	      "Nie znaleziono maszyn. Najpierw uruchom sesję Happiest na swoim komputerze.",
 	    allMachinesOffline: "Wszystkie maszyny są poza siecią",
 	    machineOfflineInlineTitle: "Maszyna jest offline",
 	    machineOfflineInlineBody:
@@ -4926,12 +4925,12 @@ export const pl: TranslationStructure = {
       "Brak połączenia z serwerem. Sprawdź połączenie internetowe.",
     daemonRpcUnavailableTitle: "Demon niedostępny",
     daemonRpcUnavailableBody:
-      "Happier nie może połączyć się z demonem na tej maszynie. Może być offline, w trakcie uruchamiania lub odłączony od serwera.",
+      "Happiest nie może połączyć się z demonem na tej maszynie. Może być offline, w trakcie uruchamiania lub odłączony od serwera.",
     launchStillPendingTitle: "Uruchamianie nadal trwa",
     createdWithSetupIssueTitle: "Sesja utworzona",
     createdWithSetupIssueBody: "Sesja została utworzona, ale konfiguracja początkowa nie została ukończona. Możesz spróbować ponownie na tym ekranie bez tworzenia kolejnej sesji.",
     launchStillPendingBody:
-      "Happier nie potwierdził jeszcze nowej sesji. Żądanie uruchomienia jest nadal zapisane. Spróbuj ponownie, aby kontynuować to samo uruchomienie bez tworzenia duplikatu sesji.",
+      "Happiest nie potwierdził jeszcze nowej sesji. Żądanie uruchomienia jest nadal zapisane. Spróbuj ponownie, aby kontynuować to samo uruchomienie bez tworzenia duplikatu sesji.",
     connectedServiceSwitchUnavailable: {
       title: "Przełączenie niedostępne",
       body: ({ reason, agentId }: { reason: string; agentId: string }) =>
@@ -5068,7 +5067,7 @@ export const pl: TranslationStructure = {
       clearAndRemove: "Wyczyść",
       helpText: "ID sesji znajdziesz na ekranie informacji o sesji.",
       cannotApplyBody:
-        "Nie można teraz zastosować tego ID wznowienia. Happier uruchomi zamiast tego nową sesję.",
+        "Nie można teraz zastosować tego ID wznowienia. Happiest uruchomi zamiast tego nową sesję.",
     },
     codexResumeBanner: {
       title: "Serwer wznawiania Codex",
@@ -5129,7 +5128,7 @@ export const pl: TranslationStructure = {
       updateTitle: "Zaktualizować GitHub CLI?",
       reinstallTitle: "Zainstalować ponownie GitHub CLI?",
       description:
-        "Instaluje GitHub CLI, aby Happier mógł używać lokalnego uwierzytelnienia GitHub w przepływach pull request.",
+        "Instaluje GitHub CLI, aby Happiest mógł używać lokalnego uwierzytelnienia GitHub w przepływach pull request.",
     },
   },
 
@@ -5316,8 +5315,8 @@ export const pl: TranslationStructure = {
           empty: "Nic nie zostało przekazane. Nie było wcześniejszej rozmowy do odtworzenia.",
           unavailableOperation: "Zaktualizuj lub połącz ponownie CLI na tej maszynie, aby to odtworzyć.",
           notRebuildable: "Kontekst został tutaj przekazany, ale transkrypcja tej sesji już go nie zawiera, więc nie da się go odtworzyć.",
-          unavailableSource: "Happier nie mógł odczytać transkrypcji tej sesji, więc nie da się tego odtworzyć.",
-          unreachable: "Happier nie mógł połączyć się z maszyną hostującą tę sesję.",
+          unavailableSource: "Happiest nie mógł odczytać transkrypcji tej sesji, więc nie da się tego odtworzyć.",
+          unreachable: "Happiest nie mógł połączyć się z maszyną hostującą tę sesję.",
           retryAction: "Spróbuj ponownie",
           jumpAction: "Przejdź do ostatniej uwzględnionej wiadomości",
       },
@@ -5346,7 +5345,7 @@ export const pl: TranslationStructure = {
         badgeLabel: 'Zmiana Agenta',
         /** Delegates to the Session’s existing resume owner; never a second start path. */
         resumeAction: 'Wznów sesję',
-        unknown: 'Happier nie mógł potwierdzić, co się stało. Sprawdź tę sesję przed ponownym wysłaniem.',
+        unknown: 'Happiest nie mógł potwierdzić, co się stało. Sprawdź tę sesję przed ponownym wysłaniem.',
       },
     },
     sourceContext: {
@@ -5359,7 +5358,7 @@ export const pl: TranslationStructure = {
         removeAction: "Usuń",
         removeA11y: "Usuń rozmowę źródłową",
         keepAction: "Zostaw",
-        serverMismatch: "Ta rozmowa znajduje się na innym serwerze Happier. Wróć do niego albo usuń rozmowę źródłową, aby zacząć od nowa.",
+        serverMismatch: "Ta rozmowa znajduje się na innym serwerze Happiest. Wróć do niego albo usuń rozmowę źródłową, aby zacząć od nowa.",
     },
     forking: {
       dividerTitle: "Rozgałęziono z wcześniejszego kontekstu",
@@ -5379,7 +5378,7 @@ export const pl: TranslationStructure = {
           },
           replay: {
               title: "Gałąź przez Replay",
-              subtitle: "Happier odtwarza dotychczasową rozmowę jako kontekst nowej sesji.",
+              subtitle: "Happiest odtwarza dotychczasową rozmowę jako kontekst nowej sesji.",
           },
           configure: {
               title: "Skonfiguruj nową sesję",
@@ -5400,7 +5399,7 @@ export const pl: TranslationStructure = {
               openAction: "Otwórz gałąź",
           },
           unknown: {
-              title: "Happier nie potwierdził utworzenia gałęzi",
+              title: "Happiest nie potwierdził utworzenia gałęzi",
               body: "Żądanie zostało wysłane, więc gałąź może już istnieć. Sprawdź to zamiast tworzyć ją ponownie, bo druga próba może utworzyć duplikat.",
               checkAction: "Sprawdź gałąź",
               checking: "Szukanie gałęzi…",
@@ -5409,7 +5408,7 @@ export const pl: TranslationStructure = {
           },
           failure: {
               updateRequired: "Zaktualizuj lub połącz ponownie CLI na tej maszynie, aby rozgałęzić tę sesję.",
-              generic: "Happier nie mógł utworzyć gałęzi.",
+              generic: "Happiest nie mógł utworzyć gałęzi.",
           },
       },
 	    },
@@ -5437,13 +5436,13 @@ export const pl: TranslationStructure = {
 	    },
 	    staleRunner: {
 	      title: "Sesja nadal działa na starszej CLI",
-	      body: "Uruchom ponownie runner tej sesji, aby kontynuować na zaktualizowanej CLI daemona. Sesja Happier pozostaje ta sama.",
+	      body: "Uruchom ponownie runner tej sesji, aby kontynuować na zaktualizowanej CLI daemona. Sesja Happiest pozostaje ta sama.",
 	      busyBody: "Runner sesji jest zajęty. Spróbuj ponownie po zakończeniu bieżącej aktywności.",
-	      failureBody: "Happier nie mógł ponownie uruchomić tego runnera sesji. Spróbuj ponownie po odświeżeniu sesji.",
+	      failureBody: "Happiest nie mógł ponownie uruchomić tego runnera sesji. Spróbuj ponownie po odświeżeniu sesji.",
 	      identityChangedBody: "Runner sesji zmienił się podczas żądania restartu. Odśwież sesję i spróbuj ponownie.",
 	      ineligibleBody: "Ten runner sesji nie kwalifikuje się już do zaplanowanego restartu.",
 	      unsupportedBody: "Ten daemon nie udostępnia jeszcze operacji restartu runnera sesji.",
-	      versionUnknownBody: "Happier nie może jeszcze potwierdzić, której wersji CLI używa ten runner.",
+	      versionUnknownBody: "Happiest nie może jeszcze potwierdzić, której wersji CLI używa ten runner.",
 	      restartAction: "Uruchom runner ponownie",
 	      restartPendingAction: "Restartowanie...",
 	      statusBadge: "Starsza CLI",
@@ -5455,7 +5454,7 @@ export const pl: TranslationStructure = {
 	    mcpRestartRequired: {
 	        title: "Uruchom ponownie, aby zastosować zmiany MCP",
 	        body: "Serwery MCP są stosowane podczas uruchamiania sesji. Uruchom ponownie ten proces, aby użyć zaktualizowanego wyboru.",
-	        failureBody: "Happier nie zdołał ponownie uruchomić procesu. Twój wybór MCP został zapisany i zostanie zastosowany przy następnym uruchomieniu.",
+	        failureBody: "Happiest nie zdołał ponownie uruchomić procesu. Twój wybór MCP został zapisany i zostanie zastosowany przy następnym uruchomieniu.",
 	        restartAction: "Uruchom sesję ponownie",
 	        restartPendingAction: "Ponowne uruchamianie…",
 	        badgeLabel: "Zmiany MCP",
@@ -5467,9 +5466,9 @@ export const pl: TranslationStructure = {
 	    invalidLinkTitle: "Nieprawidłowy link do sesji",
 	    invalidLinkDescription: "Link do sesji jest brakujący lub nieprawidłowy. Sprawdź URL i spróbuj ponownie.",
 	    resumeSupportNoteChecking:
-	      "Uwaga: Happier wciąż sprawdza, czy ta maszyna może wznowić sesję dostawcy.",
+	      "Uwaga: Happiest wciąż sprawdza, czy ta maszyna może wznowić sesję dostawcy.",
 	    resumeSupportNoteUnverified:
-	      "Uwaga: Happier nie mógł zweryfikować obsługi wznawiania na tej maszynie.",
+	      "Uwaga: Happiest nie mógł zweryfikować obsługi wznawiania na tej maszynie.",
     resumeSupportDetails: {
       cliNotDetected: "Nie wykryto CLI na maszynie.",
       capabilityProbeFailed: "Nie udało się sprawdzić możliwości.",
@@ -5484,7 +5483,7 @@ export const pl: TranslationStructure = {
       `Ta sesja została zakończona i nie można jej wznowić, ponieważ ${provider} nie obsługuje przywracania kontekstu tutaj. Rozpocznij nową sesję, aby kontynuować.`,
     machineOfflineNoticeTitle: "Maszyna jest offline",
     machineOfflineNoticeBody: ({ machine }: { machine: string }) =>
-      `“${machine}” jest offline. Możesz teraz dodać wiadomość do kolejki; Happier będzie kontynuować, gdy maszyna wróci online.`,
+      `“${machine}” jest offline. Możesz teraz dodać wiadomość do kolejki; Happiest będzie kontynuować, gdy maszyna wróci online.`,
       machineOfflineCannotResume:
         "Maszyna jest offline. Przywróć ją online, aby wznowić tę sesję.",
         openRuns: "Otwórz uruchomienia sesji",
@@ -5814,15 +5813,15 @@ export const pl: TranslationStructure = {
         },
         discardConfirm: {
           title: "Odrzucić oczekującą wiadomość?",
-          body: "To zachowa odrzuconą kopię i powstrzyma Happier przed dostarczeniem tej oczekującej wiadomości.",
+          body: "To zachowa odrzuconą kopię i powstrzyma Happiest przed dostarczeniem tej oczekującej wiadomości.",
         },
         markHandledConfirm: {
           title: "Oznaczyć oczekującą wiadomość jako obsłużoną?",
-          body: "Użyj tego tylko wtedy, gdy dostawca już obsłużył wiadomość albo nie chcesz już, aby Happier ją dostarczył.",
+          body: "Użyj tego tylko wtedy, gdy dostawca już obsłużył wiadomość albo nie chcesz już, aby Happiest ją dostarczył.",
         },
         dismissDeliveryConfirm: {
           title: "Odrzucić niepewne dostarczenie?",
-          body: "Oryginalna wiadomość zostanie zarchiwizowana bez ponownego wysyłania. Jeśli dostawca później potwierdzi dostarczenie, Happier nadal może dodać oryginalną wiadomość do transkrypcji.",
+          body: "Oryginalna wiadomość zostanie zarchiwizowana bez ponownego wysyłania. Jeśli dostawca później potwierdzi dostarczenie, Happiest nadal może dodać oryginalną wiadomość do transkrypcji.",
         },
         sendAsNewConfirm: {
           title: "Wysłać tę wiadomość jako nową?",
@@ -5860,7 +5859,7 @@ export const pl: TranslationStructure = {
           retrySendFailed: 'Nie udało się ponownie wysłać wiadomości',
           markHandledFailed: "Nie udało się oznaczyć oczekującego dostarczenia jako obsłużonego",
           clearTerminalComposerFailed: "Nie udało się wyczyścić pola terminala",
-          clearTerminalComposerUnsupported: "Ta sesja nie obsługuje czyszczenia pola terminala z Happier.",
+          clearTerminalComposerUnsupported: "Ta sesja nie obsługuje czyszczenia pola terminala z Happiest.",
           clearTerminalComposerUnsafe: "Nie można teraz bezpiecznie wyczyścić pola terminala.",
         },
       },
@@ -6108,7 +6107,7 @@ export const pl: TranslationStructure = {
     // Used by Server Configuration screen (app/(app)/server.tsx)
     serverConfiguration: "Ustawienia Relay",
     enterServerUrl: "Proszę wprowadzić URL Relay",
-    notValidHappyServer: "To nie jest prawidłowy Relay Happier",
+    notValidHappyServer: "To nie jest prawidłowy Relay Happiest",
     changeServer: "Zmień Relay",
     continueWithServer: "Kontynuować z tym Relay?",
     resetToDefault: "Resetuj do domyślnego",
@@ -6258,7 +6257,7 @@ export const pl: TranslationStructure = {
   },
   sessionsList: {
     serverHeader: ({ server }: { server: string }) => `Serwer: ${server}`,
-    storagePersistedTab: "Happier",
+    storagePersistedTab: "Happiest",
     storageDirectTab: "Bezpośrednie",
     renameWorkspace: 'Zmień nazwę przestrzeni roboczej',
     renameWorkspacePromptTitle: 'Zmień nazwę przestrzeni roboczej',
@@ -6434,7 +6433,7 @@ export const pl: TranslationStructure = {
     continueInWindowsTerminalConfirmBody: "Proces w tle na komputerze zostanie zakończony, a sesja będzie kontynuowana w oknie Windows Terminal. Historia zostanie zachowana.",
     continueInWindowsTerminalConfirmBodyRunning: "Bieżąca odpowiedź zostanie przerwana. Proces w tle na komputerze zostanie zakończony, a sesja będzie kontynuowana w oknie Windows Terminal. Historia zostanie zachowana.",
     continueInWindowsTerminalConfirm: "Kontynuuj w terminalu",
-    stopSessionControlUnavailable: "Happier nie może połączyć się ze sterowaniem sesją. Upewnij się, że maszyna sesji i daemon są online, a następnie spróbuj ponownie.",
+    stopSessionControlUnavailable: "Happiest nie może połączyć się ze sterowaniem sesją. Upewnij się, że maszyna sesji i daemon są online, a następnie spróbuj ponownie.",
     archiveSession: "Zarchiwizuj sesję",
     archiveSessionConfirm: "Czy na pewno chcesz zarchiwizować tę sesję?",
     workspaceTitle: "Obszar roboczy",
@@ -6447,9 +6446,9 @@ export const pl: TranslationStructure = {
     createWorktreeSubtitle: "Uruchom nową sesję, która utworzy Git worktree w tym połączonym obszarze roboczym.",
     locationLabel: "Lokalizacja",
     checkoutLabel: "Wybrany checkout",
-    happySessionIdCopied: "ID sesji Happier skopiowane do schowka",
-    failedToCopySessionId: "Nie udało się skopiować ID sesji Happier",
-    happySessionId: "ID sesji Happier",
+    happySessionIdCopied: "ID sesji Happiest skopiowane do schowka",
+    failedToCopySessionId: "Nie udało się skopiować ID sesji Happiest",
+    happySessionId: "ID sesji Happiest",
     claudeCodeSessionId: "ID sesji Claude Code",
     claudeCodeSessionIdCopied: "ID sesji Claude Code skopiowane do schowka",
     aiProfile: "Profil AI",
@@ -6518,8 +6517,6 @@ export const pl: TranslationStructure = {
         unpinSession: "Odepnij sesję",
         pinLimitExceeded: ({ count }: { count: number }) => `Możesz przypiąć maksymalnie ${count.toLocaleString()} sesji. Odepnij inną sesję i spróbuj ponownie.`,
     copyResumeCommand: "Kopiuj komendę wznowienia",
-    resumeCommand: ({ sessionId }: { sessionId: string }) =>
-      `happier resume ${sessionId}`,
     viewMachine: "Zobacz maszynę",
     viewMachineSubtitle: "Zobacz szczegóły maszyny i sesje",
     killSessionSubtitle: "Natychmiastowo zakończ sesję",
@@ -6536,7 +6533,7 @@ export const pl: TranslationStructure = {
     path: "Ścieżka",
     operatingSystem: "System operacyjny",
     processId: "ID procesu",
-    happyHome: "Katalog domowy Happier",
+    happyHome: "Katalog domowy Happiest",
     attachFromTerminal: "Dołącz z terminala",
     tmuxTarget: "Cel tmux",
     tmuxFallback: "Fallback tmux",
@@ -6565,7 +6562,7 @@ export const pl: TranslationStructure = {
     }) =>
       `Zainstalowana wersja ${currentVersion}. Zaktualizuj do ${requiredVersion} lub nowszej`,
     updateCliInstructions:
-      "Proszę uruchomić happier self update",
+      "Proszę uruchomić happiest self update",
     deleteSession: "Usuń sesję",
     deleteSessionSubtitle: "Trwale usuń tę sesję",
     deleteSessionConfirm: "Usunąć sesję na stałe?",
@@ -6593,11 +6590,10 @@ export const pl: TranslationStructure = {
     emptyMainScreen: {
       // Used by SessionGettingStartedGuidance component
       readyToCode: "Gotowy do kodowania?",
-      installCli: "Zainstaluj Happier CLI",
+      installCli: "Zainstaluj Happiest CLI",
       runIt: "Uruchom je",
       scanQrCode: "Zeskanuj kod QR",
       openCamera: "Otwórz kamerę",
-      runCommand: "$ happier",
     },
     emptyMessages: {
       noMessagesYet: "Brak wiadomości",
@@ -6876,7 +6872,7 @@ export const pl: TranslationStructure = {
   },
 
   sidebar: {
-    sessionsTitle: "Happier",
+    sessionsTitle: "Happiest",
   },
 
   toolView: {
@@ -7010,7 +7006,7 @@ export const pl: TranslationStructure = {
     acpHistoryImport: {
       title: "Zaimportować historię sesji?",
       defaultNote:
-        "Ta historia sesji różni się od tego, co jest już w Happier. Import może spowodować duplikaty.",
+        "Ta historia sesji różni się od tego, co jest już w Happiest. Import może spowodować duplikaty.",
       counts: {
         local: ({ count }: { count: number }) => `Lokalnie: ${count}`,
         remote: ({ count }: { count: number }) => `Zdalnie: ${count}`,
@@ -7099,7 +7095,7 @@ export const pl: TranslationStructure = {
     askUserQuestion: {
         submit: "Wyślij odpowiedź",
         submissionFailures: {
-            update: "Zaktualizuj Happier CLI i spróbuj ponownie.",
+            update: "Zaktualizuj Happiest CLI i spróbuj ponownie.",
             reconnect: "Połącz ponownie tę sesję i spróbuj jeszcze raz.",
             retry: "Nie udało się przyjąć odpowiedzi. Sprawdź ją i spróbuj ponownie.",
         },
@@ -7281,7 +7277,7 @@ export const pl: TranslationStructure = {
       },
       indexLock: {
         title: "Usunąć nieaktualną blokadę Git?",
-        body: "Git zgłosił blokadę indeksu. Jeśli nie działa inna komenda Git, Happier może usunąć nieaktualną blokadę i spróbować ponownie.",
+        body: "Git zgłosił blokadę indeksu. Jeśli nie działa inna komenda Git, Happiest może usunąć nieaktualną blokadę i spróbować ponownie.",
         confirm: "Usuń blokadę i ponów",
         recoveryFailed: "Nie udało się usunąć blokady indeksu Git.",
       },
@@ -7429,7 +7425,7 @@ export const pl: TranslationStructure = {
         frontmatterReadOnly: "Frontmatter (tylko do odczytu)",
       },
       fileEditingUnsupported:
-        "Edycja plików nie jest obsługiwana przez podłączonego daemona. Zaktualizuj Happier na maszynie, aby włączyć operacje zapisu.",
+        "Edycja plików nie jest obsługiwana przez podłączonego daemona. Zaktualizuj Happiest na maszynie, aby włączyć operacje zapisu.",
       fileChangedExternally:
         "Ten plik zmienił się na dysku podczas edycji. Szkic pozostał bez zmian; sprawdź najnowszą wersję pliku przed zapisaniem.",
       selectionFailed: "Nie udało się zaktualizować wyboru",
@@ -7711,7 +7707,7 @@ export const pl: TranslationStructure = {
           createFeatureBranch: "Utwórz gałąź funkcji",
           createFeatureBranchAndOpen: "Utwórz gałąź i otwórz PR",
           featureBranchPromptTitle: "Nazwa gałęzi funkcji",
-          featureBranchPromptBody: "Happier przełączy się na tę gałąź przed kontynuacją.",
+          featureBranchPromptBody: "Happiest przełączy się na tę gałąź przed kontynuacją.",
           defaultBranchRequiresFeature: "Utwórz gałąź funkcji przed otwarciem pull requesta z gałęzi domyślnej.",
           defaultBranchDenied: "Nie można otwierać pull requestów bezpośrednio z gałęzi domyślnej.",
           states: {
@@ -7805,7 +7801,7 @@ export const pl: TranslationStructure = {
         crossSession: ({ sessionId }: { sessionId: string }) => `Uruchomiono z sesji ${sessionId}`,
         externalCli: "Uruchomiono zewnętrznie z CLI",
         externalMcp: "Uruchomiono zewnętrznie przez MCP",
-        externalAction: "Uruchomiono zewnętrznie przez akcję Happier",
+        externalAction: "Uruchomiono zewnętrznie przez akcję Happiest",
         externalUnknown: "Uruchomiono zewnętrznie (nieznane źródło)",
         legacyUnknown: "Nieznane źródło uruchomienia",
       },
@@ -7857,7 +7853,7 @@ export const pl: TranslationStructure = {
         },
         spawnPolicy: {
             title: 'Zasady tworzenia sesji AI',
-            footer: 'Te kontrolki dotyczą tylko sytuacji, gdy asystent w sesji Happier tworzy inną sesję. Odziedziczone ustawienia sesji nadrzędnej pozostają dozwolone; zablokowane elementy odrzucają jawne nadpisania czytelnym błędem.',
+            footer: 'Te kontrolki dotyczą tylko sytuacji, gdy asystent w sesji Happiest tworzy inną sesję. Odziedziczone ustawienia sesji nadrzędnej pozostają dozwolone; zablokowane elementy odrzucają jawne nadpisania czytelnym błędem.',
             toggles: {
                 allowCustomDirectory: { title: 'Niestandardowy katalog', subtitle: 'Pozwala asystentowi wybrać inny katalog roboczy.' },
                 allowCrossMachine: { title: 'Cele na innych maszynach', subtitle: 'Pozwala utworzyć sesję na innej dostępnej maszynie.' },
@@ -7962,11 +7958,11 @@ export const pl: TranslationStructure = {
             },
             session_agent: {
                 title: 'Sesja AI',
-                subtitle: 'Kontroluje narzędzia dostępne dla asystenta działającego w sesji Happier.',
+                subtitle: 'Kontroluje narzędzia dostępne dla asystenta działającego w sesji Happiest.',
             },
             mcp: {
                 title: 'MCP',
-                subtitle: 'Kontroluje zewnętrznych klientów MCP używających katalogu akcji MCP Happier.',
+                subtitle: 'Kontroluje zewnętrznych klientów MCP używających katalogu akcji MCP Happiest.',
             },
             cli: {
                 title: 'CLI sterowania sesją',
@@ -8159,7 +8155,7 @@ settingsSession: {
       },
       messageSending: {
         inactiveResumePolicyTitle: "Automatyczne wznawianie po wysłaniu",
-        inactiveResumePolicySubtitle: "Wybierz, co Happier ma zrobić po wysłaniu do nieaktywnej sesji.",
+        inactiveResumePolicySubtitle: "Wybierz, co Happiest ma zrobić po wysłaniu do nieaktywnej sesji.",
         inactiveResumePolicy: {
           whenAvailableTitle: "Teraz lub po powrocie maszyny",
           whenAvailableSubtitle: "Wznów od razu, jeśli jest dostępna; w przeciwnym razie przetwórz po ponownym połączeniu daemona.",
@@ -8213,7 +8209,7 @@ settingsSession: {
             "Najpierw umieść w Oczekujących; wyślij później przez \"Steruj teraz\".",
         },
         nonSteerablePromptTitle: 'Gdy wiadomość nie może sterować aktywną turą',
-        nonSteerablePromptFooter: 'Zmiany trybu uprawnień oraz /clear lub /compact nie mogą zostać zastosowane w trakcie tury. Wybierz, co Happier robi z taką wiadomością, gdy agent jest zajęty.',
+        nonSteerablePromptFooter: 'Zmiany trybu uprawnień oraz /clear lub /compact nie mogą zostać zastosowane w trakcie tury. Wybierz, co Happiest robi z taką wiadomością, gdy agent jest zajęty.',
         nonSteerablePrompt: {
           askTitle: 'Pytaj za każdym razem',
           askSubtitle: 'Zaproponuj „Przerwij i wyślij teraz” lub „Dodaj do kolejki po turze”.',
@@ -8226,7 +8222,7 @@ settingsSession: {
       usageLimitRecovery: {
         title: "Odzyskiwanie po limicie użycia",
         footer:
-          "Wybierz, co Happier robi, gdy dostawca prosi o odczekanie przed kontynuacją.",
+          "Wybierz, co Happiest robi, gdy dostawca prosi o odczekanie przed kontynuacją.",
         modeTitle: "Gdy osiągnięto limit użycia",
         askTitle: "Pytaj za każdym razem",
         askSubtitle: "Pokaż akcje sesji przed czekaniem lub ponowieniem.",
@@ -8603,7 +8599,7 @@ settingsSession: {
           "Auto zostawia krótkie sekcje jako listy i przełącza długie sekcje na przeszukiwalne menu rozwijane.",
         wizardPresentationAutoTitle: "Auto",
         wizardPresentationAutoSubtitle:
-          "Pozwól Happier wybrać najlepszy układ dla ilości treści.",
+          "Pozwól Happiest wybrać najlepszy układ dla ilości treści.",
         wizardPresentationListTitle: "Lista",
         wizardPresentationListSubtitle: "Pokaż wszystkie wiersze bezpośrednio w kreatorze.",
         wizardPresentationDropdownTitle: "Menu rozwijane",
@@ -8611,7 +8607,7 @@ settingsSession: {
       },
           promptPersonalization: {
               title: 'Prompt personalization',
-              footer: 'Choose which built-in instructions Happier adds to new agent sessions. This does not hide options an agent already sends.',
+              footer: 'Choose which built-in instructions Happiest adds to new agent sessions. This does not hide options an agent already sends.',
               askAgentToRenameSessionsTitle: 'Session title updates',
               askAgentToRenameSessionsNeverTitle: 'Never',
               askAgentToRenameSessionsNeverSubtitle: 'Do not prompt agents to set session titles.',
@@ -8637,9 +8633,9 @@ settingsSession: {
       },
           defaultStorage: {
               title: 'Domyślny typ sesji',
-              footer: 'Wybierz, czy nowe sesje mają zaczynać jako sesje Happier, czy jako bezpośrednie sesje oparte na dostawcy.',
+              footer: 'Wybierz, czy nowe sesje mają zaczynać jako sesje Happiest, czy jako bezpośrednie sesje oparte na dostawcy.',
               globalTitle: 'Domyślne globalne',
-              persistedSubtitle: 'Domyślnie zapisuj nowe sesje w Happier i synchronizuj je między urządzeniami.',
+              persistedSubtitle: 'Domyślnie zapisuj nowe sesje w Happiest i synchronizuj je między urządzeniami.',
               directSubtitle: 'Uruchamiaj bezpośrednie sesje powiązane z maszyną, gdy dostawca to obsługuje.',
               globalSubtitle: ({ label }: { label: string }) => `Domyślne globalne: ${label}`,
               useGlobalDefault: 'Użyj domyślnego globalnego',
@@ -8725,12 +8721,12 @@ settingsSession: {
     // Voice settings screen
     modeTitle: "Głos",
     modeDescription:
-      "Skonfiguruj funkcje głosowe. Możesz całkowicie wyłączyć głos, użyć Happier Voice (wymaga subskrypcji) albo użyć własnego konta ElevenLabs.",
+      "Skonfiguruj funkcje głosowe. W zależności od możliwości serwera wybierz głos lokalny albo własne konto ElevenLabs.",
     mode: {
       off: "Wyłączone",
       offSubtitle: "Wyłącz wszystkie funkcje głosowe",
-      happier: "Happier Voice",
-      happierSubtitle: "Użyj Happier Voice (wymagana subskrypcja)",
+      happier: "Happiest Voice",
+      happierSubtitle: "Użyj Happiest Voice (wymagana subskrypcja)",
       local: "Lokalny OSS Voice",
       localSubtitle:
         "Użyj lokalnych endpointów STT/TTS kompatybilnych z OpenAI",
@@ -8796,7 +8792,7 @@ settingsSession: {
     byo: {
       title: "Użyj mojego ElevenLabs",
 	      agentReuseDialog: {
-	        title: "Agent Happier już istnieje",
+	        title: "Agent Happiest już istnieje",
 	        messageWithId: ({ name, id }: { name: string; id: string }) =>
 	          `Znaleźliśmy istniejącego agenta ElevenLabs („${name}”, id: ${id}).\n\nCzy chcesz go zaktualizować, czy utworzyć nowego?`,
 	        messageNoId: ({ name }: { name: string }) =>
@@ -8821,12 +8817,12 @@ settingsSession: {
       apiKeyHelpDialogTitle: "Utwórz klucz API ElevenLabs",
       apiKeyHelpDialogBody:
         "Open ElevenLabs → Developers → API Keys → Create API key → Copy the key.",
-      autoprovCreate: "Utwórz agenta Happier",
+      autoprovCreate: "Utwórz agenta Happiest",
       autoprovCreateSubtitle:
-        "Utwórz i skonfiguruj agenta Happier na swoim koncie ElevenLabs używając klucza API",
+        "Utwórz i skonfiguruj agenta Happiest na swoim koncie ElevenLabs używając klucza API",
       autoprovUpdate: "Aktualizuj agenta",
       autoprovUpdateSubtitle:
-        "Zaktualizuj agenta do najnowszego szablonu Happier",
+        "Zaktualizuj agenta do najnowszego szablonu Happiest",
       autoprovCreated: ({ agentId }: { agentId: string }) =>
         `Utworzono agenta: ${agentId}`,
       autoprovUpdated: "Agent zaktualizowany",
@@ -9071,7 +9067,7 @@ settingsSession: {
         manifest: {
           title: "Manifest pakietu modelu",
           subtitle:
-            "Domyślnie używa pakietów modeli Happier (nadpisz przez EXPO_PUBLIC_HAPPIER_MODEL_PACK_MANIFESTS).",
+            "Domyślnie używa pakietów modeli Happiest (nadpisz przez EXPO_PUBLIC_HAPPIER_MODEL_PACK_MANIFESTS).",
           detailResolved: "Ustalono",
           detailMissing: "Brak",
         },
@@ -9264,7 +9260,7 @@ settingsSession: {
         },
         backend: {
           daemonSubtitle:
-            "Używa backendu Happier i obsługuje wznawianie u dostawcy.",
+            "Używa backendu Happiest i obsługuje wznawianie u dostawcy.",
           openAiSubtitle:
             "Połącz z endpointami HTTP zgodnymi z OpenAI.",
         },
@@ -9341,7 +9337,7 @@ settingsSession: {
           providerResumeTitle: "Wznawianie dostawcy",
           providerResumeSubtitle:
             "Wznawiaj na podstawie stanu sesji dostawcy (gdy obsługiwane).",
-          disabledVoiceAgent: "Wymaga Happier Voice Agent.",
+          disabledVoiceAgent: "Wymaga Happiest Voice Agent.",
           disabledDaemonBackend: "Wymaga backendu Daemon.",
           disabledAgentNoProviderResume:
             "Wybrany agent nie obsługuje wznawiania u dostawcy.",
@@ -9394,7 +9390,7 @@ settingsSession: {
       },
       mediatorBackend: "Backend agenta głosowego",
       mediatorBackendSubtitle:
-        "Daemon (używa backendu Happier) lub OpenAI-compatible HTTP",
+        "Daemon (używa backendu Happiest) lub OpenAI-compatible HTTP",
       mediatorBackendDaemon: "Demon",
       mediatorBackendOpenAi: "HTTP zgodne z OpenAI",
       mediatorAgentSource: "Źródło agenta głosowego",
@@ -9513,7 +9509,7 @@ settingsSession: {
       testTts: "Testuj TTS",
       testTtsSubtitle:
         "Odtwórz krótki przykład używając skonfigurowanego lokalnego TTS (na urządzeniu lub przez endpoint)",
-      testTtsSample: "Cześć z Happier. To test Twojego lokalnego TTS.",
+      testTtsSample: "Cześć z Happiest. To test Twojego lokalnego TTS.",
       testTtsMissingBaseUrl: "Najpierw ustaw bazowy URL TTS.",
       testTtsFailed:
         "TTS test failed. Check your base URL, API key, model, and voice.",
@@ -9657,8 +9653,8 @@ settingsSession: {
 
   updates: {
     title: "Aktualizacje",
-    thisAppTitle: "Happier",
-    happierCliTitle: "Happier CLI",
+    thisAppTitle: "Happiest",
+    happierCliTitle: "Happiest CLI",
     sections: {
       thisApp: "Ta aplikacja",
       thisComputer: "Ten komputer",
@@ -9690,7 +9686,7 @@ settingsSession: {
       updatingBatch: ({ done, total }: { done: number; total: number }) => `Aktualizowanie ${Math.min(done + 1, total)} z ${total}…`,
       updating: "Aktualizowanie…",
       keepWorking: "Możesz dalej pracować.",
-      ready: "Uruchom ponownie, aby dokończyć aktualizację Happier",
+      ready: "Uruchom ponownie, aby dokończyć aktualizację Happiest",
       failedCount: ({ count }: { count: number }) => plural({ count, one: `${count} aktualizacja nie została ukończona`, few: `${count} aktualizacje nie zostały ukończone`, many: `${count} aktualizacji nie zostało ukończonych` }),
       notCheckedYet: "Jeszcze nie sprawdzono",
       required: "Wymagana jest aktualizacja",
@@ -9700,7 +9696,7 @@ settingsSession: {
       uncheckedMeta: "Niektóre narzędzia nie zostały jeszcze sprawdzone.",
       offline: "Niektóre maszyny są offline",
       checkedAt: ({ time }: { time: string }) => `Ostatnio sprawdzono: ${time}`,
-      upToDateDescription: "Happier, jego wiersz poleceń i Twoi agenci są aktualni.",
+      upToDateDescription: "Happiest, jego wiersz poleceń i Twoi agenci są aktualni.",
       unknownDescription: "Wszystko, co udało się sprawdzić, jest aktualne. Resztę sprawdzimy ponownie, gdy będzie osiągalna.",
       offlineDescription: "Wszystko, co osiągalne, jest aktualne. Maszyny offline sprawdzimy, gdy wrócą.",
     },
@@ -9742,8 +9738,8 @@ settingsSession: {
       restartingService: "Ponowne uruchamianie usługi w tle…",
       readyVersion: ({ version }: { version: string }) => `Wersja ${version} jest gotowa`,
       ready: "Aktualizacja gotowa",
-      webNewBuild: "Nowsza wersja Happier jest gotowa",
-      requiredApp: "Ta wersja nie jest już obsługiwana. Zaktualizuj, aby dalej korzystać z Happier.",
+      webNewBuild: "Nowsza wersja Happiest jest gotowa",
+      requiredApp: "Ta wersja nie jest już obsługiwana. Zaktualizuj, aby dalej korzystać z Happiest.",
       appCheckFailed: "Nie udało się sprawdzić, czy jest nowsza wersja.",
       appDownloadFailed: "Pobieranie nie zostało ukończone.",
       appInstallFailed: "Nie udało się zainstalować aktualizacji.",
@@ -9765,7 +9761,7 @@ settingsSession: {
       othersUpToDate: ({ count }: { count: number }) => plural({ count, one: `Jeszcze ${count} element jest aktualny`, few: `Jeszcze ${count} elementy są aktualne`, many: `Jeszcze ${count} elementów jest aktualnych` }),
       waitingOffline: ({ count }: { count: number }) => plural({ count, one: `${count} aktualizacja czeka, aż maszyna wróci do sieci`, few: `${count} aktualizacje czekają, aż maszyna wróci do sieci`, many: `${count} aktualizacji czeka, aż maszyna wróci do sieci` }),
     },
-    footer: "Aktualizacje instalują się na każdej maszynie osobno. Po aktualizacji wiersza poleceń Happier uruchamia ponownie usługę w tle na tej maszynie.",
+    footer: "Aktualizacje instalują się na każdej maszynie osobno. Po aktualizacji wiersza poleceń Happiest uruchamia ponownie usługę w tle na tej maszynie.",
     confirmVendor: {
       title: "Uruchomić aktualizator dostawcy?",
       message: ({ names }: { names: string }) => `${names}: aktualizacja zostanie przeprowadzona przez własny aktualizator na tamtej maszynie.`,
@@ -9778,7 +9774,7 @@ settingsSession: {
     tray: {
       available: ({ count }: { count: number }) => `Dostępne aktualizacje (${count})…`,
       running: "Aktualizowanie…",
-      ready: "Uruchom ponownie, aby zaktualizować Happier",
+      ready: "Uruchom ponownie, aby zaktualizować Happiest",
       required: "Wymagana aktualizacja…",
       failed: "Jedna z aktualizacji nie została ukończona…",
     },
@@ -9800,17 +9796,17 @@ settingsSession: {
     },
     defaultTitle: "Co nowego",
     onboardingShowcase: {
-                "title": "Witamy w Happier",
+                "title": "Witamy w Happiest",
                 "subtitle": "Twoi agenci AI wszędzie tam, gdzie pracujesz.",
                 "cards": {
                     "welcome": {
-                        "title": "Witamy w Happier",
+                        "title": "Witamy w Happiest",
                         "everywhereTitle": "Twoi agenci AI wszędzie tam, gdzie pracujesz",
                         "everywhereBody": "Claude Code, Codex, OpenCode, Pi i wiele więcej: na telefonie, tablecie, w przeglądarce albo na desktopie.",
                         "cockpitTitle": "Twój mobilny kokpit",
                         "cockpitBody": "Czat, pliki, Git, edytor, terminal. Wszystko, czego potrzebujesz, żeby budować i wysyłać kolejny projekt, pod ręką.",
                         "existingTitle": "Istniejące sesje, już dostępne",
-                        "existingBody": "Każdą sesję Claude, Codex albo OpenCode uruchomioną na Twojej maszynie możesz otworzyć w Happier na żywo.",
+                        "existingBody": "Każdą sesję Claude, Codex albo OpenCode uruchomioną na Twojej maszynie możesz otworzyć w Happiest na żywo.",
                         "voiceTitle": "Asystent głosowy do wspólnego myślenia",
                         "voiceBody": "Zapytaj, co robią Twoi agenci, zatwierdzaj prośby o uprawnienia i wysyłaj wiadomości. Bez użycia rąk.",
                         "reviewTitle": "Przeglądaj diffy i zostawiaj komentarze",
@@ -9818,7 +9814,7 @@ settingsSession: {
                         "subagentsTitle": "Subagenci między providerami",
                         "subagentsBody": "Uruchamiaj subagentów Codex z sesji Claude. Dziel pracę między agentów. Przekazuj wiadomości między sesjami.",
                         "tuisTitle": "Używaj swoich ulubionych TUI",
-                        "tuisBody": "Uruchamiaj Claude Code, Codex albo OpenCode w ich natywnym terminalowym UI. Happier przechwytuje je i synchronizuje na wszystkie urządzenia.",
+                        "tuisBody": "Uruchamiaj Claude Code, Codex albo OpenCode w ich natywnym terminalowym UI. Happiest przechwytuje je i synchronizuje na wszystkie urządzenia.",
                         "inboxTitle": "Jedna skrzynka. Każda sesja.",
                         "inboxBody": "Wszystkie oczekujące zatwierdzenia, prośby o uprawnienia i sesje gotowe do przejrzenia, ze wszystkich maszyn, w jednym miejscu.",
                         "mcpTitle": "Jedna konfiguracja MCP. Każdy provider.",
@@ -9883,7 +9879,7 @@ settingsSession: {
                     "mcp": {
                         "title": "Jedna konfiguracja. Każdy provider.",
                         "wideTitle": "Jedna konfiguracja.\nKażdy provider.",
-                        "body": "Zdefiniuj MCP raz w Happier, a zadziałają we wszystkich backendach, nawet tych bez natywnego wsparcia MCP. Zarządzaj skills, promptami i nie tylko!",
+                        "body": "Zdefiniuj MCP raz w Happiest, a zadziałają we wszystkich backendach, nawet tych bez natywnego wsparcia MCP. Zarządzaj skills, promptami i nie tylko!",
                         "alt": "Abstrakcyjny obraz zastępczy dla współdzielonej konfiguracji MCP."
                     },
                     "queue": {
@@ -9928,7 +9924,7 @@ settingsSession: {
       "Link połączenia jest nieprawidłowy lub go brakuje. Sprawdź URL i spróbuj ponownie.",
     connectTerminal: "Połącz terminal",
     terminalRequestDescription:
-      "Terminal żąda połączenia z Twoim kontem Happier Coder. Pozwoli to terminalowi bezpiecznie wysyłać i odbierać wiadomości.",
+      "Terminal żąda połączenia z Twoim kontem Happiest Coder. Pozwoli to terminalowi bezpiecznie wysyłać i odbierać wiadomości.",
     connectionDetails: "Szczegóły połączenia",
     publicKey: "Klucz publiczny",
     encryption: "Szyfrowanie",
@@ -9992,9 +9988,9 @@ settingsSession: {
     invalidAuthUrl: "Nieprawidłowy URL uwierzytelnienia",
     microphoneAccessRequiredTitle: "Wymagany dostęp do mikrofonu",
     microphoneAccessRequiredRequestPermission:
-      "Happier potrzebuje dostępu do mikrofonu do czatu głosowego. Udziel zgody, gdy pojawi się prośba.",
+      "Happiest potrzebuje dostępu do mikrofonu do czatu głosowego. Udziel zgody, gdy pojawi się prośba.",
     microphoneAccessRequiredEnableInSettings:
-      "Happier potrzebuje dostępu do mikrofonu do czatu głosowego. Włącz dostęp do mikrofonu w ustawieniach urządzenia.",
+      "Happiest potrzebuje dostępu do mikrofonu do czatu głosowego. Włącz dostęp do mikrofonu w ustawieniach urządzenia.",
     microphoneAccessRequiredBrowserInstructions:
       "Zezwól na dostęp do mikrofonu w ustawieniach przeglądarki. Być może musisz kliknąć ikonę kłódki na pasku adresu i włączyć uprawnienie mikrofonu dla tej witryny.",
     openSettings: "Otwórz ustawienia",
@@ -10075,12 +10071,12 @@ settingsSession: {
     // Unified onboarding redesign — welcome decision (right pane)
     welcomeQuestionTitle: "Witaj.",
     welcomeQuestionSubtitle: "Jesteś tu pierwszy raz?",
-    welcomeQuestionBody: "Happier to centrum kontroli twoich agentów kodujących AI. E-mail nie jest potrzebny. Twoje konto to klucz prywatny generowany na tym urządzeniu.",
+    welcomeQuestionBody: "Happiest to centrum kontroli twoich agentów kodujących AI. E-mail nie jest potrzebny. Twoje konto to klucz prywatny generowany na tym urządzeniu.",
 
     welcomePrimaryButton: "Pierwszy raz tutaj — zaczynajmy",
     welcomePrimarySubtitle: "Jedno dotknięcie. Bez formularzy. Twój klucz zostaje tutaj.",
 
-    welcomeSecondaryButton: "Zaloguj się — używam już Happier",
+    welcomeSecondaryButton: "Zaloguj się — używam już Happiest",
     welcomeSecondarySubtitle: "Zeskanuj kod QR albo wpisz swój tajny klucz",
 
     // Unified onboarding redesign — returning-user copy variants.
@@ -10110,8 +10106,8 @@ settingsSession: {
     // Returning-user buttons. For returning users we invert the visual
     // hierarchy: Login becomes the filled primary action (probability of
     // intent is high), Start fresh becomes the bordered secondary action.
-    // "I already use Happier" is dropped from the login button title for
-    // returning users because — they obviously do already use Happier.
+    // "I already use Happiest" is dropped from the login button title for
+    // returning users because — they obviously do already use Happiest.
     welcomeReturningLoginButton: "Zaloguj się — wróćmy do pracy",
     welcomeReturningStartFreshButton: "Zacznij od nowa — utwórz nowe konto",
     welcomeReturningStartFreshSubtitle: "Wygeneruj nowy klucz na tym urządzeniu.",
@@ -10120,7 +10116,7 @@ settingsSession: {
     welcomeFooterRelay: "Self-hosting?",
     welcomeFooterRelayAction: "Użyj własnego Relay",
     // Shown in place of welcomeFooterRelay when the active server is a
-    // custom (non-Happier-Cloud) relay. The action below the label is the
+    // custom (non-default) relay. The action below the label is the
     // relay's host (optionally with :port) followed by a small pencil
     // icon so the user can tap to edit. Long hostnames are truncated with
     // a tail-ellipsis to avoid colliding with the right-side Docs group.
@@ -10129,7 +10125,6 @@ settingsSession: {
     welcomeFooterDocs: "Potrzebujesz pomocy?",
     welcomeFooterDocsAction: "Dokumentacja",
     welcomeFooterGithubLabel: "Repozytorium GitHub",
-    welcomeFooterDiscordLabel: "Społeczność Discord",
 
     // Mobile brand hero CTA
     brandHeroGetStarted: "Zacznij",
@@ -10165,8 +10160,8 @@ settingsSession: {
               startDaemon: ({ targetLabel }: { targetLabel: string }) =>
 
                   `Użyj desktopowego procesu konfiguracji, aby ponownie połączyć usługę w tle dla ${targetLabel}. Otwórz ręczne kroki tylko jeśli jesteś już na tym komputerze.`,
-              connectMachineElsewhere: ({ targetLabel }: { targetLabel: string }) => `Otwórz Happier na komputerze, który chcesz połączyć z ${targetLabel}, albo wykonaj na nim poniższe kroki w terminalu.`,
-              startDaemonElsewhere: ({ targetLabel }: { targetLabel: string }) => `Otwórz Happier na tamtym komputerze, aby ponownie połączyć jego usługę w tle z ${targetLabel}, albo wykonaj na nim poniższe kroki w terminalu.`,
+              connectMachineElsewhere: ({ targetLabel }: { targetLabel: string }) => `Otwórz Happiest na komputerze, który chcesz połączyć z ${targetLabel}, albo wykonaj na nim poniższe kroki w terminalu.`,
+              startDaemonElsewhere: ({ targetLabel }: { targetLabel: string }) => `Otwórz Happiest na tamtym komputerze, aby ponownie połączyć jego usługę w tle z ${targetLabel}, albo wykonaj na nim poniższe kroki w terminalu.`,
 
               createSession: 'Rozpocznij nową sesję przyciskiem + albo z terminala.',
 
@@ -10226,7 +10221,7 @@ settingsSession: {
 
                   title: 'Zainstaluj usługę w tle (zalecane)',
 
-                  description: 'Utrzymuje Happier w tle, gotowe do zdalnych uruchomień.',
+                  description: 'Utrzymuje Happiest w tle, gotowe do zdalnych uruchomień.',
 
                   copyLabel: 'Instalacja demona',
 
@@ -10274,24 +10269,24 @@ settingsSession: {
 
 
     setupSurface: {
-        acquisitionResolvingReleaseStatus: "Wyszukiwanie wersji narzędzia wiersza poleceń Happier.",
-        acquisitionDownloadingStatus: "Pobieranie narzędzia wiersza poleceń Happier.",
+        acquisitionResolvingReleaseStatus: "Wyszukiwanie wersji narzędzia wiersza poleceń Happiest.",
+        acquisitionDownloadingStatus: "Pobieranie narzędzia wiersza poleceń Happiest.",
         acquisitionVerifyingStatus: "Weryfikowanie pobranego pliku.",
-        acquisitionUnpackingStatus: "Rozpakowywanie narzędzia wiersza poleceń Happier.",
-        acquisitionInstallingStatus: "Instalowanie narzędzia wiersza poleceń Happier.",
+        acquisitionUnpackingStatus: "Rozpakowywanie narzędzia wiersza poleceń Happiest.",
+        acquisitionInstallingStatus: "Instalowanie narzędzia wiersza poleceń Happiest.",
         acquisitionFinalizingStatus: "Kończenie instalacji narzędzia wiersza poleceń.",
-        acquisitionCheckingCliStatus: "Sprawdzanie narzędzia wiersza poleceń Happier.",
+        acquisitionCheckingCliStatus: "Sprawdzanie narzędzia wiersza poleceń Happiest.",
         acquisitionCheckingDaemonStatus: "Sprawdzanie usługi działającej w tle.",
-        acquisitionReleaseFailed: "Happier nie znalazł wersji narzędzia wiersza poleceń. Spróbuj ponownie.",
+        acquisitionReleaseFailed: "Happiest nie znalazł wersji narzędzia wiersza poleceń. Spróbuj ponownie.",
         acquisitionDownloadFailed: "Pobieranie narzędzia wiersza poleceń nie zostało ukończone. Spróbuj ponownie.",
-        acquisitionVerificationFailed: "Happier nie mógł zweryfikować pobranego pliku. Spróbuj ponownie.",
+        acquisitionVerificationFailed: "Happiest nie mógł zweryfikować pobranego pliku. Spróbuj ponownie.",
         acquisitionInstallFailed: "Instalacja narzędzia wiersza poleceń nie została ukończona. Spróbuj ponownie.",
         acquisitionDownloadBytes: ({ received }: { received: string }) => `Pobrano ${received}`,
         acquisitionDownloadBytesTotal: ({ received, total }: { received: string; total: string }) => `Pobrano ${received} z ${total}`,
     checkingTitle: 'Sprawdzanie tego komputera',
     checkingStatus: ({ relay }: { relay: string }) => `Sprawdzamy, co ten komputer ma już dla ${relay}.`,
     workingTitle: 'Konfigurowanie tego komputera',
-    stagePrepareStatus: 'Przygotowujemy wiersz poleceń Happier na tym komputerze.',
+    stagePrepareStatus: 'Przygotowujemy wiersz poleceń Happiest na tym komputerze.',
     stageConnectStatus: ({ relay }: { relay: string }) => `Łączymy ten komputer z ${relay}. Nie musisz nic robić.`,
     stageConnectStatusAs: ({ relay, account }: { relay: string; account: string }) => `Łączenie tego komputera z ${relay} jako ${account}. Nie musisz nic robić.`,
     stageServiceStatus: 'Instalujemy usługę w tle, dzięki której Twoje sesje pozostają dostępne.',
@@ -10304,12 +10299,12 @@ settingsSession: {
     blockedAccountChangedStatus: 'Podczas konfiguracji ten komputer zalogował się na inne konto, więc konfiguracja zatrzymała się przed parowaniem. Spróbuj ponownie.',
     blockedPairingDeclinedStatus: 'Ten komputer nie został zatwierdzony do połączenia. Twoje konto i sesje pozostają nienaruszone.',
     blockedPairingIncompleteStatus: 'Łączenie tego komputera nie zostało ukończone.',
-    blockedCliOutdatedStatus: 'Wiersz poleceń Happier na tym komputerze jest starszy, niż wymaga konfiguracja. Zaktualizuj Happier i spróbuj ponownie.',
+    blockedCliOutdatedStatus: 'Wiersz poleceń Happiest na tym komputerze jest starszy, niż wymaga konfiguracja. Zaktualizuj Happiest i spróbuj ponownie.',
     blockedCliChannelOutdatedStatus: ({ channel }: { channel: string }) => `Ten komputer używa CLI ${channel}, które jest starsze, niż wymaga ta aplikacja.`,
     blockedCliChannelOutdatedVersionStatus: ({ channel, version }: { channel: string; version: string }) => `Ten komputer używa CLI ${channel}. Jego najnowsza wersja, ${version}, jest starsza, niż wymaga ta aplikacja.`,
-    blockedCliUnresponsiveStatus: 'Wiersz poleceń Happier przestał odpowiadać.',
-        blockedCliUnavailableStatus: "Happier nie mógł uruchomić swojego narzędzia wiersza poleceń na tym komputerze.",
-    blockedCliFailedStatus: 'Happier nie mógł dokończyć odczytu konfiguracji tego komputera.',
+    blockedCliUnresponsiveStatus: 'Wiersz poleceń Happiest przestał odpowiadać.',
+        blockedCliUnavailableStatus: "Happiest nie mógł uruchomić swojego narzędzia wiersza poleceń na tym komputerze.",
+    blockedCliFailedStatus: 'Happiest nie mógł dokończyć odczytu konfiguracji tego komputera.',
     unreachableStatus: ({ relay }: { relay: string }) => `Ten komputer jeszcze nie odpowiada na ${relay}.`,
     notConvergedStatus: ({ relay }: { relay: string }) => `Usługa w tle na tym komputerze nie zakończyła jeszcze uruchamiania dla ${relay}.`,
     canceledTitle: 'Konfiguracja anulowana',
@@ -10317,7 +10312,7 @@ settingsSession: {
     stepOfTotal: ({ step, total }: { step: number; total: number }) => `Krok ${step} z ${total}`,
     hideDetails: 'Ukryj szczegóły',
     consentTitle: 'Zastąpić usługę w tle na tym komputerze?',
-    consentBodyFallback: 'Na tym komputerze działa już usługa w tle Happier, którą nie zarządza ta aplikacja.',
+    consentBodyFallback: 'Na tym komputerze działa już usługa w tle Happiest, którą nie zarządza ta aplikacja.',
     consentServicesList: ({ services }: { services: string }) => `Usługi, których to dotyczy: ${services}`,
     consentConfirm: 'Zastąp',
     consentKeep: 'Zachowaj istniejącą usługę',
@@ -10331,27 +10326,27 @@ settingsSession: {
     accountMoveBody: ({ from, to, relay }: { from: string; to: string; relay: string }) => `Ten komputer jest zalogowany w ${relay} jako ${from}. Po przełączeniu na ${to} konto ${from} nie będzie już mieć dostępu do tego komputera.`,
     accountMoveBodyAcrossRelays: ({ from, fromRelay, to, toRelay }: { from: string; fromRelay: string; to: string; toRelay: string }) => `Ten komputer jest zalogowany w ${fromRelay} jako ${from}. Po przełączeniu na ${to} w ${toRelay} konto ${from} nie będzie już mieć dostępu do tego komputera.`,
     accountMoveConfirm: 'Przełącz',
-    consentTakeoverTitle: 'Pozwolić Happier prowadzić tu usługę w tle?',
+    consentTakeoverTitle: 'Pozwolić Happiest prowadzić tu usługę w tle?',
     consentTakeoverConfirm: 'Przejmij',
     continueWithoutAction: 'Kontynuuj bez tego komputera',
     updateCliAction: 'Zaktualizuj',
-    cliChoiceTitle: ({ version }: { version: string }) => `Happier CLI ${version} jest już zainstalowany`,
-    cliChoiceTitleUnknownVersion: 'Happier CLI jest już zainstalowany',
-    cliChoiceBody: ({ path }: { path: string }) => `Znajduje się w ${path}. Happier może zainstalować własną kopię, aktualizować ją i ustawić jako pierwszą w PATH albo możesz dalej używać tej.`,
-    cliChoiceBodyOutdated: ({ path }: { path: string }) => `Znajduje się w ${path} i jest za stary dla konfiguracji. Happier może zainstalować własną, aktualną kopię i ustawić ją jako pierwszą w PATH albo możesz zachować swoją i zaktualizować ją samodzielnie.`,
-    cliChoiceTitleMissing: 'Twój Happier CLI nie jest już zainstalowany',
-    cliChoiceBodyMissing: ({ path }: { path: string }) => `Wybrano zachowanie tego w ${path}, ale już go tam nie ma. Happier może zainstalować własną kopię i ją aktualizować albo możesz zainstalować swój ponownie i dalej go używać.`,
-    cliChoiceBodyKeepBlocked: ({ path, link }: { path: string; link: string }) => `Znajduje się w ${path}, ale nowe terminale najpierw uruchamiają CLI Happier przez ${link}, którego Happier nie dodał. Pozwól Happier zarządzać wierszem poleceń albo usuń ${link} i uruchom konfigurację ponownie, aby zachować swój.`,
+    cliChoiceTitle: ({ version }: { version: string }) => `Happiest CLI ${version} jest już zainstalowany`,
+    cliChoiceTitleUnknownVersion: 'Happiest CLI jest już zainstalowany',
+    cliChoiceBody: ({ path }: { path: string }) => `Znajduje się w ${path}. Happiest może zainstalować własną kopię, aktualizować ją i ustawić jako pierwszą w PATH albo możesz dalej używać tej.`,
+    cliChoiceBodyOutdated: ({ path }: { path: string }) => `Znajduje się w ${path} i jest za stary dla konfiguracji. Happiest może zainstalować własną, aktualną kopię i ustawić ją jako pierwszą w PATH albo możesz zachować swoją i zaktualizować ją samodzielnie.`,
+    cliChoiceTitleMissing: 'Twój Happiest CLI nie jest już zainstalowany',
+    cliChoiceBodyMissing: ({ path }: { path: string }) => `Wybrano zachowanie tego w ${path}, ale już go tam nie ma. Happiest może zainstalować własną kopię i ją aktualizować albo możesz zainstalować swój ponownie i dalej go używać.`,
+    cliChoiceBodyKeepBlocked: ({ path, link }: { path: string; link: string }) => `Znajduje się w ${path}, ale nowe terminale najpierw uruchamiają CLI Happiest przez ${link}, którego Happiest nie dodał. Pozwól Happiest zarządzać wierszem poleceń albo usuń ${link} i uruchom konfigurację ponownie, aby zachować swój.`,
     cliChoiceNotNow: 'Nie teraz',
-    cliChoiceManage: 'Niech Happier nim zarządza',
+    cliChoiceManage: 'Niech Happiest nim zarządza',
     cliChoiceKeep: 'Zachowaj mój',
     blockedCliChoiceStatus: 'Konfiguracja zatrzymała się przed wprowadzeniem zmian. Wybierz, kto zarządza wierszem poleceń, aby kontynuować.',
     blockedCliOwnOutdatedStatus: ({ command }: { command: string }) => `Twój wiersz poleceń jest za stary dla konfiguracji. Zaktualizuj go poleceniem ${command}`,
     blockedCliOwnOutdatedUnknownStatus: 'Twój wiersz poleceń jest za stary dla konfiguracji. Zaktualizuj go tam, gdzie go zainstalowano.',
-    blockedCliOwnMissingStatus: 'Zachowany wiersz poleceń nie jest już zainstalowany. Zainstaluj go ponownie albo pozwól Happier zarządzać wierszem poleceń.',
+    blockedCliOwnMissingStatus: 'Zachowany wiersz poleceń nie jest już zainstalowany. Zainstaluj go ponownie albo pozwól Happiest zarządzać wierszem poleceń.',
     cliTrustTitle: 'Zatwierdzić ten wiersz poleceń?',
-    cliTrustBody: ({ command }: { command: string }) => `Happier nie zainstalował wiersza poleceń w ${command}. Zatwierdzenie pozwoli mu odczytywać i zapisywać sesje tego konta. Zatwierdź tylko ten, który sam tam umieściłeś.`,
-    cliTrustBodyUnknownCommand: 'Happier nie zainstalował tego wiersza poleceń. Zatwierdzenie pozwoli mu odczytywać i zapisywać sesje tego konta. Zatwierdź tylko ten, który sam tam umieściłeś.',
+    cliTrustBody: ({ command }: { command: string }) => `Happiest nie zainstalował wiersza poleceń w ${command}. Zatwierdzenie pozwoli mu odczytywać i zapisywać sesje tego konta. Zatwierdź tylko ten, który sam tam umieściłeś.`,
+    cliTrustBodyUnknownCommand: 'Happiest nie zainstalował tego wiersza poleceń. Zatwierdzenie pozwoli mu odczytywać i zapisywać sesje tego konta. Zatwierdź tylko ten, który sam tam umieściłeś.',
     cliTrustApprove: 'Zatwierdź',
   },
 
@@ -10361,7 +10356,7 @@ settingsSession: {
           webDesktopOnlyBody: 'Otwórz aplikację desktopową, aby skonfigurować ten komputer. Aplikacja webowa może pokazywać status, ale nie może zainstalować ani skonfigurować usługi w tle.',
           preAuthTitle: 'Wybierz Relay przed zalogowaniem',
           preAuthBody: 'Wybierz Relay, którego chcesz używać na tym komputerze, zanim utworzysz, odtworzysz lub zalogujesz konto.',
-          preAuthContinueHint: 'Po kontynuowaniu Happier cofnie Cię do logowania na wybranym Relay, a potem wróci tutaj, aby dokończyć konfigurację.',
+          preAuthContinueHint: 'Po kontynuowaniu Happiest cofnie Cię do logowania na wybranym Relay, a potem wróci tutaj, aby dokończyć konfigurację.',
     currentRelayTitle: 'Wybrany Relay',
     currentRelayDescription: ({ relayUrl }: { relayUrl: string }) => `Wybrany Relay: ${relayUrl}`,
     savedRelaysTitle: 'Zapisane Relay',
@@ -10398,7 +10393,7 @@ settingsSession: {
     machine: {
     offlineUnableToSpawn: "Launcher wyłączony, gdy maszyna jest offline",
     offlineHelp:
-      "• Upewnij się, że komputer jest online\n• Uruchom `happier daemon status`, aby zdiagnozować\n• Czy używasz najnowszej wersji CLI? Uruchom `happier self update`",
+      "• Upewnij się, że komputer jest online\n• Uruchom `happiest daemon status`, aby zdiagnozować\n• Czy używasz najnowszej wersji CLI? Uruchom `happiest self update`",
     launchNewSessionInDirectory: "Uruchom nową sesję w katalogu",
     customPathPlaceholder: "Wpisz własną ścieżkę",
     tools: {
@@ -10411,7 +10406,7 @@ settingsSession: {
       screenTitle: "Instalowalne",
       aboutGroupTitle: "Informacje",
       aboutSubtitle:
-        "Zarządzaj narzędziami, które Happier może instalować i utrzymywać w aktualności na tej maszynie.",
+        "Zarządzaj narzędziami, które Happiest może instalować i utrzymywać w aktualności na tej maszynie.",
       experimentalGroupTitle: ({ title }: { title: string }) =>
         `${title} (eksperymentalne)`,
       autoInstallTitle: "Automatyczna instalacja w razie potrzeby",
@@ -10420,7 +10415,7 @@ settingsSession: {
       autoUpdateTitle: "Automatyczna aktualizacja",
       autoUpdatePromptTitle: "Automatyczna aktualizacja",
       autoUpdatePromptBody:
-        "Wybierz, jak Happier ma obsługiwać aktualizacje dla tego instalowalnego elementu.",
+        "Wybierz, jak Happiest ma obsługiwać aktualizacje dla tego instalowalnego elementu.",
       autoUpdateModes: {
         off: "Wyłączone",
         notify: "Powiadamiaj",
@@ -10438,9 +10433,9 @@ settingsSession: {
         notSetUp: 'Ten komputer nie jest jeszcze skonfigurowany.',
         connectedAs: ({ relay, account }: { relay: string; account: string }) => `Połączono z ${relay} jako ${account}.`,
         cliTitle: 'Wiersz poleceń',
-        cliManaged: ({ version }: { version: string }) => `Happier ${version}, zainstalowany przez tę aplikację`,
+        cliManaged: ({ version }: { version: string }) => `Happiest ${version}, zainstalowany przez tę aplikację`,
         cliManagedOnChannel: ({ channel, version }: { channel: string; version: string }) => `CLI ${channel} ${version}, zainstalowany przez tę aplikację`,
-        cliChoiceManaged: 'Zarządzany przez Happier',
+        cliChoiceManaged: 'Zarządzany przez Happiest',
         cliChoiceOwn: ({ path }: { path: string }) => `Twój własny — ${path}`,
         cliChoiceChange: 'Zmień, kto zarządza wierszem poleceń',
         cliOldCopyTitle: 'Stary wiersz poleceń',
@@ -10452,24 +10447,24 @@ settingsSession: {
         cliManagedUnknownVersion: 'Zainstalowany przez tę aplikację',
         cliFromPath: ({ version, path }: { version: string; path: string }) => `${version} z ${path}`,
         updateCliTitle: 'Zaktualizuj wiersz poleceń',
-        updateCliAvailable: ({ version }: { version: string }) => `Dostępny jest Happier ${version}.`,
+        updateCliAvailable: ({ version }: { version: string }) => `Dostępny jest Happiest ${version}.`,
         updatingCli: 'Aktualizowanie wiersza poleceń',
-        cliNotManaged: 'Happier nie instalował tego wiersza poleceń, więc go nie zastąpi.',
+        cliNotManaged: 'Happiest nie instalował tego wiersza poleceń, więc go nie zastąpi.',
         cliUpdateFailed: 'Aktualizacja się nie zakończyła. Spróbuj ponownie.',
         cliUpdateRestartNotConverged: 'Wiersz poleceń został zaktualizowany, ale usługa w tle nadal działa w poprzedniej wersji. Spróbuj ponownie.',
     },
     cliPath: {
       title: "Terminal",
-      footer: "Happier Desktop dodaje lub usuwa tylko te wpisy PATH, które sam utworzył; wpisy zapisane przez instalator powłoki pozostają nietknięte.",
-      addTitle: "Dodaj happier do PATH",
-      addSubtitle: "Udostępnij polecenie happier w nowych terminalach.",
-      removeTitle: "Usuń happier z PATH",
-      removeSubtitle: "Usuń tylko wpisy PATH dodane przez Happier Desktop.",
-      added: "Dodano. Otwórz nowy terminal, aby używać happier.",
-      alreadyPresent: "happier jest już w Twoim PATH.",
-      existingCommand: ({ path }: { path: string }) => `Inny happier w ${path} już odpowiada w Twoim terminalu, więc nic nie dodano.`,
-      removed: "Usunięto wpisy PATH dodane przez Happier Desktop.",
-      nothingToRemove: "Happier Desktop nie dodał żadnych wpisów PATH.",
+      footer: "Happiest Desktop dodaje lub usuwa tylko te wpisy PATH, które sam utworzył; wpisy zapisane przez instalator powłoki pozostają nietknięte.",
+      addTitle: "Dodaj happiest do PATH",
+      addSubtitle: "Udostępnij polecenie happiest w nowych terminalach.",
+      removeTitle: "Usuń happiest z PATH",
+      removeSubtitle: "Usuń tylko wpisy PATH dodane przez Happiest Desktop.",
+      added: "Dodano. Otwórz nowy terminal, aby używać happiest.",
+      alreadyPresent: "happiest jest już w Twoim PATH.",
+      existingCommand: ({ path }: { path: string }) => `Inny happiest w ${path} już odpowiada w Twoim terminalu, więc nic nie dodano.`,
+      removed: "Usunięto wpisy PATH dodane przez Happiest Desktop.",
+      nothingToRemove: "Happiest Desktop nie dodał żadnych wpisów PATH.",
     },
     stopDaemon: "Zatrzymaj daemon",
     stopDaemonConfirmTitle: "Zatrzymać daemon?",
@@ -10533,7 +10528,7 @@ settingsSession: {
     detectedCliDetected: "Wykryto",
     detectedCliNotDetected: "Nie wykryto",
     detectedCliUnknown: "Nieznane",
-    detectedCliNotSupported: "Nieobsługiwane (zaktualizuj @happier-dev/cli)",
+    detectedCliNotSupported: "Nieobsługiwane (zaktualizuj Happiest CLI)",
     untitledSession: "Sesja bez nazwy",
     back: "Wstecz",
     notFound: "Nie znaleziono maszyny",
@@ -10626,26 +10621,26 @@ settingsSession: {
     switchToRemote: "Przełącz na zdalny",
     detachLocalTerminal: "Odłącz terminal",
     directSessionTakeoverAvailable:
-      "Ta bezpośrednia sesja jest dostępna na Twojej maszynie. Przejmij ją w Happier, aby sterować nią tutaj.",
+      "Ta bezpośrednia sesja jest dostępna na Twojej maszynie. Przejmij ją w Happiest, aby sterować nią tutaj.",
     directSessionMachineOffline:
       "Ta bezpośrednia sesja jest obecnie niedostępna, ponieważ maszyna jest offline.",
     switchingToDirectTakeover: "Przejmowanie tej bezpośredniej sesji…",
     switchingToPersistedTakeover: "Przejmowanie i importowanie tej sesji…",
     takeOverDirect: "Przejmij",
     takeOverPersist: "Przejmij i importuj",
-    directTakeoverDialogTitle: "Kontynuować tę bezpośrednią sesję w Happier?",
-    directTakeoverDialogBody: "Wybierz, jak Happier ma przejąć kontrolę. Tryb bezpośredni nadal korzysta z transkryptu dostawcy. Import przenosi transkrypt do Happier.",
+    directTakeoverDialogTitle: "Kontynuować tę bezpośrednią sesję w Happiest?",
+    directTakeoverDialogBody: "Wybierz, jak Happiest ma przejąć kontrolę. Tryb bezpośredni nadal korzysta z transkryptu dostawcy. Import przenosi transkrypt do Happiest.",
     directTakeoverDialogDirectTitle: "Przejmij",
-    directTakeoverDialogDirectBody: "Steruj tą sesją w Happier bez importowania transkryptu do Happier.",
+    directTakeoverDialogDirectBody: "Steruj tą sesją w Happiest bez importowania transkryptu do Happiest.",
     directTakeoverDialogPersistTitle: "Przejmij i importuj",
-    directTakeoverDialogPersistBody: "Zaimportuj transkrypt do Happier i kontynuuj z pełnym zestawem funkcji sesji Happier.",
+    directTakeoverDialogPersistBody: "Zaimportuj transkrypt do Happiest i kontynuuj z pełnym zestawem funkcji sesji Happiest.",
     directTakeoverDialogForceStopTitle: "Najpierw spróbować zatrzymać proces lokalny",
-    directTakeoverDialogForceStopBody: "Happier znalazł zaufany lokalny proces dla tej sesji. Włącz to, jeśli chcesz, aby Happier zatrzymał go przed przejęciem.",
+    directTakeoverDialogForceStopBody: "Happiest znalazł zaufany lokalny proces dla tej sesji. Włącz to, jeśli chcesz, aby Happiest zatrzymał go przed przejęciem.",
     directTakeoverForceStopConfirmTitle: "Najpierw zatrzymać proces lokalny?",
-    directTakeoverForceStopConfirmBody: "Happier znalazł zaufany lokalny proces dla tej bezpośredniej sesji. Zatrzymać go przed przejęciem tutaj?",
+    directTakeoverForceStopConfirmBody: "Happiest znalazł zaufany lokalny proces dla tej bezpośredniej sesji. Zatrzymać go przed przejęciem tutaj?",
     directTakeoverForceStopConfirmAction: "Zatrzymaj i przejmij",
     directSessionRunningOnComputerTitle: "Ta sesja nadal działa na komputerze",
-    directSessionRunningOnComputerBody: "Inny program na tym komputerze nadal pracuje w tej sesji. Kontynuowanie tutaj najpierw zatrzyma ten program, łącznie z tym, co właśnie robi, aby tylko Happier zapisywał do sesji.",
+    directSessionRunningOnComputerBody: "Inny program na tym komputerze nadal pracuje w tej sesji. Kontynuowanie tutaj najpierw zatrzyma ten program, łącznie z tym, co właśnie robi, aby tylko Happiest zapisywał do sesji.",
     directSessionRunningOnComputerAction: "Zatrzymaj i kontynuuj",
   },
 
@@ -11010,7 +11005,7 @@ settingsSession: {
     duplicateName: "Profil o tej nazwie już istnieje",
     setupInstructions: {
       title: "Instrukcje konfiguracji",
-      viewCloudGuide: "Zobacz oficjalny przewodnik konfiguracji",
+      viewCloudGuide: "Zobacz przewodnik konfiguracji",
     },
     machineLogin: {
       title: "Wymagane logowanie na maszynie",
@@ -11136,7 +11131,7 @@ settingsSession: {
     },
     defaultStorage: {
       title: 'Domyślny typ sesji',
-      footer: 'Nadpisuje domyślny dla konta typ sesji Happier/bezpośredniej dla nowych sesji, gdy wybrany jest ten profil.',
+      footer: 'Nadpisuje domyślny dla konta typ sesji Happiest/bezpośredniej dla nowych sesji, gdy wybrany jest ten profil.',
       accountDefaultSubtitle: ({ label }: { label: string }) => `Domyślne konto: ${label}`,
       useAccountDefault: 'Użyj domyślnego konta',
       currently: ({ label }: { label: string }) => `Aktualnie: ${label}`,

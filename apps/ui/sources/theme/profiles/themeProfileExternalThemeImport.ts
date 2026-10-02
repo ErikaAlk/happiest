@@ -1,3 +1,5 @@
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 import type { ThemeProfileV1 } from './themeProfileTypes';
 import { VS_CODE_THEME_IMPORT_ADAPTER } from './themeProfileExternalThemeImportVsCode';
 
@@ -47,8 +49,8 @@ const resolveBestExternalThemeImportAdapter = (value: unknown): ThemeProfileExte
 export const getSupportedThemeProfileImportFormats = (): readonly ThemeProfileImportFormatSummary[] => [
     {
         id: 'happier-theme-profile-json',
-        label: 'Happier theme profile JSON',
-        description: 'Exported Happier theme profiles and backups.',
+        label: `${productIdentity.productName} theme profile JSON`,
+        description: `Exported ${productIdentity.productName} theme profiles and backups.`,
     },
     ...THEME_PROFILE_EXTERNAL_IMPORT_ADAPTERS.map((adapter) => ({
         id: adapter.id,

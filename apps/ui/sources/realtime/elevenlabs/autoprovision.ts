@@ -1,3 +1,4 @@
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { elevenLabsFetchJson } from './elevenLabsApi';
 import { buildElevenLabsVoiceAgentPrompt } from '@happier-dev/agents';
 import { DEFAULT_ELEVENLABS_VOICE_ID } from './defaults';
@@ -8,7 +9,7 @@ import { listElevenLabsVoices } from './elevenLabsVoices';
 import { selectPreferredElevenLabsVoiceId } from './selectPreferredElevenLabsVoiceId';
 import { resolveUiVoicePromptStackBlocks } from '@/voice/agent/resolveUiVoicePromptStackBlocks';
 
-const HAPPIER_ELEVENLABS_AGENT_NAME = 'Happier Voice';
+const HAPPIER_ELEVENLABS_AGENT_NAME = `${productIdentity.productName} Voice`;
 const DEFAULT_CLIENT_TOOL_RESPONSE_TIMEOUT_SECS = 60;
 const MAX_CLIENT_TOOL_RESPONSE_TIMEOUT_SECS = 120;
 const USER_INTERACTIVE_CLIENT_TOOL_RESPONSE_TIMEOUT_SECS = 120;

@@ -4,10 +4,10 @@ import { isDoNotTranslate } from './localeLiterals';
 
 /**
  * `isDoNotTranslate` decides what is never offered for translation. Withholding a real command is
- * essential — a localised `happier connect <code>` is a command that does not run. But the rule
+ * essential — a localised `happiest connect <code>` is a command that does not run. But the rule
  * that recognises a command line used to accept any run of lowercase word-ish tokens, which is
  * exactly the shape of the prose fragments that sit either side of a `${...}` hole: "ready for
- * review", "just now", "m ago", " configured in Happier". Those were withheld from every locale and
+ * review", "just now", "m ago", " configured in Happiest". Those were withheld from every locale and
  * therefore still render in English in all of them.
  *
  * A command line is distinguishable from prose: it starts with an executable, or carries a token no
@@ -18,14 +18,14 @@ describe('isDoNotTranslate', () => {
     it('withholds real commands and code', () => {
         for (const command of [
             'npx -y @modelcontextprotocol/server-playwright',
-            'happier connect ',
-            'happier daemon status',
+            'happiest connect ',
+            'happiest daemon status',
             'claude setup-token',
             'git rebase --continue',
             'ssh user@host',
             '--force',
             'https://example.com/docs',
-            '~/.happier/uploads',
+            '~/.happiest/uploads',
             'src/new-file.ts',
         ]) {
             expect(isDoNotTranslate(command), command).toBe(true);
@@ -34,7 +34,7 @@ describe('isDoNotTranslate', () => {
 
     it('offers prose fragments that merely look lowercase and terse', () => {
         for (const prose of [
-            ' configured in Happier',
+            ' configured in Happiest',
             'ready for review',
             'action required',
             'permission required',

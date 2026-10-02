@@ -46,7 +46,7 @@ function desktopSnapshot(state: DemoState): DesktopUpdaterSnapshot {
 function buildDemoGroups(state: DemoState): UpdatesGroup[] {
     const app = buildAppUpdateItem({
         platformOs: 'web',
-        title: 'Happier',
+        title: 'Happiest',
         native: { updateUrl: null, required: false },
         webUiUpdateAvailable: false,
         desktop: desktopSnapshot(state),
@@ -54,7 +54,7 @@ function buildDemoGroups(state: DemoState): UpdatesGroup[] {
     }).item;
     const thisCli = buildThisComputerCliUpdateItem({
         machineId: 'laptop',
-        title: 'Happier CLI',
+        title: 'Happiest CLI',
         facts: { currentVersion: '0.2.13', latestVersion: '0.2.14', managed: true, updateCommand: null },
         task: IDLE,
     });
@@ -65,7 +65,7 @@ function buildDemoGroups(state: DemoState): UpdatesGroup[] {
         online: true,
         data: { available: true, version: '2.1.3', latestVersion: '2.1.4', installSource: 'managed', updateSupported: true, updateCommand: null },
         task: state === 'failed'
-            ? { running: false, step: null, errorMessage: 'The update didn’t finish. Try again.', logPath: '/Users/lee/.happier/logs/provider-installs/claude-2026-09-25.log' }
+            ? { running: false, step: null, errorMessage: 'The update didn’t finish. Try again.', logPath: '/Users/lee/.happiest/logs/provider-installs/claude-2026-09-25.log' }
             : IDLE,
     });
     const codex = buildAgentCliUpdateItem({
@@ -89,7 +89,7 @@ function buildDemoGroups(state: DemoState): UpdatesGroup[] {
     });
     const remote = buildRemoteCliUpdateItem({
         machineId: 'studio',
-        title: 'Happier CLI',
+        title: 'Happiest CLI',
         online: true,
         platform: 'darwin',
         happyCliVersion: '0.2.12',
@@ -98,7 +98,7 @@ function buildDemoGroups(state: DemoState): UpdatesGroup[] {
             latestVersion: '0.2.14',
             channel: 'stable',
             installSource: 'managed',
-            updateCommand: 'happier self update',
+            updateCommand: 'happiest self update',
             canUpdateRemotely: true,
             lastUpdate: { targetVersion: '0.2.14', outcome: 'pendingReconnect', at: Date.now(), message: null },
         },
@@ -106,8 +106,8 @@ function buildDemoGroups(state: DemoState): UpdatesGroup[] {
         task: IDLE,
     });
     const offline = buildRemoteCliUpdateItem({
-        machineId: 'nas', title: 'Happier CLI', online: false, platform: 'linux', happyCliVersion: '0.2.11',
-        facts: { currentVersion: '0.2.11', latestVersion: '0.2.14', channel: 'stable', installSource: 'managed', updateCommand: 'happier self update', canUpdateRemotely: true, lastUpdate: null },
+        machineId: 'nas', title: 'Happiest CLI', online: false, platform: 'linux', happyCliVersion: '0.2.11',
+        facts: { currentVersion: '0.2.11', latestVersion: '0.2.14', channel: 'stable', installSource: 'managed', updateCommand: 'happiest self update', canUpdateRemotely: true, lastUpdate: null },
         remoteUpdateAdvertised: null,
         task: IDLE,
     });

@@ -1,4 +1,5 @@
 import ts from 'typescript';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 /**
  * Read and rewrite the translatable text inside a locale module, by source offset.
@@ -226,7 +227,7 @@ export function findEscapeNormalisations(literals: readonly LocaleLiteral[]): Ro
 
 /**
  * Literals that must survive byte-identical: interpolation glue, code, flags, paths, URLs and
- * whole CLI invocations. Sending these to a translator is how `happier attach <session-id>`
+ * whole CLI invocations. Sending these to a translator is how `happiest attach <session-id>`
  * becomes a command that does not run.
  *
  * This is a HEURISTIC for deciding what to *offer* a translator, never a licence to skip a string
@@ -246,9 +247,13 @@ export function isDoNotTranslate(text: string): boolean {
     return false;
 }
 
-/** Executables this app actually names in user-facing copy. */
-const COMMAND_EXECUTABLE =
-    /^(happier|npx|npm|yarn|pnpm|bunx|node|claude|codex|gemini|opencode|qwen|kimi|kilo|kiro|auggie|cursor-agent|gh|git|tmux|zellij|ssh|scp|curl|brew|winget|choco|docker|systemctl|launchctl)$/;
+/** Executables this app actually names in user-facing copy; the product's own command comes from its identity. */
+const COMMAND_EXECUTABLES: ReadonlySet<string> = new Set([
+    productIdentity.commandName,
+    'npx', 'npm', 'yarn', 'pnpm', 'bunx', 'node',
+    'claude', 'codex', 'gemini', 'opencode', 'qwen', 'kimi', 'kilo', 'kiro', 'auggie', 'cursor-agent',
+    'gh', 'git', 'tmux', 'zellij', 'ssh', 'scp', 'curl', 'brew', 'winget', 'choco', 'docker', 'systemctl', 'launchctl',
+]);
 
 /** A token no sentence contains: a flag, a <placeholder>, a scoped package. */
 const NOT_PROSE_TOKEN = /^(--?[\w-]+|<[\w-]+>|@[\w.-]+\/[\w.-]+)$/;
@@ -258,7 +263,7 @@ const NOT_PROSE_TOKEN = /^(--?[\w-]+|<[\w-]+>|@[\w.-]+\/[\w.-]+)$/;
  *
  * The previous rule accepted any run of lowercase word-ish tokens, which is exactly the shape of
  * the prose fragments sitting either side of a `${...}` hole — "ready for review", "just now",
- * " configured in Happier". Withholding those from translation left them in English in every
+ * " configured in Happiest". Withholding those from translation left them in English in every
  * locale. A real command either starts with an executable this app names, or carries a token no
  * sentence would contain; and it never reads like a sentence.
  */
@@ -270,7 +275,7 @@ function looksLikeCommandLine(trimmed: string): boolean {
     if (!/^[a-z][\w.@/-]*$/.test(head)) return false;
     if (!rest.every((token) => /^(--?[\w-]+|<[\w-]+>|[\w.@:/*-]+)$/.test(token))) return false;
     return (
-        COMMAND_EXECUTABLE.test(head) ||
+        COMMAND_EXECUTABLES.has(head) ||
         rest.some((token) => NOT_PROSE_TOKEN.test(token) || token.includes('/'))
     );
 }

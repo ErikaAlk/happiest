@@ -1,3 +1,5 @@
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
 type SessionDebugMetadata = unknown;
 
 export type SessionDebugInformationSession = Readonly<{
@@ -71,13 +73,13 @@ export function buildSessionDebugInformation(params: Readonly<{
     const metadata = asRecord(params.session.metadata);
     const happierSessionLogPath = normalizeString(metadata?.sessionLogPath);
     const providerSessionArtifactPath = resolveProviderSessionArtifactPath(params.session.metadata);
-    const lines = [`Happier session ID: ${params.session.id}`];
+    const lines = [`${productIdentity.productName} session ID: ${params.session.id}`];
 
     if (providerDisplayName && providerSessionId) {
         lines.push(`${providerDisplayName} session ID: ${providerSessionId}`);
     }
     if (happierSessionLogPath) {
-        lines.push(`Happier logs: ${happierSessionLogPath}`);
+        lines.push(`${productIdentity.productName} logs: ${happierSessionLogPath}`);
     }
     if (providerDisplayName && providerSessionArtifactPath) {
         lines.push(`${providerDisplayName} session logs: ${providerSessionArtifactPath}`);

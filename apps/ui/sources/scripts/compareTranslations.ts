@@ -123,7 +123,7 @@ function checkIfEnglish(path: string, value: any, englishValue: any, lang: strin
         // Common product/proper-noun literals that should remain stable.
         if (trimmed === englishValue.trim()) {
             const stableProperNouns = new Set([
-                'Happier',
+                'Happiest',
                 'Windows',
                 'Windows Terminal',
                 'Tmux',
