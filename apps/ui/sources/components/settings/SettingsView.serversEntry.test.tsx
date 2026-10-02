@@ -369,7 +369,7 @@ describe('SettingsView', () => {
         const githubItem = screen.findRowByTitle('settings.github');
 
         expect(githubItem).toBeTruthy();
-        expect(githubItem?.props.subtitle).toBe('happier-dev/happier');
+        expect(githubItem?.props.subtitle).toBe('ErikaAlk/happiest');
         expect(githubItem?.props.detail).toBeUndefined();
     });
 

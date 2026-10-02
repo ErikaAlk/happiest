@@ -11,8 +11,9 @@ import { openExternalUrl } from '@/utils/url/openExternalUrl';
 import { DevicePetSelector, type DetectedDevicePetSelectorItem, type LocalDevicePetSelectorItem } from '../DevicePetSelector';
 import type { CodexDetectionState, LocalPetImportDiagnostic, LocalPetRemovalDiagnostic } from './types';
 import { Icon } from '@/components/ui/icons/Icon';
+import { productLinks } from '@/constants/productLinks';
 
-const PETS_HELP_URL = 'https://docs.happier.dev';
+const PETS_HELP_URL = productLinks.docsPage('extras/pets');
 
 type PetsLocalLibrarySectionProps = Readonly<{
     builtInPetRows: readonly BuiltInPetPackage[];

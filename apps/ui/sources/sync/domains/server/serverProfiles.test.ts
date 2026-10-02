@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MMKV } from 'react-native-mmkv';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { scopedStorageId } from '@/utils/system/storageScope';
 
@@ -207,13 +208,14 @@ describe('serverProfiles', () => {
         expect(profiles.getTabActiveServerId()).toBe(tab.id);
     });
 
-    it('seeds Happier Cloud on native when no preconfigured env exists', async () => {
+    it('seeds the product default server on native when no preconfigured env exists', async () => {
         const scope = randomScope();
         process.env.EXPO_PUBLIC_HAPPY_STORAGE_SCOPE = scope;
 
         const profiles = await importFresh();
-        expect(profiles.listServerProfiles().some((p) => p.serverUrl === 'https://api.happier.dev')).toBe(true);
-        expect(profiles.getActiveServerUrl()).toBe('https://api.happier.dev');
+        const seeded = profiles.listServerProfiles().find((p) => p.serverUrl === productIdentity.defaultServerUrl);
+        expect(seeded?.name).toBe(productIdentity.defaultServerName);
+        expect(profiles.getActiveServerUrl()).toBe(productIdentity.defaultServerUrl);
     });
 
     it('seeds a same-origin server profile on web when no preconfigured env exists', async () => {
@@ -309,23 +311,6 @@ describe('serverProfiles', () => {
         expect(profiles.getActiveServerUrl()).toBe('https://api.example.test');
         expect(profiles.getActiveServerId()).toBe('manual-id');
     });
-
-    it.each(['https://cloud.happier.dev', 'https://app.happier.dev'])(
-        'seeds api.happier.dev on the hosted web origin %s when no preconfigured env exists',
-        async (webOrigin) => {
-            const scope = randomScope();
-            process.env.EXPO_PUBLIC_HAPPY_STORAGE_SCOPE = scope;
-            delete process.env.EXPO_PUBLIC_HAPPY_SERVER_URL;
-            delete process.env.EXPO_PUBLIC_HAPPY_PRECONFIGURED_SERVERS;
-            stubWebRuntime(webOrigin);
-
-            const profiles = await importFresh();
-            const all = profiles.listServerProfiles();
-            expect(all.some((p) => p.serverUrl === 'https://api.happier.dev')).toBe(true);
-            expect(all.some((p) => p.serverUrl === webOrigin)).toBe(false);
-            expect(profiles.getActiveServerUrl()).toBe('https://api.happier.dev');
-        },
-    );
 
     it('never treats the desktop webview origin as a relay', async () => {
         // The desktop app's page is its own bundle (http://tauri.localhost on Windows, the Metro
@@ -739,13 +724,13 @@ describe('serverProfiles', () => {
         expect(profiles.getActiveServerUrl()).toBe('http://localhost:3013');
     });
 
-    it('reset-to-default targets the seeded cloud profile outside stack context when no preconfigured env exists', async () => {
+    it('reset-to-default targets the seeded default profile outside stack context when no preconfigured env exists', async () => {
         const scope = randomScope();
         process.env.EXPO_PUBLIC_HAPPY_STORAGE_SCOPE = scope;
         delete process.env.EXPO_PUBLIC_HAPPY_SERVER_CONTEXT;
 
         const profiles = await importFresh();
-        const cloud = profiles.listServerProfiles().find((p) => p.serverUrl === 'https://api.happier.dev');
+        const cloud = profiles.listServerProfiles().find((p) => p.serverUrl === productIdentity.defaultServerUrl);
         expect(cloud).toBeTruthy();
 
         const one = profiles.upsertServerProfile({ serverUrl: 'https://one.example.test', name: 'one' });

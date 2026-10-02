@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { buildSessionGettingStartedViewModel, computeMachinesSummary, computeSessionGettingStartedDecision } from './gettingStartedModel';
 
@@ -70,7 +71,7 @@ describe('buildSessionGettingStartedViewModel', () => {
         expect(model.showServerSetup).toBe(true);
     });
 
-    it('does not show server setup command for Happier Cloud', () => {
+    it('does not show server setup command for the product default server', () => {
         const model = buildSessionGettingStartedViewModel({
             sessions: [],
             selection: {
@@ -79,7 +80,7 @@ describe('buildSessionGettingStartedViewModel', () => {
                 allowedServerIds: ['cloud'],
             },
             serverSelectionGroups: [],
-            serverProfiles: [{ id: 'cloud', name: 'Happier Cloud', serverUrl: 'https://api.happier.dev' }],
+            serverProfiles: [{ id: 'cloud', name: productIdentity.defaultServerName, serverUrl: productIdentity.defaultServerUrl }],
             machineListByServerId: { cloud: [] },
             machineListStatusByServerId: { cloud: 'idle' },
         });

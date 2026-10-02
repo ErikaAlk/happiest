@@ -1,5 +1,6 @@
 import { MMKV } from 'react-native-mmkv';
 import { normalizeServerIdentityIdCapability } from '@happier-dev/protocol';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { isTauriDesktop } from '@/utils/platform/tauri';
 import { readStorageScopeFromEnv, scopedStorageId } from '@/utils/system/storageScope';
 import { isStackContext } from './serverContext';
@@ -10,11 +11,10 @@ import { readConfiguredServerUrlEnv, readConfiguredServerUrlEnvRaw } from './rea
 export type ServerProfileSource = 'manual' | 'url' | 'stack-env' | 'notification' | 'preconfigured';
 
 /**
- * The canonical Happier Cloud relay URL. Treated as a constant so callers can
- * compare an active server URL against it (via createServerUrlComparableKey)
- * without scattering the string literal across the codebase.
+ * The relay a fresh native install starts on; the same address serves the web app. Callers compare
+ * an active server URL against it via createServerUrlComparableKey.
  */
-export const HAPPIER_CLOUD_SERVER_URL = 'https://api.happier.dev' as const;
+export const DEFAULT_SERVER_URL = productIdentity.defaultServerUrl;
 
 export type ServerProfile = Readonly<{
     id: string;
@@ -247,9 +247,9 @@ function parsePreconfiguredServersFromEnv(): PreconfiguredServer[] {
         }
     }
 
-    // On native builds, never start "serverless": seed Happier Cloud when no preconfigured server exists.
+    // On native builds, never start "serverless": seed the default server when no preconfigured server exists.
     if (entries.length === 0 && !isWebRuntime()) {
-        append(HAPPIER_CLOUD_SERVER_URL, 'Happier Cloud', 'preconfigured');
+        append(DEFAULT_SERVER_URL, productIdentity.defaultServerName, 'preconfigured');
     }
 
     return entries;
@@ -679,12 +679,6 @@ export function getWebSameOriginServerUrl(): string | null {
     try {
         const parsed = new URL(origin);
         if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
-        // Official hosted web origins are static SPAs; the API lives on api.happier.dev.
-        // Keep the legacy app.happier.dev alias valid while preferring cloud.happier.dev
-        // in new links and defaults.
-        if (['cloud.happier.dev', 'app.happier.dev'].includes(parsed.hostname.toLowerCase())) {
-            return HAPPIER_CLOUD_SERVER_URL;
-        }
         return origin;
     } catch {
         return null;

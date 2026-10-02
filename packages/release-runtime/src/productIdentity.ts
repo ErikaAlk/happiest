@@ -18,6 +18,8 @@ export const productIdentity = {
   issuesUrl: `https://github.com/${githubRepo}/issues`,
   /** Server a fresh install connects to; the same address serves the web app. */
   defaultServerUrl: 'https://happiest.erikaalk.click',
+  /** Display name of the built-in profile for `defaultServerUrl`. */
+  defaultServerName: 'Happiest Server',
   /** Command installed for the stable ring; other rings append their rolling suffix. */
   commandName: 'happiest',
   /** Home directory under the user's home; `HAPPIEST_HOME_DIR` overrides it. */

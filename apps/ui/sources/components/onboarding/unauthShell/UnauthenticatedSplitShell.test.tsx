@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Text } from 'react-native';
+import { Linking, Text } from 'react-native';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { renderScreen } from '@/dev/testkit';
 
@@ -285,5 +286,32 @@ describe('UnauthenticatedSplitShell', () => {
 
         screen.pressByTestId('welcome-footer-relay-action');
         expect(onOpenRelayCustomFlow).toHaveBeenCalledTimes(1);
+    });
+
+    it('links the welcome footer to the product repository and its README, without a community chat entry', async () => {
+        mockLayout('split');
+        const openURL = vi.spyOn(Linking, 'openURL').mockResolvedValue(undefined);
+        try {
+            const screen = await renderScreen(
+                <UnauthenticatedSplitShell
+                    stepId="welcome"
+                    isWelcomeStep
+                    onOpenRelayCustomFlow={() => {}}
+                    onBrandHeroGetStarted={() => {}}
+                >
+                    <FakeBody label="welcome" />
+                </UnauthenticatedSplitShell>,
+            );
+
+            screen.pressByTestId('welcome-footer-github-action');
+            screen.pressByTestId('welcome-footer-docs-action');
+            expect(openURL.mock.calls).toEqual([
+                [`https://github.com/${productIdentity.githubRepo}`],
+                [`https://github.com/${productIdentity.githubRepo}#readme`],
+            ]);
+            expect(screen.findAllByTestId('welcome-footer-discord-action')).toEqual([]);
+        } finally {
+            openURL.mockRestore();
+        }
     });
 });

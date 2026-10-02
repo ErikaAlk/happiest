@@ -8,6 +8,8 @@ import { t } from '@/text';
 import { trackWhatsNewClicked } from '@/track';
 import { requestReview } from '@/utils/system/requestReview';
 import { ICON_SIZE, Icon } from '@/components/ui/icons/Icon';
+import { productLinks } from '@/constants/productLinks';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 type SettingsBelowFoldSectionsRouter = ReturnType<typeof useRouter>;
 type SettingsBelowFoldSectionsTheme = ReturnType<typeof useUnistyles>['theme'];
@@ -404,7 +406,7 @@ const SettingsAboutSection = React.memo(function SettingsAboutSection({
             <Item
                 title={t('settings.github')}
                 icon={<Icon name="github-logo" size={29} color={theme.colors.text.primary} />}
-                subtitle="happier-dev/happier"
+                subtitle={productIdentity.githubRepo}
                 onPress={handleGitHub}
             />
             <Item
@@ -416,7 +418,7 @@ const SettingsAboutSection = React.memo(function SettingsAboutSection({
                 title={t('settings.privacyPolicy')}
                 icon={<Icon name="shield-check" size={29} color={theme.colors.accent.blue} />}
                 onPress={async () => {
-                    const url = 'https://docs.happier.dev/legal/privacy';
+                    const url = productLinks.docsPage('legal/privacy');
                     const supported = await Linking.canOpenURL(url);
                     if (supported) {
                         await Linking.openURL(url);
@@ -427,7 +429,7 @@ const SettingsAboutSection = React.memo(function SettingsAboutSection({
                 title={t('settings.termsOfService')}
                 icon={<Icon name="file-text" size={29} color={theme.colors.accent.blue} />}
                 onPress={async () => {
-                    const url = 'https://docs.happier.dev/legal/terms';
+                    const url = productLinks.docsPage('legal/terms');
                     const supported = await Linking.canOpenURL(url);
                     if (supported) {
                         await Linking.openURL(url);

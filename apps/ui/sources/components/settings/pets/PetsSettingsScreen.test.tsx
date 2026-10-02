@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
 import { act } from 'react-test-renderer';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import {
     PET_DAEMON_RPC_METHODS,
     PET_PACKAGE_FORMAT_CODEX_ATLAS_V1,
@@ -559,7 +560,9 @@ describe('PetsSettingsScreen', () => {
 
         await screen.pressByTestIdAsync('settings-pets-help-docs');
 
-        expect(openExternalUrlMock).toHaveBeenCalledWith('https://docs.happier.dev');
+        expect(openExternalUrlMock).toHaveBeenCalledWith(
+            `https://github.com/${productIdentity.githubRepo}/blob/HEAD/apps/docs/content/docs/extras/pets.mdx`,
+        );
     });
 
     it('lets desktop users choose attention-or-active overlay visibility for this device', async () => {

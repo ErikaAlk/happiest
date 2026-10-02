@@ -4,7 +4,7 @@ import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 export const DEFAULT_SERVER_URL = productIdentity.defaultServerUrl;
 
 /** Display name of the built-in `cloud` profile. */
-export const DEFAULT_SERVER_NAME = `${productIdentity.productName} Server`;
+export const DEFAULT_SERVER_NAME = productIdentity.defaultServerName;
 
 // Upstream Happier Cloud serves its API and its web app from different hosts.
 const UPSTREAM_CLOUD_API_URL = 'https://api.happier.dev';

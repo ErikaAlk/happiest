@@ -1,6 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { getAppEnvironmentConfig } = require('./appVariantConfig.cjs');
 const { EXPO_PROJECT_CONFIG } = require('./appProjectConfig.cjs');
+const { productIdentity } = require('@happier-dev/release-runtime/productIdentity');
 
 function normalizeVariantOverride(raw) {
     const value = String(raw ?? '').trim().toLowerCase();
@@ -60,7 +61,8 @@ if (appLocalConfigModule && typeof appLocalConfigModule === 'object') {
 
 const DEFAULTS = {
     ...EXPO_PROJECT_CONFIG,
-    linkHost: "cloud.happier.dev",
+    // Share links open the web app, which the default server's address serves.
+    linkHost: new URL(productIdentity.defaultServerUrl).host,
 };
 
 // Allow opt-in overrides for local dev tooling without changing upstream defaults.
@@ -225,9 +227,7 @@ if (!process.env.EXPO_PUBLIC_HAPPIER_FEATURE_POLICY_ENV && resolvedFeaturePolicy
 }
 
 const linkHost = (process.env.EXPO_APP_LINK_HOST || DEFAULTS.linkHost).trim();
-const linkHosts = linkHost === DEFAULTS.linkHost
-    ? [linkHost, 'app.happier.dev']
-    : [linkHost];
+const linkHosts = [linkHost];
 const iosAssociatedDomainsRaw = (process.env.EXPO_IOS_ASSOCIATED_DOMAINS || '').trim();
 const iosAssociatedDomains = iosAssociatedDomainsRaw
     ? iosAssociatedDomainsRaw.split(/[\s,]+/).map(v => v.trim()).filter(Boolean)

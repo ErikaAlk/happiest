@@ -166,7 +166,7 @@ function describeRelayDrift(
         return null;
     }
 
-    // Relays are named the way a person says them (`api.happier.dev`), never as full URLs,
+    // Relays are named the way a person says them (`happiest.erikaalk.click`), never as full URLs,
     // and accounts by a readable label (R17).
     const daemonRelayUrl = daemonFacts.relayUrl;
     const appRelayHost = toRelayHostDisplay(activeServerUrl);

@@ -43,6 +43,7 @@ import { runAfterInteractionsWithFallback } from '@/utils/timing/runAfterInterac
 import { Icon } from '@/components/ui/icons/Icon';
 import { describeUpdatesSettingsSubtitle } from '@/components/updates/describeUpdatesSummary';
 import { useSharedUpdatesSummary } from '@/updates/useUpdatesSummary';
+import { productLinks } from '@/constants/productLinks';
 
 const DEFER_BELOW_FOLD_SETTINGS_SECTIONS_DELAY_MS = 0;
 const DEFER_BELOW_FOLD_SETTINGS_STAGE_DELAY_MS = 16;
@@ -157,7 +158,7 @@ export const SettingsView = React.memo(function SettingsView() {
     }, []);
 
     const handleGitHub = async () => {
-        const url = 'https://github.com/happier-dev/happier';
+        const url = productLinks.repository;
         const supported = await Linking.canOpenURL(url);
         if (supported) {
             await Linking.openURL(url);

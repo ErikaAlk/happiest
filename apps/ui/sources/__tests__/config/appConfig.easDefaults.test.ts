@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 const DEFAULT_EAS_PROJECT_ID = '2a550bd7-e4d2-4f59-ab47-dcb778775cee';
 const DEFAULT_UPDATES_URL = `https://u.expo.dev/${DEFAULT_EAS_PROJECT_ID}`;
@@ -154,7 +155,7 @@ describe('app.config.js', () => {
 
         expect(exp.extra?.app?.variant).toBe('preview');
         expect(exp.extra?.app?.identityVariant).toBe('publicdev');
-        expect(exp.name).toBe('Happier (dev)');
+        expect(exp.name).toBe('Happiest (dev)');
         expect(exp.ios?.bundleIdentifier).toBe('dev.happier.app.publicdev');
         expect(exp.android?.package).toBe('dev.happier.app.publicdev');
         expect(exp.scheme).toBe('happier-dev');
@@ -227,7 +228,7 @@ describe('app.config.js', () => {
 
         expect(exp.extra?.app?.variant).toBe('preview');
         expect(exp.extra?.app?.identityVariant).toBe('internalpreview');
-        expect(exp.name).toBe('Happier (internal preview)');
+        expect(exp.name).toBe('Happiest (internal preview)');
         expect(exp.ios?.bundleIdentifier).toBe('dev.happier.app.internalpreview');
         expect(exp.android?.package).toBe('dev.happier.app.internalpreview');
         expect(exp.scheme).toBe('happier-internalpreview');
@@ -243,17 +244,12 @@ describe('app.config.js', () => {
         });
 
         expect(exp.extra?.app?.variant).toBe('preview');
-        // Production identity still enables universal links / app links.
-        expect(exp.ios?.associatedDomains).toEqual([
-            'applinks:cloud.happier.dev',
-            'applinks:app.happier.dev',
-        ]);
+        // Production identity still enables universal links / app links, on the default server's host.
+        const defaultServerHost = new URL(productIdentity.defaultServerUrl).host;
+        expect(exp.ios?.associatedDomains).toEqual([`applinks:${defaultServerHost}`]);
         const data = exp.android?.intentFilters?.[0]?.data;
         const dataItems = Array.isArray(data) ? data : data ? [data] : [];
-        expect(dataItems.map((item) => item?.host)).toEqual([
-            'cloud.happier.dev',
-            'app.happier.dev',
-        ]);
+        expect(dataItems.map((item) => item?.host)).toEqual([defaultServerHost]);
     });
 
     it('uses the ui package.json version for expo.version by default', () => {
