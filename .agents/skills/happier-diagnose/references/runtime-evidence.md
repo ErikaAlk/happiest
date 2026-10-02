@@ -1,4 +1,4 @@
-# Happier runtime evidence
+# Happiest runtime evidence
 
 Use only the sections relevant to the incident. Paths and commands are discovery aids, not proof; verify current output and installed-version behavior.
 
@@ -6,10 +6,10 @@ Use only the sections relevant to the incident. Paths and commands are discovery
 
 Prefer copied Session info metadata when available. Useful fields include `sessionLogPath`, `flavor`, provider session ID, `host`, `path`, `version`, `os`, `hostPid`, `happyHomeDir`, `machineId`, and `startedBy`.
 
-With only a Happier session ID, use the `happier-session-control` contract:
+With only a Happiest session ID, use the `happier-session-control` contract:
 
 ```bash
-happier session status <session-id-or-prefix> --json
+happiest session status <session-id-or-prefix> --json
 ```
 
 For daemon-wide incidents, session metadata may be unnecessary.
@@ -19,19 +19,18 @@ For daemon-wide incidents, session metadata may be unnecessary.
 When daemon, server, auth, process, version, or connectivity state is material:
 
 ```bash
-happier doctor --json
-happier auth status --json
+happiest doctor --json
+happiest auth status --json
 ```
 
 Interpret the returned fields rather than assuming that command success means the subsystem is healthy.
 
-## Happier homes and logs
+## Happiest homes and logs
 
-Trust `metadata.happyHomeDir` and `metadata.sessionLogPath` over guesses. `$HAPPIER_HOME_DIR` can override defaults. Common homes include:
+Trust `metadata.happyHomeDir` and `metadata.sessionLogPath` over guesses. `$HAPPIEST_HOME_DIR` can override defaults. Common homes include:
 
-- release: `~/.happier/`;
-- preview: `~/.happier-preview/`;
-- development: `~/.happier-dev/`;
+- installed CLI: `~/.happiest/`;
+- CLI started from repository sources (`happiest-source`): `~/.happiest-source/`;
 - custom: the configured home.
 
 Primary session evidence is `metadata.sessionLogPath`. When absent, search the resolved home for the `hostPid`:
@@ -76,7 +75,7 @@ OpenCode follows XDG storage. Session content may be distributed across storage 
 find "${XDG_DATA_HOME:-$HOME/.local/share}/opencode/storage" -type f -name "<opencodeSessionId>.json" 2>/dev/null
 ```
 
-Global OpenCode logs normally live under the same base in `opencode/log/`; correlate them to the Happier failure window. Connected-services sessions may instead use:
+Global OpenCode logs normally live under the same base in `opencode/log/`; correlate them to the Happiest failure window. Connected-services sessions may instead use:
 
 ```text
 <happyHomeDir>/servers/<serverId>/daemon/connected-services/homes/<connectedServiceId>/<profileId>/opencode/
@@ -87,7 +86,7 @@ Global OpenCode logs normally live under the same base in `opencode/log/`; corre
 Use current workspace source when diagnosing the current checkout. For an installed release, inspect the source corresponding to `metadata.version` when decision-material:
 
 ```bash
-git clone --depth 1 --branch "v<version>" https://github.com/happier-dev/happier "<temporary-directory>"
+git clone --depth 1 --branch "cli-v<version>" https://github.com/ErikaAlk/happiest "<temporary-directory>"
 ```
 
 If that immutable tag is unavailable, report the fallback basis rather than implying exact version correspondence. Relevant owners commonly live under:

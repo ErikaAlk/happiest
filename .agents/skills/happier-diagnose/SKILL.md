@@ -1,12 +1,12 @@
 ---
 name: happier-diagnose
-description: Diagnose and explain a Happier runtime, session, daemon, provider (Claude/Codex/OpenCode), authentication, or connectivity incident from logs, structured diagnostics, runtime state, and source evidence without modifying repository implementation. Use for support investigation, incident triage, session-ID analysis, or when the user asks what went wrong; if the user requests a repository fix, hand the established evidence to happier-implement.
-metadata: {"openclaw":{"requires":{"bins":["happier"]},"homepage":"https://github.com/happier-dev/happier"}}
+description: Diagnose and explain a Happiest runtime, session, daemon, provider (Claude/Codex/OpenCode), authentication, or connectivity incident from logs, structured diagnostics, runtime state, and source evidence without modifying repository implementation. Use for support investigation, incident triage, session-ID analysis, or when the user asks what went wrong; if the user requests a repository fix, hand the established evidence to happier-implement.
+metadata: {"openclaw":{"requires":{"bins":["happiest"]},"homepage":"https://github.com/ErikaAlk/happiest"}}
 ---
 
-# Happier Diagnose
+# Happiest Diagnose
 
-Investigate a Happier runtime/support incident from primary evidence, determine the originating cause when the evidence supports it, and report what is known, what is derived, and what remains unverified. Diagnosis is read-only: do not edit repository source or silently turn the investigation into a fix.
+Investigate a Happiest runtime/support incident from primary evidence, determine the originating cause when the evidence supports it, and report what is known, what is derived, and what remains unverified. Diagnosis is read-only: do not edit repository source or silently turn the investigation into a fix.
 
 For a GitHub issue or coherent issue bundle, use `.agents/skills/happier-issue-diagnose`; it owns untrusted issue intake, private maintainer-evidence capability checks, version/release disposition, and the GitHub-facing report while composing this runtime evidence method when applicable. For a raw multi-issue corpus, use `.agents/skills/happier-issue-triage` first.
 
@@ -23,13 +23,13 @@ Inspect evidence already supplied or locally available before asking the user fo
 - what still works and the practical impact;
 - whether the user wants diagnosis only, local recovery guidance, or later reporting.
 
-If no usable description or evidence exists, ask one concise question that requests the symptom and any Happier session ID or copied session metadata. Do not interrogate or ask for information that safe local/CLI inspection can retrieve.
+If no usable description or evidence exists, ask one concise question that requests the symptom and any Happiest session ID or copied session metadata. Do not interrogate or ask for information that safe local/CLI inspection can retrieve.
 
 Do not guess an expected result. Derive it from the user's stated expectation, a current product/external contract, or observed canonical behavior. If it remains materially unspecified, report that ambiguity rather than forcing a root-cause verdict.
 
 ## 2. Select the evidence path
 
-Read [runtime-evidence.md](references/runtime-evidence.md) when session metadata, doctor/auth state, Happier logs, provider transcripts, connected-service homes, or installed-version source is needed. In the built-in `/happier-diagnose` prompt, use the bundled runtime-evidence reference included below.
+Read [runtime-evidence.md](references/runtime-evidence.md) when session metadata, doctor/auth state, Happiest logs, provider transcripts, connected-service homes, or installed-version source is needed. In the built-in `/happier-diagnose` prompt, use the bundled runtime-evidence reference included below.
 
 Start with evidence that can discriminate among likely failure layers:
 
@@ -39,7 +39,7 @@ Start with evidence that can discriminate among likely failure layers:
 - process, port, filesystem, persistence, browser/network, or service state;
 - current or installed-version source, schemas, and tests when they establish reachability or interpret a logged event.
 
-Run `happier doctor --json` and `happier auth status --json` when daemon, server, authentication, lifecycle, process, or connectivity state is material. Do not make doctor a mandatory prelude to an unrelated UI-only or already-decided failure.
+Run `happiest doctor --json` and `happiest auth status --json` when daemon, server, authentication, lifecycle, process, or connectivity state is material. Do not make doctor a mandatory prelude to an unrelated UI-only or already-decided failure.
 
 Prefer `metadata.sessionLogPath` and `metadata.happyHomeDir` over guessed locations. Anchor searches on time, session/provider IDs, PID, host, and operation. Absence is evidence only about the named files, patterns, and time range searched.
 
@@ -53,7 +53,7 @@ Separate symptom, propagation, and cause. Classify where the failure entered:
 - daemon, process, service, or connectivity lifecycle;
 - provider or external service contract;
 - authentication, authorization, encryption, or key state;
-- canonical Happier implementation;
+- canonical Happiest implementation;
 - persisted/session state or compatibility;
 - test/harness or stale runtime artifact;
 - unrelated system.

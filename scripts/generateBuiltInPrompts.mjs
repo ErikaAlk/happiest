@@ -1,6 +1,9 @@
 import { readFile, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+const { productIdentity } = createRequire(import.meta.url)('@happier-dev/release-runtime/productIdentity');
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), '..');
@@ -80,7 +83,7 @@ export function renderBuiltInPromptsSource({
 // Regenerate with: node scripts/generateBuiltInPrompts.mjs
 // Validate freshness with: node scripts/generateBuiltInPrompts.mjs --check
 //
-// Built-in core slash commands available in any Happier session, no user
+// Built-in core slash commands available in any ${productIdentity.productName} session, no user
 // configuration needed. Each entry's body is sent verbatim to the agent when
 // the user types the matching token.
 
@@ -98,7 +101,7 @@ export const HAPPIER_DIAGNOSE_BODY: string = ${serializedDiagnoseSkill};
 export const BUILT_IN_PROMPTS: ReadonlyArray<BuiltInPrompt> = Object.freeze([
     Object.freeze({
         token: '/happier-diagnose',
-        title: 'Diagnose Happier Issue',
+        title: 'Diagnose ${productIdentity.productName} Issue',
         body: HAPPIER_DIAGNOSE_BODY,
         allowArgs: true,
     }),

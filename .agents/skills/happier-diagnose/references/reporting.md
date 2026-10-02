@@ -1,20 +1,20 @@
-# Reporting a Happier diagnosis
+# Reporting a Happiest diagnosis
 
 Use only after presenting the diagnosis and receiving explicit user consent for the selected path.
 
 ## Choose private, public, or both
 
-- **Private diagnostics upload:** logs and selected transcripts are sent to Happier's diagnostics service for maintainers.
-- **Public GitHub issue:** a sanitized, searchable report is created at `happier-dev/happier`.
+- **Private diagnostics upload:** logs and selected transcripts are sent to the bug-report service that the connected server advertises (`capabilities.bugReports.providerUrl`); name that service to the user before uploading.
+- **Public GitHub issue:** a sanitized, searchable report is created at `ErikaAlk/happiest`.
 
 The paths are complementary. If the user selects both, upload privately first so the public issue can include the returned `reportId`. Consent to one path does not authorize the other.
 
 ## Private upload
 
-Construct the current command from verified `happier bug-report --help` output. A typical invocation is:
+Construct the current command from verified `happiest bug-report --help` output. A typical invocation is:
 
 ```bash
-happier bug-report \
+happiest bug-report \
   --title "<specific title>" \
   --summary "<concise evidence-backed summary>" \
   --current-behavior "<observed behavior>" \
@@ -23,7 +23,7 @@ happier bug-report \
   --repro-step "<step 2>" \
   --frequency <always|often|sometimes|once> \
   --severity <blocker|high|medium|low> \
-  --session-id <happier-session-id> \
+  --session-id <happiest-session-id> \
   --attach-session-log <session-log-path> \
   --attach-provider-transcript <provider-transcript-path> \
   --include-diagnostics \
@@ -59,7 +59,7 @@ Verify `gh` availability and authentication before attempting the external write
 
 ## Environment
 
-- Happier CLI:
+- Happiest CLI:
 - OS:
 - Provider:
 - Diagnostics reportId:
