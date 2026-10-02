@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { existsSync, lstatSync, mkdtempSync, mkdirSync, readdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { delimiter, join } from 'node:path';
 
@@ -12,6 +12,23 @@ vi.mock('node:fs', async (importOriginal) => {
 });
 
 const originalPlatformDescriptor = Object.getOwnPropertyDescriptor(process, 'platform');
+
+// An app execution alias (what Windows Terminal, winget and Store apps put in WindowsApps) is a
+// reparse point Node cannot open, so `existsSync` reports it missing although Windows runs it.
+// Only a real Windows profile has one; elsewhere the test that needs it is skipped.
+function findAppExecutionAlias(): { dir: string; name: string } | null {
+    if (process.platform !== 'win32' || !process.env.LOCALAPPDATA) return null;
+    const dir = join(process.env.LOCALAPPDATA, 'Microsoft', 'WindowsApps');
+    if (!existsSync(dir)) return null;
+    const aliases = readdirSync(dir).filter((name) => {
+        const full = join(dir, name);
+        return name.toLowerCase().endsWith('.exe') && !existsSync(full) && lstatSync(full).isSymbolicLink();
+    });
+    const name = aliases.find((alias) => alias.toLowerCase() === 'wt.exe') ?? aliases[0];
+    return name ? { dir, name } : null;
+}
+
+const appExecutionAlias = findAppExecutionAlias();
 
 describe('resolveWindowsCommandInvocation', () => {
     const tempDirs = new Set<string>();
@@ -50,7 +67,7 @@ describe('resolveWindowsCommandInvocation', () => {
         })?.toLowerCase()).toBe(cmdShimPath.toLowerCase());
     });
 
-    it('probes candidate spellings only in PATH directories that contain the command', async () => {
+    it('decides candidate spellings from one listing per PATH directory instead of probing each', async () => {
         if (!originalPlatformDescriptor) {
             throw new Error('Expected process.platform to be configurable for this test');
         }
@@ -79,8 +96,7 @@ describe('resolveWindowsCommandInvocation', () => {
 
         // Each probe is a blocking filesystem call on the daemon's event loop, and the daemon looks
         // up every provider CLI this way whenever the new-session screen asks for capabilities.
-        const probedDirs = new Set(vi.mocked(existsSync).mock.calls.map(([probed]) => String(probed).slice(0, matchingDir.length)));
-        expect([...probedDirs]).toEqual([matchingDir]);
+        expect(vi.mocked(existsSync)).not.toHaveBeenCalled();
     });
 
     it('finds a command installed into a PATH directory after an earlier lookup missed it', async () => {
@@ -100,6 +116,16 @@ describe('resolveWindowsCommandInvocation', () => {
         expect(resolveWindowsCommandOnPath('late-tool', env)).toBeNull();
         writeFileSync(join(binDir, 'late-tool.exe'), '', 'utf8');
         expect(resolveWindowsCommandOnPath('late-tool', env)?.toLowerCase()).toBe(join(binDir, 'late-tool.exe').toLowerCase());
+    });
+
+    it.skipIf(appExecutionAlias === null)('finds an app execution alias such as wt.exe on PATH', async () => {
+        const alias = appExecutionAlias!;
+        const { resolveWindowsCommandOnPath } = await import('./resolveWindowsCommandInvocation.js');
+
+        expect(resolveWindowsCommandOnPath(alias.name, {
+            PATH: alias.dir,
+            PATHEXT: '.COM;.EXE;.BAT;.CMD',
+        })?.toLowerCase()).toBe(join(alias.dir, alias.name).toLowerCase());
     });
 
     it('detects PATHEXT commands directly from the supplied Windows PATH', async () => {

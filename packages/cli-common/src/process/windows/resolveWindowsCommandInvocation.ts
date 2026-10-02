@@ -90,26 +90,31 @@ export function resolveWindowsCommandPath(commandPath: string, env: NodeJS.Proce
 }
 
 /**
- * Whether a PATH directory can hold any of `lowerCandidates`, from one listing of the directory.
- * Probing every PATHEXT spelling in every PATH directory costs over a thousand blocking filesystem
- * calls per missing command on a typical Windows PATH; one listing per directory replaces them.
- * A directory that cannot be listed keeps the per-candidate probes, which decide exactly as before.
+ * The entries of a PATH directory from one listing, keyed by lower-cased name; `'missing'` when there
+ * is no such directory and `null` when it exists but cannot be listed.
+ *
+ * The listing decides which candidate spellings exist. Probing every PATHEXT spelling in every PATH
+ * directory costs over a thousand blocking filesystem calls per missing command on a typical Windows
+ * PATH, and a probe cannot see an app execution alias such as Windows Terminal's
+ * `%LOCALAPPDATA%\Microsoft\WindowsApps\wt.exe`: `existsSync` follows its reparse point, cannot open
+ * it and reports it missing, although Windows finds and runs it. The listing names it like any file.
  */
-function pathDirectoryMayContain(dir: string, lowerCandidates: ReadonlySet<string>): boolean {
+function listPathDirectory(dir: string): ReadonlyMap<string, string> | 'missing' | null {
   let entries: string[];
   try {
     entries = readdirSync(dir);
   } catch (error) {
     const code = (error as NodeJS.ErrnoException).code;
-    return code !== 'ENOENT' && code !== 'ENOTDIR';
+    return code === 'ENOENT' || code === 'ENOTDIR' ? 'missing' : null;
   }
-  return entries.some((entry) => lowerCandidates.has(entry.toLowerCase()));
+  return new Map(entries.map((entry) => [entry.toLowerCase(), entry]));
 }
 
 /**
  * The first `command` on PATH, trying each PATHEXT spelling per directory. `accept` skips matches the
  * caller already knows are not the one it looks for (the managed `happier.exe` when looking for a
  * `happier` the user installed), so the search goes on to the next match instead of stopping there.
+ * A directory that cannot be listed is probed one candidate at a time.
  */
 export function resolveWindowsCommandOnPath(
   command: string,
@@ -123,19 +128,18 @@ export function resolveWindowsCommandOnPath(
   if (!pathEnv) return null;
 
   const candidates = buildWindowsCommandCandidates(cmd, env);
-  const lowerCandidates = new Set(candidates.map((name) => name.toLowerCase()));
 
   for (const dir of pathEnv.split(pathDelimiter)) {
     const trimmedDir = dir.trim();
     if (!trimmedDir) continue;
-    if (!pathDirectoryMayContain(trimmedDir, lowerCandidates)) continue;
+    const entries = listPathDirectory(trimmedDir);
+    if (entries === 'missing') continue;
     for (const name of candidates) {
-      const full = join(trimmedDir, name);
-      try {
-        if (existsSync(full) && accept(full)) return full;
-      } catch {
-        // ignore
-      }
+      const listedName = entries ? entries.get(name.toLowerCase()) : name;
+      if (!listedName) continue;
+      const full = join(trimmedDir, listedName);
+      if (!entries && !existsSync(full)) continue;
+      if (accept(full)) return full;
     }
   }
 
