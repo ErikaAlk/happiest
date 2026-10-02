@@ -8147,7 +8147,6 @@ settingsSession: {
           title: 'Windows',
           defaultModeTitle: 'Domyślny tryb zdalnej sesji Windows',
           windowNameTitle: 'Nazwa okna Windows Terminal',
-          windowNamePlaceholder: 'happier',
           windowNameHint: 'Sesje otwierane w Windows Terminal używają tego nazwanego okna, aby nowe sesje mogły pojawiać się jako karty.',
       },
       advanced: {

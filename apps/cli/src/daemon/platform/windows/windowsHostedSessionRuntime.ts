@@ -3,6 +3,7 @@ import {
   normalizeWindowsTerminalWindowName as normalizeProtocolWindowsTerminalWindowName,
   DEFAULT_WINDOWS_TERMINAL_WINDOW_NAME,
 } from '@happier-dev/protocol';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { randomBytes } from 'node:crypto';
 
 type WindowsHostedActualMode = 'windows_terminal' | 'windows_console';
@@ -49,7 +50,7 @@ export function buildWindowsTerminalWindowIdentity(params: {
   const sanitizedAgent = params.agentCommand.replace(/[^A-Za-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 24) || 'agent';
   return {
     windowId: normalizeWindowsTerminalWindowName(params.windowName),
-    title: `Happier ${params.agentCommand} ${base}`,
+    title: `${productIdentity.productName} ${params.agentCommand} ${base}`,
   };
 }
 

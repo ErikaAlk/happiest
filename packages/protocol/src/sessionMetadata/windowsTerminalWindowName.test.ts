@@ -8,15 +8,15 @@ import {
 
 describe('windowsTerminalWindowName', () => {
   it('normalizes empty and reserved Windows Terminal window names to the shared default', () => {
-    expect(DEFAULT_WINDOWS_TERMINAL_WINDOW_NAME).toBe('happier');
-    expect(normalizeWindowsTerminalWindowName('')).toBe('happier');
-    expect(normalizeWindowsTerminalWindowName('   ')).toBe('happier');
-    expect(normalizeWindowsTerminalWindowName('new')).toBe('happier');
-    expect(normalizeWindowsTerminalWindowName('0')).toBe('happier');
+    expect(DEFAULT_WINDOWS_TERMINAL_WINDOW_NAME).toBe('happiest');
+    expect(normalizeWindowsTerminalWindowName('')).toBe('happiest');
+    expect(normalizeWindowsTerminalWindowName('   ')).toBe('happiest');
+    expect(normalizeWindowsTerminalWindowName('new')).toBe('happiest');
+    expect(normalizeWindowsTerminalWindowName('0')).toBe('happiest');
   });
 
   it('preserves explicit named Windows Terminal windows', () => {
-    expect(normalizeWindowsTerminalWindowName('  happier qa  ')).toBe('happier qa');
-    expect(WindowsTerminalWindowNameSchema.parse('happier-dev')).toBe('happier-dev');
+    expect(normalizeWindowsTerminalWindowName('  happiest qa  ')).toBe('happiest qa');
+    expect(WindowsTerminalWindowNameSchema.parse('happiest-dev')).toBe('happiest-dev');
   });
 });

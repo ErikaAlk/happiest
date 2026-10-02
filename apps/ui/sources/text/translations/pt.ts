@@ -8265,7 +8265,6 @@ settingsSession: {
           title: 'Windows',
           defaultModeTitle: 'Modo remoto padrão do Windows',
           windowNameTitle: 'Nome da janela do Windows Terminal',
-          windowNamePlaceholder: 'happier',
           windowNameHint: 'Sessões abertas no Windows Terminal usam esta janela nomeada para que novas sessões possam aparecer como abas.',
       },
       advanced: {

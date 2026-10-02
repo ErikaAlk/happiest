@@ -7334,7 +7334,6 @@ settingsSession: {
             title: 'Windows',
             defaultModeTitle: '預設 Windows 遠端工作階段模式',
             windowNameTitle: 'Windows Terminal 視窗名稱',
-            windowNamePlaceholder: 'happier',
             windowNameHint: '在 Windows Terminal 開啟的工作階段會使用這個命名視窗，讓新的工作階段可以顯示為分頁。',
         },
     },

@@ -13,32 +13,32 @@ describe('windowsHostedSessionRuntime', () => {
     expect(buildWindowsTerminalWindowIdentity({
       existingSessionId: 'sess_123',
       agentCommand: 'codex',
-      windowName: 'happier',
+      windowName: 'happiest',
       now: () => 123,
       randomHex: () => 'abcd1234',
     })).toEqual({
-      windowId: 'happier',
-      title: 'Happier codex sess_123',
+      windowId: 'happiest',
+      title: 'Happiest codex sess_123',
     });
   });
 
   it('keeps generated spawn ids in the tab title without changing the shared window id', () => {
     expect(buildWindowsTerminalWindowIdentity({
       agentCommand: 'claude',
-      windowName: 'happier',
+      windowName: 'happiest',
       now: () => 42,
       randomHex: () => 'beefcafe',
     })).toEqual({
-      windowId: 'happier',
-      title: 'Happier claude spawn-42-beefcafe',
+      windowId: 'happiest',
+      title: 'Happiest claude spawn-42-beefcafe',
     });
   });
 
   it('normalizes configured Windows Terminal window names', () => {
-    expect(normalizeWindowsTerminalWindowName('  happier qa  ')).toBe('happier qa');
-    expect(normalizeWindowsTerminalWindowName('')).toBe('happier');
-    expect(normalizeWindowsTerminalWindowName('last')).toBe('happier');
-    expect(normalizeWindowsTerminalWindowName('-1')).toBe('happier');
+    expect(normalizeWindowsTerminalWindowName('  happiest qa  ')).toBe('happiest qa');
+    expect(normalizeWindowsTerminalWindowName('')).toBe('happiest');
+    expect(normalizeWindowsTerminalWindowName('last')).toBe('happiest');
+    expect(normalizeWindowsTerminalWindowName('-1')).toBe('happiest');
   });
 
   it('lets the daemon environment override the requested Windows Terminal window name', () => {

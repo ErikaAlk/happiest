@@ -8270,7 +8270,6 @@ settingsSession: {
             title: 'Windows',
             defaultModeTitle: 'Default Windows remote session mode',
             windowNameTitle: 'Windows Terminal window name',
-            windowNamePlaceholder: 'happier',
             windowNameHint: 'Sessions opened in Windows Terminal use this named window so new sessions can appear as tabs.',
         },
     },

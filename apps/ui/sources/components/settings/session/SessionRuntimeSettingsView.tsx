@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Platform, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { DEFAULT_WINDOWS_TERMINAL_WINDOW_NAME } from '@happier-dev/protocol';
 
 import { DropdownMenu } from '@/components/ui/forms/dropdown/DropdownMenu';
 import { Switch } from '@/components/ui/forms/Switch';
@@ -111,7 +112,7 @@ export const SessionRuntimeSettingsView = React.memo(function SessionRuntimeSett
                     <TextInput
                         testID="settings-session-windows-terminal-window-name-input"
                         style={styles.textInput}
-                        placeholder={t('settingsSession.windows.windowNamePlaceholder')}
+                        placeholder={DEFAULT_WINDOWS_TERMINAL_WINDOW_NAME}
                         placeholderTextColor={theme.colors.input.placeholder}
                         value={windowsTerminalWindowName ?? ''}
                         onChangeText={setWindowsTerminalWindowName}

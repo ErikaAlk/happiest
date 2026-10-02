@@ -8476,7 +8476,6 @@ settingsSession: {
           title: 'Windows',
           defaultModeTitle: 'Modalità remota predefinita di Windows',
           windowNameTitle: 'Nome finestra di Windows Terminal',
-          windowNamePlaceholder: 'happier',
           windowNameHint: 'Le sessioni aperte in Windows Terminal usano questa finestra con nome, così le nuove sessioni possono apparire come schede.',
       },
       advanced: {

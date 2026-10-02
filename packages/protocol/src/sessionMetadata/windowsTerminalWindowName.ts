@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
-export const DEFAULT_WINDOWS_TERMINAL_WINDOW_NAME = 'happier';
+// Same value as `productIdentity.commandName`, so sessions of an installed upstream Happier (window
+// `happier`) never open as tabs of this product's window. Protocol builds before release-runtime, so
+// it carries the literal and scripts/release/product_identity_literals.contract.test.mjs compares it.
+export const DEFAULT_WINDOWS_TERMINAL_WINDOW_NAME = 'happiest';
 
 const WINDOWS_TERMINAL_RESERVED_WINDOW_NAMES = new Set(['new', '-1', 'last', '0']);
 

@@ -8397,7 +8397,6 @@ settingsSession: {
         title: 'Windows',
         defaultModeTitle: 'Windows リモートセッションの既定モード',
         windowNameTitle: 'Windows Terminal のウィンドウ名',
-        windowNamePlaceholder: 'happier',
         windowNameHint: 'Windows Terminal で開くセッションはこの名前付きウィンドウを使い、新しいセッションをタブとして表示できます。',
     },
     advanced: {

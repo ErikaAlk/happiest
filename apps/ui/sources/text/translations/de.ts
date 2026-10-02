@@ -8240,7 +8240,6 @@ settingsSession: {
             title: 'Windows',
             defaultModeTitle: 'Standardmodus für Remote-Sessions unter Windows',
             windowNameTitle: 'Fenstername für Windows Terminal',
-            windowNamePlaceholder: 'happier',
             windowNameHint: 'Sessions, die in Windows Terminal geöffnet werden, nutzen dieses benannte Fenster, damit neue Sessions als Tabs erscheinen.',
         },
     },

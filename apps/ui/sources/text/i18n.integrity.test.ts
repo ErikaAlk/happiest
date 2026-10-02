@@ -414,7 +414,6 @@ const IGNORED_UNTRANSLATED_KEYS_BY_LOCALE: Readonly<Record<string, ReadonlySet<s
         'settingsSession.transcript.motionPickerTitle',
         'settingsSession.transcript.title',
         'settingsSession.windows.title',
-        'settingsSession.windows.windowNamePlaceholder',
         'settingsVoice.byo.agentId',
         'settingsVoice.byo.agentIdPlaceholder',
         'settingsVoice.byo.apiKeyPlaceholder',

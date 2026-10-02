@@ -8131,7 +8131,6 @@ settingsSession: {
         title: 'Windows',
         defaultModeTitle: 'Режим удалённой сессии Windows по умолчанию',
         windowNameTitle: 'Имя окна Windows Terminal',
-        windowNamePlaceholder: 'happier',
         windowNameHint: 'Сессии, открытые в Windows Terminal, используют это именованное окно, чтобы новые сессии могли появляться как вкладки.',
     },
     advanced: {

@@ -7718,7 +7718,6 @@ settingsSession: {
                 title: 'Windows',
                 defaultModeTitle: 'Mode remot de Windows per defecte',
                 windowNameTitle: 'Nom de la finestra de Windows Terminal',
-                windowNamePlaceholder: 'happier',
                 windowNameHint: 'Les sessions obertes a Windows Terminal fan servir aquesta finestra amb nom perquè les sessions noves puguin aparèixer com a pestanyes.',
             },
             advanced: {

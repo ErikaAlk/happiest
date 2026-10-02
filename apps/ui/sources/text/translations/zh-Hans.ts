@@ -7916,7 +7916,6 @@ settingsSession: {
         title: 'Windows',
         defaultModeTitle: '默认 Windows 远程会话模式',
         windowNameTitle: 'Windows Terminal 窗口名称',
-        windowNamePlaceholder: 'happier',
         windowNameHint: '在 Windows Terminal 中打开的会话会使用这个命名窗口，因此新会话可以显示为标签页。',
       },
     advanced: {

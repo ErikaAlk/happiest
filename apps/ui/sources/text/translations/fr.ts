@@ -8227,7 +8227,6 @@ settingsSession: {
             title: 'Windows',
             defaultModeTitle: 'Mode de session distante Windows par défaut',
             windowNameTitle: 'Nom de fenêtre Windows Terminal',
-            windowNamePlaceholder: 'happier',
             windowNameHint: 'Les sessions ouvertes dans Windows Terminal utilisent cette fenêtre nommée pour que les nouvelles sessions apparaissent comme des onglets.',
         },
     },
