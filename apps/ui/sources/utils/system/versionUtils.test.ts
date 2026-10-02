@@ -4,9 +4,14 @@ import {
     getVersionSupportState,
     isVersionSupported,
     parseVersion,
+    supportsSessionForkRequestId,
     MINIMUM_CLI_VERSION,
     MINIMUM_CLI_BACKEND_TARGET_SPAWN_VERSION,
+    MINIMUM_CLI_PENDING_QUEUE_V2_VERSION,
+    MINIMUM_CLI_SESSION_FORK_REQUEST_ID_VERSION,
     MINIMUM_CLI_SESSION_USER_MESSAGE_RPC_VERSION,
+    MINIMUM_CLI_SOURCE_CONTEXT_SPAWN_VERSION,
+    MINIMUM_CLI_SPAWN_PENDING_FIRST_INPUT_VERSION,
 } from './versionUtils';
 
 describe('versionUtils', () => {
@@ -68,12 +73,25 @@ describe('versionUtils', () => {
             expect(isVersionSupported('invalid', MINIMUM_CLI_VERSION)).toBe(false);
         });
 
-        it('accepts compatible 0.1.0 dev builds for modern spawn and runtime rpc gates', () => {
-            const devVersion = '0.1.0-dev.1775063171.91734';
-            expect(isVersionSupported(devVersion, MINIMUM_CLI_BACKEND_TARGET_SPAWN_VERSION)).toBe(true);
-            expect(isVersionSupported(devVersion, MINIMUM_CLI_SESSION_USER_MESSAGE_RPC_VERSION)).toBe(true);
-            expect(isVersionSupported('0.1.0', MINIMUM_CLI_BACKEND_TARGET_SPAWN_VERSION)).toBe(true);
-            expect(isVersionSupported('0.1.0', MINIMUM_CLI_SESSION_USER_MESSAGE_RPC_VERSION)).toBe(true);
+        it('accepts every Happiest CLI build, from the first dev build on, at every CLI gate', () => {
+            // Happiest numbers its own releases from 0.1.0; dev and preview builds are 0.1.0-dev.N and 0.1.0-preview.N.
+            const happiestBuilds = ['0.1.0-dev.1', '0.1.0-preview.1', '0.1.0', '0.1.1'];
+            const gates = [
+                MINIMUM_CLI_VERSION,
+                MINIMUM_CLI_PENDING_QUEUE_V2_VERSION,
+                MINIMUM_CLI_SESSION_USER_MESSAGE_RPC_VERSION,
+                MINIMUM_CLI_BACKEND_TARGET_SPAWN_VERSION,
+                MINIMUM_CLI_SPAWN_PENDING_FIRST_INPUT_VERSION,
+                MINIMUM_CLI_SOURCE_CONTEXT_SPAWN_VERSION,
+                MINIMUM_CLI_SESSION_FORK_REQUEST_ID_VERSION,
+            ];
+            for (const version of happiestBuilds) {
+                for (const gate of gates) {
+                    expect(isVersionSupported(version, gate), `${version} at gate ${gate}`).toBe(true);
+                }
+                expect(isVersionSupported(version), `${version} at the default gate`).toBe(true);
+                expect(supportsSessionForkRequestId(version), `${version} fork request id`).toBe(true);
+            }
         });
     });
 

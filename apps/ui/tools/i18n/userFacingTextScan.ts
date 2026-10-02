@@ -182,8 +182,14 @@ function getObjectPropertyName(node: ts.ObjectLiteralElementLike, sourceFile: ts
     return null;
 }
 
-function isTranslationCallExpression(expr: ts.Expression): boolean {
-    return ts.isCallExpression(expr) && ts.isIdentifier(expr.expression) && expr.expression.text === 't';
+/**
+ * Calls whose string arguments are never untranslated copy: `t(...)` keys, and the command line text
+ * that `formatCliCommand(...)` turns into a command people type.
+ */
+const NON_COPY_CALLEE_NAMES: ReadonlySet<string> = new Set(['t', 'formatCliCommand']);
+
+function isNonCopyCallExpression(expr: ts.Expression): boolean {
+    return ts.isCallExpression(expr) && ts.isIdentifier(expr.expression) && NON_COPY_CALLEE_NAMES.has(expr.expression.text);
 }
 
 function normalizeTemplateExpressionText(expr: ts.TemplateExpression): string {
@@ -218,7 +224,7 @@ function collectUserFacingStringsFromExpression(args: Readonly<{
         }
 
         if (ts.isCallExpression(node)) {
-            if (isTranslationCallExpression(node as unknown as ts.Expression)) return;
+            if (isNonCopyCallExpression(node as unknown as ts.Expression)) return;
         }
 
         if (ts.isConditionalExpression(node)) {
@@ -299,7 +305,7 @@ function collectUserFacingStringLiteralsFromExpression(args: Readonly<{
 
     const visit = (node: ts.Node): void => {
         if (ts.isCallExpression(node)) {
-            if (isTranslationCallExpression(node as unknown as ts.Expression)) return;
+            if (isNonCopyCallExpression(node as unknown as ts.Expression)) return;
         }
 
         if (ts.isPropertyAssignment(node) || ts.isShorthandPropertyAssignment(node) || ts.isSpreadAssignment(node)) {

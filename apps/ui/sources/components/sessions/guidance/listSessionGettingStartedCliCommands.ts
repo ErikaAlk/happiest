@@ -1,14 +1,15 @@
 import { AGENT_IDS, getAgentBehavior, getAgentCore } from '@/agents/catalog/catalog';
+import { formatCliCommand } from '@/utils/system/cliCommand';
 
-export function listSessionGettingStartedCliCommands(commandName = 'happier'): readonly string[] {
-    const commands = [commandName];
+export function listSessionGettingStartedCliCommands(): readonly string[] {
+    const commands = [formatCliCommand()];
 
     for (const agentId of AGENT_IDS) {
         if (getAgentBehavior(agentId).guidance?.includeInSessionGettingStartedCliExamples !== true) {
             continue;
         }
 
-        commands.push(`${commandName} ${getAgentCore(agentId).cli.detectKey}`);
+        commands.push(formatCliCommand(getAgentCore(agentId).cli.detectKey));
     }
 
     return commands;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { act } from 'react-test-renderer';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { collectUnexpectedRawTextNodes, renderScreen } from '@/dev/testkit';
 import { installSessionGuidanceCommonModuleMocks } from './sessionGuidanceTestHelpers';
 
@@ -17,6 +18,10 @@ const modalMocks = vi.hoisted(() => ({
 }));
 const centeredInfoTileMockState = vi.hoisted(() => ({
   renderCount: 0,
+}));
+const configMock = vi.hoisted(() => ({
+  variant: 'production',
+  cliNpmDistTag: undefined as string | undefined,
 }));
 
 vi.mock('expo-clipboard', () => clipboardMocks);
@@ -77,7 +82,7 @@ vi.mock('@/components/ui/buttons/RoundButton', () => ({
 }));
 
 vi.mock('@/config', () => ({
-  config: { variant: 'production', cliNpmDistTag: undefined },
+  config: configMock,
 }));
 
 describe('SessionGettingStartedGuidanceView', () => {
@@ -102,8 +107,8 @@ describe('SessionGettingStartedGuidanceView', () => {
     expect(screen.findByTestId('session-getting-started-setup-primary-card')).not.toBeNull();
     expect(screen.findByTestId('session-getting-started-cli-follow-up')).toBeNull();
     expect(screen.findByTestId('session-getting-started-show-manual')).not.toBeNull();
-    expect(content).not.toContain('happier server add');
-    expect(content).not.toContain('happier daemon install');
+    expect(content).not.toContain('happiest server add');
+    expect(content).not.toContain('happiest daemon install');
 
     expect(screen.findByTestId('session-getting-started-copy-all')).toBeNull();
     expect(screen.findByTestId('session-getting-started-scroll')).not.toBeNull();
@@ -122,24 +127,24 @@ describe('SessionGettingStartedGuidanceView', () => {
     expect(screen.findByTestId('session-getting-started-step-auth_login')).not.toBeNull();
     expect(screen.findByTestId('session-getting-started-step-daemon_install')).toBeNull();
     expect(screen.findByTestId('session-getting-started-step-create_session')).not.toBeNull();
-    expect(expandedContent).not.toContain('happier server add');
+    expect(expandedContent).not.toContain('happiest server add');
     expect(expandedContent).toContain('https://api.company.example');
     expect(expandedContent).not.toContain('$ npm i -g @happier-dev/cli');
     // Desktop already installed the command line on this computer, so the terminal path starts at
     // setup rather than re-teaching the install (U13).
     expect(screen.findByTestId('session-getting-started-step-install_cli')).toBeNull();
-    expect(expandedContent).not.toContain('curl -fsSL https://happier.dev/install');
+    expect(expandedContent).not.toContain('curl -fsSL');
     expect(expandedContent).not.toContain('npm i -g @happier-dev/cli');
-    expect(expandedContent).not.toContain('happier service install');
-    expect(expandedContent).toContain('happier setup --relay "https://api.company.example"');
-    expect(expandedContent).not.toContain('happier daemon install');
-    expect(expandedContent).toContain('happier codex');
-    expect(expandedContent).toContain('happier opencode');
+    expect(expandedContent).not.toContain('happiest service install');
+    expect(expandedContent).toContain('happiest setup --relay "https://api.company.example"');
+    expect(expandedContent).not.toContain('happiest daemon install');
+    expect(expandedContent).toContain('happiest codex');
+    expect(expandedContent).toContain('happiest opencode');
 
     clipboardMocks.setStringAsync.mockClear();
     modalMocks.alert.mockClear();
     await screen.pressByTestIdAsync('session-getting-started-copy-auth_login');
-    expect(clipboardMocks.setStringAsync).toHaveBeenCalledWith('happier setup --relay "https://api.company.example"');
+    expect(clipboardMocks.setStringAsync).toHaveBeenCalledWith('happiest setup --relay "https://api.company.example"');
     expect(modalMocks.alert).not.toHaveBeenCalledWith('common.copied', 'items.copiedToClipboard');
     expect(screen.findByTestId('session-getting-started-copy-auth_login-copied')).not.toBeNull();
   });
@@ -282,10 +287,46 @@ describe('SessionGettingStartedGuidanceView', () => {
     );
 
     const content = screen.getTextContent();
-    expect(content).toContain('happier service install');
-    expect(content).toContain('happier service start');
-    expect(content).not.toContain('happier daemon install');
-    expect(content).not.toContain('happier daemon start');
+    expect(content).toContain('happiest service install');
+    expect(content).toContain('happiest service start');
+    expect(content).not.toContain('happiest daemon install');
+    expect(content).not.toContain('happiest daemon start');
+  });
+
+  it('recommends the stable command line from the product release on every app variant', async () => {
+    vi.useFakeTimers();
+    configMock.variant = 'development';
+    try {
+      const { SessionGettingStartedGuidanceView } = await import('./SessionGettingStartedGuidance');
+      const screen = await renderScreen(
+        <SessionGettingStartedGuidanceView
+          variant="phone"
+          model={{
+            kind: 'connect_machine',
+            targetLabel: 'Company',
+            serverUrl: 'https://api.company.example',
+            serverName: 'company',
+            showServerSetup: true,
+            onConnectTerminal: vi.fn(),
+            onEnterUrlManually: vi.fn(),
+          }}
+        />,
+      );
+      act(() => {
+        vi.runOnlyPendingTimers();
+      });
+
+      const content = screen.getTextContent();
+      expect(content).toContain(
+        `curl -fsSL https://github.com/${productIdentity.githubRepo}/releases/download/cli-stable/install.sh | bash -s -- --yes`,
+      );
+      expect(content).toContain(`${productIdentity.commandName} setup --relay "https://api.company.example"`);
+      expect(content).not.toContain('--channel');
+      expect(content).not.toContain('happier.dev');
+    } finally {
+      configMock.variant = 'production';
+      vi.useRealTimers();
+    }
   });
 
   it('skips rerendering the guidance view when props are equal by value', async () => {

@@ -77,6 +77,38 @@ describe('tools/i18n/userFacingTextScan', () => {
         }
     });
 
+    it('treats commands built by formatCliCommand as commands, not untranslated copy', async () => {
+        const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'happier-ui-i18n-scan-'));
+        try {
+            const filePath = path.join(dir, 'Example.tsx');
+            await fs.writeFile(
+                filePath,
+                [
+                    `import { formatCliCommand } from '@/utils/system/cliCommand';`,
+                    '',
+                    'export function Example(props: { command?: string; name: string; id: string }) {',
+                    '  const command = props.command || formatCliCommand(`connect ${props.name}`);',
+                    '  return (',
+                    '    <View>',
+                    '      <Item title="Resume here" subtitle={formatCliCommand(`resume ${props.id}`)} />',
+                    '      <Text>{command}</Text>',
+                    '    </View>',
+                    '  );',
+                    '}',
+                    '',
+                ].join('\n'),
+                'utf8'
+            );
+
+            const texts = scanUserFacingStrings({ sourcesRootDir: dir }).map((h) => h.text);
+
+            expect(texts).toContain('Resume here');
+            expect(texts.some((text) => text.startsWith('connect ') || text.startsWith('resume '))).toBe(false);
+        } finally {
+            await fs.rm(dir, { recursive: true, force: true });
+        }
+    });
+
     // F10 — Scanner exclusion narrowing: `*StorySurface.tsx` suffix used to
     // hide production onboarding/release-note story surfaces from the scanner.
     // The dev-only carve-out must target the SelectionList dev preview file

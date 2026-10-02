@@ -11,6 +11,7 @@ import Animated, {
 import { runOnJS } from 'react-native-worklets';
 import WebView from 'react-native-webview';
 import { t } from '@/text';
+import { formatCliCommand } from '@/utils/system/cliCommand';
 import { Modal } from '@/modal';
 import { Text } from '@/components/ui/text/Text';
 
@@ -393,7 +394,7 @@ export const OAuthViewUnsupported = React.memo((props: {
     name: string;
     command?: string;
 }) => {
-    const command = props.command || t('connect.unsupported.command', { name: props.name.toLowerCase() });
+    const command = props.command || formatCliCommand(`connect ${props.name.toLowerCase()}`);
 
     return (
         <View style={styles.unsupportedContainer}>

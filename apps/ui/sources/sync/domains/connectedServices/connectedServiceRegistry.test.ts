@@ -29,11 +29,12 @@ describe('connectedServiceRegistry', () => {
     const entry = getConnectedServiceRegistryEntry('github');
     expect(entry).toMatchObject({
       serviceId: 'github',
-      connectCommand: 'happier connect github --token',
+      connectCommand: 'happiest connect github --token',
       supportsOauth: false,
       supportsToken: true,
       tokenKind: 'access-token',
     });
+    expect(getConnectedServiceRegistryEntry('openai').connectCommand).toBe('happiest connect codex --api-key');
     expect(typeof entry.tokenSetupUrl).toBe('string');
     const tokenSetupUrl = new URL(entry.tokenSetupUrl ?? '');
     expect(tokenSetupUrl.origin).toBe('https://github.com');

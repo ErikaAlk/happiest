@@ -198,16 +198,17 @@ describe('buildSpawnHappySessionRpcParams', () => {
             pendingFirstInput: { text: 'prompt', localId: 'first-turn-1' },
         } as const;
 
-        expect(supportsSpawnPendingFirstInput('0.2.10-dev.40')).toBe(false);
-        expect(supportsSpawnPendingFirstInput('0.2.10-dev.41')).toBe(true);
-        expect(supportsSpawnPendingFirstInput('0.2.10')).toBe(true);
+        // Every Happiest CLI build, from the first 0.1.0 dev build on, consumes it.
+        expect(supportsSpawnPendingFirstInput('0.0.9')).toBe(false);
+        expect(supportsSpawnPendingFirstInput('0.1.0-dev.1')).toBe(true);
+        expect(supportsSpawnPendingFirstInput('0.1.0')).toBe(true);
         expect(buildCompatibleSpawnHappySessionRpcParams({
             options,
-            daemonCliVersion: '0.2.10-dev.40',
+            daemonCliVersion: '0.0.9',
         })).not.toHaveProperty('pendingFirstInput');
         expect(buildCompatibleSpawnHappySessionRpcParams({
             options,
-            daemonCliVersion: '0.2.10-dev.41',
+            daemonCliVersion: '0.1.0-dev.1',
         })).toHaveProperty('pendingFirstInput', options.pendingFirstInput);
     });
 

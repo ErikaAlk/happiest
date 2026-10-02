@@ -13,6 +13,7 @@ import { useUnistyles } from 'react-native-unistyles';
 import { layout } from '@/components/ui/layout/layout';
 import { t } from '@/text';
 import { isVersionSupported, MINIMUM_CLI_VERSION } from '@/utils/system/versionUtils';
+import { formatCliCommand } from '@/utils/system/cliCommand';
 import { getAttachCommandForSession, getTmuxFallbackReason, getTmuxTargetForSession } from '@/utils/sessions/terminalSessionDetails';
 import { CodeView } from '@/components/ui/media/CodeView';
 import { Session } from '@/sync/domains/state/storageTypes';
@@ -1104,7 +1105,7 @@ function SessionInfoContent({ session, sessionServerId, sourceMachineIdForHandof
                             subtitle={t('sessionInfo.updateCliInstructions')}
                             icon={<Icon name="warning" size={29} color={theme.colors.accent.orange} />}
                             showChevron={false}
-                            copy="happier self update"
+                            copy={formatCliCommand('self update')}
                         />
                     </ItemGroup>
                 )}
@@ -1232,10 +1233,10 @@ function SessionInfoContent({ session, sessionServerId, sourceMachineIdForHandof
                     {!session.active && Boolean(vendorResumeId) && (
                         <Item
                             title={t('sessionInfo.copyResumeCommand')}
-                            subtitle={t('sessionInfo.resumeCommand', { sessionId: session.id })}
+                            subtitle={formatCliCommand(`resume ${session.id}`)}
                             icon={<Icon name="terminal" size={29} color={theme.colors.accent.purple} />}
                             showChevron={false}
-                            copy={t('sessionInfo.resumeCommand', { sessionId: session.id })}
+                            copy={formatCliCommand(`resume ${session.id}`)}
                         />
                     )}
                     {visibleSessionActionIds.has(SESSION_ACTION_CONTINUE_IN_TERMINAL_ID) && continueInTerminalInfoItemProps && (

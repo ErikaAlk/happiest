@@ -583,7 +583,7 @@ describe('sessions ops server-scoped routing', () => {
         };
         const { forkSession } = await sessionsModulePromise;
 
-        setDaemonVersion('0.2.0');
+        setDaemonVersion('0.0.9');
         machineRpcWithServerScopeMock.mockResolvedValueOnce({ ok: true, childSessionId: 'child-old' });
         await forkSession({
             machineId: 'machine-1',
@@ -595,7 +595,7 @@ describe('sessions ops server-scoped routing', () => {
         expect((machineRpcWithServerScopeMock.mock.calls[0]?.[0] as any).payload)
             .not.toHaveProperty('requestId');
 
-        setDaemonVersion('0.2.10-dev.41');
+        setDaemonVersion('0.1.0-dev.1');
         machineRpcWithServerScopeMock.mockResolvedValueOnce({ ok: true, childSessionId: 'child-new' });
         await forkSession({
             machineId: 'machine-1',

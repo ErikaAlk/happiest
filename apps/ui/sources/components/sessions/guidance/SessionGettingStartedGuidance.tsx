@@ -15,12 +15,8 @@ import { listServerProfiles } from '@/sync/domains/server/serverProfiles';
 import { useConnectTerminal } from '@/hooks/session/useConnectTerminal';
 import type { FeatureId } from '@happier-dev/protocol';
 import { getFeatureBuildPolicyDecision } from '@/sync/domains/features/featureBuildPolicy';
-import { config } from '@/config';
-import {
-    resolveCurrentAppVariant,
-    resolvePreferredPublicReleaseRingLabelForCurrentApp,
-} from '@/sync/runtime/currentAppVariant';
 import { isTauriDesktop } from '@/utils/platform/tauri';
+import { formatCliCommand, formatCliInstallCommand } from '@/utils/system/cliCommand';
 
 import type { SessionGettingStartedDecisionKind } from './gettingStartedModel';
 import type { SessionGettingStartedViewModel } from './gettingStartedModel';
@@ -28,7 +24,6 @@ import { buildSessionGettingStartedViewModel, computeMachinesSummaryForServerIds
 import { Text } from '@/components/ui/text/Text';
 import { CopiedPill } from '@/components/ui/copy/CopiedPill';
 import { useTemporaryCopyFeedback } from '@/components/ui/copy/useTemporaryCopyFeedback';
-import { buildHappierCliCommandName, buildHappierCliInstallCommand } from './happierCliInstallCommand';
 import { listSessionGettingStartedCliCommands } from './listSessionGettingStartedCliCommands';
 import { normalizeNodeForView } from '@/components/ui/rendering/normalizeNodeForView';
 import { runAfterInteractionsWithFallback } from '@/utils/timing/runAfterInteractionsWithFallback';
@@ -245,23 +240,6 @@ function subtitleForKind(kind: SessionGettingStartedDecisionKind, targetLabel: s
     }
 }
 
-function buildCliInstallCommand(options?: Readonly<{ suppressAutomaticSetup?: boolean }>): string {
-    return buildHappierCliInstallCommand({
-        appVariant: resolveCurrentAppVariant(),
-        distTagOverride: config.cliNpmDistTag,
-        channelOverride: resolvePreferredPublicReleaseRingLabelForCurrentApp(),
-        suppressAutomaticSetup: options?.suppressAutomaticSetup,
-    });
-}
-
-function buildCliCommandName(): 'happier' | 'hprev' | 'hdev' {
-    return buildHappierCliCommandName({
-        appVariant: resolveCurrentAppVariant(),
-        distTagOverride: config.cliNpmDistTag,
-        channelOverride: resolvePreferredPublicReleaseRingLabelForCurrentApp(),
-    });
-}
-
 type SessionGettingStartedGuidanceStep = Readonly<{
     id: string;
     title: string;
@@ -290,7 +268,6 @@ function buildSteps(model: SessionGettingStartedGuidanceViewModel): SessionGetti
     switch (model.kind) {
         case 'connect_machine': {
             const steps: SessionGettingStartedGuidanceStep[] = [];
-            const cliCommandName = buildCliCommandName();
             // On desktop the app already installed the command line on this computer, so the
             // terminal path starts at setup rather than re-teaching the install (U13).
             if (!model.onOpenSetup) {
@@ -298,11 +275,10 @@ function buildSteps(model: SessionGettingStartedGuidanceViewModel): SessionGetti
                     id: 'install_cli',
                     title: t('sessionGettingStarted.steps.installCli.title'),
                     description: t('sessionGettingStarted.steps.installCli.description'),
-                    // This card already knows which relay the user is connecting.
-                    // Suppress the installer's generic automatic handoff, then let
-                    // the one target-bound setup command own relay selection,
-                    // authentication, and service reconciliation.
-                    command: buildCliInstallCommand({ suppressAutomaticSetup: true }),
+                    // This card already knows which relay the user is connecting, so the install
+                    // skips the installer's own setup handoff and the one target-bound setup
+                    // command below owns relay selection, authentication, and service reconciliation.
+                    command: formatCliInstallCommand(),
                     copyLabel: t('sessionGettingStarted.steps.installCli.copyLabel'),
                 });
             }
@@ -311,46 +287,44 @@ function buildSteps(model: SessionGettingStartedGuidanceViewModel): SessionGetti
                 title: t('sessionGettingStarted.steps.authLogin.title'),
                 description: t('sessionGettingStarted.steps.authLogin.description'),
                 command: model.showServerSetup
-                    ? `${cliCommandName} setup --relay \"${model.serverUrl}\"`
-                    : `${cliCommandName} setup`,
+                    ? formatCliCommand(`setup --relay \"${model.serverUrl}\"`)
+                    : formatCliCommand('setup'),
                 copyLabel: t('sessionGettingStarted.steps.authLogin.copyLabel'),
             });
             steps.push({
                 id: 'create_session',
                 title: t('sessionGettingStarted.steps.createSession.title'),
                 description: t('sessionGettingStarted.steps.createSession.description'),
-                command: listSessionGettingStartedCliCommands(cliCommandName).join('\n'),
+                command: listSessionGettingStartedCliCommands().join('\n'),
                 copyLabel: t('sessionGettingStarted.steps.createSession.copyLabel'),
             });
             return steps;
         }
         case 'start_daemon': {
-            const cliCommandName = buildCliCommandName();
             return [
                 {
                     id: 'daemon_install',
                     title: t('sessionGettingStarted.steps.daemonInstall.title'),
                     description: t('sessionGettingStarted.steps.startDaemonInstall.description'),
-                    command: `${cliCommandName} service install`,
+                    command: formatCliCommand('service install'),
                     copyLabel: t('sessionGettingStarted.steps.daemonInstall.copyLabel'),
                 },
                 {
                     id: 'daemon_start',
                     title: t('sessionGettingStarted.steps.daemonStart.title'),
                     description: t('sessionGettingStarted.steps.daemonStart.description'),
-                    command: `${cliCommandName} service start`,
+                    command: formatCliCommand('service start'),
                     copyLabel: t('sessionGettingStarted.steps.daemonStart.copyLabel'),
                 },
             ];
         }
         case 'create_session': {
-            const cliCommandName = buildCliCommandName();
             return [
                 {
                     id: 'start_session',
                     title: t('sessionGettingStarted.steps.startSession.title'),
                     description: t('sessionGettingStarted.steps.startSession.description'),
-                    command: cliCommandName,
+                    command: formatCliCommand(),
                     copyLabel: t('sessionGettingStarted.steps.startSession.copyLabel'),
                 },
             ];

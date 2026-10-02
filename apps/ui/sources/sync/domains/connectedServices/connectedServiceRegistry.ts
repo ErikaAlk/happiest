@@ -1,5 +1,7 @@
 import type { ConnectedServiceId } from '@happier-dev/protocol';
 
+import { formatCliCommand } from '@/utils/system/cliCommand';
+
 import { buildGithubPersonalAccessTokenUrl } from './github/buildGithubPersonalAccessTokenUrl';
 
 export type ConnectedServiceRegistryEntry = Readonly<{
@@ -21,7 +23,7 @@ export type ConnectedServiceRegistryEntry = Readonly<{
 export const CONNECTED_SERVICES_REGISTRY: readonly ConnectedServiceRegistryEntry[] = Object.freeze([
   {
     serviceId: 'claude-subscription',
-    connectCommand: 'happier connect claude',
+    connectCommand: formatCliCommand('connect claude'),
     supportsOauth: true,
     oauthAddActionModes: ['paste', 'browser'],
     supportsToken: true,
@@ -29,33 +31,33 @@ export const CONNECTED_SERVICES_REGISTRY: readonly ConnectedServiceRegistryEntry
   },
   {
     serviceId: 'openai-codex',
-    connectCommand: 'happier connect codex',
+    connectCommand: formatCliCommand('connect codex'),
     supportsOauth: true,
     oauthAddActionModes: ['device', 'paste', 'browser'],
   },
   {
     serviceId: 'openai',
-    connectCommand: 'happier connect codex --api-key',
+    connectCommand: formatCliCommand('connect codex --api-key'),
     supportsOauth: false,
     supportsToken: true,
     tokenKind: 'api-key',
   },
   {
     serviceId: 'anthropic',
-    connectCommand: 'happier connect claude --api-key',
+    connectCommand: formatCliCommand('connect claude --api-key'),
     supportsOauth: false,
     supportsToken: true,
     tokenKind: 'api-key',
   },
   {
     serviceId: 'gemini',
-    connectCommand: 'happier connect gemini',
+    connectCommand: formatCliCommand('connect gemini'),
     supportsOauth: true,
     oauthAddActionModes: ['paste', 'browser'],
   },
   {
     serviceId: 'github',
-    connectCommand: 'happier connect github --token',
+    connectCommand: formatCliCommand('connect github --token'),
     supportsOauth: false,
     supportsToken: true,
     tokenKind: 'access-token',
@@ -68,7 +70,7 @@ export function getConnectedServiceRegistryEntry(serviceId: ConnectedServiceId):
   if (entry) return entry;
   return {
     serviceId,
-    connectCommand: `happier connect ${serviceId}`,
+    connectCommand: formatCliCommand(`connect ${serviceId}`),
     supportsOauth: false,
     oauthAddActionModes: [],
     supportsToken: false,

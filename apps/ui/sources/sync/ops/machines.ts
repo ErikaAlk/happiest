@@ -16,6 +16,7 @@ import {
     type SpawnSessionErrorDetail,
 } from '@happier-dev/protocol';
 import { RPC_ERROR_CODES, RPC_METHODS, isRpcMethodNotFoundResult } from '@happier-dev/protocol/rpc';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { apiSocket } from '../api/session/apiSocket';
 import type { MachineMetadata } from '../domains/state/storageTypes';
@@ -57,6 +58,10 @@ import {
 import { prepareAccountSettingsForDaemonSpawnIfNeeded } from './accountSettingsDaemonSpawnPreparation';
 import { isAccountSettingsScopeChangedDuringSpawnPreparationError } from '@/sync/engine/settings/accountSettingsSpawnPreparationError';
 import { delay } from '@/utils/timing/time';
+import {
+    MINIMUM_CLI_BACKEND_TARGET_SPAWN_VERSION,
+    MINIMUM_CLI_SOURCE_CONTEXT_SPAWN_VERSION,
+} from '@/utils/system/versionUtils';
 
 export type { SpawnHappySessionRpcParams, SpawnSessionOptions } from '../domains/session/spawn/spawnSessionPayload';
 export { buildSpawnHappySessionRpcParams } from '../domains/session/spawn/spawnSessionPayload';
@@ -255,7 +260,7 @@ export async function machineSpawnNewSession(options: SpawnSessionOptions): Prom
                 errorCode: SPAWN_SESSION_ERROR_CODES.INVALID_REQUEST,
                 errorMessage:
                     'Update or reconnect the CLI to continue from this Session. Continuing from an existing '
-                    + 'Session requires Happier CLI 0.2.10-dev.76 or newer on this '
+                    + `Session requires ${productIdentity.productName} CLI ${MINIMUM_CLI_SOURCE_CONTEXT_SPAWN_VERSION} or newer on this `
                     + `machine (detected ${versionLabel}).`,
             };
         }
@@ -274,8 +279,8 @@ export async function machineSpawnNewSession(options: SpawnSessionOptions): Prom
                 type: 'error',
                 errorCode: SPAWN_SESSION_ERROR_CODES.INVALID_REQUEST,
                 errorMessage:
-                    'The selected backend target requires a compatible 0.1.0-dev build or Happier CLI v0.2.0 ' +
-                    `or newer on this machine (detected ${versionLabel}).`,
+                    `The selected backend target requires ${productIdentity.productName} CLI ${MINIMUM_CLI_BACKEND_TARGET_SPAWN_VERSION} `
+                    + `or newer on this machine (detected ${versionLabel}).`,
             };
         }
         const targetFingerprint = resolveSpawnAttemptTargetFingerprint({

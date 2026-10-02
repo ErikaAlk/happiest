@@ -2,23 +2,26 @@
  * Utility functions for version comparison and validation
  */
 
+// The earliest Happiest CLI build. Happiest numbers its own releases from 0.1.0 (dev and preview builds
+// are 0.1.0-dev.N and 0.1.0-preview.N) and forked from a CLI that already had every capability gated
+// below, so each gate starts here. A gate moves up only for a capability a later Happiest build adds.
+const FIRST_HAPPIEST_CLI_VERSION = '0.1.0-dev.0';
+
 // Minimum required CLI version for full compatibility
-export const MINIMUM_CLI_VERSION = '0.1.0';
+export const MINIMUM_CLI_VERSION = FIRST_HAPPIEST_CLI_VERSION;
 // Minimum required CLI version to safely consume server-side pending queue V2.
 // Keep separate from MINIMUM_CLI_VERSION so it can be bumped independently.
 export const MINIMUM_CLI_PENDING_QUEUE_V2_VERSION = MINIMUM_CLI_VERSION;
 // Minimum CLI version that supports the active-session runtime prompt RPC path.
-// The protocol landed during 0.1.0 dev builds, before the 0.2.0 release line.
-export const MINIMUM_CLI_SESSION_USER_MESSAGE_RPC_VERSION = '0.1.0-dev.0';
+export const MINIMUM_CLI_SESSION_USER_MESSAGE_RPC_VERSION = FIRST_HAPPIEST_CLI_VERSION;
 // Minimum CLI version that accepts the backendTarget-based spawn payload contract.
-// The protocol landed during 0.1.0 dev builds, before the 0.2.0 release line.
-export const MINIMUM_CLI_BACKEND_TARGET_SPAWN_VERSION = '0.1.0-dev.0';
-// First CLI build whose fresh-session runner consumes pendingFirstInput from daemon spawn custody.
-export const MINIMUM_CLI_SPAWN_PENDING_FIRST_INPUT_VERSION = '0.2.10-dev.41';
-// First CLI build whose daemon spawn schema accepts a Replay sourceContext.
-export const MINIMUM_CLI_SOURCE_CONTEXT_SPAWN_VERSION = '0.2.10-dev.76';
-// First CLI build whose strict session-fork request schema accepts requestId.
-export const MINIMUM_CLI_SESSION_FORK_REQUEST_ID_VERSION = '0.2.10-dev.41';
+export const MINIMUM_CLI_BACKEND_TARGET_SPAWN_VERSION = FIRST_HAPPIEST_CLI_VERSION;
+// Minimum CLI version whose fresh-session runner consumes pendingFirstInput from daemon spawn custody.
+export const MINIMUM_CLI_SPAWN_PENDING_FIRST_INPUT_VERSION = FIRST_HAPPIEST_CLI_VERSION;
+// Minimum CLI version whose daemon spawn schema accepts a Replay sourceContext.
+export const MINIMUM_CLI_SOURCE_CONTEXT_SPAWN_VERSION = FIRST_HAPPIEST_CLI_VERSION;
+// Minimum CLI version whose strict session-fork request schema accepts requestId.
+export const MINIMUM_CLI_SESSION_FORK_REQUEST_ID_VERSION = FIRST_HAPPIEST_CLI_VERSION;
 function normalizeComparableVersion(version: string): {
     baseParts: number[];
     prereleaseChannel: 'dev' | 'preview' | null;

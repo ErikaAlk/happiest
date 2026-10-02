@@ -1319,12 +1319,12 @@ describe('machineSpawnNewSession error mapping', () => {
         active: true,
         activeAt: 1,
         metadata: {
-          host: 'legacy-first-input-machine', platform: 'darwin', happyCliVersion: '0.2.10-dev.40',
+          host: 'legacy-first-input-machine', platform: 'darwin', happyCliVersion: '0.0.9',
           happyHomeDir: '/Users/alice/.happier', homeDir: '/Users/alice',
         },
         metadataVersion: 0,
         daemonState: {
-          startedWithCliVersion: '0.2.10-dev.40',
+          startedWithCliVersion: '0.0.9',
         },
         daemonStateVersion: 1,
       },
@@ -1465,7 +1465,7 @@ describe('machineSpawnNewSession error mapping', () => {
     expect(result).toEqual({
       type: 'error',
       errorCode: SPAWN_SESSION_ERROR_CODES.INVALID_REQUEST,
-      errorMessage: expect.stringContaining('0.2.0'),
+      errorMessage: expect.stringContaining('Happiest CLI 0.1.0-dev.0 or newer'),
     });
     expect(machineRpcWithServerScopeMock).not.toHaveBeenCalled();
   });
@@ -1579,13 +1579,13 @@ describe('machineSpawnNewSession error mapping', () => {
     expect(machineRpcWithServerScopeMock).not.toHaveBeenCalled();
   });
 
-  it('refuses a source-context spawn for a supported older v0.2 daemon', async () => {
+  it('refuses a source-context spawn for a daemon older than the first Happiest build', async () => {
     storage.setState((state) => ({
       machines: {
         ...state.machines,
         'machine-1': {
           ...state.machines['machine-1']!,
-          daemonState: { startedWithCliVersion: '0.2.0' },
+          daemonState: { startedWithCliVersion: '0.0.9' },
         },
       },
     }));
