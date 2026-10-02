@@ -74,82 +74,63 @@ Why always-on is recommended:
 ## Common commands
 
 ```bash
-happier daemon status
-happier daemon start
-happier daemon stop
-happier daemon list
-happier daemon logs
+happiest daemon status
+happiest daemon start
+happiest daemon stop
+happiest daemon list
+happiest daemon logs
 ```
 
-## Release lanes
+## Installing and updating
 
-The daemon follows the CLI/runtime lane you installed on that machine:
-
-- `stable` CLI install -> stable daemon/runtime
-- `preview` CLI install -> preview daemon/runtime
-- `dev` CLI install -> dev daemon/runtime
-
-That means the public lane commands are:
+The daemon runs the CLI you installed on that machine. Happiest publishes one stable channel, so
+one command installs the daemon service and one updates it:
 
 ```bash
-happier daemon install
-hprev daemon install
-hdev daemon install
+happiest daemon install
+happiest self update
 ```
 
-Likewise, updater commands stay lane-specific:
+There is no separate daemon installer; the daemon rides with the CLI on that machine.
+
+After a successful `self update`, a daemon that the background service is running is restarted so it runs the new
+version. A daemon you started yourself (`happiest daemon start`) is left running; restart it yourself when you are
+ready.
+
+### Alongside an upstream Happier install
+
+Happiest installs next to an upstream Happier on the same computer without overwriting it. It has its own command
+(`happiest`), its own home directory (`~/.happiest`) and its own service names: systemd units and Scheduled Tasks
+carry the `happiest-daemon` prefix, LaunchAgent labels start with `com.happiest.cli.daemon`, and on Windows the
+Scheduled Task lives in the `Happiest` folder of Task Scheduler. To inspect the exact service name/label/unit on your
+platform, run:
 
 ```bash
-happier self update
-hprev self update
-hdev self update
+happiest daemon service paths
 ```
 
-There is no separate public daemon installer endpoint today; the daemon rides with the matching CLI lane on that machine.
-
-After a successful `self update`, a daemon that lane's background service is running is restarted so it runs the new
-version. A daemon you started yourself (`happier daemon start`) and another lane's service are left running; restart
-those yourself when you are ready.
-
-### Side-by-side installs (stable vs preview vs dev)
-
-You can install all three public lanes side-by-side (`happier`, `hprev`, `hdev`) without them overwriting each other.
-
-The unsuffixed `happier` command belongs to the lane you installed first, or the one you last picked with the
-installer's `--channel`. Installing or updating another lane — including a desktop app of another lane — adds only
-that lane's own command (`hprev`, `hdev`) and never changes what `happier` runs. The desktop app of another lane
-uses your default lane's CLI and its background service instead of installing a second one.
-
-Daemon runtime state is lane-scoped, and daemon services (LaunchAgent/systemd/Scheduled Task) use lane-scoped service identifiers.
-To inspect the exact service name/label/unit on your platform, run:
-
-```bash
-happier daemon service paths
-hprev daemon service paths
-hdev daemon service paths
-```
-
-Recommendation: keep only one lane’s daemon service enabled for a given server profile unless you have a specific reason to run multiple daemons concurrently.
+Recommendation: keep only one daemon service enabled for a given server profile, whether it belongs to Happiest or to
+an upstream Happier, unless you have a specific reason to run multiple daemons concurrently.
 
 ## Always-on: install as a user service
 
 Install for your current default server profile:
 
 ```bash
-happier daemon install
+happiest daemon install
 ```
 
 Advanced lifecycle control (and dry-run planning):
 
 ```bash
-happier daemon service status
-happier daemon service install --dry-run
-happier daemon service restart
+happiest daemon service status
+happiest daemon service install --dry-run
+happiest daemon service restart
 ```
 
 Platform notes:
 
-- **macOS**: LaunchAgent
+- **macOS**: LaunchAgent (the CLI supports it, but Happiest publishes no macOS release)
 - **Linux**: `systemd --user`
 - **Windows**: Scheduled Task (user-level)
 
@@ -159,10 +140,10 @@ If you would rather have the daemon run only while you are using Happier (for ex
 desktop app is open), install the service without its login trigger:
 
 ```bash
-happier service install --no-autostart
+happiest service install --no-autostart
 ```
 
-The service stays installed and `happier service start` / `stop` / `restart` keep working — nothing
+The service stays installed and `happiest service start` / `stop` / `restart` keep working — nothing
 starts it for you at login. On macOS the LaunchAgent is written with `RunAtLoad` off, on Linux the
 `systemd --user` unit is installed but not enabled, and on Windows the Scheduled Task is registered
 with a start date that has already passed instead of a logon trigger — so it is startable but never
@@ -176,27 +157,27 @@ has to be re-registered to apply the new trigger, which restarts the daemon.
 Switch back with:
 
 ```bash
-happier service install --autostart at-login
+happiest service install --autostart at-login
 ```
 
 Re-running `install` without either flag keeps whichever mode the service already has, so repairs and
-upgrades never turn the login trigger back on behind your back. `happier service install --dry-run
+upgrades never turn the login trigger back on behind your back. `happiest service install --dry-run
 --json` reports the mode it would apply as `autostart`.
 
 To remove it:
 
 ```bash
-happier daemon uninstall
+happiest daemon uninstall
 ```
 
-On Windows, `happier daemon service paths` prints the Scheduled Task name and wrapper path.
+On Windows, `happiest daemon service paths` prints the Scheduled Task name and wrapper path.
 
 ## Headless authentication (no TTY)
 
 On headless servers (or anywhere you don’t have an interactive TTY), use:
 
 ```bash
-happier auth login --no-open --method web
+happiest auth login --no-open --method web
 ```
 
 This prints an authorization URL and waits until you approve it in your browser (the request can expire; if it does, rerun the command).
@@ -206,13 +187,13 @@ This prints an authorization URL and waits until you approve it in your browser 
 If you have SSH access and want a fully automated experience (request + approval + credential write), run this from a machine where you're already authenticated:
 
 ```bash
-happier auth pair-remote --ssh user@host --json
+happiest auth pair-remote --ssh user@host --json
 ```
 
 This is especially useful for provisioning headless servers because you can approve the connection from your already-signed-in machine and avoid copy/pasting URLs.
 
 ## Troubleshooting
 
-- **Check status**: `happier daemon status`
-- **Find logs**: `happier daemon logs`
-- **Service paths**: `happier daemon service paths`
+- **Check status**: `happiest daemon status`
+- **Find logs**: `happiest daemon logs`
+- **Service paths**: `happiest daemon service paths`

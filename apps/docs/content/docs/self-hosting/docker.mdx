@@ -7,45 +7,48 @@ This page explains how to deploy **your own Happier Server** with Docker. It foc
 
 Use `/apps/server/.env.example` as your base env template and load the same values in Docker/Compose.
 
-## Prebuilt images (recommended)
+## Relay image (recommended)
 
-We publish preview Docker images on Docker Hub (recommended):
+Happiest publishes no Docker images, so you build the relay image yourself. The `relay-server` target of this repository's `Dockerfile` downloads a published server release for your architecture, verifies it against the release signing key stored in the repository, and bakes it into the image. The server release includes the web UI, so the image serves it without a separate step.
 
-```bash
-docker pull happierdev/relay-server:preview
-```
-
-We also publish the same images to GitHub Container Registry (GHCR):
+Pick a server release on [GitHub Releases](https://github.com/ErikaAlk/happiest/releases). Its tag is `server-v<version>`. Then build from a clone of the repository:
 
 ```bash
-docker pull ghcr.io/happier-dev/relay-server:preview
+git clone https://github.com/ErikaAlk/happiest.git
+cd happiest
+docker build -t happiest-relay-server --target relay-server \
+  --build-arg HAPPIER_RELAY_SERVER_RELEASE_TAG=server-v<version> \
+  --build-arg HAPPIER_RELAY_SERVER_VERSION=<version> \
+  .
 ```
 
-Published images:
+Build arguments:
 
-- `relay-server`: Happier Server + embedded web UI (this page)
-- `dev-box`: Happier CLI + daemon in Docker (see: [Dev box](/development/devcontainers))
+- `HAPPIER_RELAY_SERVER_RELEASE_TAG`: the tag of the release to download, such as `server-v<version>`.
+- `HAPPIER_RELAY_SERVER_VERSION`: the same version without the `server-v` prefix.
+- `HAPPIER_RELEASE_BASE_URL` (optional): where releases are downloaded from, `https://github.com/ErikaAlk/happiest/releases/download` by default. Change it only to download from a mirror with the same layout.
 
-The published `relay-server` image is built from signed server-runtime and UI-web release artifacts. It runs as the non-root `happier` user, embeds the UI bundle at image build time, and does not need a source checkout or `hstack`.
+The image builds for `linux/amd64` and `linux/arm64`; any other architecture stops the build with an unsupported-architecture error.
 
-Prebuilt `relay-server` images support the default SQLite setup and the documented Postgres override. They intentionally do not include the generated MySQL Prisma client. To run Happier with MySQL, build a source-based `server` image from this repository with MySQL included at build time.
+The `relay-server` image runs as the non-root `happier` user. Once it is built, running it needs neither a source checkout nor `hstack`.
 
-Tags:
+The `relay-server` image supports the default SQLite setup and the documented Postgres override. It intentionally does not include the generated MySQL Prisma client. To run Happier with MySQL, build the source-based `server` image from this repository with MySQL included at build time (see [Build images](#build-images)).
 
-- `:preview` (floating preview tag)
-- `:preview-<short-sha>` (immutable preview build)
-- `:stable` / `:latest` (stable channel, when enabled)
+The repository also has a `dev-box` image (`docker/dev-box/Dockerfile`) that runs the Happiest CLI and daemon in Docker, built from a CLI release in the same way (see: [Dev box](/development/devcontainers)).
 
 ## Updates
 
-Docker images do **not** update themselves. To upgrade, pull a newer tag and restart/recreate your container:
+Docker images do **not** update themselves. To upgrade, build the image again against a newer server release, then recreate your container:
 
 ```bash
-docker pull happierdev/relay-server:preview
+docker build -t happiest-relay-server --target relay-server \
+  --build-arg HAPPIER_RELAY_SERVER_RELEASE_TAG=server-v<new-version> \
+  --build-arg HAPPIER_RELAY_SERVER_VERSION=<new-version> \
+  .
 docker compose up -d --force-recreate
 ```
 
-For strict control, pin to an immutable tag (for example `:preview-<short-sha>`) or a digest.
+For strict control, tag each build with its version (for example `happiest-relay-server:<version>`) and reference that tag in your container or Compose file.
 
 Full matrix (all apps/assets): [Updates](/releases/updates).
 
@@ -53,8 +56,8 @@ The `relay-server` image defaults to the **light flavor + SQLite**, with all dat
 
 ```bash
 docker run --rm -p 3005:3005 \
-  -v happier-server-data:/data \
-  happierdev/relay-server:preview
+  -v happiest-server-data:/data \
+  happiest-relay-server
 ```
 
 Configuration docs:
@@ -69,45 +72,45 @@ Notes:
 - It embeds the web UI bundle and serves it at `/` by default.
   - Disable UI serving: set `HAPPIER_SERVER_UI_DIR=` (empty).
   - Serve UI under `/ui`: set `HAPPIER_SERVER_UI_PREFIX=/ui`.
-- It does not install a managed host service. Upgrades happen when the container is restarted after pulling a new image tag.
+- It does not install a managed host service. Upgrades happen when you build a newer image and recreate the container.
 
-### Prebuilt image: use Postgres (full flavor)
+### Relay image: use Postgres (full flavor)
 
-The `relay-server` image is built from the same server code and can run full flavor too — you just override the defaults. Postgres is the external database supported by the prebuilt image. On startup, the image applies its bundled Postgres migrations before starting the server. Health-managed or multi-replica deployments should instead use the dedicated migration step described under [Migrations](#migrations).
+The `relay-server` image is built from the same server code and can run full flavor too — you just override the defaults. Postgres is the external database supported by this image. On startup, the image applies its bundled Postgres migrations before starting the server. Health-managed or multi-replica deployments should instead use the dedicated migration step described under [Migrations](#migrations).
 
-Example `docker-compose.yml` (Postgres + local files backend):
+Example `docker-compose.yml` (Postgres + local files backend), using the `happiest-relay-server` image you built above:
 
 ```yaml
 services:
   db:
     image: postgres:17
     environment:
-      POSTGRES_DB: happier
-      POSTGRES_USER: happier
+      POSTGRES_DB: happiest
+      POSTGRES_USER: happiest
       POSTGRES_PASSWORD: change-me
     volumes:
       - pgdata:/var/lib/postgresql/data
 
   relay:
-    image: happierdev/relay-server:preview
+    image: happiest-relay-server
     ports:
       - "3005:3005"
     environment:
       PORT: "3005"
       HAPPIER_SERVER_FLAVOR: full
       HAPPIER_DB_PROVIDER: postgres
-      DATABASE_URL: postgresql://happier:change-me@db:5432/happier
+      DATABASE_URL: postgresql://happiest:change-me@db:5432/happiest
       HANDY_MASTER_SECRET: change-me-to-a-long-random-string
       HAPPIER_FILES_BACKEND: local
-      HAPPIER_SERVER_LIGHT_DATA_DIR: /data/happier
+      HAPPIER_SERVER_LIGHT_DATA_DIR: /data/happiest
     volumes:
-      - happier-relay-data:/data/happier
+      - happiest-relay-data:/data/happiest
     depends_on:
       - db
 
 volumes:
   pgdata:
-  happier-relay-data:
+  happiest-relay-data:
 ```
 
 For S3/Minio instead of local files, set `HAPPIER_FILES_BACKEND=s3` and the `S3_*` env vars (see [Environment variables](/self-hosting/env)).
@@ -122,19 +125,19 @@ This approach:
 - gives you a stable HTTPS URL inside your tailnet
 - keeps the Happier server image unprivileged (Tailscale runs in its own container)
 
-Minimal `docker-compose.yml` example (preview channel):
+Minimal `docker-compose.yml` example:
 
 ```yaml
 services:
   relay:
-    image: happierdev/relay-server:preview
+    image: happiest-relay-server
     environment:
       PORT: "3005"
       # Optional:
       # Disable UI serving:
       # HAPPIER_SERVER_UI_DIR: ""
     volumes:
-      - happier-relay-data:/data
+      - happiest-relay-data:/data
 
   tailscale:
     image: tailscale/tailscale:stable
@@ -146,7 +149,7 @@ services:
       - /dev/net/tun:/dev/net/tun
     environment:
       TS_AUTHKEY: ${TS_AUTHKEY}
-      TS_HOSTNAME: happier-relay
+      TS_HOSTNAME: happiest-relay
       TS_STATE_DIR: /var/lib/tailscale
     volumes:
       - tailscale-state:/var/lib/tailscale
@@ -160,7 +163,7 @@ services:
       '
 
 volumes:
-  happier-relay-data:
+  happiest-relay-data:
   tailscale-state:
 ```
 
@@ -178,39 +181,28 @@ This repo includes a top-level `Dockerfile` with multiple targets.
 
 ```bash
 # Server image (defaults to the full flavor; role defaults to "all" unless SERVER_ROLE is set at runtime)
-docker build -t happier-server --target server .
+docker build -t happiest-server --target server .
 
 # Worker image (sets SERVER_ROLE=worker in the image)
-docker build -t happier-server-worker --target server-worker .
+docker build -t happiest-server-worker --target server-worker .
 ```
 
-The `server` and `server-worker` targets build from the source tree. The `relay-server` target is the same artifact-based shape used by published Docker images, so it expects explicit release artifact inputs:
-
-```bash
-docker build -t happier-relay-server --target relay-server \
-  --build-arg HAPPIER_RELAY_SERVER_RELEASE_TAG=server-preview \
-  --build-arg HAPPIER_RELAY_SERVER_VERSION=<server-runtime-version> \
-  --build-arg HAPPIER_RELAY_UI_WEB_RELEASE_TAG=ui-web-preview \
-  --build-arg HAPPIER_RELAY_UI_WEB_VERSION=<ui-web-version> \
-  .
-```
-
-The release pipeline resolves these build args from GitHub releases automatically. For local source iteration, build the `server` target instead.
+The `server` and `server-worker` targets build from the source tree, so they follow whatever you have checked out. The `relay-server` target packages a published server release instead and expects explicit release inputs; see [Relay image](#relay-image-recommended). For local source iteration, build the `server` target.
 
 ### Optional: build only selected DB providers
 
-By default, source-built `server` and `server-worker` images include generated Prisma clients for all supported DB providers. The prebuilt `relay-server` image is artifact-based and prunes the generated MySQL Prisma client; use the `server` target below when you need MySQL.
+By default, source-built `server` and `server-worker` images include generated Prisma clients for all supported DB providers. The `relay-server` image is release-based and prunes the generated MySQL Prisma client; use the `server` target below when you need MySQL.
 
 If you want a smaller, provider-specific image, you can limit which Prisma clients are generated at build time:
 
 ```bash
 # Build with only Postgres (includes pglite support since it uses the Postgres client)
-docker build -t happier-server --target server \
+docker build -t happiest-server --target server \
   --build-arg HAPPIER_BUILD_DB_PROVIDERS='postgres' \
   .
 
 # Build with Postgres + MySQL (no SQLite client)
-docker build -t happier-server --target server \
+docker build -t happiest-server --target server \
   --build-arg HAPPIER_BUILD_DB_PROVIDERS='postgres|mysql' \
   .
 ```
@@ -254,7 +246,7 @@ The DB provider is selected via:
 
 Supported values under either preset are `postgres`, `mysql` (MySQL 8.0.16+), `sqlite`, and `pglite`. Full defaults to Postgres; light defaults to SQLite.
 
-Image support depends on how the image was built. Prebuilt `relay-server` images include SQLite and Postgres runtime support; MySQL requires a source-built `server` image with MySQL included.
+Image support depends on how the image was built. `relay-server` images include SQLite and Postgres runtime support; MySQL requires a source-built `server` image with MySQL included.
 
 ## Quick start (single container)
 
@@ -265,17 +257,17 @@ This is useful for quick experiments. For production, prefer Docker Compose (nex
 ```bash
 docker run --rm -p 3005:3005 \
   -e PORT=3005 \
-  -e DATABASE_URL='postgresql://user:pass@db:5432/happier?sslmode=require' \
+  -e DATABASE_URL='postgresql://user:pass@db:5432/happiest?sslmode=require' \
   -e HANDY_MASTER_SECRET='change-me-to-a-long-random-string' \
   -e HAPPIER_FILES_BACKEND=s3 \
   -e S3_HOST='minio' \
   -e S3_PORT='9000' \
   -e S3_USE_SSL='false' \
-  -e S3_BUCKET='happier-public' \
-  -e S3_PUBLIC_URL='https://files.example.com/happier-public' \
+  -e S3_BUCKET='happiest-public' \
+  -e S3_PUBLIC_URL='https://files.example.com/happiest-public' \
   -e S3_ACCESS_KEY='...' \
   -e S3_SECRET_KEY='...' \
-  happier-server
+  happiest-server
 ```
 
 ### Full flavor (MySQL 8.0.16+)
@@ -284,17 +276,17 @@ docker run --rm -p 3005:3005 \
 docker run --rm -p 3005:3005 \
   -e PORT=3005 \
   -e HAPPIER_DB_PROVIDER=mysql \
-  -e DATABASE_URL='mysql://user:pass@db:3306/happier' \
+  -e DATABASE_URL='mysql://user:pass@db:3306/happiest' \
   -e HANDY_MASTER_SECRET='change-me-to-a-long-random-string' \
   -e HAPPIER_FILES_BACKEND=s3 \
   -e S3_HOST='minio' \
   -e S3_PORT='9000' \
   -e S3_USE_SSL='false' \
-  -e S3_BUCKET='happier-public' \
-  -e S3_PUBLIC_URL='https://files.example.com/happier-public' \
+  -e S3_BUCKET='happiest-public' \
+  -e S3_PUBLIC_URL='https://files.example.com/happiest-public' \
   -e S3_ACCESS_KEY='...' \
   -e S3_SECRET_KEY='...' \
-  happier-server
+  happiest-server
 ```
 
 Production note: remove `--rm` and add `--restart unless-stopped` (or your platform’s equivalent), and prefer `--env-file` over long `-e ...` lists.
@@ -303,7 +295,7 @@ Example:
 
 ```bash
 cp apps/server/.env.example .env
-docker run --env-file .env -p 3005:3005 happier-server
+docker run --env-file .env -p 3005:3005 happiest-server
 ```
 
 ### Full flavor (local files backend)
@@ -313,12 +305,12 @@ If you don’t want S3/Minio, you can store public files on local disk:
 ```bash
 docker run --rm -p 3005:3005 \
   -e PORT=3005 \
-  -e DATABASE_URL='postgresql://user:pass@db:5432/happier?sslmode=require' \
+  -e DATABASE_URL='postgresql://user:pass@db:5432/happiest?sslmode=require' \
   -e HANDY_MASTER_SECRET='change-me-to-a-long-random-string' \
   -e HAPPIER_FILES_BACKEND=local \
-  -e HAPPIER_SERVER_LIGHT_DATA_DIR=/data/happier \
-  -v happier-server-data:/data/happier \
-  happier-server
+  -e HAPPIER_SERVER_LIGHT_DATA_DIR=/data/happiest \
+  -v happiest-server-data:/data/happiest \
+  happiest-server
 ```
 
 ### Light flavor (PGlite)
@@ -336,8 +328,8 @@ docker run --rm -p 3005:3005 \
   -e HAPPIER_SERVER_FLAVOR=light \
   -e HAPPIER_DB_PROVIDER=pglite \
   -e HAPPIER_SERVER_LIGHT_DATA_DIR=/data/server-light \
-  -v happier-server-light:/data/server-light \
-  happier-server
+  -v happiest-server-light:/data/server-light \
+  happiest-server
 ```
 
 ### Light flavor (SQLite, default)
@@ -350,8 +342,8 @@ docker run --rm -p 3005:3005 \
   -e HAPPIER_SERVER_FLAVOR=light \
   -e HAPPIER_DB_PROVIDER=sqlite \
   -e HAPPIER_SERVER_LIGHT_DATA_DIR=/data/server-light \
-  -v happier-server-light:/data/server-light \
-  happier-server
+  -v happiest-server-light:/data/server-light \
+  happiest-server
 ```
 
 ## Recommended: Docker Compose
@@ -372,8 +364,8 @@ services:
   db:
     image: postgres:17
     environment:
-      POSTGRES_DB: happier
-      POSTGRES_USER: happier
+      POSTGRES_DB: happiest
+      POSTGRES_USER: happiest
       POSTGRES_PASSWORD: change-me
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -398,15 +390,15 @@ services:
       - "3005:3005"
     environment:
       PORT: "3005"
-      DATABASE_URL: postgresql://happier:change-me@db:5432/happier
+      DATABASE_URL: postgresql://happiest:change-me@db:5432/happiest
       HANDY_MASTER_SECRET: change-me-to-a-long-random-string
       HAPPIER_FILES_BACKEND: s3
       S3_HOST: minio
       S3_PORT: "9000"
       S3_USE_SSL: "false"
-      S3_BUCKET: happier-public
+      S3_BUCKET: happiest-public
       # For Minio behind a reverse proxy, set this to your public files URL.
-      S3_PUBLIC_URL: https://files.example.com/happier-public
+      S3_PUBLIC_URL: https://files.example.com/happiest-public
       S3_ACCESS_KEY: minioadmin
       S3_SECRET_KEY: minioadmin
       # Single-container mode: leave SERVER_ROLE unset (defaults to "all")
@@ -428,7 +420,7 @@ services:
   db:
     image: mysql:8.0
     environment:
-      MYSQL_DATABASE: happier
+      MYSQL_DATABASE: happiest
       MYSQL_ROOT_PASSWORD: change-me
     volumes:
       - mysqldata:/var/lib/mysql
@@ -454,14 +446,14 @@ services:
     environment:
       PORT: "3005"
       HAPPIER_DB_PROVIDER: mysql
-      DATABASE_URL: mysql://root:change-me@db:3306/happier
+      DATABASE_URL: mysql://root:change-me@db:3306/happiest
       HANDY_MASTER_SECRET: change-me-to-a-long-random-string
       HAPPIER_FILES_BACKEND: s3
       S3_HOST: minio
       S3_PORT: "9000"
       S3_USE_SSL: "false"
-      S3_BUCKET: happier-public
-      S3_PUBLIC_URL: https://files.example.com/happier-public
+      S3_BUCKET: happiest-public
+      S3_PUBLIC_URL: https://files.example.com/happiest-public
       S3_ACCESS_KEY: minioadmin
       S3_SECRET_KEY: minioadmin
     depends_on:
@@ -493,7 +485,7 @@ services:
       # alternative: embedded Postgres via PGlite
       # HAPPIER_DB_PROVIDER: pglite
     volumes:
-      - happier-server-light:/data/server-light
+      - happiest-server-light:/data/server-light
     command: >
       sh -lc '
         if [ "${HAPPIER_DB_PROVIDER:-sqlite}" = "pglite" ]; then
@@ -506,7 +498,7 @@ services:
       '
 
 volumes:
-  happier-server-light:
+  happiest-server-light:
 ```
 
 ### Full flavor (API + worker)
@@ -553,7 +545,7 @@ services:
 
 ## Migrations
 
-The source-built `server` target and prebuilt `relay-server` image run DB migrations by default. Migration selection follows `HAPPIER_DB_PROVIDER`, independently of the preset: Postgres, MySQL, and PGlite use their packaged/provider migration owner; SQLite uses the server's canonical in-process startup migration path.
+The source-built `server` target and the `relay-server` image run DB migrations by default. Migration selection follows `HAPPIER_DB_PROVIDER`, independently of the preset: Postgres, MySQL, and PGlite use their packaged/provider migration owner; SQLite uses the server's canonical in-process startup migration path.
 
 The default is convenient for a single container. For Postgres, MySQL, or PGlite deployments managed by an orchestrator, run migrations once before replacing application containers:
 

@@ -1,6 +1,6 @@
 ---
 title: Setup
-description: Install hstack, choose a workspace, and initialize main/dev checkouts.
+description: Run hstack from your checkout, choose a workspace, and initialize main/dev checkouts.
 ---
 
 ## Prerequisites
@@ -10,13 +10,19 @@ description: Install hstack, choose a workspace, and initialize main/dev checkou
 - Docker (recommended if you plan to use `happier-server` full flavor)
 - Tailscale (optional, but recommended for phone/remote access)
 
-## Install and initialize
+## Run and initialize
 
-hstack can be run either:
+hstack is not released. Happiest publishes no npm package and no hstack binary, so there is nothing to install with `npx` or from a release page. hstack runs from a checkout of this repository. From the repository root:
 
-- as an installed CLI (recommended once published), or
-- via `npx` (good for one-off setup), or
-- from a local checkout (maintainers / when the npm package isn’t published yet).
+```bash
+node apps/stack/bin/hstack.mjs help
+```
+
+The examples on these pages write `hstack <command>`. From a checkout, run the same command as `node apps/stack/bin/hstack.mjs <command>`. To run a command against an isolated stack that belongs to that checkout, use the repo-local launcher, which is what `yarn tui:with-tauri` runs:
+
+```bash
+node apps/stack/scripts/repo_local.mjs <hstack-subcommand> [args...]
+```
 
 ### Guided setup (recommended)
 
@@ -26,16 +32,18 @@ Development profile (recommended for contributors):
 hstack setup-from-source --profile=dev
 ```
 
+The workspace is cloned from `happier-dev/happier` unless you override the source. To work on Happiest, pass `--happier-repo=ErikaAlk/happiest`, or use `--profile=local-repo --repo-dir=<path>` to run hstack against a checkout you already have.
+
 Self-host profile (stable / production-ish):
 
 ```bash
-happier relay host install --mode system
+happiest relay host install --mode system
 ```
 
 Legacy wrapper (still supported):
 
 ```bash
-hstack self-host install # forwards to `happier relay host install` when supported
+hstack self-host install # forwards to `happiest relay host install` when supported
 ```
 
 Enable auto-updates (opt-in) at install time:
@@ -59,10 +67,10 @@ hstack setup-from-source --profile=selfhost
 
 ### Use a different stable branch
 
-By default, `setup-from-source` uses `main` for the stable `main/` workspace checkout. To target a different branch (for example `preview`):
+By default, `setup-from-source` uses `main` for the stable `main/` workspace checkout. To target a different branch (for example `dev`):
 
 ```bash
-hstack setup-from-source --profile=selfhost --stable-branch=preview
+hstack setup-from-source --profile=selfhost --stable-branch=dev
 ```
 
 This persists `HAPPIER_STACK_STABLE_BRANCH` in your user config so future bootstrap/review flows keep using the same branch.

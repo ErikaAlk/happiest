@@ -31,7 +31,7 @@ This direct/discoverable exposure model is for Happier action-backed tools. It d
 
 ## What you are granting
 
-`happier mcp serve` runs with the **same local privileges as the MCP host
+`happiest mcp serve` runs with the **same local privileges as the MCP host
 process**, using your CLI's authenticated credentials. Configuring a host to
 spawn it is a privilege grant, not a connection setting.
 
@@ -49,17 +49,17 @@ your account allows.
 The external MCP server is a **stdio MCP server** (meant to be spawned by an MCP host):
 
 ```bash
-happier mcp serve
+happiest mcp serve
 ```
 
-`happier mcp start` is accepted as a compatibility alias.
+`happiest mcp start` is accepted as a compatibility alias.
 
 If you are wiring up a new host, keep `serve` as the canonical command name in your config so the intent is obvious to the next person who reads it.
 
 Optionally set a default session context for tools that can infer “current session”:
 
 ```bash
-happier mcp serve --session <session-id>
+happiest mcp serve --session <session-id>
 ```
 
 ## Configure an MCP host
@@ -72,7 +72,7 @@ Example shape:
 {
   "mcpServers": {
     "happier": {
-      "command": "happier",
+      "command": "happiest",
       "args": ["mcp", "serve"]
     }
   }
@@ -81,10 +81,9 @@ Example shape:
 
 Notes:
 
-- Ensure `happier` is on `PATH`, or use an absolute path to the binary — many hosts do not run in the same shell environment as your terminal. `which happier` gives you the path to paste.
-- **Match the lane you actually use.** A preview or dev install is a different command: `happier` (stable), `hprev` (preview), `hdev` (dev). Configuring the host with a lane you do not use is a common cause of confusing behaviour.
+- Ensure `happiest` is on `PATH`, or use an absolute path to the binary — many hosts do not run in the same shell environment as your terminal. `which happiest` gives you the path to paste.
 - The MCP host must run on a machine that is already authenticated to Happier, or the server will fail with `not_authenticated`.
-- For security, `happier mcp serve` does **not** honor server-selection *environment variables* (like `HAPPIER_SERVER_URL`). To target a non-default server, pass the CLI server flags in `args` (see below) or switch the active server profile in the CLI home directory.
+- For security, `happiest mcp serve` does **not** honor server-selection *environment variables* (like `HAPPIEST_SERVER_URL`). To target a non-default server, pass the CLI server flags in `args` (see below) or switch the active server profile in the CLI home directory.
 
 ### Target a specific server
 
@@ -94,7 +93,7 @@ If your MCP host supports it, include the normal CLI server selection flags in t
 {
   "mcpServers": {
     "happier": {
-      "command": "happier",
+      "command": "happiest",
       "args": ["--server", "company", "mcp", "serve"]
     }
   }
@@ -107,7 +106,7 @@ Or use ad-hoc URLs:
 {
   "mcpServers": {
     "happier": {
-      "command": "happier",
+      "command": "happiest",
       "args": ["--server-url", "https://api.company.example", "--webapp-url", "https://app.company.example", "mcp", "serve"]
     }
   }
@@ -119,7 +118,7 @@ Or use ad-hoc URLs:
 
 If you want to verify the server is wired correctly, point any MCP host or inspector at:
 
-- `command`: `happier`
+- `command`: `happiest`
 - `args`: `["mcp", "serve"]`
 
 Then try the session-control tools first:
@@ -291,7 +290,7 @@ Some tools operate on a **specific session**, and some operate on the **current/
 
 - Many session control tools accept an explicit `sessionId` argument.
 - If a tool supports inferring the session and you do not pass `sessionId`, Happier uses:
-  1) the `--session <session-id>` value passed at `happier mcp serve` startup (if any), otherwise
+  1) the `--session <session-id>` value passed at `happiest mcp serve` startup (if any), otherwise
   2) a global “no session selected” context (some tools will fail with `session_not_selected` in that case).
 
 For deterministic automations, prefer passing an explicit `sessionId`.
@@ -412,7 +411,7 @@ This is useful when you want a smaller direct tool list but still want the actio
 Authenticate the CLI first:
 
 ```bash
-happier auth login
+happiest auth login
 ```
 
 If you’re targeting a self-hosted server, ensure the MCP host launches Happier with the right server profile (or server URL flags). See [CLI → Server profiles](/apps/cli#server-profiles).
@@ -424,13 +423,13 @@ Starting and managing local provider processes (creating sessions, sending messa
 If a tool call fails with an error like `No daemon running` (or similar), run:
 
 ```bash
-happier daemon start
+happiest daemon start
 ```
 
 For a smoother always-on setup (recommended), install it as a user service:
 
 ```bash
-happier daemon install
+happiest daemon install
 ```
 
 ### A tool is missing

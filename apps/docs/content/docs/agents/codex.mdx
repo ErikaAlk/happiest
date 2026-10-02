@@ -10,7 +10,7 @@ This page documents how Happier integrates with **Codex** and what Codex-specifi
 Happier can install it for you:
 
 ```bash
-happier install provider codex
+happiest install provider codex
 ```
 
 Or install it yourself, then restart Happier:
@@ -50,13 +50,13 @@ In the CLI:
 
 ```bash
 # Subscription auth (recommended): device code flow
-happier connect codex --device
+happiest connect codex --device
 
 # Headless fallback: paste the redirect URL
-happier connect codex --paste
+happiest connect codex --paste
 
 # API key mode
-happier connect codex --api-key
+happiest connect codex --api-key
 ```
 
 Notes:
@@ -111,7 +111,7 @@ If you manually switch Codex to plain `mcp` in settings, new sessions can still 
 
 With the App Server backend, Codex uses shared local control with Codex CLI 0.131.0 or newer on macOS and Linux. Happier and the Codex TUI connect to the same running app-server thread, so the app remains writable and can continue handling approvals while the TUI is attached. If a turn is already active, the normal Happier input flow waits before starting the next app turn.
 
-This shared-control flow starts with a Happier session. If you started a thread directly in Codex CLI, Happier cannot join its running app-server by resuming that thread in a separate process: Codex keeps one active writer for the thread. To use both interfaces for a new session, start it in Happier and run `happier attach` on the same machine.
+This shared-control flow starts with a Happier session. If you started a thread directly in Codex CLI, Happier cannot join its running app-server by resuming that thread in a separate process: Codex keeps one active writer for the thread. To use both interfaces for a new session, start it in Happier and run `happiest attach` on the same machine.
 
 Windows, ACP sessions, and App Server sessions using an older Codex CLI keep the existing exclusive local-control flow. Happier waits for a safe turn boundary before moving those sessions between the app and the terminal. In this flow the Codex TUI owns the thread until Happier stops it, so with Codex CLI 0.156.0 or newer Happier starts it with `--no-daemon`, outside Codex's shared background server. Codex 0.157.0 and newer start that server by default and refuse to start without it from an install that lacks the complete local package.
 
@@ -169,12 +169,12 @@ Codex supports Happier’s attach flow for app-started sessions:
 
 - start the session from the Happier app,
 - let it run remotely in the background on your machine,
-- later run `happier attach <session-id>` from a terminal on that same machine,
+- later run `happiest attach <session-id>` from a terminal on that same machine,
 - switch into local control when you want to use Codex’s terminal UI directly.
 
 You can later switch back to remote control and keep using the same session from Happier.
 
-Local control starts from the terminal. Use `happier attach <session-id>` on the owning machine.
+Local control starts from the terminal. Use `happiest attach <session-id>` on the owning machine.
 
 On supported Codex CLI versions with App Server, app messages and approvals stay available while the Codex TUI is attached. Both clients use the same running thread. On the older exclusive path, app messages use the pending queue until Happier can safely resume remote processing.
 
@@ -195,13 +195,13 @@ An inactive Codex session can be resumed when:
 From the CLI, use:
 
 ```bash
-happier resume
+happiest resume
 ```
 
 or:
 
 ```bash
-happier resume <session-id>
+happiest resume <session-id>
 ```
 
 From the app/web UI, inactive Codex sessions are resumable only when those same checks pass.

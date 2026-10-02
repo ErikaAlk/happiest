@@ -24,7 +24,7 @@ For user-facing MCP management inside Happier itself, including Happier-managed 
 
 If you start a session from your terminal, Happier inherits your shell environment and passes it through to the provider process.
 
-This means “activation” commands like `eval "$(…)"` (that only export env vars) work well: run the activation, then run `happier`.
+This means “activation” commands like `eval "$(…)"` (that only export env vars) work well: run the activation, then run `happiest`.
 
 ### UI / remotely-started sessions (daemon)
 
@@ -45,7 +45,7 @@ Recommended usage with Happier:
 1) Install + configure `claude-code-router`.
 2) Start the router service (`ccr start`).
 3) Configure env vars for Claude Code:
-   - Terminal flow: run the router’s activation command (for example `eval "$(ccr activate)"`), then start Happier (`happier`).
+   - Terminal flow: run the router’s activation command (for example `eval "$(ccr activate)"`), then start Happier (`happiest`).
    - Remote/UI flow: create a **Claude** profile and set:
      - `ANTHROPIC_BASE_URL` → your router URL (for example `http://127.0.0.1:3456`)
      - `ANTHROPIC_AUTH_TOKEN` → the router API key/token (if configured)
@@ -68,7 +68,7 @@ Recommended usage with Happier:
 2) Switch providers in your shell (example):
    - `eval "$(ccm glm global)"`
 3) Start Happier normally:
-   - `happier`
+   - `happiest`
 
 Do **not** use `ccc …` with Happier. `ccc` launches `claude` directly (bypassing Happier). You want Happier to be the process that spawns `claude`, with the switched env vars already set.
 

@@ -29,7 +29,7 @@ terminal attach, handoff, and resume helpers.
 If you use Happier's provider installer, you can install OpenCode from the CLI:
 
 ```bash
-happier install provider opencode
+happiest install provider opencode
 opencode --version
 ```
 
@@ -76,7 +76,7 @@ For most users, the important part is:
 
 - new OpenCode sessions default to the **server-native** backend,
 - Happier can keep the same OpenCode session visible in both the app and the terminal,
-- attaching later should use `happier attach <session-id>`, not a raw vendor attach command.
+- attaching later should use `happiest attach <session-id>`, not a raw vendor attach command.
 
 By default, Happier uses a **managed local OpenCode server** on the machine and reuses it across sessions. Advanced users can set an explicit OpenCode server URL in settings; when you do that, Happier will keep using that explicit server for the session.
 
@@ -105,7 +105,7 @@ present in Happier CLI 0.2.12 stable.
 ## Start OpenCode from a terminal
 
 ```bash
-happier opencode
+happiest opencode
 ```
 
 When you start OpenCode this way:
@@ -127,7 +127,7 @@ Using it:
 - keeps the same session id and transcript,
 - closes the attached OpenCode TUI while the Happier session keeps running.
 
-You can later run `happier attach <session-id>` from a terminal on the same machine to get back into the OpenCode TUI.
+You can later run `happiest attach <session-id>` from a terminal on the same machine to get back into the OpenCode TUI.
 
 ## Start OpenCode from the app
 
@@ -140,7 +140,7 @@ If you start a new OpenCode session from the Happier app:
 Later, on the same machine, you can attach a terminal to that live session with:
 
 ```bash
-happier attach <session-id>
+happiest attach <session-id>
 ```
 
 After attaching:
@@ -234,7 +234,7 @@ password for the OpenCode server it manages for you:
   managed server with your password and authenticates with it. Changing it starts a separate managed
   server, because a server can only serve the sessions that authenticate with its own password.
 - Otherwise Happier generates the password for that server, keeps it in the owner-only managed-server
-  state file under `~/.happier/opencode/managed-servers/`, and reuses it for health checks, session
+  state file under `~/.happiest/opencode/managed-servers/`, and reuses it for health checks, session
   requests, and terminals it attaches to that server — including after a daemon restart.
 
 The generated password stays on your machine: it is passed to the server through the environment, is
@@ -248,7 +248,7 @@ your own `OPENCODE_PASSWORD`.
 - Attach availability is also session-specific: the session must have the metadata/context Happier needs to reopen that OpenCode session locally.
 - Model, mode, and permission behavior can still vary by installed OpenCode runtime.
 - Tool events are normalized into Happier’s canonical tool timeline.
-- For OpenCode reattach flows, the supported command is `happier attach <session-id>`.
+- For OpenCode reattach flows, the supported command is `happiest attach <session-id>`.
 
 ## Troubleshooting
 
@@ -263,14 +263,14 @@ If OpenCode is not detected:
 Use:
 
 ```bash
-happier attach <session-id>
+happiest attach <session-id>
 ```
 
 Do this on the same machine and against the same Happier account/server profile that owns the session.
 
 ### The terminal is open but no longer accepts prompts
 
-This usually means the session was detached back to remote mode from Happier. Reattach with `happier attach <session-id>` from a terminal on the same machine.
+This usually means the session was detached back to remote mode from Happier. Reattach with `happiest attach <session-id>` from a terminal on the same machine.
 
 ## Related
 

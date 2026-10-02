@@ -14,81 +14,60 @@ The Happier CLI is the power-user client for:
 
 ## Install
 
+Happiest publishes the CLI as a GitHub Release on `ErikaAlk/happiest` for Linux (x64 and arm64) and
+Windows (x64). Only the stable channel is published, so there is one installer per platform. There
+is no macOS build, npm package or Homebrew formula.
+
+<Tabs items={['Linux', 'Windows']}>
+<Tab value="Linux">
 ```bash
-curl -fsSL https://happier.dev/install | bash
+curl -fsSL https://github.com/ErikaAlk/happiest/releases/download/cli-stable/install.sh | bash
 ```
-
-Public installer lanes:
-
-- `stable`: `curl -fsSL https://happier.dev/install | bash` -> `happier`
-- `preview`: `curl -fsSL https://happier.dev/install-preview | bash` -> `hprev`
-- `dev`: `curl -fsSL https://happier.dev/install-dev | bash` -> `hdev`
-
-Windows (PowerShell):
-
+</Tab>
+<Tab value="Windows">
 ```powershell
-irm https://happier.dev/install.ps1 | iex
+irm https://github.com/ErikaAlk/happiest/releases/download/cli-stable/install.ps1 | iex
 ```
+</Tab>
+</Tabs>
 
-npm fallback (power-user / Node workflow):
-
-```bash
-npm install -g @happier-dev/cli
-```
-
-Important:
-
-- npm installs expose the npm dist-tags (`@latest` and `@next`).
-- The rolling `dev` lane is installer-managed (`install-dev` / `hdev`), not a separate npm dist-tag.
-
-### Homebrew (coming soon)
-
-<Callout type="warn" title="Not published yet">
-The Homebrew formula is prepared but its tap is not public yet, so this command does not work
-today. Use the installer above until this notice is gone.
-</Callout>
-
-On macOS 13 (Ventura) or later and on Linux, the stable CLI will install from Happier's own tap:
-
-```bash
-brew install happier-dev/tap/happier
-```
-
-The formula installs the same signed release payload the installer does, into Homebrew's prefix,
-and links `happier` onto your `PATH`. It has no `brew services` entry: the background service is
-still set up by the CLI itself (`happier setup`, or `happier service install`).
+The installer keeps the full CLI payload under `~/.happiest/cli/current` (`%USERPROFILE%\.happiest\cli\current`
+on Windows) and installs the `happiest` command. Setting `HAPPIEST_HOME_DIR` moves that home directory.
 
 ## Updates
 
-How you update depends on how you installed the CLI:
+Update the CLI from the CLI:
 
-- **Installer install**: run the lane-specific command (`happier`, `hprev`, or `hdev`) with `self check` / `self update` (or rerun the matching installer endpoint). Installer installs keep the full CLI payload under `~/.happier/cli/current` and refresh the selected lane shim for you.
-- Stable is `~/.happier/cli/current`; preview/dev use `~/.happier/cli-preview/current` and `~/.happier/cli-dev/current`.
-- **npm install**: `npm install -g @happier-dev/cli@latest` (or `@next` for preview). npm does not currently expose a separate public `dev` dist-tag.
-- **Homebrew install** (once published): `brew upgrade happier`. `happier self update` recognises a Homebrew install and prints that command instead of replacing Homebrew's copy.
+```bash
+happiest self check
+happiest self update
+```
+
+`self update` downloads the latest stable release from `ErikaAlk/happiest`, verifies it with
+Happiest's own minisign key (shipped with the installer), and installs it in place of the current
+CLI. Rerunning the installer command above does the same.
 
 ### Using the desktop app with a CLI you installed yourself
 
 In the current development build (unreleased), when the desktop app sets up this computer and finds
-a `happier` it did not install (npm, Homebrew or a manual copy), it asks once, naming that CLI's
-version and path:
+a `happiest` it did not install (for example a copy you placed there by hand), it asks once, naming
+that CLI's version and path:
 
-- **Let Happier manage it** — the app installs its own CLI, puts it first on your `PATH` for new
+- **Let Happiest manage it** — the app installs its own CLI, puts it first on your `PATH` for new
   terminals, and moves the background service to it. Your old copy is left in place; Settings ›
-  This computer › Command line shows the command that removes it (for example
-  `npm uninstall -g @happier-dev/cli` or `brew uninstall <formula>`). The app never runs it for you.
+  This computer › Command line shows where it still is, so you can remove it yourself. The app
+  never removes it for you.
 - **Keep my own** — the app installs nothing and adds nothing to your `PATH`; the app, the
-  background service and your terminal all use your CLI. Updating it stays with you (for example
-  `npm install -g @happier-dev/cli@latest`). If it is too old for setup, the app says so and names
-  that command instead of replacing it.
+  background service and your terminal all use your CLI. Updating it stays with you. If it is too
+  old for setup, the app says so instead of replacing it.
 
-The answer applies to every Happier app on this computer. Change it any time in Settings › This
+The answer applies to every Happiest app on this computer. Change it any time in Settings › This
 computer › Command line. You are asked again only if the CLI you kept disappears or becomes too old
 for setup; if it disappears, the app asks before installing anything in its place.
 
-On Windows, a `happier` on the system-wide `Path` (for example from a machine-wide Node.js install)
-still runs first in new terminals after **Let Happier manage it**, because Windows puts the system
-`Path` ahead of yours. Remove that copy with the command Settings shows.
+On Windows, a `happiest` on the system-wide `Path` still runs first in new terminals after
+**Let Happiest manage it**, because Windows puts the system `Path` ahead of yours. Remove that copy
+yourself.
 
 The CLI can also show periodic update notices in TTY sessions; disable with:
 
@@ -100,7 +79,7 @@ Full matrix (all apps/assets): [Updates](/releases/updates).
 
 ## Set up a coding agent
 
-The upcoming 0.2 setup flow offers installable agents from Happier's catalog
+The setup flow offers installable agents from Happier's catalog
 when none is available. Choose one or **Skip for now**. Skipping completes the
 machine connection, but a computer with no agent is not coding-ready. Installing
 an agent only makes its CLI available; complete that agent's own authentication
@@ -109,10 +88,10 @@ separately before starting a session.
 ## Authenticate
 
 ```bash
-happier auth login
+happiest auth login
 ```
 
-`happier auth login` asks whether to approve with a web browser or the mobile app.
+`happiest auth login` asks whether to approve with a web browser or the mobile app.
 The browser path prints its terminal-connect URL; the mobile path prints a QR code and deep link.
 When using self-hosted servers, run login against the correct server profile (see below).
 
@@ -124,13 +103,13 @@ Recommended first-run flow:
 
 Notes:
 - The CLI never needs your secret key directly. For device-key accounts, restore happens in the app (mobile/web UI).
-- On enterprise/keyless deployments (mTLS or keyless OAuth), the same `happier auth login` flow works; the browser/app will use whatever the server advertises via `GET /v1/features`.
+- On enterprise/keyless deployments (mTLS or keyless OAuth), the same `happiest auth login` flow works; the browser/app will use whatever the server advertises via `GET /v1/features`.
 - **Terminal connect is separate from account restore.** In the app, use **Scan QR to connect terminal** only for terminal/daemon approval. To sign a phone into the same account, use **Add your phone** on an already-signed-in desktop/web app and **Restore account** on the phone.
 - If the mobile QR/deep link does not include a server URL, your current server is probably loopback-only (`localhost` / `127.0.0.1`). Configure the phone to a reachable server URL first, then retry.
 
 Advanced:
-- To also print optional “configure server” links (rarely needed): `happier auth login --print-configure-links`
-- To stop waiting for approval after a fixed time instead of waiting indefinitely: `happier auth login --wait-timeout <seconds>`. When the timeout expires, that request ends and cannot be approved. Rerun `happier auth login` to create a new request. Guided setup uses this so it can hand the terminal back.
+- To also print optional “configure server” links (rarely needed): `happiest auth login --print-configure-links`
+- To stop waiting for approval after a fixed time instead of waiting indefinitely: `happiest auth login --wait-timeout <seconds>`. When the timeout expires, that request ends and cannot be approved. Rerun `happiest auth login` to create a new request. Guided setup uses this so it can hand the terminal back.
 
 User guide: [Features → Device linking & restore](/accounts/device-linking-and-restore)
 
@@ -139,7 +118,7 @@ User guide: [Features → Device linking & restore](/accounts/device-linking-and
 If you want to run Happier on a **remote machine** (VPS, home server, dev box) but approve/authenticate it from a machine where you're already signed in:
 
 ```bash
-happier auth pair-remote --ssh user@host
+happiest auth pair-remote --ssh user@host
 ```
 
 Notes:
@@ -147,9 +126,9 @@ Notes:
 - This orchestrates a claim-gated pairing flow over SSH (remote request → local approve → remote wait).
 - Add `--json` for machine-readable output.
 - Add `--server ...` or `--server-url/--webapp-url` to choose the local relay profile/account used for approval.
-- If your selected relay is local-only (`localhost` / `127.0.0.1`), interactive mode offers reachable addresses for this computer (Tailscale Serve, direct Tailscale IP, LAN IP) plus Custom. In scripts, pass the address the remote machine should use to reach this computer's relay: `happier auth pair-remote --ssh user@host --server-url-for-remote https://relay.example.com`.
+- If your selected relay is local-only (`localhost` / `127.0.0.1`), interactive mode offers reachable addresses for this computer (Tailscale Serve, direct Tailscale IP, LAN IP) plus Custom. In scripts, pass the address the remote machine should use to reach this computer's relay: `happiest auth pair-remote --ssh user@host --server-url-for-remote https://relay.example.com`.
 - `--remote-server-url` remains available as a legacy alias for `--server-url-for-remote`.
-- For remote Windows hosts, make sure the Happier CLI command is available in the SSH session. If the command is not named `happier`, pass `--remote-command hdev` or the installed command name.
+- For remote Windows hosts, make sure the Happier CLI command is available in the SSH session. If the command is not named `happiest`, pass the installed command name with `--remote-command <command>`.
 
 ### Pairing (JSON, manual / scripting)
 
@@ -157,13 +136,13 @@ Split the flow when you want full control (automation, custom SSH, etc):
 
 ```bash
 # On the remote host (prints a request + publicKey)
-happier auth request --json
+happiest auth request --json
 
 # On a local machine that's already authenticated (approves the public key)
-happier auth approve --public-key <publicKey> --json
+happiest auth approve --public-key <publicKey> --json
 
 # Back on the remote host (waits, claims, and writes credentials)
-happier auth wait --public-key <publicKey> --json
+happiest auth wait --public-key <publicKey> --json
 ```
 
 This is terminal/CLI pairing, not the same flow as device restore inside the app.
@@ -171,11 +150,11 @@ This is terminal/CLI pairing, not the same flow as device restore inside the app
 ## Guided first run
 
 ```bash
-happier setup
+happiest setup
 ```
 
 On a fresh interactive install, the installer continues directly into
-`happier setup`. Run it yourself when the installer was unattended, you skipped
+`happiest setup`. Run it yourself when the installer was unattended, you skipped
 the guided step, or sign-in did not finish. Setup asks where your relay lives,
 points this computer at it, and runs the sign-in. It leaves an already-finished
 computer alone only when a relay is selected, the relay still accepts the stored
@@ -188,8 +167,7 @@ retry or explicitly choosing another relay — an unreachable relay is never
 treated as a rejected sign-in or a reason to sign in somewhere else.
 
 <Callout type="info">
-  The current 0.2 checkout has the refreshed setup presentation; it is not part
-  of the public 0.2.11 installer. Wide terminals place the planet beside the
+  Wide terminals place the planet beside the
   setup choices, slowly growing and shrinking while you choose. Use the arrow
   keys to select and Enter to continue; letter shortcuts remain available.
   Narrow terminals use a compact text layout. On a capable terminal, set
@@ -225,7 +203,7 @@ combined.
 the relay you named and, for `--this-computer`, installs the relay here. It then
 stops, because signing in has to be approved on your phone or in a browser and
 nothing on the command line can approve it for you. Setup names
-`happier auth login` and exits non-zero — the binary installed, the guided setup
+`happiest auth login` and exits non-zero — the binary installed, the guided setup
 did not finish. It needs one of `--cloud`, `--relay <url>` or `--this-computer`:
 your account lives on whichever relay is chosen, so setup will not choose one.
 
@@ -258,21 +236,21 @@ loopback address — the sign-in step says so and signs in through this computer
 browser rather than offering the app. Terminal links deliberately drop an
 address no other device can reach, so the phone would be left pointing at
 whichever relay it already had. Only a sign-in that actually starts a new
-request makes that choice: setup runs `happier auth login` either way, and when
+request makes that choice: setup runs `happiest auth login` either way, and when
 your stored sign-in is still accepted it just repairs the machine registration
 without opening a browser. Once the relay has an address your phone can reach,
-`happier auth login` offers both routes again.
+`happiest auth login` offers both routes again.
 
 Setup finishes by checking for an installed coding agent. Finding none is a
 warning, not a failure — you can finish setup and install one afterwards.
 
 ## Check and repair this machine
 
-`happier status` reads the whole chain between you and a working session —
+`happiest status` reads the whole chain between you and a working session —
 account, relay registration, automatic startup, CLI channel — and changes
-nothing. `happier doctor repair` fixes what it can. Both are covered in
+nothing. `happiest doctor repair` fixes what it can. Both are covered in
 [Check your setup](/getting-started/check-your-setup), along with the
-`happier service` commands that manage automatic startup.
+`happiest service` commands that manage automatic startup.
 
 ## Notifications from a script
 
@@ -280,8 +258,8 @@ Send a notification to your own devices from anywhere a shell runs — the end o
 a long build, a cron job, a deploy:
 
 ```bash
-happier notify -p "Deployment complete!"
-happier notify -p "Database connection restored" -t "Alert"
+happiest notify -p "Deployment complete!"
+happiest notify -p "Database connection restored" -t "Alert"
 ```
 
 `-p` is the message and `-t` an optional title.
@@ -291,7 +269,7 @@ happier notify -p "Database connection restored" -t "Alert"
 Trigger a saved automation without opening the app:
 
 ```bash
-happier automation run <automation-id> [--idempotency-key <key>] [--json]
+happiest automation run <automation-id> [--idempotency-key <key>] [--json]
 ```
 
 Pass `--idempotency-key` when the caller might retry — a repeated key will not
@@ -300,7 +278,7 @@ run the automation twice.
 ## Plugins
 
 ```bash
-happier plugins list [--json]
+happiest plugins list [--json]
 ```
 
 This version of Happier does not support installing plugins; the command exists
@@ -312,13 +290,13 @@ unrecognised-command error. It always lists nothing.
 ### Save and switch servers
 
 ```bash
-happier server list
-happier server current
-happier server add --name company --server-url https://api.company.example --webapp-url https://app.company.example --use
-happier server use company
+happiest server list
+happiest server current
+happiest server add --name company --server-url https://api.company.example --webapp-url https://app.company.example --use
+happiest server use company
 ```
 
-`--use` (and `happier server use ...`) sets the **default server** for future commands, so you can usually omit `--server ...` once it’s selected.
+`--use` (and `happiest server use ...`) sets the **default server** for future commands, so you can usually omit `--server ...` once it’s selected.
 
 The selected server hosts the account and synchronized session state; coding
 agents still run on the machine that owns the session. Changing the default
@@ -330,20 +308,20 @@ sessions, or settings from the previous server.
 Use per-invocation targeting when you do not want to switch the default:
 
 ```bash
-happier --server company auth login
-happier --server personal daemon status
+happiest --server company auth login
+happiest --server personal daemon status
 ```
 
 You can also use URL flags:
 
 ```bash
-happier --server-url https://api.company.example --webapp-url https://app.company.example auth login
-happier --server-url https://api.company.example --webapp-url https://app.company.example auth pair-remote --ssh user@host --json
+happiest --server-url https://api.company.example --webapp-url https://app.company.example auth login
+happiest --server-url https://api.company.example --webapp-url https://app.company.example auth pair-remote --ssh user@host --json
 ```
 
 <Callout type="warn">
-  `happier logout` is deprecated and prints a notice saying so. Use
-  `happier auth logout`.
+  `happiest logout` is deprecated and prints a notice saying so. Use
+  `happiest auth logout`.
 </Callout>
 
 ## Daemon (background mode)
@@ -355,17 +333,17 @@ For always-on background sessions, remote control, and headless servers, see [Da
 If a supported session is already running, you can reattach to that same live session from a terminal:
 
 ```bash
-happier attach
-happier attach <session-id>
+happiest attach
+happiest attach <session-id>
 ```
 
-This is the main “start in the app, continue in the terminal” workflow. In a supported TTY, `happier attach` opens an interactive picker of active sessions:
+This is the main “start in the app, continue in the terminal” workflow. In a supported TTY, `happiest attach` opens an interactive picker of active sessions:
 
 - **local attachable sessions** are selectable immediately
 - **active but non-attachable sessions** stay visible but disabled with a reason
 - **remote-capable provider sessions** are marked as remote; press `P` in the picker to run a reachability check before attaching
 
-If the session is stopped, use `happier resume` instead.
+If the session is stopped, use `happiest resume` instead.
 
 Important notes:
 
@@ -377,7 +355,7 @@ Attach strategy depends on the provider:
 - Some providers use Happier's `tmux`-backed attach flow.
 - OpenCode uses a provider-native attach flow for server-backed sessions.
 
-For OpenCode, the supported reattach command is still `happier attach <session-id>`. Do not rely on a raw vendor `opencode attach ...` command as your normal Happier workflow.
+For OpenCode, the supported reattach command is still `happiest attach <session-id>`. Do not rely on a raw vendor `opencode attach ...` command as your normal Happier workflow.
 
 Supported attach styles include:
 
@@ -394,7 +372,7 @@ If a Happier session is inactive but still vendor-resumable, you can resume it d
 ### Interactive selector
 
 ```bash
-happier resume
+happiest resume
 ```
 
 In a supported TTY, Happier shows an interactive picker of resumable inactive sessions.
@@ -402,7 +380,7 @@ In a supported TTY, Happier shows an interactive picker of resumable inactive se
 ### Resume by id
 
 ```bash
-happier resume <session-id>
+happiest resume <session-id>
 ```
 
 You can use a full session id or an unambiguous prefix.
@@ -420,7 +398,7 @@ For the full user guide and the meaning of “resumable”, see [Features → Re
 Use:
 
 ```bash
-happier session list
+happiest session list
 ```
 
 The default output is a table that includes session id, agent, recent activity, active state, resume state, title, and path.
@@ -428,9 +406,9 @@ The default output is a table that includes session id, agent, recent activity, 
 Useful variants:
 
 ```bash
-happier session list --resumable
-happier session list --plain
-happier session list --json
+happiest session list --resumable
+happiest session list --plain
+happiest session list --json
 ```
 
 - `--resumable` filters to sessions that can currently be resumed
@@ -439,61 +417,61 @@ happier session list --json
 
 ## Session control (non-interactive)
 
-The `happier session ...` command group is the non-interactive surface for creating and controlling sessions.
+The `happiest session ...` command group is the non-interactive surface for creating and controlling sessions.
 
 Deep reference: [CLI sessions](/apps/cli-sessions).
 
 ### Create a session (scriptable)
 
 ```bash
-happier session create --title "My session" --message "Hello"
+happiest session create --title "My session" --message "Hello"
 ```
 
 Optional targeting:
 
 ```bash
-happier session create --path /path/to/repo --backend <backend-target-key> --tag <tag>
+happiest session create --path /path/to/repo --backend <backend-target-key> --tag <tag>
 ```
 
 `--backend` expects a **backend target key** (not a short name). Common forms:
 
 ```bash
 # Built-in catalog agent
-happier session create --backend "agent:<agent-id>"
+happiest session create --backend "agent:<agent-id>"
 
 # ACP backend target (e.g. opencode, gemini, etc)
-happier session create --backend "acpBackend:<backend-id>"
+happiest session create --backend "acpBackend:<backend-id>"
 ```
 
 ### Send messages
 
 ```bash
-happier session send <session-id> "ping"
+happiest session send <session-id> "ping"
 ```
 
 Wait for an agent response (useful for scripts; can time out if the agent is busy/offline):
 
 ```bash
-happier session send <session-id> "ping" --wait --timeout 60
+happiest session send <session-id> "ping" --wait --timeout 60
 ```
 
 ### Status, stop, archive
 
 ```bash
-happier session status <session-id>
-happier session history <session-id>
-happier session wait <session-id> --timeout 60
-happier session stop <session-id>
-happier session archive <session-id>
-happier session unarchive <session-id>
+happiest session status <session-id>
+happiest session history <session-id>
+happiest session wait <session-id> --timeout 60
+happiest session stop <session-id>
+happiest session archive <session-id>
+happiest session unarchive <session-id>
 ```
 
 ### Set title / model / permission mode
 
 ```bash
-happier session set-title <session-id> "New title"
-happier session set-model <session-id> <model-id>
-happier session set-permission-mode <session-id> <mode>
+happiest session set-title <session-id> "New title"
+happiest session set-model <session-id> <model-id>
+happiest session set-permission-mode <session-id> <mode>
 ```
 
 Prefer `read_only`, `default`, `auto`, or `yolo` for `<mode>`. Older aliases such as `read-only`, `safe-yolo`, `workspace_write`, `acceptEdits`, and `bypassPermissions` remain accepted. Use `--json` to script and see the compatible normalized `permissionMode` value.
@@ -517,7 +495,7 @@ Use the app’s **Inbox** to review/approve/deny and see the final execution res
 For advanced automation, approvals can also be decided through the generic action executor:
 
 ```bash
-happier session actions execute <session-id> approval.request.decide --input-json '{"artifactId":"<id>","decision":"approve"}' --json
+happiest session actions execute <session-id> approval.request.decide --input-json '{"artifactId":"<id>","decision":"approve"}' --json
 ```
 
 ### Action catalog from the CLI
@@ -525,9 +503,9 @@ happier session actions execute <session-id> approval.request.decide --input-jso
 You can inspect and execute Happier actions directly:
 
 ```bash
-happier session actions list
-happier session actions describe <action-id>
-happier session actions execute <session-id> <action-id> --input-json '<json>'
+happiest session actions list
+happiest session actions describe <action-id>
+happiest session actions execute <session-id> <action-id> --input-json '<json>'
 ```
 
 ### Execution runs (review / plan / delegate / voice agent)
@@ -535,10 +513,10 @@ happier session actions execute <session-id> <action-id> --input-json '<json>'
 Execution runs are the structured “run” layer for multi-step flows in a session (for example: start a review run, then send follow-up messages, then stop).
 
 ```bash
-happier session run list <session-id>
-happier session run start <session-id> --intent <intent> --backend <backend-target-key> --permission-mode auto
-happier session run send <session-id> <run-id> "message"
-happier session run stop <session-id> <run-id>
+happiest session run list <session-id>
+happiest session run start <session-id> --intent <intent> --backend <backend-target-key> --permission-mode auto
+happiest session run send <session-id> <run-id> "message"
+happiest session run stop <session-id> <run-id>
 ```
 
 Execution-run permission input uses the same preferred `read_only`, `default`,
@@ -550,10 +528,10 @@ the established `read_only` / `workspace_write` wire projection.
 If you want an MCP host (editor/agent) to control Happier sessions and actions, run the external MCP server:
 
 ```bash
-happier mcp serve
+happiest mcp serve
 ```
 
-`happier mcp start` is accepted as a compatibility alias, but `serve` is the canonical command name in the docs and CLI help.
+`happiest mcp start` is accepted as a compatibility alias, but `serve` is the canonical command name in the docs and CLI help.
 
 Guide: [Happier MCP (external)](/extending/happier-as-mcp-server)
 
@@ -562,9 +540,9 @@ Guide: [Happier MCP (external)](/extending/happier-as-mcp-server)
 The CLI supports backend profiles for session starts and profile discovery:
 
 ```bash
-happier profiles list
-happier claude --profile deepseek
-happier codex --profile openai
+happiest profiles list
+happiest claude --profile deepseek
+happiest codex --profile openai
 ```
 
 For the full guide, see [Features → Profiles](/agents/profiles).
@@ -582,13 +560,13 @@ Use it when you want to:
 ### List tools
 
 ```bash
-happier tools list
+happiest tools list
 ```
 
 Optional:
 
 ```bash
-happier tools list --directory /path/to/project
+happiest tools list --directory /path/to/project
 ```
 
 This lists:
@@ -601,7 +579,7 @@ This lists:
 ### Call a tool
 
 ```bash
-happier tools call --session-id <session-id> --source happier --tool action_spec_search --args-json '{"query":"plan mode","limit":5}'
+happiest tools call --session-id <session-id> --source happier --tool action_spec_search --args-json '{"query":"plan mode","limit":5}'
 ```
 
 Examples:

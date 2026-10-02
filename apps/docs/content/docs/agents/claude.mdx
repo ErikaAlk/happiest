@@ -32,12 +32,12 @@ Claude supports Happier’s attach flow for app-started sessions:
 
 - start a Claude session from the Happier app,
 - let Happier run it remotely on your machine,
-- later reattach with `happier attach <session-id>`,
+- later reattach with `happiest attach <session-id>`,
 - switch into local mode when you want to use Claude Code’s native terminal UI directly.
 
 You can later switch back to remote mode and continue from the Happier app without starting a new session.
 
-Local control is started from the terminal. Use `happier attach <session-id>` on the machine that owns the session.
+Local control is started from the terminal. Use `happiest attach <session-id>` on the machine that owns the session.
 
 If you send a message from the app while Claude is locally controlled, Happier stores it in the pending queue first. When Claude is idle, Happier can switch back to remote control and process the queued message. If Claude is still working in the terminal, Happier waits until the local turn finishes or stops before switching, so the app message does not interrupt the current Claude turn.
 
@@ -114,7 +114,7 @@ Anthropic currently supports both install paths. Prefer the native installer flo
 Happier can run the installer for you, using Anthropic's native installer rather than npm:
 
 ```bash
-happier install provider claude
+happiest install provider claude
 claude --version
 ```
 
@@ -154,13 +154,13 @@ In the CLI:
 
 ```bash
 # Claude subscription (recommended default)
-happier connect claude --setup-token
+happiest connect claude --setup-token
 
 # Anthropic API key (not subscription)
-happier connect claude --api-key
+happiest connect claude --api-key
 
 # Subscription OAuth (advanced)
-happier connect claude --oauth
+happiest connect claude --oauth
 ```
 
 For more details (service ids, security model, and env overrides), see:
@@ -229,7 +229,7 @@ For the full user-facing MCP guide in Happier, see:
 
 Happier does not have a Claude-specific “env var” CLI flag. To set environment variables for Claude:
 
-- **Local mode**: export env vars in your shell before running `happier` (Claude inherits them).
+- **Local mode**: export env vars in your shell before running `happiest` (Claude inherits them).
 - **Remote mode (from the app UI)**: set env vars on the profile/session in the UI (Happier forwards them to the spawned Claude process).
 
 Remote Agent SDK mode uses a filtered environment by default, but **explicit** GUI/profile env vars (and connected-services auth env vars) are forwarded to the Claude subprocess so workflows like GitHub integration can work without leaking the full parent `process.env`.

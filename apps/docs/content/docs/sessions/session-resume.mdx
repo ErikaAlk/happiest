@@ -63,7 +63,7 @@ Happier CLI exposes two main workflows for resume.
 ### List sessions
 
 ```bash
-happier session list
+happiest session list
 ```
 
 By default this prints a table with:
@@ -79,9 +79,9 @@ By default this prints a table with:
 Useful variants:
 
 ```bash
-happier session list --resumable
-happier session list --plain
-happier session list --json
+happiest session list --resumable
+happiest session list --plain
+happiest session list --json
 ```
 
 Use:
@@ -93,17 +93,17 @@ Use:
 ### Resume interactively
 
 ```bash
-happier resume
+happiest resume
 ```
 
 In a real TTY, Happier opens an interactive selector and shows resumable inactive sessions sorted by recent activity.
 
-If your terminal does not support the interactive selector, Happier tells you to use `happier session list --resumable` and then resume by id.
+If your terminal does not support the interactive selector, Happier tells you to use `happiest session list --resumable` and then resume by id.
 
 ### Resume by id
 
 ```bash
-happier resume <session-id>
+happiest resume <session-id>
 ```
 
 You can pass a full session id or an unambiguous prefix.
@@ -150,7 +150,7 @@ Use **resume** when the session is inactive and the provider supports reopening 
 Use **attach** when the session is still running locally and you want to reconnect to the live process:
 
 ```bash
-happier attach <session-id>
+happiest attach <session-id>
 ```
 
 If you are unsure:

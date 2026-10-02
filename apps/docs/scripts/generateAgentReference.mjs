@@ -27,8 +27,11 @@
  * this renderer disagree.
  */
 import { readFileSync, readdirSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+const { productIdentity } = createRequire(import.meta.url)('@happier-dev/release-runtime/productIdentity');
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..', '..');
@@ -399,7 +402,7 @@ export async function renderAgentReferenceMarkdown({
     ['Agent', 'Start it with', 'Status', 'Models', 'Managed install'],
     ids.map((id) => [
       `**${name(id)}**`,
-      `\`happier ${core(id).cliSubcommand}\``,
+      `\`${productIdentity.commandName} ${core(id).cliSubcommand}\``,
       stability[id],
       modelsCell(agents.getAgentModelConfig(id)),
       installCell(cliRuntime.getProviderCliRuntimeSpec(id)),

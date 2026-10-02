@@ -8,7 +8,7 @@ This guide explains how to start a supported session from the Happier app, leave
 This is the main workflow behind:
 
 - starting a session from the app UI while you are away from your terminal,
-- reconnecting later with `happier attach <session-id>`, and
+- reconnecting later with `happiest attach <session-id>`, and
 - switching the same session between **remote control** (from Happier) and **local control** (from the provider TUI in your terminal).
 
 ## When to use it
@@ -24,16 +24,16 @@ Common examples:
 
 - start a **Codex** or **Claude** session from the app, then attach later from your terminal,
 - start an **OpenCode** session from the app, then reopen it locally without creating a second Happier session,
-- begin a task from the UI, then run `happier attach <session-id>` when you want to use the provider’s native TUI directly,
+- begin a task from the UI, then run `happiest attach <session-id>` when you want to use the provider’s native TUI directly,
 - leave a session running in the background and reconnect later without starting a new one.
 
 ## How attach works
 
-`happier attach` reconnects to a session that is already running.
+`happiest attach` reconnects to a session that is already running.
 
 ```bash
-happier attach
-happier attach <session-id>
+happiest attach
+happiest attach <session-id>
 ```
 
 What happens depends on how that session was started:
@@ -43,15 +43,15 @@ What happens depends on how that session was started:
 - **Windows Console session**: Happier brings the existing console host to the foreground
 - **provider-native attach session**: Happier uses the provider’s own attach flow for that session
 
-`happier attach` reconnects to the existing session. It does not start a new one.
+`happiest attach` reconnects to the existing session. It does not start a new one.
 
-If you run `happier attach` without a session id in a supported terminal, Happier opens an interactive list of active sessions:
+If you run `happiest attach` without a session id in a supported terminal, Happier opens an interactive list of active sessions:
 
 - attachable sessions on the current machine are selectable
 - active sessions that are visible but not attachable stay disabled with an explanation
 - remote-capable provider sessions are labeled as remote; press `P` to check reachability before attaching
 
-Stopped sessions are not shown in this picker. Use [`happier resume`](/sessions/session-resume) for inactive sessions.
+Stopped sessions are not shown in this picker. Use [`happiest resume`](/sessions/session-resume) for inactive sessions.
 
 ## Requirements
 
@@ -78,7 +78,7 @@ On **Windows**, tmux is often not the right answer. Happier also supports Window
 - **Windows Terminal** — best when you want to come back later and continue in a Windows Terminal window
 - **Console** — starts the session in a regular visible console host
 
-If the session was started in **Windows Terminal** or **Console** mode, `happier attach <session-id>` focuses that existing interactive host instead of using tmux.
+If the session was started in **Windows Terminal** or **Console** mode, `happiest attach <session-id>` focuses that existing interactive host instead of using tmux.
 
 A **Hidden** session has no host to attach to. Choose **Continue in Windows Terminal** in the session menu to resume it in a Windows Terminal window first; see [Windows](/apps/windows#attach-behavior-on-windows).
 
@@ -130,12 +130,12 @@ The most common flow looks like this:
 
 1. Start the session in the Happier app
 2. Use it normally in **remote** mode
-3. Run `happier attach <session-id>` on the owning machine
+3. Run `happiest attach <session-id>` on the owning machine
 4. Open the provider TUI for the same session
 5. Continue working in the terminal
 6. Keep using the app at the same time on shared-control paths, or switch back later on exclusive-control paths
 
-Starting local control is terminal-driven. To take local control, attach from the terminal on the owning machine with `happier attach <session-id>`.
+Starting local control is terminal-driven. To take local control, attach from the terminal on the owning machine with `happiest attach <session-id>`.
 
 Shared-control sessions keep Happier connected while the provider TUI is open. On exclusive-control sessions, Happier queues app messages and waits for the local turn to finish, abort, or otherwise reach a safe boundary before switching back to remote processing.
 
@@ -148,7 +148,7 @@ The same session can move between two control styles:
 
 This is a control switch inside the same session, not a new session. The transcript, session id, and session settings stay the same.
 
-Remote-to-local control starts from the terminal with `happier attach`. Local-to-remote control can be requested from the app when the session is currently locally controlled. On exclusive-control paths, Happier may wait until the current local turn is done before it takes remote control. Shared-control paths keep the app connected while the TUI is attached.
+Remote-to-local control starts from the terminal with `happiest attach`. Local-to-remote control can be requested from the app when the session is currently locally controlled. On exclusive-control paths, Happier may wait until the current local turn is done before it takes remote control. Shared-control paths keep the app connected while the TUI is attached.
 
 ## Supported providers
 
@@ -197,7 +197,7 @@ For Claude and Codex’s exclusive compatibility paths, the pending queue also p
 
 ## Troubleshooting
 
-### `happier attach` does not find the session
+### `happiest attach` does not find the session
 
 Check that:
 

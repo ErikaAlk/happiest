@@ -61,7 +61,7 @@ hstack dev-targets add linux \
   --platform=posix \
   --ssh=happier-stack-linux \
   --repo-dir=/home/dev/happier \
-  --cli-home-dir=/home/dev/.happier/dev-targets/repo-dev-linux
+  --cli-home-dir=/home/dev/.happiest/dev-targets/repo-dev-linux
 ```
 
 Add a Windows target using forward-slash paths:
@@ -72,7 +72,7 @@ hstack dev-targets add windows \
   --platform=windows \
   --ssh=happier-stack-windows \
   --repo-dir=C:/Users/dev/happier \
-  --cli-home-dir=C:/Users/dev/.happier/dev-targets/repo-dev-windows
+  --cli-home-dir=C:/Users/dev/.happiest/dev-targets/repo-dev-windows
 ```
 
 `--ssh` can be a normal OpenSSH alias or `user@host`. If a target uses a generated or isolated SSH
@@ -87,7 +87,7 @@ hstack dev-targets add linux \
   --lima-instance=happier-linux \
   --lima-home=/absolute/path/to/lima-home \
   --repo-dir=/home/dev/happier \
-  --cli-home-dir=/home/dev/.happier/dev-targets/repo-dev-linux
+  --cli-home-dir=/home/dev/.happiest/dev-targets/repo-dev-linux
 ```
 
 When both Lima options are present, Stack runs `limactl start` before SSH preparation. It does not

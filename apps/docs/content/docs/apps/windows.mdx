@@ -31,7 +31,7 @@ This is usually the best choice when:
 
 - you use Windows Terminal already,
 - you want app-started sessions to later continue in a Windows Terminal window,
-- you expect to use `happier attach <session-id>` to bring that host back into focus.
+- you expect to use `happiest attach <session-id>` to bring that host back into focus.
 
 The option is available when the daemon finds `wt.exe` on its `PATH`, including the app execution alias that Microsoft Store and winget installs place in `%LOCALAPPDATA%\Microsoft\WindowsApps`.
 
@@ -90,10 +90,10 @@ Precedence is:
 
 If the session was started in an attachable Windows mode:
 
-- **Windows Terminal** sessions can be reopened or focused with `happier attach <session-id>`
-- **Console** sessions can be brought back to the foreground with `happier attach <session-id>`
+- **Windows Terminal** sessions can be reopened or focused with `happiest attach <session-id>`
+- **Console** sessions can be brought back to the foreground with `happiest attach <session-id>`
 
-A session started in **Hidden** mode has no terminal to attach to, and `happier attach` says so. To continue it on the computer, open the session menu (or **Session info**) in the Happier app and choose **Continue in Windows Terminal**. Happier ends the background process and resumes the same session in a Windows Terminal window, with its history and the agent's conversation intact. A reply in progress is interrupted, and the confirmation says so before anything stops. After that, `happier attach <session-id>` brings the window back into focus.
+A session started in **Hidden** mode has no terminal to attach to, and `happiest attach` says so. To continue it on the computer, open the session menu (or **Session info**) in the Happier app and choose **Continue in Windows Terminal**. Happier ends the background process and resumes the same session in a Windows Terminal window, with its history and the agent's conversation intact. A reply in progress is interrupted, and the confirmation says so before anything stops. After that, `happiest attach <session-id>` brings the window back into focus.
 
 The action appears for sessions the daemon started on a Windows machine, when you own the session and its agent supports resume.
 

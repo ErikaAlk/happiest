@@ -25,8 +25,12 @@
  * that exists somewhere else, and claims need checking.
  */
 import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+// The CommonJS entry is plain source, so the check works without building release-runtime.
+const { productIdentity } = createRequire(import.meta.url)('@happier-dev/release-runtime/productIdentity');
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_CONTENT_ROOT = resolve(HERE, '..', 'content', 'docs');
@@ -316,7 +320,7 @@ const CLI_COMMAND_REGISTRY = resolve(HERE, '..', '..', 'cli', 'src', 'cli', 'com
 /**
  * Every command the CLI dispatches must be documented somewhere.
  *
- * `happier doctor`, `happier service` and `happier status` — the three commands
+ * `doctor`, `service` and `status` — the three commands
  * the setup story rests on — had zero, zero and one mention across the whole
  * site when this check was written, while `hstack doctor`, a contributor-only
  * tool, was documented on eight pages. Nothing connected adding a command to
@@ -350,11 +354,11 @@ export function checkCliCommandCoverage({
     .join('\n');
   return commands
     .filter((command) => !allow.has(command))
-    .filter((command) => !published.includes(`happier ${command}`))
+    .filter((command) => !published.includes(`${productIdentity.commandName} ${command}`))
     .sort()
     .map((command) => ({
       at: 'clients/cli.mdx',
-      label: `happier ${command}`,
+      label: `${productIdentity.commandName} ${command}`,
       reason: 'CLI command is not documented anywhere on the site',
     }));
 }

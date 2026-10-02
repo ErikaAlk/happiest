@@ -48,12 +48,12 @@ These prefill server settings so users do not have to paste URLs manually.
 Use server profile commands:
 
 ```bash
-happier server list
-happier server current
-happier server add --name company --server-url https://api.company.example --webapp-url https://app.company.example --use
-happier server use company
-happier server remove company
-happier server test company
+happiest server list
+happiest server current
+happiest server add --name company --server-url https://api.company.example --webapp-url https://app.company.example --use
+happiest server use company
+happiest server remove company
+happiest server test company
 ```
 
 ### Per-command targeting (no default switch)
@@ -61,14 +61,14 @@ happier server test company
 Target a server for one command only:
 
 ```bash
-happier --server company auth login
-happier --server personal daemon status
+happiest --server company auth login
+happiest --server personal daemon status
 ```
 
 You can also pass explicit URLs for a single invocation:
 
 ```bash
-happier --server-url https://api.company.example --webapp-url https://app.company.example auth login
+happiest --server-url https://api.company.example --webapp-url https://app.company.example auth login
 ```
 
 ## Multiple daemons on one machine
@@ -76,16 +76,16 @@ happier --server-url https://api.company.example --webapp-url https://app.compan
 Install/start one daemon service per server profile:
 
 ```bash
-happier --server personal daemon service install
-happier --server company daemon service install
+happiest --server personal daemon service install
+happiest --server company daemon service install
 ```
 
 Check status:
 
 ```bash
-happier daemon status --all
-happier --server personal daemon service status
-happier --server company daemon service status
+happiest daemon status --all
+happiest --server personal daemon service status
+happiest --server company daemon service status
 ```
 
 ## Recommended flow

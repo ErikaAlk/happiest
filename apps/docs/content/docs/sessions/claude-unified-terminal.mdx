@@ -12,12 +12,12 @@ This is different from how Happier runs Claude by default. It is off until you t
 | Runtime | How Happier drives Claude | Is there a terminal to join? |
 | --- | --- | --- |
 | **Agent SDK** (default) | Happier runs Claude through `@anthropic-ai/claude-agent-sdk` in a background process and streams messages into it. | No. There is no Claude Code TUI in this mode. |
-| **Unified terminal** | Happier hosts Claude Code’s own TUI in tmux, zellij, or a Windows console host, and writes prompts into its composer. | Yes on the tmux and zellij hosts — `happier attach <session-id>` puts you in the same window or pane. |
+| **Unified terminal** | Happier hosts Claude Code’s own TUI in tmux, zellij, or a Windows console host, and writes prompts into its composer. | Yes on the tmux and zellij hosts — `happiest attach <session-id>` puts you in the same window or pane. |
 | **Legacy remote** (fallback) | Happier spawns `claude` with a streaming output format and forwards hooks for session info. | No. |
 
 Selection happens when the provider session starts, and it is pinned for the life of that session. Turning the setting on or off later changes the next Claude session you start, not the one already running.
 
-The terminal you attach to is the Claude Code run the app is driving, and you can type in it. Happier reads the composer before every write so an app message never lands on top of what you are typing — see [The draft guard](#the-draft-guard) below. For how `happier attach` works in general, see [Attach to a running session](/sessions/attach-to-session).
+The terminal you attach to is the Claude Code run the app is driving, and you can type in it. Happier reads the composer before every write so an app message never lands on top of what you are typing — see [The draft guard](#the-draft-guard) below. For how `happiest attach` works in general, see [Attach to a running session](/sessions/attach-to-session).
 
 ## Steering and interrupting, per runtime
 
@@ -75,7 +75,7 @@ The unified runtime needs a terminal host that can hold the Claude Code TUI and 
 
 Either host works. **Auto** takes `tmux` when it is installed and falls back to the bundled zellij, so the runtime still works on a machine with no `tmux`. If you pick **zellij** explicitly and the bundled binary is unavailable, Happier falls back to `tmux` rather than failing the session.
 
-Both hosts are attachable: `happier attach <session-id>` drops you into the same tmux window or zellij pane the app is driving.
+Both hosts are attachable: `happiest attach <session-id>` drops you into the same tmux window or zellij pane the app is driving.
 
 ### Windows
 

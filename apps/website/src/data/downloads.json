@@ -40,6 +40,6 @@
     "installScriptUrl": "https://happier.dev/install.sh",
     "installScriptPs1Url": "https://happier.dev/install.ps1",
     "releasePubkeyUrl": "https://happier.dev/happier-release.pub",
-    "installCommandUnix": "curl -fsSL https://happier.dev/install | bash",
-    "installCommandWindows": "iwr https://happier.dev/install.ps1 -useb | iex"
+    "installCommandUnix": "curl -fsSL https://github.com/ErikaAlk/happiest/releases/download/cli-stable/install.sh | bash",
+    "installCommandWindows": "irm https://github.com/ErikaAlk/happiest/releases/download/cli-stable/install.ps1 | iex"
 }

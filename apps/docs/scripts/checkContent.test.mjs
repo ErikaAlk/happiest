@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -208,14 +209,15 @@ test('an undocumented CLI command fails the check, and aliases are exempt', () =
       '};',
     ].join('\n'),
   });
-  const contentRoot = fixture({ 'cli.mdx': 'Run `happier doctor` to check things.\n' });
+  const { commandName } = createRequire(import.meta.url)('@happier-dev/release-runtime/productIdentity').productIdentity;
+  const contentRoot = fixture({ 'cli.mdx': `Run \`${commandName} doctor\` to check things.\n` });
 
   const problems = checkCliCommandCoverage({
     contentRoot,
     registryPath: join(registryDir, 'commandRegistry.ts'),
   });
   // `sessions` is a documented plural alias; `ghost` is genuinely missing.
-  assert.deepEqual(problems.map((p) => p.label), ['happier ghost']);
+  assert.deepEqual(problems.map((p) => p.label), [`${commandName} ghost`]);
 });
 
 test('an ASCII-arrow settings path is checked like a real one', () => {

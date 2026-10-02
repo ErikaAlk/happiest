@@ -5,40 +5,55 @@ description: Binary artifacts, channels, checksums/signatures, and manifests.
 
 ## Channels
 
-- `stable`
-- `preview`
-- `dev`
+Happiest publishes one channel, `stable`, built from the fork's `main` branch. Every release is a GitHub Release on `ErikaAlk/happiest`. There are no preview or dev releases, no npm packages, no Homebrew formula and no Docker images. hstack is not released; it runs from this repository's sources.
+
+## Release tags
+
+Rolling tags always point at the newest stable version. Versioned tags are immutable. Versions start at `0.1.0`.
+
+| Product | Rolling tag | Versioned tag |
+| --- | --- | --- |
+| CLI | `cli-stable` | `cli-v<version>` |
+| Relay server | `server-stable` | `server-v<version>` |
+| Desktop app | `ui-desktop-stable` | `ui-desktop-v<version>` |
+| Self-host UI web bundle | `ui-web-stable` | `ui-web-v<version>` |
 
 ## Artifact naming
 
-- CLI binary archives: `happier-v{version}-{os}-{arch}.tar.gz`
-- hstack binary archives: `hstack-v{version}-{os}-{arch}.tar.gz`
-- Self-host server runtime archives: `happier-server-v{version}-{os}-{arch}.tar.gz`
+- CLI binary archives: `happiest-v{version}-{os}-{arch}.tar.gz`
+- Self-host server runtime archives: `happiest-server-v{version}-{os}-{arch}.tar.gz`
 - Self-host UI web bundle archives: `happier-ui-web-v{version}-web-any.tar.gz`
 - Checksums: `checksums-{product}-v{version}.txt`
 - Checksums signature: `checksums-{product}-v{version}.txt.minisig`
 
+`{product}` is the archive's product name: `happiest`, `happiest-server`, `happiest-memory-runtime`, `happiest-difftastic` or `happier-ui-web`. The checksums file is signed with Happiest's own minisign key; its public half ships with the installer as `scripts/release/installers/happier-release.pub`.
+
+The desktop app publishes its installers under the `ui-desktop-*` tags, together with a `latest.json` update feed at `https://github.com/ErikaAlk/happiest/releases/download/ui-desktop-stable/latest.json`.
+
 ## Supported targets
 
-CLI + hstack:
+CLI:
 
 - `linux-x64`
 - `linux-arm64`
-- `darwin-x64`
-- `darwin-arm64`
 - `windows-x64`
 
 Self-host server runtime:
 
 - `linux-x64`
 - `linux-arm64`
-- `darwin-x64`
-- `darwin-arm64`
 - `windows-x64`
 
 Self-host UI web bundle:
 
 - `web-any`
+
+Desktop app:
+
+- `linux-x64`
+- `windows-x64` (the installer is not code-signed)
+
+There are no macOS artifacts.
 
 ## Manifest schema (`/v1`)
 
@@ -62,7 +77,8 @@ Each platform manifest includes:
 
 ## Rollback policy
 
-- CLI/hstack: rolling tags (`cli-stable` / `cli-preview` / `cli-dev`, `stack-stable` / `stack-preview` / `stack-dev`) + versioned tags.
-- Self-host runtime: rolling server release tags + versioned artifacts.
-- Self-host UI web bundle: rolling UI-web release tags + versioned artifacts.
-- `happier self update --to <version>` is a version-targeted rollback entry point.
+- CLI: rolling tag `cli-stable` + versioned `cli-v<version>` tags.
+- Self-host runtime: rolling tag `server-stable` + versioned `server-v<version>` artifacts.
+- Self-host UI web bundle: rolling tag `ui-web-stable` + versioned `ui-web-v<version>` artifacts.
+- Desktop app: rolling tag `ui-desktop-stable` + versioned `ui-desktop-v<version>` artifacts.
+- `happiest self update --to <version>` is a version-targeted rollback entry point.

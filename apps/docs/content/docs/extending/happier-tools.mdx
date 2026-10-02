@@ -60,7 +60,7 @@ Current native-MCP providers include:
 
 ### Shell bridge
 
-For providers that can execute shell commands but do not use native MCP directly, Happier exposes the same tool surface through the `happier tools` CLI bridge.
+For providers that can execute shell commands but do not use native MCP directly, Happier exposes the same tool surface through the `happiest tools` CLI bridge.
 
 Current shell-bridge providers include:
 
@@ -132,8 +132,8 @@ The direct/discoverable-only exposure setting applies to built-in action-backed 
 Each built-in action can be configured per **surface** (where it is available), such as:
 
 - session agents
-- the CLI (`happier session ...` and `happier tools ...`)
-- the external MCP server (`happier mcp serve`)
+- the CLI (`happiest session ...` and `happiest tools ...`)
+- the external MCP server (`happiest mcp serve`)
 - voice tools
 
 Those are all powered by the same action catalog, so one surface can be documented, approved, or disabled without creating a separate action system for each client.
@@ -249,13 +249,13 @@ In the app, Happier tools show up through:
 In the CLI, Happier exposes:
 
 ```bash
-happier tools list
+happiest tools list
 ```
 
 and:
 
 ```bash
-happier tools call --session-id <session-id> --source happier --tool <tool-name> --args-json '<json>'
+happiest tools call --session-id <session-id> --source happier --tool <tool-name> --args-json '<json>'
 ```
 
 Use `list` when you want to inspect the current built-in and custom tool surface.

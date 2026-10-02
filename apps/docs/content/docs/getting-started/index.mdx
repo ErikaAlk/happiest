@@ -47,20 +47,23 @@ and browser.
 
 ## 2. Install the CLI on the machine that will do the work
 
-<Tabs items={['macOS / Linux', 'Windows']}>
-<Tab value="macOS / Linux">
+<Tabs items={['Linux', 'Windows']}>
+<Tab value="Linux">
 ```bash
-curl -fsSL https://happier.dev/install | bash
+curl -fsSL https://github.com/ErikaAlk/happiest/releases/download/cli-stable/install.sh | bash
 ```
 </Tab>
 <Tab value="Windows">
 ```powershell
-iwr https://happier.dev/install.ps1 -useb | iex
+irm https://github.com/ErikaAlk/happiest/releases/download/cli-stable/install.ps1 | iex
 ```
 </Tab>
 </Tabs>
 
-The installer verifies the release signature, unpacks under `~/.happier`, and
+The CLI is released for Windows x64, Linux x64 and Linux arm64. There is no
+macOS build.
+
+The installer verifies the release signature, unpacks under `~/.happiest`, and
 offers to set up automatic startup so the machine stays reachable with no
 terminal open. Say yes unless you have a reason not to. On a fresh interactive
 install, it then continues directly into the setup flow below.
@@ -75,7 +78,7 @@ If the installer was unattended, you skipped guided setup, or sign-in did not
 finish, resume it with:
 
 ```bash
-happier setup
+happiest setup
 ```
 
 Setup asks the one question the installer cannot answer for itself — where your
@@ -93,9 +96,9 @@ an account or its data between relays.
 If you already know the answer, skip the question:
 
 ```bash
-happier setup --cloud                 # Happier Cloud
-happier setup --relay https://…       # a relay you already run
-happier setup --this-computer         # install a relay here too
+happiest setup --cloud                # Happier Cloud
+happiest setup --relay https://…      # a relay you already run
+happiest setup --this-computer        # install a relay here too
 ```
 
 When a new sign-in is needed, Happier prints a URL and, when your relay is
@@ -108,7 +111,7 @@ setup repairs that registration without opening a browser or asking you to sign
 in again.
 
 The terminal continues on its own after approval. If the request times out, that
-request ends; rerun `happier setup` or `happier auth login` to create a new
+request ends; rerun `happiest setup` or `happiest auth login` to create a new
 request and approve that one.
 
 If the selected relay does not answer, setup cannot verify either the stored
@@ -132,11 +135,11 @@ selected computer.
 Or start from a terminal in the project:
 
 ```bash
-happier
+happiest
 ```
 
 That starts a session with Claude Code, the default agent. To use another, name
-it: `happier codex`, `happier opencode`, `happier cursor`. The session appears
+it: `happiest codex`, `happiest opencode`, `happiest cursor`. The session appears
 in your client within a second or two, and you can drive it from there.
 
 If you skipped agent setup, the computer is connected but is not yet ready to
@@ -146,7 +149,7 @@ the session from the app or CLI.
 ## 5. Confirm it all worked
 
 ```bash
-happier status
+happiest status
 ```
 
 This reads your account, relay registration, automatic startup and CLI channel,
@@ -155,7 +158,7 @@ wrong later — see [Check your setup](/getting-started/check-your-setup).
 
 ## If something went wrong
 
-**`happier: command not found`** — the installer edited your shell profile but
+**`happiest: command not found`** — the installer edited your shell profile but
 could not change the shell you were already in. Open a new terminal. If you use
 fish, add `~/.local/bin` to your `fish_user_paths` yourself; the installer
 writes to `~/.profile`, which fish does not read.
@@ -163,13 +166,13 @@ writes to `~/.profile`, which fish does not read.
 **`Claude CLI (claude) is not available from any configured source`** — you have
 reached the last step without prerequisite 2. Install the agent
 (`curl -fsSL https://claude.ai/install.sh | bash`), sign in to it, confirm
-`claude` runs on its own, then run `happier` again. Or start a session with an
+`claude` runs on its own, then run `happiest` again. Or start a session with an
 agent you do have.
 
 **The machine never appears in the app** — signing in and registering the
 machine are two different things, and the second happens when the background
-service or a session starts. Run `happier status`; if it reports the machine is
-not registered, `happier doctor repair` will fix it.
+service or a session starts. Run `happiest status`; if it reports the machine is
+not registered, `happiest doctor repair` will fix it.
 
 ## Where to go next
 

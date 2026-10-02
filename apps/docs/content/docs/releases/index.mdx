@@ -1,53 +1,49 @@
 ---
 title: Release channels
-description: What stable, preview and dev mean, how they relate, and how to move between them.
+description: What Happiest publishes, where it is published, and how a change reaches you.
 ---
 
-Happier ships on three channels, and which one you are on changes what you get.
-That distinction is load-bearing: a fix can be live on `dev` for weeks before it
-reaches `stable`.
+Happiest publishes one channel, **stable**, as
+[GitHub Releases](https://github.com/ErikaAlk/happiest/releases) on
+`ErikaAlk/happiest`. The CLI, the relay server and the desktop app all follow
+that line, so there is one command to remember: `happiest`.
 
-| Channel | Command | What it is |
-| --- | --- | --- |
-| **stable** | `happier` | The production release. Conservative, and where most people should be. |
-| **preview** | `hprev` | The release candidate — what stable is about to become. |
-| **dev** | `hdev` | The integration lane. Everything lands here first, and it can be unstable. |
+## What is published
 
-They install side by side and keep their own shims, so you can run `hdev` for a
-project that needs a recent fix while `happier` stays on stable. Each lane
-updates itself against its own channel.
+| Piece | Platforms | Rolling tag | Versioned tag |
+| --- | --- | --- | --- |
+| **CLI** | Windows x64, Linux x64, Linux arm64 | `cli-stable` | `cli-v<version>` |
+| **Relay server** | Windows x64, Linux x64, Linux arm64 | `server-stable` | `server-v<version>` |
+| **Desktop app** | Windows x64, Linux x64 | `ui-desktop-stable` | `ui-desktop-v<version>` |
 
-Install commands for each are on the [CLI](/apps/cli) page.
+Versions start at `0.1.0`. A rolling tag always points at the newest release of
+its piece. A versioned tag stays on the release it names, so use it when you
+want an exact version.
+
+<Callout type="warn">
+  The Windows desktop installer is not code-signed. Windows can show an
+  unknown-publisher warning when you run it.
+</Callout>
+
+There are no macOS builds. Happiest does not publish preview or dev releases,
+npm packages, a Homebrew formula, Docker images or a hosted deployment, and
+hstack is not released for now. A relay server in a container is built locally
+from the repository `Dockerfile`; [Docker](/self-hosting/docker) covers the
+build.
 
 ## How a change reaches you
 
-Development uses a three-branch model, and it flows in one direction:
+Stable releases are published from the repository's `main` branch. Each piece
+has its own versioned tag, so a new CLI version and a new desktop version are
+separate releases.
 
-```
-dev  →  preview  →  main
-```
-
-`dev` is the integration branch and the repository default — changes land there
-first. `preview` is the release-candidate branch that preview builds come from.
-`main` is stable. Version and changelog materialization happens over the `dev`
-source range *before* promotion, so `main` is a destination rather than a place
-work starts.
-
-<Callout type="info">
-  If you are on `stable` and hit something that looks like a known bug, it is
-  worth checking whether it is already fixed on `dev`. The gap between the two
-  can be substantial.
-</Callout>
-
-## Switching
-
-Installing another lane does not remove the one you have — run the installer
-endpoint for the channel you want and use its command. `happier status` reports
-which channel the CLI you just invoked belongs to, which is the quickest way to
-tell what you are actually running.
+The CLI updates itself from those releases with `happiest self update`, and the
+desktop app prompts for updates from its own release. A relay server updates
+when you rerun its installer or rebuild its image. [Updates](/releases/updates)
+lists every install method and what it asks of you.
 
 ## Related
 
-- [CLI](/apps/cli) — install commands and lane management.
-- [Check your setup](/getting-started/check-your-setup) — `happier status`.
+- [CLI](/apps/cli) — install commands.
+- [Check your setup](/getting-started/check-your-setup) — `happiest status`.
 - [Updates](/releases/updates) — how updating works across apps, CLIs and images.

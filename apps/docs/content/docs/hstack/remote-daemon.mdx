@@ -19,24 +19,14 @@ hstack remote daemon setup --ssh user@host
 
 Default behavior:
 
-- uses the **stable** channel (set `--channel preview` or `--channel dev` when you want newer public binaries)
+- uses the **stable** channel, the only channel Happiest publishes
 - installs/starts the daemon service in **user** mode
 
 ## Release channel
 
-```bash
-hstack remote daemon setup --ssh user@host --channel preview
-```
+Happiest publishes stable releases only, so setup always installs the stable CLI. `--stable` (or `--channel stable`) states it explicitly:
 
 ```bash
-hstack remote daemon setup --ssh user@host --channel dev
-```
-
-Equivalent shortcuts:
-
-```bash
-hstack remote daemon setup --ssh user@host --preview
-hstack remote daemon setup --ssh user@host --dev
 hstack remote daemon setup --ssh user@host --stable
 ```
 
@@ -75,11 +65,11 @@ Under the hood, `hstack remote daemon setup` orchestrates the same pairing flow 
 If you prefer, you can run pairing directly with the Happier CLI:
 
 ```bash
-happier auth pair-remote --ssh user@host --json
+happiest auth pair-remote --ssh user@host --json
 ```
 
 ## Requirements
 
 - SSH access to the remote host (`ssh user@host`)
 - Remote host has `bash` and `curl`
-- The remote host must be a Unix-like OS (Linux/macOS). Windows hosts are not supported for this SSH flow.
+- The remote host must run Linux on x64 or arm64, the platforms Happiest releases the CLI for. Happiest publishes no macOS binaries, and Windows hosts are not supported for this SSH flow.

@@ -32,25 +32,26 @@ Optional CLI path:
 
 ```bash
 # Node-free (recommended): install the CLI binary via the official installer
-curl -fsSL https://happier.dev/install | bash
-happier setup
+curl -fsSL https://github.com/ErikaAlk/happiest/releases/download/cli-stable/install.sh | bash
+happiest setup
 ```
 
-`happier setup` chooses the relay before authentication, then signs in,
+On Windows, install with `irm https://github.com/ErikaAlk/happiest/releases/download/cli-stable/install.ps1 | iex` instead.
+
+`happiest setup` chooses the relay before authentication, then signs in,
 registers this machine, and reconciles automatic startup. The lower-level
-`happier auth login` command remains available when the relay profile and
+`happiest auth login` command remains available when the relay profile and
 machine lifecycle are already configured.
 
 Notes:
 - The desktop app and the installer-installed CLI are self-contained; you do not need system Node/Yarn installed.
-- If you prefer an npm workflow, see [CLI install](/apps/cli) (requires Node).
 
 ### Option B — Self-host Relay only (background service on your laptop)
 You run your own Relay (remote machine, LAN box, or even your own computer), but keep the background service on another machine.
 
 1. Install your Relay (examples):
    - Proxmox: see [Proxmox deployment](/self-hosting/proxmox).
-   - Any machine (managed service): install the CLI, then run `happier relay host install --mode system` (or remote: `happier relay host install --ssh user@host --mode system`)
+   - Any machine (managed service): install the CLI, then run `happiest relay host install --mode system` (or remote: `happiest relay host install --ssh user@host --mode system`)
    - Docker: see [Deployment → Docker](/self-hosting/docker).
 
 2. Open the desktop app or web UI and choose that Relay.
@@ -74,15 +75,15 @@ If you need an advanced CLI fallback for the daemon host:
 
 ```bash
 # Recommended remote-machine setup:
-happier machine setup --ssh user@host --install-relay-runtime
+happiest machine setup --ssh user@host --install-relay-runtime
 ```
 
 Troubleshooting-only (manual daemon setup on the remote host):
 
 ```bash
-happier server add --name company --server-url https://YOUR_SERVER_URL --webapp-url https://YOUR_WEBAPP_URL --use
-happier auth login
-happier daemon service install
+happiest server add --name company --server-url https://YOUR_SERVER_URL --webapp-url https://YOUR_WEBAPP_URL --use
+happiest auth login
+happiest daemon service install
 ```
 
 `--use` sets the default Relay profile for that CLI installation, but the app-first flow is preferred because it keeps Relay/account selection visible.
@@ -112,23 +113,23 @@ Recommended for first setup:
 ### CLI: target a server per invocation
 
 ```bash
-happier --server company auth login
-happier --server company daemon start
+happiest --server company auth login
+happiest --server company daemon start
 ```
 
 ### CLI: run multiple daemons on one machine (one per Relay)
 
 ```bash
-happier --server personal daemon service install
-happier --server company daemon service install
+happiest --server personal daemon service install
+happiest --server company daemon service install
 ```
 
 Then verify (cross-platform):
 
 ```bash
-happier daemon status --all
-happier --server personal daemon service status
-happier --server company daemon service status
+happiest daemon status --all
+happiest --server personal daemon service status
+happiest --server company daemon service status
 ```
 
 For complete profile/switching behavior and CLI reference, see [Features → Multi-server](/accounts/multi-server).

@@ -24,13 +24,13 @@ If the prefix matches multiple sessions, the command fails and prints candidates
 Use **attach** when the session is still running and you want to reconnect to the live local/provider process:
 
 ```bash
-happier attach <session-id>
+happiest attach <session-id>
 ```
 
 Use **resume** when the session is inactive but vendor-resumable:
 
 ```bash
-happier resume <session-id>
+happiest resume <session-id>
 ```
 
 Short version:
@@ -43,13 +43,13 @@ For the full workflows, see [Attach to a running session](/sessions/attach-to-se
 ## Create a session
 
 ```bash
-happier session create --title "My session" --message "Hello"
+happiest session create --title "My session" --message "Hello"
 ```
 
 Target a different directory:
 
 ```bash
-happier session create --path /path/to/repo --title "Repo session"
+happiest session create --path /path/to/repo --title "Repo session"
 ```
 
 ### Backend targeting (`--backend`)
@@ -57,46 +57,46 @@ happier session create --path /path/to/repo --title "Repo session"
 `--backend` expects a **backend target key**:
 
 ```bash
-happier session create --backend "agent:<agent-id>"
-happier session create --backend "acpBackend:<backend-id>"
+happiest session create --backend "agent:<agent-id>"
+happiest session create --backend "acpBackend:<backend-id>"
 ```
 
 When in doubt, inspect the canonical schema and available options via the action catalog:
 
 ```bash
-happier session actions describe session.spawn_new --json
+happiest session actions describe session.spawn_new --json
 ```
 
 ## List sessions
 
 ```bash
-happier session list
+happiest session list
 ```
 
 Scripting-friendly:
 
 ```bash
-happier session list --json
+happiest session list --json
 ```
 
 Useful filters:
 
 ```bash
-happier session list --active
-happier session list --archived
-happier session list --resumable
+happiest session list --active
+happiest session list --archived
+happiest session list --resumable
 ```
 
 ## Status
 
 ```bash
-happier session status <session-id-or-prefix>
+happiest session status <session-id-or-prefix>
 ```
 
 Live status (when supported):
 
 ```bash
-happier session status <session-id-or-prefix> --live
+happiest session status <session-id-or-prefix> --live
 ```
 
 ## Messaging
@@ -104,19 +104,19 @@ happier session status <session-id-or-prefix> --live
 Send a user message:
 
 ```bash
-happier session send <session-id-or-prefix> "ping"
+happiest session send <session-id-or-prefix> "ping"
 ```
 
 Wait for the agent to become idle:
 
 ```bash
-happier session send <session-id-or-prefix> "ping" --wait --timeout 60
+happiest session send <session-id-or-prefix> "ping" --wait --timeout 60
 ```
 
 Or wait without sending:
 
 ```bash
-happier session wait <session-id-or-prefix> --timeout 60
+happiest session wait <session-id-or-prefix> --timeout 60
 ```
 
 Notes:
@@ -131,15 +131,15 @@ Notes:
 Get recent transcript rows:
 
 ```bash
-happier session history <session-id-or-prefix> --limit 20
+happiest session history <session-id-or-prefix> --limit 20
 ```
 
 Scripting / debugging variants:
 
 ```bash
-happier session history <session-id-or-prefix> --json
-happier session history <session-id-or-prefix> --format raw --include-meta --json
-happier session history <session-id-or-prefix> --format raw --include-meta --include-structured-payload --json
+happiest session history <session-id-or-prefix> --json
+happiest session history <session-id-or-prefix> --format raw --include-meta --json
+happiest session history <session-id-or-prefix> --format raw --include-meta --include-structured-payload --json
 ```
 
 Use `compact` when you want a simpler text-focused view.
@@ -150,22 +150,22 @@ Use `raw` when you need provider payloads, metadata, or structured tool/message 
 Stop a session:
 
 ```bash
-happier session stop <session-id-or-prefix>
+happiest session stop <session-id-or-prefix>
 ```
 
 Archive / unarchive:
 
 ```bash
-happier session archive <session-id-or-prefix>
-happier session unarchive <session-id-or-prefix>
+happiest session archive <session-id-or-prefix>
+happiest session unarchive <session-id-or-prefix>
 ```
 
 Update metadata:
 
 ```bash
-happier session set-title <session-id-or-prefix> "New title"
-happier session set-model <session-id-or-prefix> <model-id>
-happier session set-permission-mode <session-id-or-prefix> <mode>
+happiest session set-title <session-id-or-prefix> "New title"
+happiest session set-model <session-id-or-prefix> <model-id>
+happiest session set-permission-mode <session-id-or-prefix> <mode>
 ```
 
 ### Permission intent (`set-permission-mode` and `--permission-mode`)
@@ -188,8 +188,8 @@ session mode.
 Use it in either place:
 
 ```bash
-happier session set-permission-mode <session-id-or-prefix> read_only
-happier session send <session-id-or-prefix> "ping" --permission-mode auto
+happiest session set-permission-mode <session-id-or-prefix> read_only
+happiest session send <session-id-or-prefix> "ping" --permission-mode auto
 ```
 
 Notes:
@@ -238,10 +238,10 @@ Example:
 
 ```bash
 # 1) run an approval-gated command
-happier session set-title <session-id> "New title" --json
+happiest session set-title <session-id> "New title" --json
 
 # 2) approve it through the generic action path
-happier session actions execute <session-id> approval.request.decide \
+happiest session actions execute <session-id> approval.request.decide \
   --input-json '{"artifactId":"<approval-artifact-id>","decision":"approve"}' \
   --json
 ```
@@ -253,14 +253,14 @@ This is the same approval object that the app Inbox shows. Most users should rev
 Discover actions:
 
 ```bash
-happier session actions list --json
-happier session actions describe <action-id> --json
+happiest session actions list --json
+happiest session actions describe <action-id> --json
 ```
 
 Execute an action:
 
 ```bash
-happier session actions execute <session-id> <action-id> --input-json '<json>' --json
+happiest session actions execute <session-id> <action-id> --input-json '<json>' --json
 ```
 
 Current JSON envelopes:
@@ -274,12 +274,12 @@ Current JSON envelopes:
 Execution runs are the structured “run” layer for multi-step flows (review / plan / delegate / voice agent):
 
 ```bash
-happier session run start <session-id> --intent <intent> --backend <backend-target-key> --permission-mode auto --json
-happier session run list <session-id> --json
-happier session run get <session-id> <run-id> --json
-happier session run send <session-id> <run-id> "message" --json
-happier session run stop <session-id> <run-id> --json
-happier session run wait <session-id> <run-id> --timeout 300 --json
+happiest session run start <session-id> --intent <intent> --backend <backend-target-key> --permission-mode auto --json
+happiest session run list <session-id> --json
+happiest session run get <session-id> <run-id> --json
+happiest session run send <session-id> <run-id> "message" --json
+happiest session run stop <session-id> <run-id> --json
+happiest session run wait <session-id> <run-id> --timeout 300 --json
 ```
 
 Execution-run inputs use the same preferred `read_only`, `default`, `auto`, and
@@ -290,8 +290,8 @@ compatible `read_only` / `workspace_write` wire projection.
 Advanced run control:
 
 ```bash
-happier session run action <session-id> <run-id> <action-id> --input-json '<json>' --json
-happier session run stream-start <session-id> <run-id> "message" --json
-happier session run stream-read <session-id> <run-id> <stream-id> --cursor 0 --json
-happier session run stream-cancel <session-id> <run-id> <stream-id> --json
+happiest session run action <session-id> <run-id> <action-id> --input-json '<json>' --json
+happiest session run stream-start <session-id> <run-id> "message" --json
+happiest session run stream-read <session-id> <run-id> <stream-id> --cursor 0 --json
+happiest session run stream-cancel <session-id> <run-id> <stream-id> --json
 ```

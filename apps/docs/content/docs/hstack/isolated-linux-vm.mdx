@@ -38,12 +38,10 @@ HSTACK_REPEAT_COUNT=5 ./scripts/provision/macos-lima-hstack-repeat-validation.sh
 The report tree is written under `output/lima-validation-<timestamp>-<vm>/` by default.
 
 Notes:
-- This runs inside the VM (Linux) and uses `npx` by default.
-- You can pin the version under test: `HSTACK_VERSION=0.6.14 ./scripts/provision/macos-lima-hstack-smoke.sh happy-e2e`.
-- If you’re testing a fork, you can point the runner at your fork’s raw scripts:
-  `HSTACK_RAW_BASE=https://raw.githubusercontent.com/<owner>/<repo>/<ref>/apps/stack ./scripts/provision/macos-lima-hstack-smoke.sh happy-e2e`.
-- If you’re testing unpublished local changes, copy a packed tarball into the VM and run:
+- This runs inside the VM (Linux). By default it installs `@happier-dev/stack` from npm with `npx`, and Happiest does not publish that package. Test this repository's hstack with a packed tarball instead: build it as described under “Package hstack from this repository” below, copy it into the VM, and run
   `HSTACK_TGZ=./happier-dev-stack-*.tgz /tmp/linux-ubuntu-hstack-smoke.sh`.
+- The runner downloads its scripts from the `happier-dev/happier` repository by default. To use Happiest’s scripts, point it at this repository’s raw files:
+  `HSTACK_RAW_BASE=https://raw.githubusercontent.com/ErikaAlk/happiest/<ref>/apps/stack ./scripts/provision/macos-lima-hstack-smoke.sh happy-e2e`.
 
 ### 2) Create + configure a VM (recommended script)
 
@@ -142,29 +140,42 @@ limactl shell happy-pr
 Inside the VM:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/happier-dev/happier/main/apps/stack/scripts/provision/linux-ubuntu-provision.sh -o /tmp/linux-ubuntu-provision.sh \
+curl -fsSL https://raw.githubusercontent.com/ErikaAlk/happiest/main/apps/stack/scripts/provision/linux-ubuntu-provision.sh -o /tmp/linux-ubuntu-provision.sh \
   && chmod +x /tmp/linux-ubuntu-provision.sh \
   && /tmp/linux-ubuntu-provision.sh --profile=happier
 ```
 
-### 3b) (Optional) Run the hstack dev setup wizard
+### 3b) Package hstack from this repository
+
+Happiest does not publish hstack to npm, so build a tarball from your checkout and copy it into the VM.
+
+1) On your Mac (repo checkout):
+
+```bash
+cd apps/stack
+npm pack
+```
+
+2) Copy the generated `happier-dev-stack-*.tgz` into the VM (any method you like). Build and copy it again after each hstack change you want to test.
+
+### 3c) (Optional) Run the hstack dev setup wizard
 
 If your goal is to **work on changes** (not just review a PR), you can run the dev profile:
 
 ```bash
-npx --yes -p @happier-dev/stack@latest hstack setup-from-source --profile=dev --bind=loopback
+npx --yes ./happier-dev-stack-*.tgz hstack setup-from-source --profile=dev --bind=loopback
 ```
 
 Notes:
 - This bootstraps a workspace (clones repos, installs deps, sets up worktrees/stacks tooling).
 - On Linux VMs you typically want `--no-mobile` workflows (iOS dev-client requires Xcode/macOS).
 
-### 4) Run `review-pr` via `npx` (published package)
+### 4) Run `review-pr` from the tarball
 
 Inside the VM:
 
 ```bash
-npx --yes -p @happier-dev/stack@latest hstack review-pr \
+npx --yes ./happier-dev-stack-*.tgz hstack review-pr \
   --repo=https://github.com/happier-dev/happier/pull/<PR_NUMBER> \
   --vm-ports \
   --no-mobile \
@@ -176,25 +187,8 @@ npx --yes -p @happier-dev/stack@latest hstack review-pr \
 Notes:
 - `--no-mobile` keeps the validation focused (Expo mobile dev-client adds more host requirements).
 - You can also add `--keep-sandbox` if you want to inspect the sandbox contents after a failure.
-- For full reproducibility, pin the version: `npx --yes -p @happier-dev/stack@0.3.0 hstack review-pr ...`
 - `--vm-ports` forces the stack/server and Expo dev-server (web) ports into the forwarded VM ranges
   (pairs with the `portForwards` config in this doc).
-
-### Optional: test **unreleased local changes**
-
-If you need to test changes that aren’t published to npm yet:
-
-1) On your Mac (repo checkout):
-
-```bash
-npm pack
-```
-
-2) Copy the generated `happier-dev-stack-*.tgz` into the VM (any method you like), then inside the VM:
-
-```bash
-npx --yes ./happier-dev-stack-*.tgz hstack review-pr ...
-```
 
 ## Option B: GUI VM (UTM) – simplest when you want a “real desktop”
 

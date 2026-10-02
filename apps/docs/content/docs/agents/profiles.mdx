@@ -104,20 +104,20 @@ The CLI reads the same account settings as the app, so the same saved custom pro
 ### List available profiles
 
 ```bash
-happier profiles list
-happier profile list
+happiest profiles list
+happiest profile list
 ```
 
 For scripting:
 
 ```bash
-happier profiles list --json
+happiest profiles list --json
 ```
 
 If you want to force a fresh settings fetch:
 
 ```bash
-happier profiles list --refresh-settings
+happiest profiles list --refresh-settings
 ```
 
 If you are not logged in, the CLI shows built-in profiles only.
@@ -127,11 +127,11 @@ If you are not logged in, the CLI shows built-in profiles only.
 Pass `--profile <id-or-name>` when starting a session:
 
 ```bash
-happier --profile anthropic
-happier claude --profile deepseek
-happier codex --profile openai
-happier codex --profile "Work Codex"
-happier gemini --profile gemini-vertex
+happiest --profile anthropic
+happiest claude --profile deepseek
+happiest codex --profile openai
+happiest codex --profile "Work Codex"
+happiest gemini --profile gemini-vertex
 ```
 
 Profile lookup rules:
@@ -181,7 +181,7 @@ See also:
 Use the built-in **DeepSeek (Reasoner)** profile when you want Claude sessions to run through DeepSeek’s Anthropic-compatible endpoint.
 
 - App UI: start a Claude session and choose **DeepSeek (Reasoner)**
-- CLI: `happier claude --profile deepseek`
+- CLI: `happiest claude --profile deepseek`
 
 Happier will apply the required auth token and the Claude-compatible env mapping for you.
 
@@ -190,7 +190,7 @@ Happier will apply the required auth token and the Claude-compatible env mapping
 Use **OpenAI (GPT-5)** when you want Codex to use an OpenAI API key instead of a machine login.
 
 - App UI: start a Codex session and choose **OpenAI (GPT-5)**
-- CLI: `happier codex --profile openai`
+- CLI: `happiest codex --profile openai`
 
 ### Example: custom work profile
 
@@ -218,14 +218,14 @@ This is useful when you want:
 
 Check:
 
-- you are logged in with `happier auth login`
+- you are logged in with `happiest auth login`
 - the profile exists in **Settings → Profiles**
 - the profile is saved in the same Happier account/server you are targeting
 
 Use:
 
 ```bash
-happier profiles list --refresh-settings
+happiest profiles list --refresh-settings
 ```
 
 ### “The CLI says a secret is missing”
