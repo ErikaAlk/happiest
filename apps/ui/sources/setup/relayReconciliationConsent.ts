@@ -3,6 +3,7 @@ import { setupReplacesValidatedAccount } from '@happier-dev/protocol';
 import { createRelayUrlComparableKeySafe } from '@/sync/domains/server/relayDrift/relayDriftModel';
 
 import {
+    daemonHasNoRelay,
     daemonRelayMatchesExpectation,
     type DesktopLocalInspection,
     type DesktopLocalReadinessFacts,
@@ -64,7 +65,8 @@ function daemonAccountContradictsTarget(facts: DesktopLocalReadinessFacts, targe
  *   it belongs.
  *
  * A daemon already on the target relay, with no account contradiction, moves nowhere: the
- * executor converges it and the CLI's own dry-run raises any ownership consent (INV9).
+ * executor converges it and the CLI's own dry-run raises any ownership consent (INV9). So does a
+ * CLI that has no relay yet: there is nothing to replace.
  *
  * A manual, foreign-home, conflicting or multiple service is one this installation does not own at
  * all, so this function does not classify it: the executor's `service install --dry-run --json`
@@ -74,6 +76,11 @@ function daemonAccountContradictsTarget(facts: DesktopLocalReadinessFacts, targe
 export function resolveRelayReconciliationConsent(input: RelayReconciliationInput): RelayReconciliationDecision {
     if (input.inspection.status === 'resolved' && daemonAccountContradictsTarget(input.inspection.facts, input.target)) {
         return 'confirm_account';
+    }
+    if (input.inspection.status === 'resolved' && daemonHasNoRelay(input.inspection.facts)) {
+        // A CLI with no relay yet (a fresh computer) has none to be moved away from; the account
+        // question above is the only one such a CLI can raise.
+        return 'start';
     }
     if (input.inspection.status !== 'resolved' || !input.observedExpectation) {
         return 'confirm_relay';
@@ -161,7 +168,7 @@ export function daemonContradictsTarget(input: Readonly<{
     if (daemonAccountContradictsTarget(facts, input.target)) {
         return true;
     }
-    return installationOwnsService(facts) && !daemonRelayMatchesExpectation(facts, input.target);
+    return !daemonHasNoRelay(facts) && installationOwnsService(facts) && !daemonRelayMatchesExpectation(facts, input.target);
 }
 
 /**

@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { AuthCredentials } from '@/auth/storage/tokenStorage';
 import { HappyError } from '@/utils/errors/errors';
@@ -12,6 +12,11 @@ vi.mock('@/utils/timing/time', async (importOriginal) => {
         backoff: immediate,
         backoffForever: immediate,
     };
+});
+
+beforeEach(() => {
+    // Requests go to the active server; Happiest has none unless one is configured.
+    process.env.EXPO_PUBLIC_HAPPY_SERVER_URL = 'https://relay.example.test';
 });
 
 afterEach(() => {

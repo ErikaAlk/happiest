@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 function randomScope(): string {
     return `test_${Date.now()}_${Math.random().toString(16).slice(2)}`;
@@ -139,15 +138,22 @@ describe('getServerUrl', () => {
         expect(getServerUrl()).toBe('https://legacy-generic.example.test');
     });
 
-    it('defaults to the product default server on native when no server is configured', async () => {
-        delete process.env.EXPO_PUBLIC_HAPPIER_SERVER_URL;
-        delete process.env.EXPO_PUBLIC_HAPPY_SERVER_URL;
-        delete process.env.EXPO_PUBLIC_SERVER_URL;
-        delete process.env.EXPO_PUBLIC_HAPPY_PRECONFIGURED_SERVERS;
+    it('has no server on native when no server is configured, and resetting changes nothing', async () => {
+        process.env.EXPO_PUBLIC_HAPPY_STORAGE_SCOPE = randomScope();
 
-        const { getServerUrl } = await importFreshServerConfig();
+        const { getServerUrl, isUsingCustomServer, setServerUrl } = await importFreshServerConfig();
 
-        expect(getServerUrl()).toBe(productIdentity.defaultServerUrl);
+        expect(getServerUrl()).toBe('');
+        expect(isUsingCustomServer()).toBe(false);
+        expect(() => setServerUrl(null)).not.toThrow();
+        expect(getServerUrl()).toBe('');
+
+        setServerUrl('https://custom.example.test');
+        expect(getServerUrl()).toBe('https://custom.example.test');
+        expect(isUsingCustomServer()).toBe(true);
+
+        expect(() => setServerUrl(null)).not.toThrow();
+        expect(getServerUrl()).toBe('https://custom.example.test');
     });
 
     it('trims EXPO_PUBLIC_HAPPY_SERVER_URL to avoid whitespace issues', async () => {

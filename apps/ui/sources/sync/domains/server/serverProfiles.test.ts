@@ -1,11 +1,18 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MMKV } from 'react-native-mmkv';
-import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { scopedStorageId } from '@/utils/system/storageScope';
 
 function randomScope(): string {
     return `test_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+}
+
+function clearConfiguredServerEnv(): void {
+    delete process.env.EXPO_PUBLIC_HAPPIER_SERVER_URL;
+    delete process.env.EXPO_PUBLIC_HAPPY_SERVER_URL;
+    delete process.env.EXPO_PUBLIC_SERVER_URL;
+    delete process.env.EXPO_PUBLIC_HAPPY_PRECONFIGURED_SERVERS;
+    delete process.env.EXPO_PUBLIC_HAPPY_SERVER_CONTEXT;
 }
 
 function stubWebRuntime(origin: string) {
@@ -208,14 +215,31 @@ describe('serverProfiles', () => {
         expect(profiles.getTabActiveServerId()).toBe(tab.id);
     });
 
-    it('seeds the product default server on native when no preconfigured env exists', async () => {
+    it('starts native with no server profile and no active server when nothing is configured', async () => {
         const scope = randomScope();
         process.env.EXPO_PUBLIC_HAPPY_STORAGE_SCOPE = scope;
+        clearConfiguredServerEnv();
 
         const profiles = await importFresh();
-        const seeded = profiles.listServerProfiles().find((p) => p.serverUrl === productIdentity.defaultServerUrl);
-        expect(seeded?.name).toBe(productIdentity.defaultServerName);
-        expect(profiles.getActiveServerUrl()).toBe(productIdentity.defaultServerUrl);
+        expect(profiles.listServerProfiles()).toEqual([]);
+        expect(profiles.getActiveServerUrl()).toBe('');
+        expect(profiles.getActiveServerSnapshot()).toMatchObject({ serverId: '', serverUrl: '' });
+    });
+
+    it('activates the first server added on a native install that started with none', async () => {
+        const scope = randomScope();
+        process.env.EXPO_PUBLIC_HAPPY_STORAGE_SCOPE = scope;
+        clearConfiguredServerEnv();
+
+        const profiles = await importFresh();
+        const seenUrls: string[] = [];
+        const unsubscribe = profiles.subscribeActiveServer((snapshot) => seenUrls.push(snapshot.serverUrl));
+        const added = profiles.upsertServerProfile({ serverUrl: 'https://relay.example.test', name: 'Relay' });
+        unsubscribe();
+
+        expect(profiles.getActiveServerId()).toBe(added.id);
+        expect(profiles.getActiveServerUrl()).toBe('https://relay.example.test');
+        expect(seenUrls).toEqual(['https://relay.example.test']);
     });
 
     it('seeds a same-origin server profile on web when no preconfigured env exists', async () => {
@@ -724,19 +748,49 @@ describe('serverProfiles', () => {
         expect(profiles.getActiveServerUrl()).toBe('http://localhost:3013');
     });
 
-    it('reset-to-default targets the seeded default profile outside stack context when no preconfigured env exists', async () => {
+    it('reset-to-default has no target when no server is configured at runtime', async () => {
         const scope = randomScope();
         process.env.EXPO_PUBLIC_HAPPY_STORAGE_SCOPE = scope;
-        delete process.env.EXPO_PUBLIC_HAPPY_SERVER_CONTEXT;
+        clearConfiguredServerEnv();
 
         const profiles = await importFresh();
-        const cloud = profiles.listServerProfiles().find((p) => p.serverUrl === productIdentity.defaultServerUrl);
-        expect(cloud).toBeTruthy();
+        expect(profiles.getResetToDefaultServerId()).toBe('');
 
-        const one = profiles.upsertServerProfile({ serverUrl: 'https://one.example.test', name: 'one' });
+        profiles.upsertServerProfile({ serverUrl: 'https://one.example.test', name: 'one' });
         const two = profiles.upsertServerProfile({ serverUrl: 'https://two.example.test', name: 'two' });
         profiles.setActiveServerId(two.id, { scope: 'device' });
-        expect(profiles.getResetToDefaultServerId()).toBe(cloud!.id);
+        expect(profiles.getResetToDefaultServerId()).toBe('');
+    });
+
+    it('reset-to-default targets the build-time configured server outside stack context', async () => {
+        const scope = randomScope();
+        process.env.EXPO_PUBLIC_HAPPY_STORAGE_SCOPE = scope;
+        clearConfiguredServerEnv();
+        process.env.EXPO_PUBLIC_HAPPY_SERVER_URL = 'https://configured.example.test';
+
+        const profiles = await importFresh();
+        const configured = profiles.listServerProfiles().find((p) => p.serverUrl === 'https://configured.example.test');
+        expect(configured).toBeTruthy();
+
+        profiles.upsertServerProfile({ serverUrl: 'https://one.example.test', name: 'one' });
+        const two = profiles.upsertServerProfile({ serverUrl: 'https://two.example.test', name: 'two' });
+        profiles.setActiveServerId(two.id, { scope: 'device' });
+        expect(profiles.getResetToDefaultServerId()).toBe(configured!.id);
+    });
+
+    it('reset-to-default targets the same-origin server on web', async () => {
+        const scope = randomScope();
+        process.env.EXPO_PUBLIC_HAPPY_STORAGE_SCOPE = scope;
+        clearConfiguredServerEnv();
+        stubWebRuntime('https://selfhost.example.test');
+
+        const profiles = await importFresh();
+        const sameOrigin = profiles.listServerProfiles().find((p) => p.serverUrl === 'https://selfhost.example.test');
+        expect(sameOrigin).toBeTruthy();
+
+        const other = profiles.upsertServerProfile({ serverUrl: 'https://other.example.test', name: 'other' });
+        profiles.setActiveServerId(other.id, { scope: 'device' });
+        expect(profiles.getResetToDefaultServerId()).toBe(sameOrigin!.id);
     });
 
     it('seeds the stack env server profile on load in stack context', async () => {

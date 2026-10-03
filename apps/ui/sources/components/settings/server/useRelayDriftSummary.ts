@@ -81,8 +81,10 @@ function daemonFactsFromDoctorSnapshot(cachedDoctorSnapshot: ReturnType<typeof r
     }
     const daemonSnapshot = cachedDoctorSnapshot.snapshot.daemonStatus;
     return {
-        relayUrl: daemonSnapshot?.server.serverUrl ?? cachedDoctorSnapshot.snapshot.server.serverUrl ?? null,
-        alternateRelayUrls: [daemonSnapshot?.server.publicServerUrl ?? cachedDoctorSnapshot.snapshot.server.publicServerUrl ?? null],
+        // `server` is null until the CLI on that computer has a Relay; the classifier then reads
+        // "daemon not configured".
+        relayUrl: daemonSnapshot?.server?.serverUrl ?? cachedDoctorSnapshot.snapshot.server?.serverUrl ?? null,
+        alternateRelayUrls: [daemonSnapshot?.server?.publicServerUrl ?? cachedDoctorSnapshot.snapshot.server?.publicServerUrl ?? null],
         accountId: daemonSnapshot?.auth.accountId ?? cachedDoctorSnapshot.snapshot.accountId ?? null,
         appAccountId: null,
         accountLabel: null,
@@ -166,7 +168,7 @@ function describeRelayDrift(
         return null;
     }
 
-    // Relays are named the way a person says them (`happiest.erikaalk.click`), never as full URLs,
+    // Relays are named the way a person says them (`relay.example.com`), never as full URLs,
     // and accounts by a readable label (R17).
     const daemonRelayUrl = daemonFacts.relayUrl;
     const appRelayHost = toRelayHostDisplay(activeServerUrl);

@@ -57,6 +57,10 @@ export function useServerFeaturesRuntimeSnapshot(options?: Readonly<{ enabled?: 
         let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
         const loadForServerId = async (serverId: string | undefined, generation: number) => {
+            // Without an active server there is nothing to probe: the snapshot stays `loading` and
+            // nothing is retried. The active-server subscription below loads once a server exists.
+            if (!getActiveServerSnapshot().serverUrl) return;
+
             const token = requestToken + 1;
             requestToken = token;
             const next = await getServerFeaturesSnapshot({

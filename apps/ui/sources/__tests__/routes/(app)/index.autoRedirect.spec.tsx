@@ -152,6 +152,7 @@ vi.mock('@/sync/api/capabilities/serverFeaturesClient', () => ({
 
 vi.mock('@/sync/domains/server/serverRuntime', () => ({
     getActiveServerSnapshot: () => ({ serverUrl: 'https://server.test' }),
+    subscribeActiveServer: () => () => {},
 }));
 
 describe('/ (welcome) auto redirect', () => {

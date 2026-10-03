@@ -54,7 +54,6 @@ vi.mock('@/sync/domains/server/serverProfiles', async (importOriginal) => {
     return createServerProfilesModuleMock({
         importOriginal,
         overrides: {
-            DEFAULT_SERVER_URL: 'https://happiest.erikaalk.click',
             listServerProfiles: () => ([
                 {
                     id: 'relay-1',

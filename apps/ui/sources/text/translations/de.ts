@@ -2122,6 +2122,7 @@ export const de: TranslationStructure = {
                 invalid: 'Doctor-Snapshot konnte nicht vom Rechner gelesen werden',
             },
             daemonAttributionUnknown: 'Daemon-Relay/-Konto: unbekannt',
+            daemonAttributionNoRelay: 'Daemon: noch kein Relay',
             daemonAttribution: ({ serverUrl, accountId }: { serverUrl: string; accountId: string }) =>
                 `Daemon: ${serverUrl} • ${accountId}`,
             daemonAttributionAge: ({ age }: { age: string }) => `Zuletzt geprüft: ${age}`,
@@ -9485,6 +9486,8 @@ settingsSession: {
         serverIncompatibleTitle: 'Relay nicht unterstützt',
         serverIncompatibleBody: ({ serverUrl }: { serverUrl: string }) =>
             `Das Relay unter ${serverUrl} hat unerwartet geantwortet. Aktualisiere dieses Relay oder wähl ein anderes, um weiterzumachen.`,
+        relayNotConfiguredTitle: 'Füg dein Relay hinzu',
+        relayNotConfiguredBody: 'Happiest hat kein öffentliches Relay. Gib die Adresse des Relays ein, das du betreibst, um weiterzumachen.',
 
         // Unified onboarding redesign — BrandPanel (left pane / mobile hero)
         brandTaglineLine1: 'Fang überall an.',
@@ -9540,11 +9543,11 @@ settingsSession: {
         // Welcome step footer links
         welcomeFooterRelay: 'Selbst gehostet?',
         welcomeFooterRelayAction: 'Eigenes Relay nutzen',
-        // Shown in place of welcomeFooterRelay when the active server is a
-        // custom (non-default) relay. The action below the label is the
-        // relay's host (optionally with :port) followed by a small pencil
-        // icon so the user can tap to edit. Long hostnames are truncated with
-        // a tail-ellipsis to avoid colliding with the right-side Docs group.
+        // Shown in place of welcomeFooterRelay when a relay is configured. The
+        // action below the label is the relay's host (optionally with :port)
+        // followed by a small pencil icon so the user can tap to edit. Long
+        // hostnames are truncated with a tail-ellipsis to avoid colliding with
+        // the right-side Docs group.
         welcomeFooterRelayActiveLabel: 'Dein Relay:',
         welcomeFooterRelayEditAccessibility: 'Relay wechseln',
         welcomeFooterDocs: 'Brauchst du Hilfe?',

@@ -22,7 +22,7 @@ type AddTargetsSectionProps = Readonly<{
     isValidating: boolean;
     onChangeUrl: (value: string) => void;
     onChangeName: (value: string) => void;
-    onResetServer: () => Promise<void> | void;
+    onResetServer: (() => Promise<void> | void) | null;
     onAddServer: () => Promise<void> | void;
     prefillHint?: string | null;
     defaultExpanded?: 'server' | 'group' | null;
@@ -248,15 +248,17 @@ export function AddTargetsSection(props: AddTargetsSectionProps) {
                         </Text>
                     )}
                     <View style={styles.buttonRow}>
-                        <View style={styles.buttonWrapper}>
-                            <RoundButton
-                                testID="server-settings-add-reset"
-                                title={t('server.resetToDefault')}
-                                size="normal"
-                                display="inverted"
-                                onPress={props.onResetServer}
-                            />
-                        </View>
+                        {props.onResetServer ? (
+                            <View style={styles.buttonWrapper}>
+                                <RoundButton
+                                    testID="server-settings-add-reset"
+                                    title={t('server.resetToDefault')}
+                                    size="normal"
+                                    display="inverted"
+                                    onPress={props.onResetServer}
+                                />
+                            </View>
+                        ) : null}
                         <View style={styles.buttonWrapper}>
                             <RoundButton
                                 testID="server-settings-add-confirm"

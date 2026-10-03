@@ -19,12 +19,13 @@ type CachedDoctorSnapshot = Readonly<{
     cachedAt: number;
     snapshot: {
         capturedAt: string;
+        /** `null`: the CLI on that computer has no relay yet. */
         server: {
             activeServerId: string;
             serverUrl: string;
             publicServerUrl: string;
             webappUrl: string;
-        };
+        } | null;
         accountId: string | null;
         settings: {
             activeServerId: string | null;
@@ -1027,6 +1028,31 @@ describe('useRelayDriftBanner', () => {
         });
 
         expect(read()).toBeNull();
+    });
+
+    it('reads a machine whose CLI has no relay yet as not configured, with the one connect action', async () => {
+        const { useRelayDriftBanner } = await import('./useRelayDriftBanner');
+        state.cachedDoctorSnapshot = {
+            cachedAt: 1,
+            snapshot: {
+                capturedAt: '2026-03-29T00:00:00.000Z',
+                server: null,
+                accountId: null,
+                settings: { activeServerId: null, servers: [], knownAccountIds: [] },
+            },
+        };
+
+        let banner: RelayDriftBanner | null = null;
+        function Probe() {
+            banner = useRelayDriftBanner();
+            return null;
+        }
+
+        await renderScreen(React.createElement(Probe));
+
+        const resolvedBanner = banner as RelayDriftBanner | null;
+        expect(resolvedBanner?.title).toBe('server.relayDrift.bannerNotConfiguredTitle');
+        expect(resolvedBanner?.actionLabel).toBe('server.relayDrift.connectHereAction');
     });
 
     it('offers the one connect action when the relay matches but the daemon still needs auth', async () => {

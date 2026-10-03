@@ -5,7 +5,8 @@ import { t } from '@/text';
 
 import type { FeaturesResponse } from '@happier-dev/protocol';
 
-export type RemoteServerAvailability = 'loading' | 'ready' | 'legacy' | 'unavailable' | 'incompatible';
+// `unconfigured`: no Relay is configured yet, so there is nothing to probe or sign in to.
+export type RemoteServerAvailability = 'loading' | 'ready' | 'legacy' | 'unavailable' | 'incompatible' | 'unconfigured';
 
 export type RemoteSignupOptions = Readonly<{
     anonymousEnabled: boolean;

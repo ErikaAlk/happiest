@@ -1,7 +1,7 @@
 import type { FeaturesResponse as ServerFeatures } from '@happier-dev/protocol';
 import { AsyncTtlCache } from '@happier-dev/protocol';
 
-import { ServerFetchAbortedForServerSwitchError, serverFetch } from '@/sync/http/client';
+import { NoActiveServerError, ServerFetchAbortedForServerSwitchError, serverFetch } from '@/sync/http/client';
 import { getActiveServerSnapshot } from '@/sync/domains/server/serverRuntime';
 import {
     areServerProfileIdentifiersEquivalent,
@@ -218,6 +218,9 @@ async function getServerFeaturesSnapshotWithRetry(
                             { includeAuth: false, retry: 'none' },
                         );
                 } catch (error) {
+                    // No server to probe: nothing happened on the network, so nothing is cached or retried.
+                    if (error instanceof NoActiveServerError) throw error;
+
                     const timedOut = controller.signal.aborted;
                     const aborted = isAbortErrorLike(error);
                     const serverSwitchAbort = error instanceof ServerFetchAbortedForServerSwitchError;

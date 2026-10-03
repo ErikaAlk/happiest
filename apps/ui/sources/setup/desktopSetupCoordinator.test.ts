@@ -401,6 +401,48 @@ describe('desktopSetupCoordinator', () => {
         expect(startExecutor).not.toHaveBeenCalled();
     });
 
+    it('adopts the app relay without asking when the CLI has no relay yet (first run on a fresh computer)', async () => {
+        // The status of a CLI that was never given a relay: `server` is null, nothing is paired,
+        // no service is installed and the runtime block describes no daemon.
+        const { server: _server, runtimeConvergence: _runtimeConvergence, ...rest } = AMBIENT_RESULT.data;
+        resolveWith({
+            ...AMBIENT_RESULT,
+            data: {
+                ...rest,
+                server: null,
+                serviceInstalled: false,
+                daemonRunning: false,
+                needsAuth: true,
+                machineId: null,
+                auth: {
+                    authenticated: false,
+                    machineRegistered: false,
+                    machineId: null,
+                    needsAuth: true,
+                    accountId: null,
+                    credentialState: 'missing',
+                    validatedAccountId: null,
+                },
+                service: { installed: false, running: false },
+            },
+        });
+        const { desktopSetupCoordinator } = await importCoordinator();
+        const inspection = await desktopSetupCoordinator.inspect();
+        expect(inspection).toMatchObject({ status: 'resolved', facts: { server: { serverUrl: null, comparableKey: null } } });
+
+        const confirm = vi.fn(async () => 'keep' as const);
+        const startExecutor = vi.fn(async (_spec: SystemTaskSpec) => 'task_setup_1');
+
+        await expect(desktopSetupCoordinator.reconcile({ start: startExecutor, confirm })).resolves.toEqual({ taskId: 'task_setup_1' });
+        await expect(desktopSetupCoordinator.startSetup({ start: startExecutor, confirm })).resolves.toEqual({ taskId: 'task_setup_1' });
+
+        expect(confirm).not.toHaveBeenCalled();
+        expect((startExecutor.mock.calls[0]?.[0] as SystemTaskSpec).params).toMatchObject({
+            activeRelayUrl: 'https://relay.example.test',
+            expectedAccountId: 'acct_app',
+        });
+    });
+
     it('remembers the device preference only when the user chose "always"', async () => {
         resolveWith({
             ...AMBIENT_RESULT,

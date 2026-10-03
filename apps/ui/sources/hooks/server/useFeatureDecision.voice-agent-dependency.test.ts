@@ -10,6 +10,8 @@ import { getStorage } from '@/sync/domains/state/storage';
 const initialStorageState = getStorage().getState();
 
 beforeEach(() => {
+    // The stubbed features endpoint is only probed once a server is configured.
+    process.env.EXPO_PUBLIC_HAPPY_SERVER_URL = 'https://relay.example.test';
     resetServerFeaturesClientForTests();
     getStorage().setState(initialStorageState, true);
 });

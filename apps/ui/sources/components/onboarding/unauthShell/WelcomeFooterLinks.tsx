@@ -5,14 +5,10 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { Text } from '@/components/ui/text/Text';
 import { Typography } from '@/constants/Typography';
 import { useActiveServerSnapshot } from '@/hooks/server/useActiveServerSnapshot';
-import { DEFAULT_SERVER_URL } from '@/sync/domains/server/serverProfiles';
-import { createServerUrlComparableKey } from '@/sync/domains/server/url/serverUrlCanonical';
 import { derivePresentableRelayHost } from '@/sync/domains/server/url/serverUrlDisplay';
 import { t } from '@/text';
 import { Icon } from '@/components/ui/icons/Icon';
 import { productLinks } from '@/constants/productLinks';
-
-const DEFAULT_SERVER_COMPARABLE_KEY = createServerUrlComparableKey(DEFAULT_SERVER_URL);
 
 export type WelcomeFooterLinksProps = Readonly<{
     variant: 'desktop' | 'mobile';
@@ -45,14 +41,11 @@ export const WelcomeFooterLinks = React.memo(function WelcomeFooterLinks(props: 
     const isMobile = props.variant === 'mobile';
     const relayGroupStyle = isMobile ? styles.groupMobile : styles.groupDesktop;
 
-    // The user has actively chosen another relay when the active server's
-    // canonicalised URL doesn't match the default server key. While we have no
-    // server URL yet (cold start), default to the default-server framing so the
-    // footer doesn't flicker into the custom layout for a single render.
+    // Happiest has no built-in relay: any configured active server is the user's own relay.
+    // Until one is configured the footer offers the add-relay link instead.
     const activeServer = useActiveServerSnapshot();
-    const isCustomRelay = activeServer.serverUrl.length > 0
-        && createServerUrlComparableKey(activeServer.serverUrl) !== DEFAULT_SERVER_COMPARABLE_KEY;
-    const customRelayHost = isCustomRelay
+    const hasRelay = activeServer.serverUrl.length > 0;
+    const relayHost = hasRelay
         ? (derivePresentableRelayHost(activeServer.serverUrl) ?? activeServer.serverUrl)
         : null;
 
@@ -82,16 +75,16 @@ export const WelcomeFooterLinks = React.memo(function WelcomeFooterLinks(props: 
             <View style={isMobile ? styles.linksMobile : styles.linksDesktop}>
                 <View style={relayGroupStyle} testID="welcome-footer-relay">
                     <Text style={[styles.label, labelColor]}>
-                        {isCustomRelay ? t('welcome.welcomeFooterRelayActiveLabel') : t('welcome.welcomeFooterRelay')}
+                        {hasRelay ? t('welcome.welcomeFooterRelayActiveLabel') : t('welcome.welcomeFooterRelay')}
                     </Text>
                     <Pressable
                         onPress={props.onOpenRelayCustomFlow}
                         accessibilityRole="link"
-                        accessibilityLabel={isCustomRelay ? t('welcome.welcomeFooterRelayEditAccessibility') : undefined}
+                        accessibilityLabel={hasRelay ? t('welcome.welcomeFooterRelayEditAccessibility') : undefined}
                         testID="welcome-footer-relay-action"
                     >
                         {({ pressed }) => (
-                            isCustomRelay && customRelayHost ? (
+                            relayHost ? (
                                 <View style={isMobile ? styles.relayHostRowMobile : styles.relayHostRowDesktop}>
                                     <Text
                                         style={[styles.actionBold, actionColor, styles.relayHostText, pressed ? actionPressedStyle : null]}
@@ -99,7 +92,7 @@ export const WelcomeFooterLinks = React.memo(function WelcomeFooterLinks(props: 
                                         ellipsizeMode="tail"
                                         testID="welcome-footer-relay-host"
                                     >
-                                        {customRelayHost}
+                                        {relayHost}
                                     </Text>
                                     <Icon
                                         name="pencil"

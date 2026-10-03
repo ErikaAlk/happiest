@@ -2632,6 +2632,7 @@ localTailscale: {
         invalid: "マシンから doctor スナップショットを取得できませんでした",
       },
       daemonAttributionUnknown: "デーモンのRelay/アカウント: 不明",
+      daemonAttributionNoRelay: "デーモン: Relay は未設定",
       daemonAttribution: ({ serverUrl, accountId }: { serverUrl: string; accountId: string }) =>
         `デーモン: ${serverUrl} • ${accountId}`,
       daemonAttributionAge: ({ age }: { age: string }) => `最終確認: ${age}`,
@@ -10286,6 +10287,8 @@ settingsSession: {
     serverIncompatibleTitle: "Relay が未対応です",
     serverIncompatibleBody: ({ serverUrl }: { serverUrl: string }) =>
       `${serverUrl} の Relay から想定外の応答が返されました。その Relay を更新するか、別の Relay を選んで続行してください。`,
+    relayNotConfiguredTitle: "あなたの Relay を追加",
+    relayNotConfiguredBody: "Happiest には公開 Relay がありません。続行するには、ご自身で運用している Relay のアドレスを追加してください。",
 
     // Unified onboarding redesign — BrandPanel (left pane / mobile hero)
     brandTaglineLine1: "どこからでも始められる。",
@@ -10341,11 +10344,11 @@ settingsSession: {
     // Welcome step footer links
     welcomeFooterRelay: "セルフホスティング?",
     welcomeFooterRelayAction: "自分の Relay を使う",
-    // Shown in place of welcomeFooterRelay when the active server is a
-    // custom (non-default) relay. The action below the label is the
-    // relay's host (optionally with :port) followed by a small pencil
-    // icon so the user can tap to edit. Long hostnames are truncated with
-    // a tail-ellipsis to avoid colliding with the right-side Docs group.
+    // Shown in place of welcomeFooterRelay when a relay is configured. The
+    // action below the label is the relay's host (optionally with :port)
+    // followed by a small pencil icon so the user can tap to edit. Long
+    // hostnames are truncated with a tail-ellipsis to avoid colliding with
+    // the right-side Docs group.
     welcomeFooterRelayActiveLabel: "使用中の Relay:",
     welcomeFooterRelayEditAccessibility: "Relay を変更",
     welcomeFooterDocs: "ヘルプが必要ですか?",

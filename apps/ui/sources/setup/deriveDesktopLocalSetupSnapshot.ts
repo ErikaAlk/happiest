@@ -209,6 +209,16 @@ export function daemonRelayMatchesExpectation(facts: DesktopLocalReadinessFacts,
     return daemonKeys.some((key) => accepted.has(key));
 }
 
+/**
+ * Whether the CLI that answered has no relay at all: its status reports no server, as on a computer
+ * where no relay was ever added. Adopting the app's relay then replaces nothing, so no reader may
+ * treat it as a relay the app would move this computer away from.
+ */
+export function daemonHasNoRelay(facts: DesktopLocalReadinessFacts): boolean {
+    const { serverUrl, publicServerUrl, localServerUrl, comparableKey } = facts.server;
+    return serverUrl === null && publicServerUrl === null && localServerUrl === null && comparableKey === null;
+}
+
 function resolveSetupReason(facts: DesktopLocalReadinessFacts, expected: DesktopSetupExpectation): DesktopLocalSetupReason | null {
     if (!daemonRelayMatchesExpectation(facts, expected)) {
         return 'relay_mismatch';

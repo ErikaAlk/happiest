@@ -1,5 +1,5 @@
 import React from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { storage } from '@/sync/domains/state/storageStore';
 import { profileDefaults } from '@/sync/domains/profiles/profile';
@@ -9,6 +9,11 @@ import { renderScreen } from '@/dev/testkit';
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 describe('useFriendsIdentityReadiness', () => {
+    beforeEach(() => {
+        // The stubbed features endpoint is only probed once a server is configured.
+        process.env.EXPO_PUBLIC_HAPPY_SERVER_URL = 'https://relay.example.test';
+    });
+
     it('returns needsUsername when username mode is enabled and no provider is required by server features', async () => {
         vi.resetModules();
         storage.getState().applyProfile({ ...profileDefaults, username: null, linkedProviders: [] });

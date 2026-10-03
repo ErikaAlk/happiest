@@ -2260,6 +2260,7 @@ export const zhHans: TranslationStructure = {
         invalid: "无法从机器读取 doctor snapshot",
       },
       daemonAttributionUnknown: "守护进程 Relay/账号：未知",
+      daemonAttributionNoRelay: "守护进程：尚未设置 Relay",
       daemonAttribution: ({ serverUrl, accountId }: { serverUrl: string; accountId: string }) =>
         `守护进程：${serverUrl} • ${accountId}`,
       daemonAttributionAge: ({ age }: { age: string }) => `最近检查：${age}`,
@@ -9694,6 +9695,8 @@ settingsSession: {
     serverIncompatibleTitle: "Relay 不受支持",
     serverIncompatibleBody: ({ serverUrl }: { serverUrl: string }) =>
       `${serverUrl} 返回了意外的响应。请更新该 Relay 或选择其他 Relay 以继续。`,
+    relayNotConfiguredTitle: "添加你的 Relay",
+    relayNotConfiguredBody: "Happiest 没有公共 Relay。填写你自己搭建的 Relay 地址后继续。",
 
     // Unified onboarding redesign — BrandPanel (left pane / mobile hero)
     brandTaglineLine1: "随处开始。",
@@ -9749,11 +9752,11 @@ settingsSession: {
     // Welcome step footer links
     welcomeFooterRelay: "自托管?",
     welcomeFooterRelayAction: "使用自己的 Relay",
-    // Shown in place of welcomeFooterRelay when the active server is a
-    // custom (non-default) relay. The action below the label is the
-    // relay's host (optionally with :port) followed by a small pencil
-    // icon so the user can tap to edit. Long hostnames are truncated with
-    // a tail-ellipsis to avoid colliding with the right-side Docs group.
+    // Shown in place of welcomeFooterRelay when a relay is configured. The
+    // action below the label is the relay's host (optionally with :port)
+    // followed by a small pencil icon so the user can tap to edit. Long
+    // hostnames are truncated with a tail-ellipsis to avoid colliding with
+    // the right-side Docs group.
     welcomeFooterRelayActiveLabel: "你的 Relay:",
     welcomeFooterRelayEditAccessibility: "更改 Relay",
     welcomeFooterDocs: "需要帮助?",

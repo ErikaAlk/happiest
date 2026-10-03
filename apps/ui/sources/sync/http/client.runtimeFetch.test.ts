@@ -11,6 +11,8 @@ afterEach(() => {
 
 describe('serverFetch runtime fetch override', () => {
     it('uses the configured runtime fetch implementation instead of global fetch', async () => {
+        // The static import above already loaded the client against the real server state.
+        vi.resetModules();
         vi.doMock('@/sync/domains/server/serverRuntime', () => ({
             getActiveServerSnapshot: () => ({
                 serverId: 'server-a',

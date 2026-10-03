@@ -162,6 +162,13 @@ export function createWelcomeFeaturesResponse(
 export async function renderWelcomeScreen(
     options: RenderWelcomeScreenOptions = {},
 ): Promise<RenderScreenResult> {
+    // Happiest has no built-in Relay, so the welcome screen only probes and offers sign-in once one is
+    // configured. `configuredServerUrl: null` renders the fresh-install state with no Relay at all.
+    if (options.configuredServerUrl === null) {
+        delete process.env.EXPO_PUBLIC_HAPPY_SERVER_URL;
+    } else {
+        process.env.EXPO_PUBLIC_HAPPY_SERVER_URL = options.configuredServerUrl ?? 'https://relay.example.test';
+    }
     const { default: Screen } = await import('@/app/(app)/index');
     const element = options.strictMode
         ? React.createElement(React.StrictMode, null, React.createElement(Screen))
@@ -199,4 +206,5 @@ export async function waitForWelcomeTestId(
 }
 type RenderWelcomeScreenOptions = Readonly<{
     strictMode?: boolean;
+    configuredServerUrl?: string | null;
 }>;

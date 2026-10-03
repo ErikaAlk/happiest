@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { buildSessionGettingStartedViewModel, computeMachinesSummary, computeSessionGettingStartedDecision } from './gettingStartedModel';
 
@@ -55,7 +54,7 @@ describe('buildSessionGettingStartedViewModel', () => {
         expect(model.targetLabel).toBe('Company Servers');
     });
 
-    it('shows server setup command for non-cloud servers', () => {
+    it('shows server setup command for the configured server', () => {
         const model = buildSessionGettingStartedViewModel({
             sessions: [],
             selection: {
@@ -71,18 +70,18 @@ describe('buildSessionGettingStartedViewModel', () => {
         expect(model.showServerSetup).toBe(true);
     });
 
-    it('does not show server setup command for the product default server', () => {
+    it('does not show server setup command while no server is configured', () => {
         const model = buildSessionGettingStartedViewModel({
             sessions: [],
             selection: {
-                activeTarget: { kind: 'server', id: 'cloud' },
-                activeServerId: 'cloud',
-                allowedServerIds: ['cloud'],
+                activeTarget: { kind: 'server', id: '' },
+                activeServerId: '',
+                allowedServerIds: [],
             },
             serverSelectionGroups: [],
-            serverProfiles: [{ id: 'cloud', name: productIdentity.defaultServerName, serverUrl: productIdentity.defaultServerUrl }],
-            machineListByServerId: { cloud: [] },
-            machineListStatusByServerId: { cloud: 'idle' },
+            serverProfiles: [],
+            machineListByServerId: {},
+            machineListStatusByServerId: {},
         });
         expect(model.showServerSetup).toBe(false);
     });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import renderer, { act } from 'react-test-renderer';
 import { pressTestInstanceAsync, renderScreen } from '@/dev/testkit';
 import { installConnectionStatusControlCommonModuleMocks } from './connectionStatusControlTestHelpers';
@@ -324,6 +324,11 @@ afterEach(() => {
 });
 
 describe('ConnectionStatusControl (native popover config)', () => {
+    beforeEach(() => {
+        // Happiest has no built-in server: the build-time configured one is the app's saved target.
+        process.env.EXPO_PUBLIC_HAPPY_SERVER_URL = 'https://default.example.test';
+    });
+
     it('does not mount the closed popover shell until the trigger opens it', async () => {
         const ConnectionStatusControl = await importConnectionStatusControl();
         const screen = await renderScreen(React.createElement(ConnectionStatusControl, { variant: 'sidebar' }));

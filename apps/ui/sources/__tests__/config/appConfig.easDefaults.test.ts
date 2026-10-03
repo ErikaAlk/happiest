@@ -66,6 +66,8 @@ function withCleanEnv<T>(fn: () => T): T {
         'HAPPIER_EXPO_RUNTIME_VERSION',
         'HAPPIER_EXPO_RUNTIME_VERSION_POLICY',
         'EXPO_APP_LOCAL_CONFIG_PATH',
+        'EXPO_APP_LINK_HOST',
+        'EXPO_IOS_ASSOCIATED_DOMAINS',
         'EXPO_PUBLIC_HAPPIER_FEATURE_POLICY_ENV',
         'EXPO_PUBLIC_IOS_BACKGROUND_AUDIO',
         'EXPO_IOS_BACKGROUND_AUDIO',
@@ -245,12 +247,40 @@ describe('app.config.js', () => {
         });
 
         expect(exp.extra?.app?.variant).toBe('preview');
-        // Production identity still enables universal links / app links, on the default server's host.
-        const defaultServerHost = new URL(productIdentity.defaultServerUrl).host;
-        expect(exp.ios?.associatedDomains).toEqual([`applinks:${defaultServerHost}`]);
+    });
+
+    it('declares no universal links or app links unless a link host is configured', () => {
+        const exp = withCleanEnv(() => {
+            process.env.APP_ENV = 'production';
+            return getPublicConfig();
+        });
+
+        expect(exp.ios?.associatedDomains).toEqual([]);
+        expect(exp.android?.intentFilters).toEqual([]);
+    });
+
+    it('enables universal links and app links for the configured link host on the production identity', () => {
+        const exp = withCleanEnv(() => {
+            process.env.APP_ENV = 'production';
+            process.env.EXPO_APP_LINK_HOST = 'relay.example.test';
+            return getPublicConfig();
+        });
+
+        expect(exp.ios?.associatedDomains).toEqual(['applinks:relay.example.test']);
         const data = exp.android?.intentFilters?.[0]?.data;
         const dataItems = Array.isArray(data) ? data : data ? [data] : [];
-        expect(dataItems.map((item) => item?.host)).toEqual([defaultServerHost]);
+        expect(dataItems.map((item) => item?.host)).toEqual(['relay.example.test']);
+    });
+
+    it('takes iOS associated domains from EXPO_IOS_ASSOCIATED_DOMAINS without declaring app links', () => {
+        const exp = withCleanEnv(() => {
+            process.env.APP_ENV = 'production';
+            process.env.EXPO_IOS_ASSOCIATED_DOMAINS = 'applinks:a.example.test applinks:b.example.test';
+            return getPublicConfig();
+        });
+
+        expect(exp.ios?.associatedDomains).toEqual(['applinks:a.example.test', 'applinks:b.example.test']);
+        expect(exp.android?.intentFilters).toEqual([]);
     });
 
     it('uses the ui package.json version for expo.version by default', () => {

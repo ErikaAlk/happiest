@@ -9,7 +9,8 @@ import {
 } from './relayReconciliationConsent';
 
 function facts(overrides: Partial<{
-    serverUrl: string;
+    /** `null`: the CLI has no relay yet (its status reports no server). */
+    serverUrl: string | null;
     installed: boolean;
     running: boolean;
     targetMode: DesktopLocalReadinessFacts['service']['targetMode'];
@@ -21,7 +22,7 @@ function facts(overrides: Partial<{
     return {
         acquisition: { command: '/managed/happier', provenance: 'managed', version: null, channel: null },
         server: {
-            serverUrl: overrides.serverUrl ?? 'https://old.relay.test',
+            serverUrl: overrides.serverUrl === undefined ? 'https://old.relay.test' : overrides.serverUrl,
             publicServerUrl: null,
             localServerUrl: null,
             comparableKey: null,
@@ -285,6 +286,33 @@ describe('resolveRelayReconciliationConsent (UD5)', () => {
         })).toBe('confirm_relay');
     });
 
+    it('adopts the app\'s relay without asking when the CLI has no relay yet: there is nothing to move away from', () => {
+        // Desktop first run on a fresh computer: the app is signed in to a relay and the local CLI
+        // has none. Whatever the service or runtime facts say, no relay is being replaced.
+        const noRelay = { serverUrl: null, validatedAccountId: null } as const;
+        const shapes: Array<Parameters<typeof facts>[0]> = [
+            { ...noRelay, installed: false, targetMode: null, serviceOwnsRunningDaemon: false, runtimeConvergence: null },
+            { ...noRelay, installed: false, targetMode: null, serviceOwnsRunningDaemon: false },
+            { ...noRelay, installed: true, targetMode: null },
+            { ...noRelay, installed: true, targetMode: 'pinned' },
+            { ...noRelay, installed: true, targetMode: 'default-following', runtimeConvergence: null },
+        ];
+        for (const shape of shapes) {
+            expect(resolveRelayReconciliationConsent({
+                target: MOVE_TARGET,
+                inspection: resolved(shape),
+                observedExpectation: OBSERVED,
+                alwaysMoveDefaultFollowingService: false,
+            })).toBe('start');
+        }
+        expect(resolveRelayReconciliationConsent({
+            target: MOVE_TARGET,
+            inspection: resolved(shapes[0]),
+            observedExpectation: null,
+            alwaysMoveDefaultFollowingService: false,
+        })).toBe('start');
+    });
+
     it('does not ask about an unknown target mode when there is no service installed to move', () => {
         // Nothing installed reports no mode either, and a first install is not a relay move.
         expect(resolveRelayReconciliationConsent({
@@ -315,6 +343,13 @@ describe('daemonContradictsTarget (B2)', () => {
             inspection: resolved({ serverUrl: 'https://new.relay.test', validatedAccountId: 'acct_other' }),
             target: TARGET,
         })).toBe(true);
+    });
+
+    it('says nothing about a CLI with no relay yet, even with a service installed: no relay is contradicted', () => {
+        expect(daemonContradictsTarget({
+            inspection: resolved({ serverUrl: null, validatedAccountId: null, targetMode: 'default-following' }),
+            target: TARGET,
+        })).toBe(false);
     });
 
     it('says nothing about a computer with no service installed: a first install moves nothing', () => {

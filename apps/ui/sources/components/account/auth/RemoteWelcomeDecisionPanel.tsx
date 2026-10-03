@@ -267,6 +267,18 @@ function DecisionActionRow(props: DecisionActionRowProps): React.ReactElement {
     );
 }
 
+function WelcomeServerStatusBlock(props: Readonly<{ testIDPrefix: string; title: string; body: string }>): React.ReactElement {
+    const styles = stylesheet;
+    return (
+        <View testID={props.testIDPrefix} style={styles.serverUnavailableBlock}>
+            <Text testID={`${props.testIDPrefix}-title`} style={styles.serverUnavailableTitle}>
+                {props.title}
+            </Text>
+            <Text style={styles.serverStatusBody}>{props.body}</Text>
+        </View>
+    );
+}
+
 export function RemoteWelcomeDecisionPanel(props: RemoteWelcomeDecisionPanelProps): React.ReactElement {
     const { options } = props;
     const styles = stylesheet;
@@ -288,21 +300,39 @@ export function RemoteWelcomeDecisionPanel(props: RemoteWelcomeDecisionPanelProp
         && options.showAnonymousSignup
         && !isReturningUser;
 
+    if (options.serverAvailability === 'unconfigured') {
+        return (
+            <View testID="welcome-decision-panel" style={styles.decisionPanel}>
+                <WelcomeServerStatusBlock
+                    testIDPrefix="welcome-relay-not-configured"
+                    title={t('welcome.relayNotConfiguredTitle')}
+                    body={t('welcome.relayNotConfiguredBody')}
+                />
+                <View style={styles.actionStack}>
+                    <DecisionActionRow
+                        testID="welcome-add-relay"
+                        primary
+                        title={t('setupOnboarding.addAndUseRelay')}
+                        iconName="plus"
+                        onPress={props.onChangeRelay}
+                    />
+                </View>
+            </View>
+        );
+    }
+
     if (options.serverAvailability === 'unavailable' || options.serverAvailability === 'incompatible') {
         return (
             <View testID="welcome-decision-panel" style={styles.decisionPanel}>
-                <View testID="welcome-server-unavailable" style={styles.serverUnavailableBlock}>
-                    <Text testID="welcome-server-unavailable-title" style={styles.serverUnavailableTitle}>
-                        {options.serverAvailability === 'incompatible'
-                            ? t('welcome.serverIncompatibleTitle')
-                            : t('welcome.serverUnavailableTitle')}
-                    </Text>
-                    <Text style={styles.serverStatusBody}>
-                        {options.serverAvailability === 'incompatible'
-                            ? t('welcome.serverIncompatibleBody', { serverUrl: options.serverUrlForCopy })
-                            : t('welcome.serverUnavailableBody', { serverUrl: options.serverUrlForCopy })}
-                    </Text>
-                </View>
+                <WelcomeServerStatusBlock
+                    testIDPrefix="welcome-server-unavailable"
+                    title={options.serverAvailability === 'incompatible'
+                        ? t('welcome.serverIncompatibleTitle')
+                        : t('welcome.serverUnavailableTitle')}
+                    body={options.serverAvailability === 'incompatible'
+                        ? t('welcome.serverIncompatibleBody', { serverUrl: options.serverUrlForCopy })
+                        : t('welcome.serverUnavailableBody', { serverUrl: options.serverUrlForCopy })}
+                />
                 <View style={styles.actionStack}>
                     <DecisionActionRow
                         testID="welcome-change-relay"

@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { AuthCredentials } from '@/auth/storage/tokenStorage';
 import { createSuccessfulServerReachabilityProbeResponse, isServerReachabilityProbeRequest } from '@/dev/testkit';
@@ -31,6 +31,11 @@ function stubFetch(responseFactory: () => Promise<unknown>) {
 }
 
 describe('apiVendorTokens', () => {
+    beforeEach(() => {
+        // Requests go to the active server; Happiest has none unless one is configured.
+        process.env.EXPO_PUBLIC_HAPPY_SERVER_URL = 'https://relay.example.test';
+    });
+
     afterEach(() => {
         vi.unstubAllGlobals();
         vi.restoreAllMocks();

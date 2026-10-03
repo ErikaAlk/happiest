@@ -258,8 +258,15 @@ export function buildServerFeaturesResponse(overrides: FixtureOverrides = {}): F
     };
 }
 
+// Happiest has no built-in server, so a stubbed features endpoint is only probed once a server is
+// configured (the same build-time configuration a real install would carry).
+function configureStubbedServer(): void {
+    process.env.EXPO_PUBLIC_HAPPY_SERVER_URL = 'https://relay.example.test';
+}
+
 export function stubServerFeaturesFetch(overrides: FixtureOverrides = {}): void {
     const response = buildServerFeaturesResponse(overrides);
+    configureStubbedServer();
     vi.stubGlobal(
         'fetch',
         vi.fn(async () => ({
@@ -270,6 +277,7 @@ export function stubServerFeaturesFetch(overrides: FixtureOverrides = {}): void 
 }
 
 export function stubServerFeaturesFetchFailure(): void {
+    configureStubbedServer();
     vi.stubGlobal(
         'fetch',
         vi.fn(async (input: RequestInfo | URL) => {

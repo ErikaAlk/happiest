@@ -35,6 +35,30 @@ describe('buildDiagnosisReport', () => {
     expect(report.findings.some((f) => f.code === 'server.mismatch.ui_vs_machine')).toBe(true);
   });
 
+  it('does not compare servers for a machine and a pasted snapshot whose CLI has no server yet', () => {
+    const noServerSnapshot = {
+      capturedAt: '2026-02-23T00:00:00.000Z',
+      server: null,
+      accountId: null,
+      settings: { activeServerId: null, servers: [], knownAccountIds: [] },
+    };
+    const report = buildDiagnosisReport({
+      ui: {
+        activeServerId: 'relay-1',
+        activeServerUrl: 'https://relay.example.test',
+        profileId: 'acct_1',
+      },
+      serverProfiles: [{ id: 'relay-1', serverUrl: 'https://relay.example.test' }],
+      machinesByServerId: { 'relay-1': [{ id: 'm1', active: true }] },
+      machineDoctorSnapshots: [{ machineId: 'm1', serverId: 'relay-1', snapshot: noServerSnapshot }],
+      pastedDoctorSnapshots: [noServerSnapshot],
+      serverDiagnostics: { state: 'ok' },
+      nowMs: 0,
+    });
+
+    expect(report.findings.map((f) => f.code)).toEqual(['auth.machine_missing_account']);
+  });
+
   it('detects UI vs machine accountId mismatch', () => {
     const report = buildDiagnosisReport({
       ui: {

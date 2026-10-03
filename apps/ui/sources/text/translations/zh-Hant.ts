@@ -2762,6 +2762,7 @@ const zhHantOverrides: DeepPartial<TranslationStructure> = {
                 invalid: '無法從機器讀取 doctor snapshot',
             },
             daemonAttributionUnknown: '守護程式 Relay/帳戶：未知',
+            daemonAttributionNoRelay: '守護程式：尚未設定 Relay',
             daemonAttribution: ({ serverUrl, accountId }: { serverUrl: string; accountId: string }) =>
                 `守護程式：${serverUrl} • ${accountId}`,
             daemonAttributionAge: ({ age }: { age: string }) => `最近檢查：${age}`,
@@ -8084,6 +8085,8 @@ settingsSession: {
         serverIncompatibleTitle: 'Relay 不受支援',
         serverIncompatibleBody: ({ serverUrl }: { serverUrl: string }) =>
             `${serverUrl} 回傳了意外的回應。請更新該 Relay 或選擇其他 Relay 以繼續。`,
+        relayNotConfiguredTitle: '新增你的 Relay',
+        relayNotConfiguredBody: 'Happiest 沒有公用 Relay。填寫你自己架設的 Relay 位址後繼續。',
 
         // Unified onboarding redesign — BrandPanel (left pane / mobile hero)
         brandTaglineLine1: '隨處開始。',
@@ -8139,11 +8142,11 @@ settingsSession: {
         // Welcome step footer links
         welcomeFooterRelay: '自架?',
         welcomeFooterRelayAction: '使用自己的 Relay',
-        // Shown in place of welcomeFooterRelay when the active server is a
-        // custom (non-default) relay. The action below the label is the
-        // relay's host (optionally with :port) followed by a small pencil
-        // icon so the user can tap to edit. Long hostnames are truncated with
-        // a tail-ellipsis to avoid colliding with the right-side Docs group.
+        // Shown in place of welcomeFooterRelay when a relay is configured. The
+        // action below the label is the relay's host (optionally with :port)
+        // followed by a small pencil icon so the user can tap to edit. Long
+        // hostnames are truncated with a tail-ellipsis to avoid colliding with
+        // the right-side Docs group.
         welcomeFooterRelayActiveLabel: '你的 Relay:',
         welcomeFooterRelayEditAccessibility: '變更 Relay',
         welcomeFooterDocs: '需要協助?',

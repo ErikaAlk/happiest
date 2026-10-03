@@ -19,6 +19,7 @@ import { fireAndForget } from "@/utils/system/fireAndForget";
 import { formatOperationFailedDebugMessage } from "@/utils/errors/formatOperationFailedDebugMessage";
 import { HappyError } from "@/utils/errors/errors";
 import { getActiveServerSnapshot } from "@/sync/domains/server/serverRuntime";
+import { useActiveServerSnapshot } from "@/hooks/server/useActiveServerSnapshot";
 import { getServerFeaturesSnapshot } from "@/sync/api/capabilities/serverFeaturesClient";
 import { getServerRetentionPolicy } from '@/sync/api/capabilities/serverRetentionPolicyClient';
 import { formatServerRetentionDisclosure } from '@/sync/domains/server/retention/formatServerRetentionPolicy';
@@ -155,7 +156,10 @@ function NotAuthenticated() {
     const isDesktopShell = React.useMemo(() => isTauriDesktop(), []);
     const applyBrandHeroSeen = useApplyBrandHeroSeen();
 
-    const [serverAvailability, setServerAvailability] = React.useState<RemoteServerAvailability>('loading');
+    const activeServer = useActiveServerSnapshot();
+    const [serverAvailability, setServerAvailability] = React.useState<RemoteServerAvailability>(
+        () => (activeServer.serverUrl ? 'loading' : 'unconfigured'),
+    );
     const [serverCheckNonce, setServerCheckNonce] = React.useState(0);
     const [signupOptions, setSignupOptions] = React.useState<RemoteSignupOptions>({
         anonymousEnabled: true,
@@ -172,6 +176,13 @@ function NotAuthenticated() {
     const hasPendingTerminalConnect = Boolean(getPendingTerminalConnect());
 
     React.useEffect(() => {
+        if (!activeServer.serverUrl) {
+            // Happiest has no built-in Relay: until one is added there is nothing to probe.
+            setServerAvailability('unconfigured');
+            setRetentionSummary(null);
+            return;
+        }
+
         let mounted = true;
         let retryTimer: ReturnType<typeof setTimeout> | null = null;
         const scheduleInitialServerCheckRetry = (): boolean => {
@@ -247,7 +258,7 @@ function NotAuthenticated() {
                 clearTimeout(retryTimer);
             }
         };
-    }, [serverCheckNonce]);
+    }, [activeServer.serverId, activeServer.serverUrl, serverCheckNonce]);
 
     const createAccount = async () => {
         try {
@@ -411,14 +422,9 @@ function NotAuthenticated() {
         }
     };
 
-    const serverUrlForCopy = (() => {
-        const snapshot = getActiveServerSnapshot();
-        const raw = snapshot?.serverUrl ? String(snapshot.serverUrl).trim() : '';
-        return raw || t('status.unknown');
-    })();
     const authEntryOptions = useRemoteAuthEntryOptions({
         serverAvailability,
-        serverUrlForCopy,
+        serverUrlForCopy: activeServer.serverUrl.trim(),
         retryServerCheck: () => setServerCheckNonce((v) => v + 1),
         signupOptions,
         loginOptions,

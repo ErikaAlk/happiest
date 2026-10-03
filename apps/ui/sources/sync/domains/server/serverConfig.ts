@@ -34,7 +34,8 @@ export function getServerUrl(): string {
 export function setServerUrl(url: string | null): void {
     const normalized = normalizeUrl(String(url ?? ''));
     if (!normalized) {
-        setActiveServer({ serverId: getResetToDefaultServerId(), scope: 'device' });
+        const resetServerId = getResetToDefaultServerId();
+        if (resetServerId) setActiveServer({ serverId: resetServerId, scope: 'device' });
         return;
     }
 

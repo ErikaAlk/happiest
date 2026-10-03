@@ -1,5 +1,3 @@
-import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
-
 export type SessionGettingStartedDecisionKind =
     | 'loading'
     | 'connect_machine'
@@ -145,7 +143,7 @@ export function buildSessionGettingStartedViewModel(input: SessionGettingStarted
         machines,
     });
 
-    const showServerSetup = Boolean(activeProfile.serverUrl) && activeProfile.serverUrl !== productIdentity.defaultServerUrl;
+    const showServerSetup = Boolean(activeProfile.serverUrl);
 
     return {
         kind,

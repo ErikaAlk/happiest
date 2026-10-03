@@ -41,7 +41,7 @@ describe('machineDoctorSnapshotCache', () => {
     const cached = readCachedMachineDoctorSnapshot({ serverId: 's1', machineId: 'm1' });
     expect(cached).not.toBeNull();
     expect(cached!.cachedAt).toBe(123);
-    expect(cached!.snapshot.server.serverUrl).toBe('https://api.happier.dev');
+    expect(cached!.snapshot.server?.serverUrl).toBe('https://api.happier.dev');
   });
 
   it('deletes invalid cache entries', () => {

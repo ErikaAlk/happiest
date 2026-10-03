@@ -278,6 +278,37 @@ describe('RemoteWelcomeDecisionPanel', () => {
         expect(retryServerCheck).toHaveBeenCalledTimes(1);
     });
 
+    it('offers only adding a Relay while no Relay is configured', async () => {
+        const onChangeRelay = vi.fn();
+        const options = deriveRemoteAuthEntryOptions(createInput({ serverAvailability: 'unconfigured', serverUrlForCopy: '' }));
+        expect(options.showAuthActions).toBe(false);
+
+        const screen = await renderScreen(
+            <RemoteWelcomeDecisionPanel
+                options={options}
+                isDesktopShell={false}
+                layout="portrait"
+                onAnonymousSignup={noop}
+                onChangeRelay={onChangeRelay}
+                onKeylessProviderLogin={noop}
+                onMtlsLogin={noop}
+                onOpenSetup={noop}
+                onProviderSignup={noop}
+                onRestore={noop}
+            />,
+        );
+
+        expect(screen.findByTestId('welcome-relay-not-configured')).not.toBeNull();
+        expect(screen.findAllByTestId('welcome-server-unavailable')).toHaveLength(0);
+        expect(screen.findAllByTestId('welcome-primary-start')).toHaveLength(0);
+        expect(screen.findAllByTestId('welcome-secondary-login')).toHaveLength(0);
+        expect(screen.findAllByTestId('welcome-retry-server')).toHaveLength(0);
+
+        await screen.pressByTestIdAsync('welcome-add-relay');
+
+        expect(onChangeRelay).toHaveBeenCalledTimes(1);
+    });
+
     it('routes provider-only signup through the provider callback', async () => {
         const onProviderSignup = vi.fn();
         const screen = await renderScreen(

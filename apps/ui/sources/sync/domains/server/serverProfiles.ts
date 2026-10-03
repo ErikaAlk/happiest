@@ -1,6 +1,5 @@
 import { MMKV } from 'react-native-mmkv';
 import { normalizeServerIdentityIdCapability } from '@happier-dev/protocol';
-import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { isTauriDesktop } from '@/utils/platform/tauri';
 import { readStorageScopeFromEnv, scopedStorageId } from '@/utils/system/storageScope';
 import { isStackContext } from './serverContext';
@@ -9,12 +8,6 @@ import { sanitizeServerUrlForShareableLink } from './url/shareableServerUrl';
 import { readConfiguredServerUrlEnv, readConfiguredServerUrlEnvRaw } from './readConfiguredServerUrlEnv';
 
 export type ServerProfileSource = 'manual' | 'url' | 'stack-env' | 'notification' | 'preconfigured';
-
-/**
- * The relay a fresh native install starts on; the same address serves the web app. Callers compare
- * an active server URL against it via createServerUrlComparableKey.
- */
-export const DEFAULT_SERVER_URL = productIdentity.defaultServerUrl;
 
 export type ServerProfile = Readonly<{
     id: string;
@@ -245,11 +238,6 @@ function parsePreconfiguredServersFromEnv(): PreconfiguredServer[] {
         if (origin) {
             append(origin, '', 'url');
         }
-    }
-
-    // On native builds, never start "serverless": seed the default server when no preconfigured server exists.
-    if (entries.length === 0 && !isWebRuntime()) {
-        append(DEFAULT_SERVER_URL, productIdentity.defaultServerName, 'preconfigured');
     }
 
     return entries;
@@ -941,11 +929,10 @@ export function setActiveServerId(
     emitActiveServerChanged(previousSnapshot);
 }
 
+// The server a build, stack or same-origin web page configures at runtime, or '' when there is none.
+// Happiest has no built-in server, so a manually added server is never a reset target.
 export function getResetToDefaultServerId(): string {
-    const state = readPersistedState();
-    const preconfiguredId = getPrimaryPreconfiguredServerId(state.servers);
-    if (preconfiguredId) return preconfiguredId;
-    return Object.keys(state.servers)[0] ?? '';
+    return getPrimaryPreconfiguredServerId(readPersistedState().servers) ?? '';
 }
 
 export function getTabActiveServerId(): string | null {

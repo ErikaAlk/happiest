@@ -1,6 +1,6 @@
 import React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { buildServerFeaturesResponse } from '@/hooks/server/serverFeaturesTestUtils';
 import { flushHookEffects } from '@/hooks/server/serverFeatureHookHarness.testHelpers';
@@ -21,6 +21,11 @@ function createDeferred<T>() {
 
 describe('useRequireFriendsEnabled', () => {
     const previousScope = process.env.EXPO_PUBLIC_HAPPY_STORAGE_SCOPE;
+
+    beforeEach(() => {
+        // The features endpoint is only probed once a server is configured.
+        process.env.EXPO_PUBLIC_HAPPY_SERVER_URL = 'https://relay.example.test';
+    });
 
     afterEach(() => {
         vi.unstubAllGlobals();

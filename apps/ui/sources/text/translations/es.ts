@@ -2329,6 +2329,7 @@ export const es: TranslationStructure = {
         invalid: "No se pudo leer el doctor snapshot desde la máquina",
       },
       daemonAttributionUnknown: "Relay/cuenta del daemon: desconocido",
+      daemonAttributionNoRelay: "Daemon: aún sin Relay",
       daemonAttribution: ({ serverUrl, accountId }: { serverUrl: string; accountId: string }) =>
         `Daemon: ${serverUrl} • ${accountId}`,
       daemonAttributionAge: ({ age }: { age: string }) => `Última comprobación: ${age}`,
@@ -10067,6 +10068,8 @@ settingsSession: {
     serverIncompatibleTitle: "Relay no compatible",
     serverIncompatibleBody: ({ serverUrl }: { serverUrl: string }) =>
       `El Relay en ${serverUrl} devolvió una respuesta inesperada. Actualiza ese Relay o elige otro Relay para continuar.`,
+    relayNotConfiguredTitle: "Agrega tu Relay",
+    relayNotConfiguredBody: "Happiest no tiene un Relay público. Agrega la dirección del Relay que administras para continuar.",
 
     // Unified onboarding redesign — BrandPanel (left pane / mobile hero)
     brandTaglineLine1: "Empieza en cualquier lugar.",
@@ -10122,11 +10125,11 @@ settingsSession: {
     // Welcome step footer links
     welcomeFooterRelay: "¿Autoalojado?",
     welcomeFooterRelayAction: "Usa tu propio Relay",
-    // Shown in place of welcomeFooterRelay when the active server is a
-    // custom (non-default) relay. The action below the label is the
-    // relay's host (optionally with :port) followed by a small pencil
-    // icon so the user can tap to edit. Long hostnames are truncated with
-    // a tail-ellipsis to avoid colliding with the right-side Docs group.
+    // Shown in place of welcomeFooterRelay when a relay is configured. The
+    // action below the label is the relay's host (optionally with :port)
+    // followed by a small pencil icon so the user can tap to edit. Long
+    // hostnames are truncated with a tail-ellipsis to avoid colliding with
+    // the right-side Docs group.
     welcomeFooterRelayActiveLabel: "Tu relay:",
     welcomeFooterRelayEditAccessibility: "Cambiar relay",
     welcomeFooterDocs: "¿Necesitas ayuda?",

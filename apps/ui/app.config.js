@@ -1,7 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { getAppEnvironmentConfig } = require('./appVariantConfig.cjs');
 const { EXPO_PROJECT_CONFIG } = require('./appProjectConfig.cjs');
-const { productIdentity } = require('@happier-dev/release-runtime/productIdentity');
 
 function normalizeVariantOverride(raw) {
     const value = String(raw ?? '').trim().toLowerCase();
@@ -61,8 +60,6 @@ if (appLocalConfigModule && typeof appLocalConfigModule === 'object') {
 
 const DEFAULTS = {
     ...EXPO_PROJECT_CONFIG,
-    // Share links open the web app, which the default server's address serves.
-    linkHost: new URL(productIdentity.defaultServerUrl).host,
 };
 
 // Allow opt-in overrides for local dev tooling without changing upstream defaults.
@@ -226,8 +223,10 @@ if (!process.env.EXPO_PUBLIC_HAPPIER_FEATURE_POLICY_ENV && resolvedFeaturePolicy
     process.env.EXPO_PUBLIC_HAPPIER_FEATURE_POLICY_ENV = resolvedFeaturePolicyEnv;
 }
 
-const linkHost = (process.env.EXPO_APP_LINK_HOST || DEFAULTS.linkHost).trim();
-const linkHosts = [linkHost];
+// Happiest has no public domain: App Links and iOS associated domains exist only when the builder
+// names the host (EXPO_APP_LINK_HOST) and publishes the matching association files for their own app.
+const linkHost = (process.env.EXPO_APP_LINK_HOST || '').trim();
+const linkHosts = linkHost ? [linkHost] : [];
 const iosAssociatedDomainsRaw = (process.env.EXPO_IOS_ASSOCIATED_DOMAINS || '').trim();
 const iosAssociatedDomains = iosAssociatedDomainsRaw
     ? iosAssociatedDomainsRaw.split(/[\s,]+/).map(v => v.trim()).filter(Boolean)
@@ -337,7 +336,7 @@ const baseExpoConfig = {
             ],
             package: androidPackage,
             googleServicesFile: "./google-services.json",
-            intentFilters: appEnvironmentConfig.enableAssociatedDomains ? [
+            intentFilters: appEnvironmentConfig.enableAssociatedDomains && linkHosts.length > 0 ? [
                 {
                     "action": "VIEW",
                     "autoVerify": true,

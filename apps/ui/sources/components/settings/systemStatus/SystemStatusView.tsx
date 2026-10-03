@@ -474,7 +474,8 @@ export const SystemStatusView = React.memo(function SystemStatusView() {
                       return <Text style={{ color: theme.colors.state.danger.foreground }}>{fetchEntry.detail}</Text>;
                     }
                     if (fetchEntry.status === 'ready') {
-                      const daemonServerUrl = fetchEntry.snapshot.server.serverUrl;
+                      // `server` is null until the CLI on that computer has a Relay: nothing to compare yet.
+                      const daemonServerUrl = fetchEntry.snapshot.server?.serverUrl ?? null;
                       const daemonAccountId = fetchEntry.snapshot.accountId ?? t('status.unknown');
                       const serverMismatch = activeServerUrl && daemonServerUrl && daemonServerUrl !== activeServerUrl;
                       const accountMismatch = profile?.id && fetchEntry.snapshot.accountId && fetchEntry.snapshot.accountId !== profile.id;
@@ -482,7 +483,9 @@ export const SystemStatusView = React.memo(function SystemStatusView() {
                       const mismatchLabel = serverMismatch || accountMismatch ? ` • ${t('systemStatus.mismatch')}` : '';
                       return (
                         <Text style={{ color: serverMismatch || accountMismatch ? theme.colors.state.danger.foreground : theme.colors.text.secondary }}>
-                          {t('systemStatus.machine.daemonAttribution', { serverUrl: daemonServerUrl, accountId: daemonAccountId })}
+                          {daemonServerUrl === null
+                            ? t('systemStatus.machine.daemonAttributionNoRelay')
+                            : t('systemStatus.machine.daemonAttribution', { serverUrl: daemonServerUrl, accountId: daemonAccountId })}
                           {mismatchLabel}
                           {'\n'}
                           {t('systemStatus.machine.daemonAttributionAge', { age: formatRelativeTimeMs(fetchEntry.cachedAt) })}

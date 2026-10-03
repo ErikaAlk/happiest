@@ -1,11 +1,7 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { HappyError } from '@/utils/errors/errors';
 import { createExternalOAuthProvider } from './externalOAuthProvider';
-
-vi.mock('@/sync/domains/server/serverConfig', () => ({
-    getServerUrl: () => 'https://api.example.test',
-}));
 
 vi.mock('@/utils/timing/time', async (importOriginal) => ({
     ...(await importOriginal<typeof import('@/utils/timing/time')>()),
@@ -47,6 +43,11 @@ function createProvider() {
         displayName: 'GitHub',
     });
 }
+
+beforeEach(() => {
+    // Requests go to the active server; Happiest has none unless one is configured.
+    process.env.EXPO_PUBLIC_HAPPY_SERVER_URL = 'https://api.example.test';
+});
 
 afterEach(() => {
     vi.restoreAllMocks();

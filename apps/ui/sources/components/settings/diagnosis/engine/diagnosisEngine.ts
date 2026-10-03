@@ -88,7 +88,8 @@ export function buildDiagnosisReport(input: DiagnosisInput): DiagnosisReport {
 
   for (const entry of input.machineDoctorSnapshots) {
     const snapshot = sanitizeDoctorSnapshotUrls(entry.snapshot);
-    const machineServerUrl = normalizeUrl(snapshot.server.serverUrl);
+    // A CLI without a server yet has no URL to compare; its missing account is reported below.
+    const machineServerUrl = snapshot.server ? normalizeUrl(snapshot.server.serverUrl) : '';
     if (machineServerUrl) machineServerUrlSet.add(machineServerUrl);
 
     if (uiServerUrl && machineServerUrl && uiServerUrl !== machineServerUrl) {
@@ -115,7 +116,7 @@ export function buildDiagnosisReport(input: DiagnosisInput): DiagnosisReport {
       });
     }
 
-    if (snapshot.settings.activeServerId && snapshot.settings.activeServerId !== snapshot.server.activeServerId) {
+    if (snapshot.server && snapshot.settings.activeServerId && snapshot.settings.activeServerId !== snapshot.server.activeServerId) {
       pushFinding(findings, {
         code: 'server.mismatch.settings_vs_resolved',
         severity: 'warning',
@@ -135,7 +136,7 @@ export function buildDiagnosisReport(input: DiagnosisInput): DiagnosisReport {
 
   for (const snapshot of input.pastedDoctorSnapshots) {
     const sanitized = sanitizeDoctorSnapshotUrls(snapshot);
-    const pastedServerUrl = normalizeUrl(sanitized.server.serverUrl);
+    const pastedServerUrl = sanitized.server ? normalizeUrl(sanitized.server.serverUrl) : '';
     if (uiServerUrl && pastedServerUrl && uiServerUrl !== pastedServerUrl) {
       pushFinding(findings, {
         code: 'server.mismatch.ui_vs_pasted',

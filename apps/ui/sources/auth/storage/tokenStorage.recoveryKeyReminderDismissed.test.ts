@@ -9,6 +9,8 @@ describe('TokenStorage recovery key reminder dismissed (web)', () => {
 
     beforeEach(() => {
         vi.resetModules();
+        // The reminder is stored per server, so a server has to be configured.
+        process.env.EXPO_PUBLIC_HAPPY_SERVER_URL = 'https://relay.example.test';
         restoreLocalStorage = installLocalStorageMock().restore;
         vi.spyOn(console, 'error').mockImplementation(() => {});
     });

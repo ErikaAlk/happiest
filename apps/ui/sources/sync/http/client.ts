@@ -33,6 +33,18 @@ export class ServerFetchAbortedForServerSwitchError extends Error {
     }
 }
 
+/**
+ * A request addressed to the active server was made while no server is configured. Happiest has no
+ * built-in server, so this is the normal state of a fresh install: it is not a network failure and
+ * must not be reported, cached or retried as one.
+ */
+export class NoActiveServerError extends Error {
+    constructor() {
+        super('No active server is configured');
+        this.name = 'NoActiveServerError';
+    }
+}
+
 export class ServerFetchConnectivityTimeoutError extends Error {
     public readonly retryable = false;
 
@@ -171,9 +183,9 @@ export async function serverFetch(
     const localAbortSequence = abortSequence;
     const snapshot = getActiveServerSnapshot();
     const normalizedPath = normalizePath(path);
-    const requestUrl = normalizedPath.startsWith('http://') || normalizedPath.startsWith('https://')
-        ? normalizedPath
-        : `${snapshot.serverUrl}${normalizedPath}`;
+    const isAbsolutePath = normalizedPath.startsWith('http://') || normalizedPath.startsWith('https://');
+    if (!isAbsolutePath && !snapshot.serverUrl) throw new NoActiveServerError();
+    const requestUrl = isAbsolutePath ? normalizedPath : `${snapshot.serverUrl}${normalizedPath}`;
 
     if (isDebugEnabled() && !didLogActiveServerSnapshot) {
         didLogActiveServerSnapshot = true;

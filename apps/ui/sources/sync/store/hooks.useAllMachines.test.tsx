@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { act } from 'react-test-renderer';
 
 import { renderHook, standardCleanup } from '@/dev/testkit';
@@ -6,6 +6,11 @@ import { renderHook, standardCleanup } from '@/dev/testkit';
 import { useAllMachines, useFirstVisibleMachineId, useLaunchSelectionMachines, useMachineCliDetectionTarget, useMachineDisplayById, useMachineListByServerId, useSessionChatFooterState, useSessionForkSupportSource } from '@/sync/domains/state/storage';
 import { storage } from '@/sync/domains/state/storageStore';
 import { getActiveServerSnapshot } from '@/sync/domains/server/serverRuntime';
+
+beforeEach(() => {
+    // Machines are cached per active server; Happiest has none unless one is configured.
+    process.env.EXPO_PUBLIC_HAPPY_SERVER_URL = 'https://relay.example.test';
+});
 
 afterEach(() => {
     standardCleanup();

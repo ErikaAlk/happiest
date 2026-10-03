@@ -93,7 +93,7 @@ export type ServerSettingsController = Readonly<{
     addServerDefaultExpanded: 'server' | 'group' | null;
     onChangeUrl: (value: string) => void;
     onChangeName: (value: string) => void;
-    onResetServer: () => Promise<void>;
+    onResetServer: (() => Promise<void>) | null;
     onAddServer: () => Promise<void>;
 
     onSwitchServer: (profile: ServerProfile) => Promise<void>;
@@ -444,6 +444,9 @@ export function useServerSettingsScreenController(): ServerSettingsController {
         }
     }, [inputName, inputUrl, route.source, route.url, router, switchServerById, validateServerReachable]);
 
+    // Only a server that the build, a stack or the web page configures at runtime is a reset target.
+    const resetServerId = React.useMemo(() => getResetToDefaultServerId(), [revision]);
+
     const onResetServer = React.useCallback(async () => {
         const confirmed = await Modal.confirm(
             t('server.resetToDefault'),
@@ -452,12 +455,12 @@ export function useServerSettingsScreenController(): ServerSettingsController {
         );
 
         if (confirmed) {
-            await switchServerById(getResetToDefaultServerId());
+            await switchServerById(resetServerId);
             setInputUrl('');
             setInputName('');
             setRevision((r) => r + 1);
         }
-    }, [switchServerById]);
+    }, [resetServerId, switchServerById]);
 
     return {
         servers,
@@ -479,7 +482,7 @@ export function useServerSettingsScreenController(): ServerSettingsController {
             setError(null);
         },
         onChangeName: setInputName,
-        onResetServer,
+        onResetServer: resetServerId ? onResetServer : null,
         onAddServer,
 
         onSwitchServer: profileActions.onSwitchServer,

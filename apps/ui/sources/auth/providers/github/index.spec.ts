@@ -1,9 +1,5 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AuthCredentials } from '@/auth/storage/tokenStorage';
-
-vi.mock('@/sync/domains/server/serverConfig', () => ({
-    getServerUrl: () => 'https://server.test',
-}));
 
 vi.mock('@/utils/timing/time', () => ({
     backoff: async <T>(fn: () => Promise<T>) => await fn(),
@@ -44,6 +40,11 @@ function stubFetch(body: unknown) {
     });
     vi.stubGlobal('fetch', fetchMock);
 }
+
+beforeEach(() => {
+    // Requests go to the active server; Happiest has none unless one is configured.
+    process.env.EXPO_PUBLIC_HAPPY_SERVER_URL = 'https://server.test';
+});
 
 afterEach(() => {
     vi.restoreAllMocks();

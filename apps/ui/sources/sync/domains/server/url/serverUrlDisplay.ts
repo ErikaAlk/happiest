@@ -15,7 +15,7 @@ export function toServerUrlDisplay(raw: string): string {
 }
 
 /**
- * The relay named the way a person says it: `happiest.erikaalk.click`, or `host:port` when the port is not
+ * The relay named the way a person says it: `relay.example.com`, or `host:port` when the port is not
  * the scheme's default. One owner for the welcome footer's chip and the desktop setup sentence, so
  * two consecutive screens cannot name the same relay differently.
  *

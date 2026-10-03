@@ -50,6 +50,8 @@ function createGithubLinkedProvider(): LinkedProvider {
 }
 
 function stubRootLayoutFeaturesFetch() {
+    // The features endpoint is only probed once a server is configured.
+    process.env.EXPO_PUBLIC_HAPPY_SERVER_URL = 'https://relay.example.test';
     const payload = createRootLayoutFeaturesResponse();
     const fetchMock: typeof fetch = (() => createOkFetchResponse(payload)) as unknown as typeof fetch;
     vi.stubGlobal('fetch', vi.fn(fetchMock));
