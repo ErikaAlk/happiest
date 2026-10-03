@@ -26,9 +26,7 @@ async function prepareIsolatedHome(): Promise<void> {
   // Provide a minimal dummy credential so the daemon can bring up its control server.
   const creds = await readCredentials().catch(() => null);
   if (!creds) {
-    const path = configuration.activeServerId === 'cloud'
-      ? configuration.legacyPrivateKeyFile
-      : configuration.privateKeyFile;
+    const path = configuration.privateKeyFile;
     await mkdir(dirname(path), { recursive: true });
     await writeFile(path, JSON.stringify({ token: 'dummy', secret: 'AA==' }), { mode: 0o600 });
   }

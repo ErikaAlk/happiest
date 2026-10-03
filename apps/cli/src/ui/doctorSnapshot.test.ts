@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import type { ActiveServer } from '@/configuration';
+
 const { readCredentialsMock, readSettingsMock } = vi.hoisted(() => ({
   readCredentialsMock: vi.fn(async () => null as { token: string } | null),
   readSettingsMock: vi.fn(async () => ({
@@ -188,15 +190,21 @@ const { readRelayStatusMock } = vi.hoisted(() => ({
   }),
 }));
 
-vi.mock('@/configuration', () => ({
-  configuration: {
-    activeServerId: 'stack_main__id_default',
-    serverUrl: 'http://127.0.0.1:3005',
-    publicServerUrl: 'http://127.0.0.1:3005',
-    webappUrl: 'http://127.0.0.1:3005',
+const { configurationMock } = vi.hoisted(() => ({
+  configurationMock: {
+    activeServer: {
+      id: 'stack_main__id_default',
+      serverUrl: 'http://127.0.0.1:3005',
+      apiServerUrl: 'http://127.0.0.1:3005',
+      webappUrl: 'http://127.0.0.1:3005',
+    } as ActiveServer | null,
     publicReleaseRing: 'publicdev',
     currentCliVersion: '0.2.5-dev.7.1',
   },
+}));
+
+vi.mock('@/configuration', () => ({
+  configuration: configurationMock,
 }));
 
 vi.mock('@/persistence', () => ({
@@ -243,13 +251,13 @@ describe('buildDoctorSnapshot', () => {
 
     const snapshot = await buildDoctorSnapshot();
 
-    expect(snapshot.server.activeServerId).toBe('stack_main__id_default');
-    expect(snapshot.server.serverUrl).toBe('http://127.0.0.1:3005');
+    expect(snapshot.server?.activeServerId).toBe('stack_main__id_default');
+    expect(snapshot.server?.serverUrl).toBe('http://127.0.0.1:3005');
     expect(snapshot.settings.activeServerId).toBe('cloud');
     expect(snapshot.settings.servers.map((entry) => entry.id)).toContain('cloud');
     expect(snapshot.accountId).toBe('acct_123');
     expect(snapshot.daemonStatus?.auth.needsAuth).toBe(true);
-    expect(snapshot.daemonStatus?.server.publicServerUrl).toBe('https://relay.happier.dev');
+    expect(snapshot.daemonStatus?.server?.publicServerUrl).toBe('https://relay.happier.dev');
     expect(snapshot.daemonStatus?.daemon.startedWithCliVersion).toBe('1.2.3');
     expect(snapshot.daemonStatus?.daemon.startedWithPublicReleaseChannel).toBe('preview');
     expect(snapshot.daemonStatus?.daemon.startupSource).toBe('background-service');
@@ -290,5 +298,18 @@ describe('buildDoctorSnapshot', () => {
     expect(snapshot.warnings?.map((warning) => warning.code)).toContain('backgroundServiceRepairManual');
     expect(JSON.stringify(snapshot)).not.toContain('?token=');
     expect(readRelayStatusMock).toHaveBeenCalledTimes(6);
+  });
+
+  it('reports no active server on a computer that has not added one yet', async () => {
+    const activeServer = configurationMock.activeServer;
+    configurationMock.activeServer = null;
+    try {
+      const snapshot = await buildDoctorSnapshot();
+
+      expect(snapshot.server).toBeNull();
+      expect(snapshot.accountId).toBeNull();
+    } finally {
+      configurationMock.activeServer = activeServer;
+    }
   });
 });

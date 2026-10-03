@@ -124,7 +124,6 @@ export async function prepareIsolatedDaemonTestHome(options: {
 }): Promise<PreparedDaemonTestHome> {
   const sourceHomeDir = configuration.happyHomeDir;
   const sourceSettingsFile = configuration.settingsFile;
-  const sourceLegacyKeyFile = configuration.legacyPrivateKeyFile;
   const sourceServerKeyFile = configuration.privateKeyFile;
   const sourceServerId = configuration.activeServerId;
   const sourceServerUrl = configuration.serverUrl;
@@ -158,7 +157,6 @@ export async function prepareIsolatedDaemonTestHome(options: {
   reloadConfiguration();
 
   await copyIfExists(sourceSettingsFile, configuration.settingsFile);
-  await copyIfExists(sourceLegacyKeyFile, configuration.legacyPrivateKeyFile);
   await copyIfExists(sourceServerKeyFile, configuration.privateKeyFile);
 
   return {

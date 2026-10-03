@@ -7,8 +7,9 @@
 
 import { chmodSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { DEFAULT_SERVER_URL, deriveDefaultWebappUrl } from '@/server/defaultServer'
-import { deriveServerIdFromUrl, isServerIdFilesystemSafe, sanitizeServerIdForFilesystem } from '@/server/serverId'
+import { deriveDefaultWebappUrl } from '@/server/webappUrl'
+import { NoServerConfiguredError } from '@/server/noServerConfiguredError'
+import { deriveServerIdFromUrl, isServerIdFilesystemSafe, toFilesystemSafeServerId } from '@/server/serverId'
 import { isLocalishServerUrl } from '@/server/serverUrlClassification'
 import { normalizeCliArgv } from '@/cli/parseArgs'
 import {
@@ -93,16 +94,23 @@ export function isDaemonProcessArgv(args: readonly string[]): boolean {
   return args[1] === 'start' || args[1] === 'start-sync'
 }
 
+/** The server this process talks to. */
+export type ActiveServer = Readonly<{
+  /** Profile id; names the server's directory under `servers/`. */
+  id: string
+  /** Canonical URL, the one embedded in links and QR codes. */
+  serverUrl: string
+  /** URL this device calls; a profile's `localServerUrl` when it has one, else `serverUrl`. */
+  apiServerUrl: string
+  webappUrl: string
+}>
+
 class Configuration {
-  public readonly serverUrl: string
-  public readonly apiServerUrl: string
   /**
-   * Deprecated alias: historically used as “public URL for QR/deep links”.
-   * In schema v6+ the canonical/share URL is `serverUrl`, so this is always equal to `serverUrl`.
+   * Resolved from `HAPPIEST_SERVER_URL`-style overrides or the active profile in settings.json.
+   * `null` until a server is added: the product has no built-in server.
    */
-  public readonly publicServerUrl: string
-  public readonly webappUrl: string
-  public readonly activeServerId: string
+  public readonly activeServer: ActiveServer | null
   public readonly isDaemonProcess: boolean
   public readonly publicReleaseRing: PublicReleaseRingId;
 
@@ -111,13 +119,9 @@ class Configuration {
   public readonly logsDir: string
   public readonly settingsFile: string
   public readonly serversDir: string
-  public readonly activeServerDir: string
-  public readonly legacyPrivateKeyFile: string
-  public readonly privateKeyFile: string
   public readonly installationIdentityFile: string
-  public readonly daemonStateFile: string
-  public readonly connectedServiceBrokerStateFile: string
-  public readonly daemonLockFile: string
+  /** Scope that owns daemon state and lock instead of the active server (`HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID`). */
+  private readonly daemonLifecycleScopeId: string | null
   // Session attach file pruning (best-effort; defense-in-depth for crash-before-read scenarios).
   public readonly sessionAttachFileMaxAgeMs: number
   // Session control HTTP timeouts (v2 sessions endpoints; archive/unarchive, list, etc).
@@ -310,7 +314,7 @@ class Configuration {
       ? daemonLifecycleScopeIdRaw
       : null;
     const persisted = readActiveServerFromSettingsFile(this.settingsFile);
-    const resolved = resolveServerSelection({
+    this.activeServer = resolveServerSelection({
       envServerUrl: envServerUrl || null,
       envLocalServerUrl: envLocalServerUrl || null,
       envPublicServerUrl: envPublicServerUrl || null,
@@ -319,25 +323,11 @@ class Configuration {
       persisted,
       serversDir: this.serversDir,
     });
+    this.daemonLifecycleScopeId = daemonLifecycleScopeId
 
-    this.serverUrl = resolved.serverUrl
-    this.apiServerUrl = resolved.apiServerUrl
-    this.publicServerUrl = resolved.serverUrl
-    this.webappUrl = resolved.webappUrl
-    this.activeServerId = sanitizeServerIdForFilesystem(resolved.activeServerId, 'cloud')
-
-    this.activeServerDir = join(this.serversDir, this.activeServerId)
     this.shellBridgeContextEnvMode = resolveShellBridgeContextEnvMode(process.env)
     this.clientEncryptionRequirement = resolveClientEncryptionRequirementEnv(process.env)
-    this.legacyPrivateKeyFile = join(this.happyHomeDir, 'access.key')
-    this.privateKeyFile = join(this.activeServerDir, 'access.key')
     this.installationIdentityFile = join(this.happyHomeDir, 'installation-identity.json')
-    const daemonLifecycleDir = daemonLifecycleScopeId
-      ? join(this.serversDir, daemonLifecycleScopeId)
-      : this.activeServerDir
-    this.daemonStateFile = join(daemonLifecycleDir, CANONICAL_DAEMON_STATE_BASENAME)
-    this.connectedServiceBrokerStateFile = join(daemonLifecycleDir, 'connected-service-broker.state.json')
-    this.daemonLockFile = join(daemonLifecycleDir, `${CANONICAL_DAEMON_STATE_BASENAME}.lock`)
 
     const attachMaxAgeRaw = String(process.env.HAPPIER_SESSION_ATTACH_FILE_MAX_AGE_MS ?? '').trim();
     const attachMaxAgeMs = Number.parseInt(attachMaxAgeRaw, 10);
@@ -922,7 +912,7 @@ class Configuration {
     if (!existsSync(this.serversDir)) {
       mkdirSync(this.serversDir, { recursive: true })
     }
-    if (!existsSync(this.activeServerDir)) {
+    if (this.activeServer && !existsSync(this.activeServerDir)) {
       mkdirSync(this.activeServerDir, { recursive: true })
     }
     if (process.platform !== 'win32') {
@@ -936,10 +926,12 @@ class Configuration {
       } catch {
         // best-effort
       }
-      try {
-        chmodSync(this.activeServerDir, 0o700)
-      } catch {
-        // best-effort
+      if (this.activeServer) {
+        try {
+          chmodSync(this.activeServerDir, 0o700)
+        } catch {
+          // best-effort
+        }
       }
     }
 
@@ -947,11 +939,9 @@ class Configuration {
     if (process.platform !== 'win32') {
       const maybeSensitiveFiles = [
         this.settingsFile,
-        this.legacyPrivateKeyFile,
-        this.privateKeyFile,
         this.installationIdentityFile,
-        this.daemonStateFile,
-        this.daemonLockFile,
+        ...(this.activeServer ? [this.privateKeyFile] : []),
+        ...(this.hasDaemonLifecycleDir ? [this.daemonStateFile, this.daemonLockFile] : []),
       ]
       for (const file of maybeSensitiveFiles) {
         try {
@@ -961,6 +951,67 @@ class Configuration {
         }
       }
     }
+  }
+
+  /** The active server; throws {@link NoServerConfiguredError} for a command that needs one while none is added. */
+  requireActiveServer(): ActiveServer {
+    if (!this.activeServer) throw new NoServerConfiguredError()
+    return this.activeServer
+  }
+
+  get serverUrl(): string {
+    return this.requireActiveServer().serverUrl
+  }
+
+  get apiServerUrl(): string {
+    return this.requireActiveServer().apiServerUrl
+  }
+
+  /**
+   * Deprecated alias: historically used as “public URL for QR/deep links”.
+   * In schema v6+ the canonical/share URL is `serverUrl`, so this is always equal to `serverUrl`.
+   */
+  get publicServerUrl(): string {
+    return this.requireActiveServer().serverUrl
+  }
+
+  get webappUrl(): string {
+    return this.requireActiveServer().webappUrl
+  }
+
+  get activeServerId(): string {
+    return this.requireActiveServer().id
+  }
+
+  get activeServerDir(): string {
+    return join(this.serversDir, this.activeServerId)
+  }
+
+  get privateKeyFile(): string {
+    return join(this.activeServerDir, 'access.key')
+  }
+
+  /** Whether daemon state has a home: an explicit lifecycle scope, or the active server. */
+  get hasDaemonLifecycleDir(): boolean {
+    return Boolean(this.daemonLifecycleScopeId || this.activeServer)
+  }
+
+  get daemonStateFile(): string {
+    return join(this.daemonLifecycleDir, CANONICAL_DAEMON_STATE_BASENAME)
+  }
+
+  get connectedServiceBrokerStateFile(): string {
+    return join(this.daemonLifecycleDir, 'connected-service-broker.state.json')
+  }
+
+  get daemonLockFile(): string {
+    return join(this.daemonLifecycleDir, `${CANONICAL_DAEMON_STATE_BASENAME}.lock`)
+  }
+
+  private get daemonLifecycleDir(): string {
+    return this.daemonLifecycleScopeId
+      ? join(this.serversDir, this.daemonLifecycleScopeId)
+      : this.activeServerDir
   }
 }
 
@@ -983,13 +1034,13 @@ function readActiveServerFromSettingsFile(path: string): PersistedServerSettings
     if (!raw || typeof raw !== 'object') return null;
     const schemaVersion = Number((raw as any).schemaVersion ?? 0);
     if (!Number.isFinite(schemaVersion) || schemaVersion < 5) return null;
-    const activeServerId = sanitizeServerIdForFilesystem((raw as any).activeServerId ?? '', '');
+    const activeServerId = toFilesystemSafeServerId((raw as any).activeServerId ?? '');
     const serversRaw = (raw as any).servers;
     if (!activeServerId || !serversRaw || typeof serversRaw !== 'object') return null;
         const servers: Record<string, PersistedServerProfile> = {};
         const normalizeUrl = (value: unknown): string => String(value ?? '').trim().replace(/\/+$/, '');
         for (const [id, v] of Object.entries(serversRaw as Record<string, any>)) {
-          const sid = sanitizeServerIdForFilesystem((v as any)?.id ?? id, '');
+          const sid = toFilesystemSafeServerId((v as any)?.id ?? id);
           const serverUrlRaw = normalizeUrl((v as any)?.serverUrl);
           const legacyPublicServerUrl = normalizeUrl((v as any)?.publicServerUrl);
       const localServerUrlRaw = normalizeUrl((v as any)?.localServerUrl);
@@ -1062,9 +1113,10 @@ function resolveServerSelection(params: Readonly<{
   envActiveServerId: string | null;
   persisted: PersistedServerSettings | null;
   serversDir: string;
-}>): Readonly<{ activeServerId: string; serverUrl: string; apiServerUrl: string; webappUrl: string }> {
-  const resolveActiveServerId = (fallbackId: string): string =>
-    sanitizeServerIdForFilesystem(params.envActiveServerId ?? fallbackId, 'cloud');
+}>): ActiveServer | null {
+  // Every candidate id is filesystem-safe: the env id is checked by the caller, persisted ids on
+  // read, and deriveServerIdFromUrl only emits `env_<hex>`.
+  const resolveActiveServerId = (fallbackId: string): string => params.envActiveServerId ?? fallbackId;
 
   const normalizeUrl = (value: string | null): string | null => {
     const out = normalizeServerUrl(value ?? '');
@@ -1093,7 +1145,7 @@ function resolveServerSelection(params: Readonly<{
       const canonical = normalizeServerUrl(envActivePersisted.serverUrl);
       const apiServerUrl = normalizeServerUrl(envActivePersisted.localServerUrl ?? '') || canonical;
       return {
-        activeServerId: resolveActiveServerId(envActivePersisted.id),
+        id: resolveActiveServerId(envActivePersisted.id),
         serverUrl: canonical,
         apiServerUrl,
         webappUrl: envActivePersisted.webappUrl,
@@ -1155,17 +1207,15 @@ function resolveServerSelection(params: Readonly<{
         try {
           webappUrl = deriveDefaultWebappUrl(envCanonicalServerUrl);
         } catch {
-          webappUrl = DEFAULT_SERVER_URL;
+          // Not a parseable URL, so it has no origin to derive from; calls against it fail loudly.
+          webappUrl = envCanonicalServerUrl;
         }
       }
     }
     // An explicit runtime scope owns machine identity. A URL-matching persisted profile may supply
     // endpoint metadata, but must not silently replace that identity with a sibling profile id.
-    const activeServerId = sanitizeServerIdForFilesystem(
-      params.envActiveServerId ?? persistedMatch?.id ?? deriveServerIdFromUrl(envCanonicalServerUrl),
-      'cloud',
-    );
-    return { activeServerId, serverUrl: envCanonicalServerUrl, apiServerUrl: envApiServerUrl, webappUrl };
+    const id = params.envActiveServerId ?? persistedMatch?.id ?? deriveServerIdFromUrl(envCanonicalServerUrl);
+    return { id, serverUrl: envCanonicalServerUrl, apiServerUrl: envApiServerUrl, webappUrl };
   }
 
   if (params.persisted) {
@@ -1174,7 +1224,7 @@ function resolveServerSelection(params: Readonly<{
       const canonical = normalizeServerUrl(active.serverUrl);
       const apiServerUrl = normalizeServerUrl(active.localServerUrl ?? '') || canonical;
       return {
-        activeServerId: resolveActiveServerId(active.id),
+        id: resolveActiveServerId(active.id),
         serverUrl: canonical,
         apiServerUrl,
         webappUrl: active.webappUrl,
@@ -1182,12 +1232,7 @@ function resolveServerSelection(params: Readonly<{
     }
   }
 
-  return {
-    activeServerId: resolveActiveServerId('cloud'),
-    serverUrl: DEFAULT_SERVER_URL,
-    apiServerUrl: DEFAULT_SERVER_URL,
-    webappUrl: DEFAULT_SERVER_URL,
-  };
+  return null;
 }
 
 export let configuration: Configuration = new Configuration()

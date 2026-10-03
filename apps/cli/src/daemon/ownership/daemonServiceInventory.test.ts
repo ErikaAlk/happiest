@@ -119,14 +119,14 @@ describe('daemonServiceInventory', () => {
         });
     });
 
-    it('includes a default-following background service for the current default relay selection', async () => {
+    it('includes a default-following background service while no server is selected and the runtime has none', async () => {
         await withTempDir('happier-daemon-service-inventory-current-default-', async (homeDir) => {
             envScope.patch({
                 HAPPIEST_HOME_DIR: homeDir,
-                HAPPIEST_ACTIVE_SERVER_ID: 'cloud',
-                HAPPIEST_SERVER_URL: 'https://happiest.erikaalk.click',
-                HAPPIEST_WEBAPP_URL: 'https://happiest.erikaalk.click',
-                HAPPIEST_PUBLIC_SERVER_URL: 'https://happiest.erikaalk.click',
+                HAPPIEST_ACTIVE_SERVER_ID: undefined,
+                HAPPIEST_SERVER_URL: undefined,
+                HAPPIEST_WEBAPP_URL: undefined,
+                HAPPIEST_PUBLIC_SERVER_URL: undefined,
                 HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
                 HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
                 HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
@@ -162,6 +162,52 @@ describe('daemonServiceInventory', () => {
             expect(services).toHaveLength(1);
             expect(services[0]?.targetMode).toBe('default-following');
             expect(services[0]?.releaseChannel).toBe('stable');
+        });
+    });
+
+    it('does not include a default-following background service when the runtime targets a server that no saved selection backs', async () => {
+        await withTempDir('happier-daemon-service-inventory-unsaved-server-', async (homeDir) => {
+            envScope.patch({
+                HAPPIEST_HOME_DIR: homeDir,
+                HAPPIEST_ACTIVE_SERVER_ID: 'company',
+                HAPPIEST_SERVER_URL: 'https://relay.company.test',
+                HAPPIEST_WEBAPP_URL: 'https://app.company.test',
+                HAPPIEST_PUBLIC_SERVER_URL: 'https://relay.company.test',
+                HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
+                HAPPIEST_DAEMON_SERVICE_PLATFORM: 'linux',
+                HAPPIEST_DAEMON_SERVICE_USER_HOME_DIR: homeDir,
+                HAPPIEST_DAEMON_SERVICE_HOME_DIR: join(homeDir, '.happier'),
+                HAPPIEST_DAEMON_SERVICE_CHANNEL: 'stable',
+            });
+            vi.resetModules();
+
+            const [{ resolveDaemonServiceCliRuntimeFromEnv, resolveDaemonServicePaths }, { resolveInstalledDaemonServiceInventoryForCurrentRelay }] = await Promise.all([
+                import('@/daemon/service/cli'),
+                import('./daemonServiceInventory'),
+            ]);
+
+            const runtime = resolveDaemonServiceCliRuntimeFromEnv({ processEnv: process.env });
+            const paths = resolveDaemonServicePaths(runtime);
+            mkdirSync(dirname(paths.installedPath), { recursive: true });
+            writeFileSync(
+                paths.installedPath,
+                renderSystemdServiceUnit({
+                    description: 'Happier Daemon',
+                    execStart: ['/Users/tester/.happier/cli/current/happier', 'daemon', 'start-sync'],
+                    env: {
+                        HAPPIER_DAEMON_STARTUP_SOURCE: 'background-service',
+                        HAPPIEST_DAEMON_SERVICE_TARGET_MODE: 'default-following',
+                        HAPPIER_PUBLIC_RELEASE_CHANNEL: 'stable',
+                    },
+                    wantedBy: 'default.target',
+                }),
+                'utf-8',
+            );
+
+            const services = await resolveInstalledDaemonServiceInventoryForCurrentRelay(runtime);
+
+            expect(runtime.activeServerId).toBe('company');
+            expect(services).toEqual([]);
         });
     });
 

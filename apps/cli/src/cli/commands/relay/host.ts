@@ -79,7 +79,7 @@ function relayUrlsMatch(left: string, right: string): boolean {
 
 function resolveInstalledRelayProfileTarget(params: Readonly<{
   relayUrl: string;
-  activeProfileBeforeInstall: Awaited<ReturnType<typeof getActiveServerProfile>> | null;
+  activeProfileBeforeInstall: Awaited<ReturnType<typeof getActiveServerProfile>>;
   /**
    * The address other devices should use, when it differs from the bind URL.
    * Only consulted once the existing configuration has failed to supply a
@@ -93,26 +93,25 @@ function resolveInstalledRelayProfileTarget(params: Readonly<{
   webappUrl: string;
 }> {
   const relayUrl = params.relayUrl;
-  const configuredServerUrl = configuration.serverUrl;
-  const configuredApiServerUrl = configuration.apiServerUrl;
-  const configuredWebappUrl = configuration.webappUrl;
+  // A fresh install has no server yet; the relay being installed becomes its first one.
+  const configured = configuration.activeServer;
   const active = params.activeProfileBeforeInstall;
   const activeMatchesInstalledRelay =
-    active && active.id !== 'cloud' && (
+    active && (
       relayUrlsMatch(active.serverUrl, relayUrl) ||
       (active.localServerUrl ? relayUrlsMatch(active.localServerUrl, relayUrl) : false)
     );
 
   if (
-    relayUrlsMatch(configuredApiServerUrl, relayUrl) &&
-    configuredServerUrl &&
-    !relayUrlsMatch(configuredServerUrl, relayUrl)
+    configured &&
+    relayUrlsMatch(configured.apiServerUrl, relayUrl) &&
+    !relayUrlsMatch(configured.serverUrl, relayUrl)
   ) {
     return {
-      name: active && active.id !== 'cloud' ? active.name : defaultNameFromUrl(configuredServerUrl),
-      serverUrl: configuredServerUrl,
+      name: active ? active.name : defaultNameFromUrl(configured.serverUrl),
+      serverUrl: configured.serverUrl,
       localServerUrl: relayUrl,
-      webappUrl: configuredWebappUrl || defaultWebappUrlFromServerUrl(configuredServerUrl),
+      webappUrl: configured.webappUrl || defaultWebappUrlFromServerUrl(configured.serverUrl),
     };
   }
 
@@ -128,7 +127,7 @@ function resolveInstalledRelayProfileTarget(params: Readonly<{
   const reachableServerUrl = String(params.reachableServerUrl ?? '').trim();
   if (reachableServerUrl && !relayUrlsMatch(reachableServerUrl, relayUrl)) {
     return {
-      name: active && active.id !== 'cloud' ? active.name : defaultNameFromUrl(reachableServerUrl),
+      name: active ? active.name : defaultNameFromUrl(reachableServerUrl),
       serverUrl: reachableServerUrl,
       localServerUrl: relayUrl,
       webappUrl: defaultWebappUrlFromServerUrl(reachableServerUrl),
@@ -136,7 +135,7 @@ function resolveInstalledRelayProfileTarget(params: Readonly<{
   }
 
   return {
-    name: active && active.id !== 'cloud' ? active.name : defaultNameFromUrl(relayUrl),
+    name: active ? active.name : defaultNameFromUrl(relayUrl),
     serverUrl: relayUrl,
     webappUrl: defaultWebappUrlFromServerUrl(relayUrl),
   };
@@ -839,7 +838,7 @@ export async function runRelayHostSubcommand(args: string[]): Promise<void> {
           }
         })();
 
-    const activeProfileBeforeInstall = await getActiveServerProfile().catch(() => null);
+    const activeProfileBeforeInstall = await getActiveServerProfile();
     const payload: RelayHostInstallJson = await result;
 
     if (!json) {

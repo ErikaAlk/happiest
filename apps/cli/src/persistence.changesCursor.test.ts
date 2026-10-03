@@ -19,8 +19,8 @@ describe('changes cursor persistence', () => {
             vi.resetModules();
             envScope.patch({
                 HAPPIEST_HOME_DIR: homeDir,
-                HAPPIEST_SERVER_URL: undefined,
-                HAPPIEST_WEBAPP_URL: undefined,
+                HAPPIEST_SERVER_URL: 'http://127.0.0.1:12345',
+                HAPPIEST_WEBAPP_URL: 'http://127.0.0.1:12345',
                 HAPPIEST_ACTIVE_SERVER_ID: undefined,
             });
 
@@ -35,7 +35,7 @@ describe('changes cursor persistence', () => {
             expect(await readAccountChangesCursor('acc-1')).toBe(12);
 
             const raw = JSON.parse(readFileSync(configuration.settingsFile, 'utf8'));
-            expect(raw.lastChangesCursorByServerIdByAccountId).toEqual({ cloud: { 'acc-1': 12 } });
+            expect(raw.lastChangesCursorByServerIdByAccountId).toEqual({ [configuration.activeServerId]: { 'acc-1': 12 } });
 
             // Writing 0 removes the entry to keep settings small.
             await writeAccountChangesCursor('acc-1', 0);

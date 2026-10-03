@@ -377,4 +377,23 @@ describe('authAndSetupMachineIfNeeded (machine id binding)', () => {
       rmSync(homeDir, { recursive: true, force: true });
     }
   });
+
+  it('stops with the setup hint on a computer that has no server', async () => {
+    const homeDir = mkdtempSync(join(tmpdir(), 'happier-cli-auth-no-server-'));
+    process.env.HAPPIEST_HOME_DIR = homeDir;
+    delete process.env.HAPPIEST_ACTIVE_SERVER_ID;
+    delete process.env.HAPPIEST_SERVER_URL;
+    delete process.env.HAPPIEST_WEBAPP_URL;
+    delete process.env.HAPPIEST_PUBLIC_SERVER_URL;
+
+    try {
+      vi.resetModules();
+      const { authAndSetupMachineIfNeeded } = await import('./auth');
+      const { NoServerConfiguredError } = await import('@/server/noServerConfiguredError');
+
+      await expect(authAndSetupMachineIfNeeded()).rejects.toBeInstanceOf(NoServerConfiguredError);
+    } finally {
+      rmSync(homeDir, { recursive: true, force: true });
+    }
+  });
 });

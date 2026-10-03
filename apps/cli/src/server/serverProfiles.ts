@@ -1,6 +1,6 @@
 import { readSettings, updateSettings } from '@/persistence';
-import { DEFAULT_SERVER_NAME } from '@/server/defaultServer';
-import { deriveServerIdFromName, deriveServerIdFromUrl, sanitizeServerIdForFilesystem } from '@/server/serverId';
+import { NoServerConfiguredError } from '@/server/noServerConfiguredError';
+import { deriveServerIdFromName, deriveServerIdFromUrl, toFilesystemSafeServerId } from '@/server/serverId';
 import { isLocalishServerUrl } from '@/server/serverUrlClassification';
 import { createServerUrlComparableKey } from '@happier-dev/protocol';
 import { existsSync } from 'node:fs';
@@ -71,7 +71,8 @@ export type ServerProfile = Readonly<{
 
 export type RemoveServerProfileResult = Readonly<{
   removed: ServerProfile;
-  active: ServerProfile;
+  /** `null` after the active profile itself was removed. */
+  active: ServerProfile | null;
 }>;
 
 function asStringId(raw: string): string {
@@ -85,7 +86,7 @@ function asStringId(raw: string): string {
 function coerceProfile(value: any): ServerProfile | null {
   if (!value || typeof value !== 'object') return null;
   const idRaw = typeof value.id === 'string' ? value.id.trim() : '';
-  const id = sanitizeServerIdForFilesystem(idRaw, '');
+  const id = toFilesystemSafeServerId(idRaw);
   const name = typeof value.name === 'string' ? value.name.trim() : '';
   const serverUrlRaw = typeof value.serverUrl === 'string' ? value.serverUrl.trim() : '';
   const localServerUrlRaw = typeof (value as any).localServerUrl === 'string' ? String((value as any).localServerUrl).trim() : '';
@@ -105,14 +106,10 @@ function coerceProfile(value: any): ServerProfile | null {
       ? localServerUrlRaw
       : (legacyPublicServerUrlRaw && legacyPublicServerUrlRaw !== serverUrlRaw && isLocalishServerUrl(serverUrlRaw) ? serverUrlRaw : '');
 
-  if (!id || !serverUrl || !webappUrl) return null;
-  const displayName = id === 'cloud'
-    ? DEFAULT_SERVER_NAME
-    : name;
-  if (!displayName) return null;
+  if (!id || !serverUrl || !webappUrl || !name) return null;
   return {
     id,
-    name: displayName,
+    name,
     serverUrl,
     ...(localServerUrl ? { localServerUrl } : {}),
     webappUrl,
@@ -257,14 +254,19 @@ export async function getServerProfile(identifierRaw: string): Promise<ServerPro
   return profile;
 }
 
-export async function getActiveServerProfile(): Promise<ServerProfile> {
+/** The saved active profile; `null` until a server is added or after the active one was removed. */
+export async function getActiveServerProfile(): Promise<ServerProfile | null> {
   const settings: any = await readSettings();
-  const activeId = sanitizeServerIdForFilesystem(settings?.activeServerId ?? 'cloud', 'cloud');
+  const activeId = toFilesystemSafeServerId(settings?.activeServerId ?? '');
+  if (!activeId) return null;
   const servers = settings?.servers && typeof settings.servers === 'object' ? settings.servers : {};
-  const active = coerceProfile((servers as any)[activeId]) ?? coerceProfile((servers as any).cloud);
-  if (!active) {
-    throw new Error(`Active server profile not found: ${activeId}`);
-  }
+  return coerceProfile((servers as any)[activeId]);
+}
+
+/** The saved active profile, or {@link NoServerConfiguredError} for a command that needs one. */
+export async function requireActiveServerProfile(): Promise<ServerProfile> {
+  const active = await getActiveServerProfile();
+  if (!active) throw new NoServerConfiguredError();
   return active;
 }
 
@@ -291,7 +293,7 @@ export async function useServerProfile(idRaw: string): Promise<ServerProfile> {
     };
   });
 
-  const active = await getActiveServerProfile();
+  const active = await requireActiveServerProfile();
   await maybeCopyAccessKeyFromDerivedUrlId({
     targetServerId: active.id,
     serverUrl: active.serverUrl,
@@ -309,20 +311,20 @@ export async function addServerProfile(opts: Readonly<{
 }>): Promise<ServerProfile> {
   const name = String(opts.name ?? '').trim();
   let id = deriveServerIdFromName(name);
-  if (id.toLowerCase() === 'cloud') {
-    throw new Error('Cannot create a profile with reserved name "cloud"');
-  }
   if (!id) {
     throw new Error('Failed to derive a safe server profile id');
   }
   const serverUrl = String(opts.serverUrl ?? '').trim();
   const localServerUrl = String(opts.localServerUrl ?? '').trim();
   const webappUrl = String(opts.webappUrl ?? '').trim();
-  const shouldUse = opts.use === true;
+  let shouldUse = opts.use === true;
   const now = Date.now();
 
   await updateSettings((current: any) => {
     const servers = current?.servers && typeof current.servers === 'object' ? current.servers : {};
+    // With no active server there is nothing else to talk to, so the server added becomes the active one.
+    const activeId = current?.activeServerId;
+    if (!activeId || !coerceProfile((servers as any)[activeId])) shouldUse = true;
     if ((servers as any)[id] && String((servers as any)[id]?.serverUrl ?? '').trim() !== serverUrl) {
       let attempt = 2;
       let nextId = `${id}-${attempt}`;
@@ -360,7 +362,7 @@ export async function addServerProfile(opts: Readonly<{
   }
 
   if (shouldUse) {
-    return await getActiveServerProfile();
+    return await requireActiveServerProfile();
   }
   const profiles = await listServerProfiles();
   const created = profiles.find((p) => p.id === id);
@@ -438,7 +440,7 @@ export async function upsertServerProfileByUrl(opts: Readonly<{
   }
 
   if (shouldUse) {
-    return await getActiveServerProfile();
+    return await requireActiveServerProfile();
   }
   return await getServerProfile(resolvedId);
 }
@@ -457,7 +459,7 @@ export async function setServerProfileEndpointsById(opts: Readonly<{
   migrateMatchingProfileState?: boolean;
 }>): Promise<ServerProfile> {
   const id = asStringId(opts.id);
-  if (sanitizeServerIdForFilesystem(id, '') !== id) {
+  if (toFilesystemSafeServerId(id) !== id) {
     throw new Error(`Invalid server profile id: ${id}`);
   }
 
@@ -520,7 +522,7 @@ export async function setServerProfileEndpointsById(opts: Readonly<{
     };
   });
 
-  return shouldUse ? await getActiveServerProfile() : await getServerProfile(id);
+  return shouldUse ? await requireActiveServerProfile() : await getServerProfile(id);
 }
 
 export async function removeServerProfile(
@@ -531,18 +533,14 @@ export async function removeServerProfile(
   const force = opts.force === true;
 
   const before = await readSettings();
-  const activeServerId = sanitizeServerIdForFilesystem((before as any)?.activeServerId ?? 'cloud', 'cloud');
   const servers = (before as any)?.servers && typeof (before as any).servers === 'object' ? (before as any).servers : {};
   const resolvedId = findProfileIdByIdentifier(servers, identifier);
   if (!resolvedId) {
     throw new Error(`Server profile not found: ${identifier}`);
   }
-  if (resolvedId === 'cloud') {
-    throw new Error(`Cannot remove the ${DEFAULT_SERVER_NAME} profile`);
-  }
 
-  if (resolvedId === activeServerId && !force) {
-    throw new Error(`Cannot remove the active server profile (${resolvedId}). Use --force to switch back to cloud and remove it.`);
+  if (resolvedId === before.activeServerId && !force) {
+    throw new Error(`Cannot remove the active server profile (${resolvedId}). Use --force to remove it and leave no server active.`);
   }
 
   await updateSettings((current: any) => {
@@ -553,16 +551,10 @@ export async function removeServerProfile(
     }
 
     const { [resolvedId]: _removed, ...rest } = servers as any;
-    const nextActive = resolvedId === current?.activeServerId ? 'cloud' : current?.activeServerId;
-    if (nextActive === resolvedId) {
-      throw new Error(`Refusing to keep ${resolvedId} as active after removal`);
-    }
-    if (nextActive && !(nextActive in rest)) {
-      // Safety: if active server disappears (corrupt settings), fall back.
-      (rest as any).cloud = (rest as any).cloud ?? (servers as any).cloud;
-      return { ...current, activeServerId: 'cloud', servers: rest };
-    }
-    return { ...current, activeServerId: nextActive, servers: rest };
+    const { activeServerId: currentActiveId, ...withoutActive } = current;
+    return currentActiveId === resolvedId
+      ? { ...withoutActive, servers: rest }
+      : { ...current, servers: rest };
   });
 
   const afterActive = await getActiveServerProfile();

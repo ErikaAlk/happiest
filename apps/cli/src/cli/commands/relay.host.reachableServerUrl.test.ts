@@ -166,8 +166,8 @@ describe('happier relay host install reachable relay URL selection', () => {
 
         const logs = await runInstall();
 
-        const { getActiveServerProfile } = await import('../../server/serverProfiles');
-        const active = await getActiveServerProfile();
+        const { requireActiveServerProfile } = await import('../../server/serverProfiles');
+        const active = await requireActiveServerProfile();
         expect(active.serverUrl).toBe('http://192.168.1.20:3005');
         expect(active.localServerUrl).toBe('http://127.0.0.1:3005');
         expect(logs.join('\n')).toContain('http://192.168.1.20:3005');
@@ -179,8 +179,8 @@ describe('happier relay host install reachable relay URL selection', () => {
 
         const logs = await runInstall();
 
-        const { getActiveServerProfile } = await import('../../server/serverProfiles');
-        const active = await getActiveServerProfile();
+        const { requireActiveServerProfile } = await import('../../server/serverProfiles');
+        const active = await requireActiveServerProfile();
         expect(active.serverUrl).toBe('http://127.0.0.1:3005');
         expect(logs.join('\n')).toContain('This will work only on this same machine.');
     });
@@ -192,8 +192,8 @@ describe('happier relay host install reachable relay URL selection', () => {
 
         await runInstall();
 
-        const { getActiveServerProfile } = await import('../../server/serverProfiles');
-        const active = await getActiveServerProfile();
+        const { requireActiveServerProfile } = await import('../../server/serverProfiles');
+        const active = await requireActiveServerProfile();
         expect(promptedQuestions.length).toBeGreaterThan(0);
         expect(active.serverUrl).toBe('http://192.168.1.20:3005');
         expect(active.localServerUrl).toBe('http://127.0.0.1:3005');
@@ -205,8 +205,8 @@ describe('happier relay host install reachable relay URL selection', () => {
 
         await runInstall(['--host', '192.168.1.20']);
 
-        const { getActiveServerProfile } = await import('../../server/serverProfiles');
-        const active = await getActiveServerProfile();
+        const { requireActiveServerProfile } = await import('../../server/serverProfiles');
+        const active = await requireActiveServerProfile();
         expect(active.serverUrl).toBe('http://192.168.1.20:3005');
         expect(active.localServerUrl).toBeFalsy();
         expect(promptedQuestions).toEqual([]);
@@ -241,8 +241,8 @@ describe('happier relay host install reachable relay URL selection', () => {
         });
         expect(collectCandidatesCalls).toBe(0);
 
-        const { getActiveServerProfile } = await import('../../server/serverProfiles');
-        const active = await getActiveServerProfile();
+        const { requireActiveServerProfile } = await import('../../server/serverProfiles');
+        const active = await requireActiveServerProfile();
         expect(active.serverUrl).toBe('http://127.0.0.1:3005');
     });
 });

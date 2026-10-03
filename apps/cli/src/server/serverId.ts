@@ -10,10 +10,10 @@ export function isServerIdFilesystemSafe(raw: string): boolean {
   return SERVER_ID_SAFE_RE.test(value);
 }
 
-export function sanitizeServerIdForFilesystem(raw: string, fallback = 'cloud'): string {
+/** The trimmed id when it can name a directory under `servers/`, else `null`. */
+export function toFilesystemSafeServerId(raw: string): string | null {
   const value = String(raw ?? '').trim();
-  if (isServerIdFilesystemSafe(value)) return value;
-  return String(fallback ?? '').trim() || 'cloud';
+  return isServerIdFilesystemSafe(value) ? value : null;
 }
 
 export function deriveServerIdFromName(raw: string): string {

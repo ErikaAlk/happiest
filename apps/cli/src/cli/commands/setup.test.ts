@@ -120,7 +120,7 @@ vi.mock('@/terminal/prompts/promptInput', () => ({
 vi.mock('@/terminal/prompts/promptMultipleChoice', () => ({
   promptMultipleChoice: async (prompt: string) => {
     multipleChoicePrompts.push(prompt);
-    return multipleChoiceAnswers.shift() ?? 'cloud';
+    return multipleChoiceAnswers.shift() ?? 'existing';
   },
   promptMultipleSelection: async (_message: string, options: readonly Readonly<{ id: string; description?: string }>[]) => {
     multipleSelectionPromptCount += 1;
@@ -180,33 +180,19 @@ afterEach(() => {
 });
 
 describe('happier setup — choosing a relay', () => {
-  it('explains the three device-connection choices before selecting one', async () => {
+  it('offers a server the user runs or one on this computer, and no built-in server', async () => {
+    multipleChoiceAnswers.push('existing');
+    promptInputAnswers.push('https://relay.example.com');
+
     await handleSetupCliCommand(context([]));
 
     const prompt = multipleChoicePrompts.join('\n');
     expect(prompt).toContain('How would you like to connect your devices?');
-    expect(prompt).toContain('Happiest Server (recommended)');
-    expect(prompt).toContain('happiest.erikaalk.click');
-    expect(prompt).toContain('Happier app or your administrator');
-    expect(prompt).toContain('additional server');
-    expect(prompt).toContain('reachable network route');
-  });
-
-  it('switches a machine pointed at a custom relay back to Cloud before signing in', async () => {
-    activeProfile = { serverUrl: 'https://relay.example.com' };
-
-    await handleSetupCliCommand(context(['--cloud']));
-
-    expect(commandsRun()[0]).toBe('server use cloud');
-    expect(commandsRun()[1]).toMatch(/^auth login/);
-    expect(process.exitCode).toBeUndefined();
-  });
-
-  it('does not touch relay selection on a machine that has none', async () => {
-    await handleSetupCliCommand(context(['--cloud']));
-
-    expect(commandsRun().filter((command) => command.startsWith('server '))).toEqual([]);
-    expect(commandsRun()[0]).toMatch(/^auth login/);
+    expect(prompt).toContain('A server you run');
+    expect(prompt).toContain('Host on this computer');
+    expect(prompt).not.toContain('recommended');
+    expect(prompt).not.toContain('happiest.erikaalk.click');
+    expect(commandsRun()[0]).toBe('server add --server-url https://relay.example.com --name relay.example.com --use');
   });
 
   it('adds and activates a relay the user already runs', async () => {
@@ -256,7 +242,8 @@ describe('happier setup — readiness', () => {
   it('does not call a machine with rejected credentials already set up', async () => {
     activeProfile = { serverUrl: 'https://api.happier.dev' };
     readiness = { authenticated: false, machineRegistered: true, credentialState: 'rejected' };
-    multipleChoiceAnswers.push('cloud');
+    multipleChoiceAnswers.push('existing');
+    promptInputAnswers.push('https://relay.example.com');
 
     await handleSetupCliCommand(context([]));
 
@@ -283,7 +270,7 @@ describe('happier setup — readiness', () => {
 
     expect(commandsRun()).toEqual([]);
     expect(output.text()).toContain('temporarily-unavailable.example.com');
-    expect(output.text()).toContain('happiest setup --cloud');
+    expect(output.text()).toContain('happiest setup --relay <url>');
     expect(process.exitCode).toBe(1);
   });
 
@@ -302,7 +289,7 @@ describe('happier setup — readiness', () => {
     installedAgentIds.clear();
     multipleSelectionAnswers.push(['codex']);
 
-    await handleSetupCliCommand(context(['--cloud']));
+    await handleSetupCliCommand(context(['--relay', 'https://relay.example.com']));
 
     expect(installInvocations).toEqual(['codex']);
     expect(multipleSelectionOptions.find((option) => option.id === 'codex')?.description).toContain('Happier-managed');
@@ -313,7 +300,7 @@ describe('happier setup — readiness', () => {
   });
 
   it('does not force an agent upsell when one is already installed', async () => {
-    await handleSetupCliCommand(context(['--cloud']));
+    await handleSetupCliCommand(context(['--relay', 'https://relay.example.com']));
 
     expect(multipleSelectionPromptCount).toBe(0);
     expect(output.text()).toContain('happiest claude');
@@ -325,7 +312,7 @@ describe('happier setup — readiness', () => {
     multipleSelectionAnswers.push(['codex']);
     installFailures.add('codex');
 
-    await handleSetupCliCommand(context(['--cloud']));
+    await handleSetupCliCommand(context(['--relay', 'https://relay.example.com']));
 
     expect(output.text()).toContain('codex failed');
     expect(output.text()).toContain('/tmp/codex.log');
@@ -338,7 +325,7 @@ describe('happier setup — readiness', () => {
     multipleSelectionAnswers.push(['claude', 'codex']);
     installFailures.add('codex');
 
-    await handleSetupCliCommand(context(['--cloud']));
+    await handleSetupCliCommand(context(['--relay', 'https://relay.example.com']));
 
     expect(installInvocations).toEqual(['claude', 'codex']);
     expect(installedAgentIds.has('claude')).toBe(true);
@@ -393,44 +380,35 @@ describe('happier setup — a relay only this computer can reach', () => {
 
 describe('happier setup — handing the terminal back', () => {
   it('bounds the sign-in wait so setup cannot own the terminal forever', async () => {
-    await handleSetupCliCommand(context(['--cloud']));
+    await handleSetupCliCommand(context(['--relay', 'https://relay.example.com']));
 
-    expect(commandsRun()[0]).toMatch(/^auth login .*--wait-timeout \d+/);
+    expect(commandsRun()[1]).toMatch(/^auth login .*--wait-timeout \d+/);
   });
 
   it('reports a failed step as a failure and runs nothing after it', async () => {
-    activeProfile = { serverUrl: 'https://relay.example.com' };
-    exitCodeByCommand.set('server use cloud', 1);
+    exitCodeByCommand.set('server add --server-url https://relay.example.com --name relay.example.com --use', 1);
 
-    await handleSetupCliCommand(context(['--cloud']));
+    await handleSetupCliCommand(context(['--relay', 'https://relay.example.com']));
 
-    expect(commandsRun()).toEqual(['server use cloud']);
+    expect(commandsRun()).toEqual(['server add --server-url https://relay.example.com --name relay.example.com --use']);
     expect(process.exitCode).toBe(1);
   });
 
   it('does not claim setup complete when authentication reports incomplete service reconciliation', async () => {
     exitCodeByCommand.set('auth login --wait-timeout 300 --no-daemon-start', 1);
 
-    await handleSetupCliCommand(context(['--cloud']));
+    await handleSetupCliCommand(context(['--relay', 'https://relay.example.com']));
 
-    expect(commandsRun()).toEqual(['auth login --wait-timeout 300 --no-daemon-start']);
+    expect(commandsRun()).toEqual([
+      'server add --server-url https://relay.example.com --name relay.example.com --use',
+      'auth login --wait-timeout 300 --no-daemon-start',
+    ]);
     expect(output.text()).not.toContain('Ready to start a coding session');
     expect(process.exitCode).toBe(1);
   });
 });
 
 describe('happier setup — unattended runs (--yes)', () => {
-  it('does the relay work it can and stops at the sign-in a person has to approve', async () => {
-    activeProfile = { serverUrl: 'https://relay.example.com' };
-
-    await handleSetupCliCommand(context(['--cloud', '--yes']));
-
-    expect(commandsRun()).toEqual(['server use cloud']);
-    expect(output.text()).toContain('happiest auth login');
-    // Setup did not finish, and the installer reads a zero exit as "you're ready".
-    expect(process.exitCode).toBe(1);
-  });
-
   it('adds a relay the user already runs without stopping to ask for a profile name', async () => {
     // `server add` demands `--name` the moment it cannot prompt, and prompts for
     // one whenever it can — which is how an unattended setup stopped dead on a
@@ -440,6 +418,8 @@ describe('happier setup — unattended runs (--yes)', () => {
     expect(commandsRun()).toEqual([
       'server add --server-url https://relay.example.com --name relay.example.com --use',
     ]);
+    expect(output.text()).toContain('happiest auth login');
+    // Setup did not finish, and the installer reads a zero exit as "you're ready".
     expect(process.exitCode).toBe(1);
   });
 
@@ -479,16 +459,16 @@ describe('happier setup — unattended runs (--yes)', () => {
     await handleSetupCliCommand(context(['--yes']));
 
     expect(commandsRun()).toEqual([]);
-    expect(output.text()).toContain('--cloud');
+    expect(output.text()).toContain('--relay https://relay.example.com --yes');
     expect(process.exitCode).toBe(1);
   });
 
   it('does the work even when the terminal is gone, because --yes said so', async () => {
     interactive = false;
 
-    await handleSetupCliCommand(context(['--cloud', '--yes']));
+    await handleSetupCliCommand(context(['--relay', 'https://relay.example.com', '--yes']));
 
-    expect(commandsRun()).toEqual([]);
+    expect(commandsRun()).toEqual(['server add --server-url https://relay.example.com --name relay.example.com --use']);
     expect(output.text()).toContain('happiest auth login');
     expect(process.exitCode).toBe(1);
   });
@@ -507,7 +487,7 @@ describe('happier setup — unattended and malformed invocations', () => {
   it('creates nothing for --non-interactive even when a relay was named', async () => {
     activeProfile = { serverUrl: 'https://relay.example.com' };
 
-    await handleSetupCliCommand(context(['--cloud', '--non-interactive']));
+    await handleSetupCliCommand(context(['--relay', 'https://relay.example.com', '--non-interactive']));
 
     expect(commandsRun()).toEqual([]);
     expect(output.text()).toContain('--yes');
@@ -515,14 +495,14 @@ describe('happier setup — unattended and malformed invocations', () => {
   });
 
   it('refuses --yes together with --non-interactive', async () => {
-    await handleSetupCliCommand(context(['--cloud', '--yes', '--non-interactive']));
+    await handleSetupCliCommand(context(['--relay', 'https://relay.example.com', '--yes', '--non-interactive']));
 
     expect(commandsRun()).toEqual([]);
     expect(process.exitCode).toBe(1);
   });
 
   it('refuses two different answers to the relay question', async () => {
-    await handleSetupCliCommand(context(['--cloud', '--relay', 'https://relay.example.com']));
+    await handleSetupCliCommand(context(['--this-computer', '--relay', 'https://relay.example.com']));
 
     expect(commandsRun()).toEqual([]);
     expect(process.exitCode).toBe(1);

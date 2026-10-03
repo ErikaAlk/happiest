@@ -80,7 +80,7 @@ describe('PushNotificationClient.sendToAllDevicesAsync', () => {
   });
 
   it('bounds long titles and subtitles at the same outbound boundary', async () => {
-    const client = new PushNotificationClient('t');
+    const client = new PushNotificationClient('t', 'https://api.example.test');
     await client.sendPushNotifications([{ to: 'ExponentPushToken[a]', title: '🧪'.repeat(2000), subtitle: '漢'.repeat(2000), body: 'Body', data: { sessionId: 's_1' } }]);
     const message = sendPushNotificationsAsyncSpy.mock.calls[0][0][0];
     expect(Buffer.byteLength(JSON.stringify(message), 'utf8')).toBeLessThanOrEqual(4096);
@@ -88,7 +88,7 @@ describe('PushNotificationClient.sendToAllDevicesAsync', () => {
   });
 
   it('rejects oversized routing metadata without sending a corrupt route', async () => {
-    const client = new PushNotificationClient('t');
+    const client = new PushNotificationClient('t', 'https://api.example.test');
     await expect(client.sendPushNotifications([{ to: 'ExponentPushToken[a]', body: 'Body', data: { sessionId: 's'.repeat(5000) } }])).rejects.toThrow(/4096/);
     expect(sendPushNotificationsAsyncSpy).not.toHaveBeenCalled();
   });
@@ -98,7 +98,7 @@ describe('PushNotificationClient.sendToAllDevicesAsync', () => {
       { id: '1', token: 'ExponentPushToken[a]', clientServerUrl: 'https://api.example.test/' + 's'.repeat(5000) },
       { id: '2', token: 'ExponentPushToken[b]', clientServerUrl: 'https://api.example.test' },
     ] } });
-    await new PushNotificationClient('t').sendToAllDevicesAsync('Title', 'Body', { sessionId: 's_1' });
+    await new PushNotificationClient('t', 'https://api.example.test').sendToAllDevicesAsync('Title', 'Body', { sessionId: 's_1' });
     expect(sendPushNotificationsAsyncSpy.mock.calls[0][0]).toEqual([
       expect.objectContaining({ to: 'ExponentPushToken[b]', data: { sessionId: 's_1', serverUrl: 'https://api.example.test' } }),
     ]);
@@ -110,7 +110,7 @@ describe('PushNotificationClient.sendToAllDevicesAsync', () => {
       ? [{ status: 'error', details: { error: 'MessageTooBig' } }]
       : [{ status: 'ok', id: 'oversize' }]);
     if (source === 'receipt') getPushNotificationReceiptsAsyncSpy.mockResolvedValueOnce({ oversize: { status: 'error', details: { error: 'MessageTooBig' } } });
-    await new PushNotificationClient('t').sendPushNotifications([{ to: 'ExponentPushToken[a]', body: 'Body' }]);
+    await new PushNotificationClient('t', 'https://api.example.test').sendPushNotifications([{ to: 'ExponentPushToken[a]', body: 'Body' }]);
     expect(sendPushNotificationsAsyncSpy).toHaveBeenCalledTimes(1);
     expect(logger.infoFile).toHaveBeenCalledWith('[PUSH] Expo rejected oversized notification payload', { count: 1 });
   });

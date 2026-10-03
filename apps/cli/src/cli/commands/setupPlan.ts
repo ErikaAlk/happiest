@@ -15,8 +15,8 @@ import { resolveCliCommandName } from '@/cli/runtime/cliCommand';
 
 const cli = resolveCliCommandName();
 
+/** Where the relay lives. There is no built-in relay: the user runs their own. */
 export type SetupRelaySelection =
-  | Readonly<{ kind: 'cloud' }>
   | Readonly<{ kind: 'existing'; url: string }>
   | Readonly<{ kind: 'thisComputer' }>;
 
@@ -36,7 +36,6 @@ export type SetupStep =
   | Readonly<{ kind: 'alreadyConfigured'; relayUrl: string }>
   | Readonly<{ kind: 'installLocalRelay' }>
   | Readonly<{ kind: 'selectRelay'; relayUrl: string }>
-  | Readonly<{ kind: 'selectCloudRelay' }>
   | Readonly<{ kind: 'reportRelayReachability'; reachability: SetupRelayReachability }>
   | Readonly<{ kind: 'offerTailscaleSetup' }>
   | Readonly<{ kind: 'authLogin' }>
@@ -116,10 +115,9 @@ export type BuildSetupPlanParams = Readonly<{
 /**
  * What the command line asked for, or why it cannot be honoured.
  *
- * Parsing is a decision like any other in this module, and it was the loosest
- * one: `--cloud --relay <url>` silently kept the relay, and a misspelled
- * `--this-computer` was silently ignored, which is how a typo could end in a
- * Cloud account nobody asked for. Both are refused rather than guessed.
+ * Parsing is a decision like any other in this module: two relay choices on
+ * one command line, or a misspelled `--this-computer`, would leave setup
+ * picking a relay nobody named. Both are refused rather than guessed.
  */
 export type SetupArgs =
   | Readonly<{ kind: 'help' }>
@@ -133,7 +131,7 @@ export type SetupArgs =
       forcedNonInteractive: boolean;
     }>;
 
-const RELAY_CHOICE_FLAGS = ['--cloud', '--relay', '--this-computer'] as const;
+const RELAY_CHOICE_FLAGS = ['--relay', '--this-computer'] as const;
 const KNOWN_FLAGS: readonly string[] = [...RELAY_CHOICE_FLAGS, '--yes', '--non-interactive', '-h', '--help'];
 
 export function parseSetupArgs(args: readonly string[]): SetupArgs {
@@ -167,11 +165,6 @@ export function parseSetupArgs(args: readonly string[]): SetupArgs {
     }
     if (arg === '--non-interactive') {
       forcedNonInteractive = true;
-      continue;
-    }
-    if (arg === '--cloud') {
-      const conflict = choose(arg, { kind: 'cloud' });
-      if (conflict) return conflict;
       continue;
     }
     if (arg === '--this-computer') {
@@ -234,14 +227,12 @@ function normalizeUrl(value: string): string {
  *
  * `--yes` means "accept the recommended defaults", and there is no recommended
  * answer to "where does your relay live?" — the account lives on whichever relay
- * is picked. Guessing Cloud would create an account on a service the user never
- * named.
+ * is picked, and there is no built-in one to fall back on.
  */
 const RELAY_CHOICE_REQUIRED = [
   'Setup will not choose a relay for you — your account lives on the one you pick.',
   'Name it:',
   '',
-  `  ${cli} setup --cloud --yes`,
   `  ${cli} setup --relay https://relay.example.com --yes`,
   `  ${cli} setup --this-computer --yes`,
 ].join('\n');
@@ -274,7 +265,7 @@ export function buildSetupPlan(params: BuildSetupPlanParams): SetupPlan {
           'Your relay selection and credentials were kept unchanged.',
           '',
           `Retry: \`${cli} setup\``,
-          `Choose another relay explicitly: \`${cli} setup --cloud\` or \`${cli} setup --relay <url>\``,
+          `Choose another relay explicitly: \`${cli} setup --relay <url>\` or \`${cli} setup --this-computer\``,
         ].join('\n'),
       },
     };
@@ -337,7 +328,7 @@ export function buildSetupPlan(params: BuildSetupPlanParams): SetupPlan {
             + `steps that need no answer, then \`${cli} auth login\` to finish — signing in has to be `
             + 'approved on your phone or in a browser.'
           : `Setup needs a terminal to ask where your relay lives. Run \`${cli} setup\` directly, or name `
-            + `the relay yourself: \`${cli} setup --cloud --yes\`.`,
+            + `the relay yourself: \`${cli} setup --relay <url> --yes\`.`,
       },
     };
   }
@@ -361,14 +352,8 @@ export function buildSetupPlan(params: BuildSetupPlanParams): SetupPlan {
     if (interactive && reachability.kind === 'tailscaleNotInstalled') {
       steps.push({ kind: 'offerTailscaleSetup' });
     }
-  } else if (selection.kind === 'existing') {
+  } else {
     steps.push({ kind: 'selectRelay', relayUrl: normalizeUrl(selection.url) });
-  } else if (activeRelayUrl) {
-    // Cloud is a choice, not the absence of one. Skipping the step left a
-    // machine that already points at a custom relay — a half-finished earlier
-    // setup, most likely — authenticating against that relay after the user
-    // explicitly asked for Cloud.
-    steps.push({ kind: 'selectCloudRelay' });
   }
 
   // The only step that cannot be run for someone. An unattended run does

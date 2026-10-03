@@ -111,7 +111,7 @@ async function resolveDaemonStatePath(serverId: string): Promise<string> {
 async function listSameHomeServerIds(): Promise<string[]> {
   const settings = await readSettings();
   const serverIds = new Set<string>(Object.keys(settings.servers ?? {}));
-  const activeServerId = String(configuration.activeServerId ?? '').trim();
+  const activeServerId = configuration.activeServer?.id;
   if (activeServerId) {
     serverIds.add(activeServerId);
   }
@@ -196,18 +196,9 @@ function resolveComparableKey(rawUrl: string): string | null {
   }
 }
 
-function resolveCredentialPathCandidates(serverId: string): Readonly<{ primaryPath: string; legacyPath: string }> {
-  const primaryPath = join(configuration.serversDir, serverId, 'access.key');
-  const legacyPath = join(configuration.happyHomeDir, 'access.key');
-  return { primaryPath, legacyPath };
-}
-
 async function readAuthTokenForServerId(serverId: string): Promise<string | null> {
-  const { primaryPath, legacyPath } = resolveCredentialPathCandidates(serverId);
-  const canUseLegacy = serverId === 'cloud' && existsSync(legacyPath) && !existsSync(primaryPath);
-
-  const path = existsSync(primaryPath) ? primaryPath : canUseLegacy ? legacyPath : null;
-  if (!path) return null;
+  const path = join(configuration.serversDir, serverId, 'access.key');
+  if (!existsSync(path)) return null;
 
   try {
     const raw = JSON.parse(await readFile(path, 'utf-8'));
@@ -248,23 +239,23 @@ export async function listDaemonStatusesForAllKnownServers(): Promise<DaemonStat
   const settings = await readSettings();
   const persistedServers = settings.servers ?? {};
   const servers: Record<string, { name?: string; serverUrl?: string }> = { ...persistedServers };
-  const activeServerId = (configuration.activeServerId ?? '').toString().trim();
-  if (activeServerId && !servers[activeServerId]) {
-    servers[activeServerId] = {
+  const activeServer = configuration.activeServer;
+  if (activeServer && !servers[activeServer.id]) {
+    servers[activeServer.id] = {
       name: 'Active Server (current scope)',
-      serverUrl: configuration.serverUrl,
+      serverUrl: activeServer.serverUrl,
     };
   }
   const serverIds = Object.keys(servers);
   const results: DaemonStatusEntry[] = [];
-  const activeComparableKey = resolveComparableKey(configuration.publicServerUrl || configuration.serverUrl);
+  const activeComparableKey = activeServer ? resolveComparableKey(activeServer.serverUrl) : null;
 
   for (const serverId of serverIds) {
     const profile = servers[serverId];
     const name = profile?.name ?? serverId;
     const serverUrl =
       (profile?.serverUrl ?? '').toString().trim() ||
-      (serverId === activeServerId ? (configuration.serverUrl ?? '').toString().trim() : '');
+      (serverId === activeServer?.id ? activeServer.serverUrl : '');
     const daemonStatePath = await resolveDaemonStatePath(serverId);
     const state = await readDaemonStateFromPath(daemonStatePath);
     const running = state ? isPidAlive(state.pid) : false;

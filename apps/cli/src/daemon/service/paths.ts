@@ -24,7 +24,8 @@ export type DaemonServiceCliRuntime = Readonly<{
   channel: PublicReleaseRingId;
   targetMode: DaemonServiceTargetMode;
   instanceId: string;
-  activeServerId: string;
+  /** `null` until a server is added; only a pinned service needs one. */
+  activeServerId: string | null;
   uid: number | null;
   userHomeDir: string;
   happierHomeDir: string;

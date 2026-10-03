@@ -14,7 +14,8 @@ export async function handleAuthStatus(argv: string[] = []): Promise<void> {
   const json = wantsJson(args);
   const readiness = await resolveActiveServerAuthReadiness();
   const credentials = readiness.credentials;
-  const relayHost = formatRelayHost(configuration.serverUrl);
+  // Credentials exist only for an active server, so every branch past `!credentials` has a host.
+  const relayHost = configuration.activeServer ? formatRelayHost(configuration.activeServer.serverUrl) : null;
 
   if (json && !credentials) {
     await printJsonEnvelope({ ok: false, kind: 'auth_status', error: { code: 'not_authenticated' } });
@@ -23,6 +24,12 @@ export async function handleAuthStatus(argv: string[] = []): Promise<void> {
 
   if (!json) {
     console.log(chalk.bold('\nAuthentication Status\n'));
+  }
+
+  if (!credentials && !relayHost) {
+    console.log(chalk.red('✗ No server configured'));
+    console.log(chalk.gray(`  Run "${formatCliCommand('setup')}" to connect to the Relay you run`));
+    return;
   }
 
   if (!credentials) {

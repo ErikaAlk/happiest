@@ -134,7 +134,7 @@ export function getEnvironmentInfo(): Record<string, any> {
         workingDirectory: process.cwd(),
         processArgv: process.argv,
         happyDir: configuration?.happyHomeDir,
-        serverUrl: configuration?.serverUrl,
+        serverUrl: configuration?.activeServer?.serverUrl ?? null,
         logsDir: configuration?.logsDir,
         processPid: process.pid,
         nodeVersion: process.version,
@@ -187,7 +187,7 @@ export function formatDaemonIdentityLines(status: NonNullable<DoctorSnapshot['da
         accountId: status.auth.validatedAccountId ?? null,
     });
     return [
-        `  Relay: ${formatRelayHost(status.server.serverUrl)}`,
+        `  Relay: ${status.server ? formatRelayHost(status.server.serverUrl) : 'none yet'}`,
         ...(account ? [`  Account: ${account}`] : []),
     ];
 }
@@ -239,7 +239,7 @@ export async function runDoctorCommand(filter?: 'all' | 'daemon'): Promise<void>
 		        // Configuration
 		        console.log(chalk.bold('⚙️  Configuration'));
 		        console.log(`Happier Home: ${chalk.blue(configuration.happyHomeDir)}`);
-		        console.log(`Relay URL: ${chalk.blue(configuration.serverUrl)}`);
+		        console.log(`Relay URL: ${configuration.activeServer ? chalk.blue(configuration.activeServer.serverUrl) : chalk.yellow(`none yet — run ${cli} setup`)}`);
 		        console.log(`Logs Dir: ${chalk.blue(configuration.logsDir)}`);
 
         // Environment
@@ -254,8 +254,12 @@ export async function runDoctorCommand(filter?: 'all' | 'daemon'): Promise<void>
 		        // Connections summary (relay/account/relay profiles)
 		        if (snapshot) {
 		            console.log(chalk.bold('\n🧭 Connections'));
-		            console.log(`Resolved relay profile ID: ${chalk.green(snapshot.server.activeServerId)}`);
-		            console.log(`Resolved relay URL: ${chalk.blue(snapshot.server.serverUrl)}`);
+		            if (snapshot.server) {
+		                console.log(`Resolved relay profile ID: ${chalk.green(snapshot.server.activeServerId)}`);
+		                console.log(`Resolved relay URL: ${chalk.blue(snapshot.server.serverUrl)}`);
+		            } else {
+		                console.log(`Resolved relay: ${chalk.yellow(`none yet — run ${cli} setup`)}`);
+		            }
 	            if (snapshot.accountId) {
 	                console.log(`Account: ${chalk.green(snapshot.accountId)}`);
 	            } else {
@@ -263,7 +267,7 @@ export async function runDoctorCommand(filter?: 'all' | 'daemon'): Promise<void>
 	            }
 
 		            const settingsActive = snapshot.settings.activeServerId;
-		            if (settingsActive && settingsActive !== snapshot.server.activeServerId) {
+		            if (settingsActive && snapshot.server && settingsActive !== snapshot.server.activeServerId) {
 		                console.log(chalk.yellow(`⚠️  settings.json activeServerId (${settingsActive}) differs from resolved relay profile ID (${snapshot.server.activeServerId})`));
 		            }
 

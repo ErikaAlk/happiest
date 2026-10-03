@@ -2,14 +2,6 @@ import type { MachineReplacementReason } from '@happier-dev/protocol';
 
 import { configuration } from '@/configuration';
 import { readSettings, updateSettings, type MachineReplacementCandidate, type Settings } from '@/persistence';
-import { sanitizeServerIdForFilesystem } from '@/server/serverId';
-
-function resolveActiveServerId(settingsActiveServerId?: string): string {
-  return sanitizeServerIdForFilesystem(
-    configuration.activeServerId ?? settingsActiveServerId ?? 'cloud',
-    'cloud',
-  );
-}
 
 function normalizeAccountId(accountId: string | null | undefined): string {
   return typeof accountId === 'string' ? accountId.trim() : '';
@@ -94,8 +86,8 @@ export async function recordMachineReplacementCandidateForActiveServer(params: R
   const machineId = normalizeMachineId(params.machineId);
   if (!accountId || !machineId) return;
 
+  const activeServerId = configuration.activeServerId;
   await updateSettings((settings) => {
-    const activeServerId = resolveActiveServerId(settings.activeServerId);
     const byServer = { ...(settings.machineReplacementCandidatesByServerIdByAccountId ?? {}) };
     const byAccount = { ...(byServer[activeServerId] ?? {}) };
     byAccount[accountId] = {
@@ -116,8 +108,8 @@ export async function readMachineReplacementCandidateForActiveServer(params: Rea
 }>): Promise<MachineReplacementCandidate | null> {
   const accountId = normalizeAccountId(params.accountId);
   if (!accountId) return null;
+  const activeServerId = configuration.activeServerId;
   const settings = await readSettings();
-  const activeServerId = resolveActiveServerId(settings.activeServerId);
   return findUnambiguousMachineReplacementCandidateForAccount(settings, activeServerId, accountId);
 }
 
@@ -126,10 +118,8 @@ export async function clearMachineReplacementCandidateForActiveServer(params: Re
 }>): Promise<void> {
   const accountId = normalizeAccountId(params.accountId);
   if (!accountId) return;
-  await updateSettings((settings) => {
-    const activeServerId = resolveActiveServerId(settings.activeServerId);
-    return removeMachineReplacementCandidate(settings, activeServerId, accountId);
-  });
+  const activeServerId = configuration.activeServerId;
+  await updateSettings((settings) => removeMachineReplacementCandidate(settings, activeServerId, accountId));
 }
 
 export async function consumeMachineReplacementCandidateAfterRegistration(params: Readonly<{
@@ -142,8 +132,8 @@ export async function consumeMachineReplacementCandidateAfterRegistration(params
   const replacesMachineId = normalizeMachineId(params.replacesMachineId);
   if (!accountId || !replacesMachineId) return;
 
+  const activeServerId = configuration.activeServerId;
   await updateSettings((settings) => {
-    const activeServerId = resolveActiveServerId(settings.activeServerId);
     return removeAcknowledgedMachineReplacementCandidate(
       settings,
       activeServerId,

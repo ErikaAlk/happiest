@@ -4,7 +4,6 @@ import type { ApiClient } from '@/api/api';
 import { isMachineIdConflictError, isMachineReplacedError, isMachineRevokedError } from '@/api/api';
 import type { DaemonState, Machine, MachineMetadata } from '@/api/types';
 import { updateSettings } from '@/persistence';
-import { sanitizeServerIdForFilesystem } from '@/server/serverId';
 import { configuration } from '@/configuration';
 import { logger } from '@/ui/logger';
 
@@ -17,11 +16,8 @@ async function rotateMachineIdForActiveServer(opts: Readonly<{ expectedCurrentMa
   let nextMachineId = randomUUID();
   if (nextMachineId === opts.expectedCurrentMachineId) nextMachineId = randomUUID();
 
+  const activeServerId = configuration.activeServerId;
   const updated = await updateSettings((settings) => {
-    const activeServerId = sanitizeServerIdForFilesystem(
-      configuration.activeServerId ?? settings.activeServerId ?? 'cloud',
-      'cloud',
-    );
 
     const nextByServerId = { ...(settings.machineIdByServerId ?? {}) };
     const current = nextByServerId[activeServerId];
@@ -78,11 +74,8 @@ async function adoptReplacementMachineIdForActiveServer(opts: Readonly<{
 }>): Promise<string> {
   const normalizedReplacementMachineId = opts.replacementMachineId.trim();
 
+  const activeServerId = configuration.activeServerId;
   const updated = await updateSettings((settings) => {
-    const activeServerId = sanitizeServerIdForFilesystem(
-      configuration.activeServerId ?? settings.activeServerId ?? 'cloud',
-      'cloud',
-    );
 
     const nextByServerId = { ...(settings.machineIdByServerId ?? {}) };
     const current = nextByServerId[activeServerId];

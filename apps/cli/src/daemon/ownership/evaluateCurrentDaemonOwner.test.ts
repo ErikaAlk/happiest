@@ -71,10 +71,11 @@ describe('evaluateCurrentDaemonOwner', () => {
     ]);
 
     beforeEach(() => {
+        // The product has no built-in server, so every case runs against an explicit one.
         envScope.patch({
             HAPPIEST_DAEMON_LIFECYCLE_SCOPE_ID: undefined,
-            HAPPIEST_SERVER_URL: undefined,
-            HAPPIEST_WEBAPP_URL: undefined,
+            HAPPIEST_SERVER_URL: 'https://relay.example.test',
+            HAPPIEST_WEBAPP_URL: 'https://app.example.test',
         });
     });
 

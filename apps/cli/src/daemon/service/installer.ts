@@ -145,7 +145,7 @@ export async function previewDaemonServiceInstall(options: Readonly<{
   darwinInstallMode?: 'rebootstrap' | 'kickstart';
   restartRunningDaemon?: boolean;
   instanceId?: string;
-  activeServerId?: string;
+  activeServerId?: string | null;
   strategy?: DaemonServiceInstallStrategy;
   serverUrl?: string;
   webappUrl?: string;
@@ -163,13 +163,16 @@ export async function previewDaemonServiceInstall(options: Readonly<{
   const uid = options.uid ?? (process.getuid ? process.getuid() : undefined);
   const userHomeDir = options.userHomeDir ?? homedir();
   const happierHomeDir = options.happierHomeDir ?? configuration.happyHomeDir;
-  const instanceId = options.instanceId ?? configuration.activeServerId;
-  const activeServerId = options.activeServerId ?? configuration.activeServerId;
   const channel = await resolveDaemonServiceReleaseChannel({ channel: options.channel });
   const targetMode: DaemonServiceTargetMode = options.targetMode ?? 'default-following';
-  const serverUrl = options.serverUrl ?? configuration.apiServerUrl;
-  const webappUrl = options.webappUrl ?? configuration.webappUrl;
-  const publicServerUrl = options.publicServerUrl ?? configuration.serverUrl;
+  // A default-following service follows whichever server is active and can be installed before
+  // one is added; a pinned service bakes the active server into its definition.
+  const server = targetMode === 'pinned' ? configuration.requireActiveServer() : configuration.activeServer;
+  const instanceId = options.instanceId ?? server?.id ?? 'default';
+  const activeServerId = options.activeServerId ?? server?.id ?? null;
+  const serverUrl = options.serverUrl ?? server?.apiServerUrl ?? '';
+  const webappUrl = options.webappUrl ?? server?.webappUrl ?? '';
+  const publicServerUrl = options.publicServerUrl ?? server?.serverUrl ?? '';
   const explicitNodePath = options.nodePath ?? null;
   const explicitEntryPath = options.entryPath ?? null;
   const runtimeTarget = await resolveDaemonServiceInstallRuntimeTarget({
@@ -361,7 +364,7 @@ export async function installDaemonService(options: Readonly<{
   darwinInstallMode?: 'rebootstrap' | 'kickstart';
   restartRunningDaemon?: boolean;
   instanceId?: string;
-  activeServerId?: string;
+  activeServerId?: string | null;
   strategy?: DaemonServiceInstallStrategy;
   serverUrl?: string;
   webappUrl?: string;
@@ -462,9 +465,10 @@ export async function uninstallDaemonService(options: Readonly<{
   const uid = options.uid ?? (process.getuid ? process.getuid() : undefined);
   const userHomeDir = options.userHomeDir ?? homedir();
   const happierHomeDir = options.happierHomeDir ?? configuration.happyHomeDir;
-  const instanceId = options.instanceId ?? configuration.activeServerId;
   const channel = await resolveDaemonServiceReleaseChannel({ channel: options.channel });
   const targetMode: DaemonServiceTargetMode = options.targetMode ?? 'default-following';
+  const instanceId = options.instanceId
+    ?? (targetMode === 'pinned' ? configuration.requireActiveServer().id : configuration.activeServer?.id ?? 'default');
 
   const plan = planDaemonServiceUninstall({
     platform,

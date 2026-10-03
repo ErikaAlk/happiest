@@ -5,6 +5,7 @@ import { wantsJson, printJsonEnvelope } from '@/cli/output/jsonEnvelope';
 import {
   getActiveServerProfile,
   listServerProfiles,
+  requireActiveServerProfile,
   upsertServerProfileByUrl,
   type ServerProfile,
 } from '@/server/serverProfiles';
@@ -95,7 +96,7 @@ function summarizeProfile(profile: ServerProfile): RelayInspectTargetJsonResult[
 
 async function cmdInspectTarget(args: string[]): Promise<void> {
   const json = wantsJson(args);
-  const active = await getActiveServerProfile();
+  const active = await requireActiveServerProfile();
   const payload: RelayInspectTargetJsonResult = {
     active: summarizeProfile(active),
   };
@@ -141,7 +142,7 @@ async function cmdSet(args: string[], options: CmdSetOptions = {}): Promise<void
   const beforeActive = await getActiveServerProfile();
   const beforeMatch = resolveProfileByComparableKey(beforeProfiles, comparableKey);
   const beforeMatchId = beforeMatch?.id ?? null;
-  const beforeMatchActive = beforeMatchId != null && beforeActive.id === beforeMatchId;
+  const beforeMatchActive = beforeMatchId != null && beforeActive?.id === beforeMatchId;
 
   const nameFromArgs = String(argvValue(resolvedArgs, '--name') ?? '').trim();
   const localServerUrlRaw = String(argvValue(resolvedArgs, '--local-server-url') ?? '').trim();
@@ -164,7 +165,8 @@ async function cmdSet(args: string[], options: CmdSetOptions = {}): Promise<void
     beforeMatch.serverUrl !== upserted.serverUrl ||
     (beforeMatch.localServerUrl ?? '') !== (upserted.localServerUrl ?? '') ||
     beforeMatch.webappUrl !== upserted.webappUrl;
-  const used = shouldUse && !beforeMatchActive;
+  // The first relay on a home with none becomes active without --use.
+  const used = !beforeMatchActive && (await getActiveServerProfile())?.id === upserted.id;
 
   const payload: RelaySetJsonResult = {
     serverId: upserted.id,

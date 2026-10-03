@@ -1,5 +1,5 @@
 import { configuration } from '@/configuration';
-import { deriveDefaultWebappUrl } from '@/server/defaultServer';
+import { deriveDefaultWebappUrl } from '@/server/webappUrl';
 import { spawnHappyCLI } from '@/utils/spawnHappyCLI';
 import { isInteractiveTerminal, promptInput } from '@/terminal/prompts/promptInput';
 

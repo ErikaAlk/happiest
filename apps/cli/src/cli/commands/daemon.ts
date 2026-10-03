@@ -299,6 +299,8 @@ export async function handleDaemonCliCommand(context: CommandContext): Promise<v
 
   if (daemonSubcommand === 'start') {
     const jsonRequested = args.includes('--json');
+    // The daemon started here does not wait for a server; say what is missing before spawning it.
+    configuration.requireActiveServer();
     const ownership = await evaluateCurrentDaemonOwner();
     const takeoverRequested = args.includes('--takeover');
     const startupSource = resolveDaemonStartupSourceFromEnv(process.env);
@@ -534,6 +536,8 @@ export async function handleDaemonCliCommand(context: CommandContext): Promise<v
 
   if (daemonSubcommand === 'restart') {
     const jsonRequested = args.includes('--json');
+    // Like `start`: the daemon it starts does not wait for a server.
+    configuration.requireActiveServer();
     const restartSessionRunners = args.includes('--restart-session-runners');
     const stopSessions = args.includes('--kill-sessions');
     if (restartSessionRunners && stopSessions) {
@@ -716,8 +720,10 @@ export async function handleDaemonCliCommand(context: CommandContext): Promise<v
       if (args.includes('--json')) {
       if (args.includes('--all')) {
         const statuses = await listDaemonStatusesForAllKnownServers();
-        const activeRelayUrl = configuration.publicServerUrl || configuration.serverUrl;
+        const activeServer = configuration.activeServer;
+        const activeRelayUrl = activeServer?.serverUrl ?? null;
         const activeComparableKey = (() => {
+          if (!activeRelayUrl) return null;
           try {
             return createServerUrlComparableKey(activeRelayUrl);
           } catch {
@@ -725,11 +731,14 @@ export async function handleDaemonCliCommand(context: CommandContext): Promise<v
           }
         })();
         await writeJsonStdout({
-          active: {
-            serverId: configuration.activeServerId,
-            relayUrl: activeRelayUrl,
-            comparableKey: activeComparableKey,
-          },
+          // `null` until a server is added.
+          active: activeServer
+            ? {
+              serverId: activeServer.id,
+              relayUrl: activeRelayUrl,
+              comparableKey: activeComparableKey,
+            }
+            : null,
           entries: statuses.map((entry) => {
             let servicePlatform = typeof entry.service.platform === 'string' ? entry.service.platform : null;
             let serviceInstalledPath = typeof entry.service.installedPath === 'string' ? entry.service.installedPath : null;

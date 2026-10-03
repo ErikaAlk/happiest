@@ -62,12 +62,14 @@ export async function buildDoctorSnapshot(): Promise<DoctorSnapshot> {
 
   const candidate: DoctorSnapshot = {
     capturedAt: new Date().toISOString(),
-    server: {
-      activeServerId: configuration.activeServerId,
-      serverUrl: configuration.serverUrl,
-      publicServerUrl: configuration.publicServerUrl,
-      webappUrl: configuration.webappUrl,
-    },
+    server: configuration.activeServer
+      ? {
+          activeServerId: configuration.activeServer.id,
+          serverUrl: configuration.activeServer.serverUrl,
+          publicServerUrl: configuration.activeServer.serverUrl,
+          webappUrl: configuration.activeServer.webappUrl,
+        }
+      : null,
     accountId,
     settings: {
       activeServerId: settings.activeServerId ? String(settings.activeServerId).trim() : null,

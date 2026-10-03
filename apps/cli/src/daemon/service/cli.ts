@@ -762,10 +762,12 @@ function resolveDaemonServiceServerTargets(processEnv: NodeJS.ProcessEnv): Reado
     };
   }
 
+  // Empty until a server is added; only a pinned service bakes these, and it requires a server.
+  const server = configuration.activeServer;
   return {
-    serverUrl: configuration.apiServerUrl,
-    publicServerUrl: configuration.serverUrl,
-    webappUrl: configuration.webappUrl,
+    serverUrl: server?.apiServerUrl ?? '',
+    publicServerUrl: server?.serverUrl ?? '',
+    webappUrl: server?.webappUrl ?? '',
   };
 }
 
@@ -843,8 +845,12 @@ export function resolveDaemonServiceCliRuntimeFromEnv(options: Readonly<{
   const envActiveServerId = String(processEnv.HAPPIEST_ACTIVE_SERVER_ID ?? '').trim();
   const activeServerId = isServerIdFilesystemSafe(envActiveServerId)
     ? envActiveServerId
-    : configuration.activeServerId;
-  const instanceId = String(options.instanceId ?? '').trim() || (processEnv.HAPPIEST_DAEMON_SERVICE_INSTANCE_ID ?? '').trim() || activeServerId;
+    : configuration.activeServer?.id ?? null;
+  // A default-following service names no instance (its label is `default`), so it needs no server.
+  const instanceId = String(options.instanceId ?? '').trim()
+    || (processEnv.HAPPIEST_DAEMON_SERVICE_INSTANCE_ID ?? '').trim()
+    || activeServerId
+    || 'default';
   const resolvedServerTargets = resolveDaemonServiceServerTargets(processEnv);
   const serverUrl = (processEnv.HAPPIEST_DAEMON_SERVICE_SERVER_URL ?? '').trim() || resolvedServerTargets.serverUrl;
   const webappUrl = (processEnv.HAPPIEST_DAEMON_SERVICE_WEBAPP_URL ?? '').trim() || resolvedServerTargets.webappUrl;
@@ -1288,7 +1294,7 @@ async function handleLocalRelayFlag(argv: readonly string[]): Promise<string[]> 
   // Surface the resolved channel so the user sees which relay is being picked.
   console.log(`  (local relay on ${match.channel} channel: ${match.url})`);
   const activeBefore = await getActiveServerProfile();
-  const needsActivate = activeBefore.id === 'cloud'
+  const needsActivate = !activeBefore
     || (activeBefore.serverUrl !== match.url && activeBefore.localServerUrl !== match.url);
   if (needsActivate) {
     await upsertServerProfileByUrl({

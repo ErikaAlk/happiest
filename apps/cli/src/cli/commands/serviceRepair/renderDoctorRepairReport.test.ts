@@ -292,12 +292,10 @@ describe('renderDoctorRepairReport — authentication evidence', () => {
     expect(out).not.toContain('happiest-dev auth --server old-profile');
   });
 
-  it('offers an executable sign-in command when no profiles are configured', () => {
+  it('points at setup when no profiles are configured, because sign-in needs a server first', () => {
     const out = renderAuthentication([], false, 'happiest-dev').join('\n');
 
-    // `happiest auth` alone only prints help; the remedy must be the parsed
-    // `auth login` form so the printed command actually runs.
-    expect(out).toContain('happiest-dev auth login');
-    expect(out).not.toMatch(/^\s*happiest-dev auth\s*$/m);
+    expect(out).toContain('happiest-dev setup');
+    expect(out).not.toContain('auth login');
   });
 });

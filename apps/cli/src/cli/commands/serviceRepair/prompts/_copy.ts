@@ -11,7 +11,6 @@
 import chalk from 'chalk';
 
 import { resolveCliCommandName } from '@/cli/runtime/cliCommand';
-import { DEFAULT_SERVER_NAME } from '@/server/defaultServer';
 import { cleanRelayRuntimeVersion } from '@/ui/format/styles';
 
 import { authSignInCommand } from '../authSignInCommand';
@@ -819,11 +818,11 @@ export function copyNoServersConfigured(invoker: string = resolveCliCommandName(
   return [
     'You need at least one server profile to connect to.',
     '',
-    `Sign in to ${DEFAULT_SERVER_NAME} with:`,
-    `  ${authSignInCommand(invoker)}`,
+    'Connect to the Relay you run, or host one on this computer, with:',
+    `  ${invoker} setup`,
     '',
-    'Or connect to a self-hosted server with:',
-    `  ${invoker} server add <url>`,
+    'Or add its address directly:',
+    `  ${invoker} server add --server-url <url> --use`,
   ];
 }
 

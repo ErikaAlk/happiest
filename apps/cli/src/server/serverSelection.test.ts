@@ -41,7 +41,7 @@ describe('server selection flags', () => {
       expect(config.configuration.serverUrl).toBe('https://stack.example.test');
       expect(config.configuration.webappUrl).toBe('https://stack.example.test');
       expect(process.env.HAPPIEST_WEBAPP_URL).toBe('https://stack.example.test');
-      expect((await getActiveServerProfile()).id).toBe('cloud');
+      expect(await getActiveServerProfile()).toBeNull();
     });
   });
 
@@ -120,13 +120,13 @@ describe('server selection flags', () => {
       expect(remaining).toEqual([]);
       expect(config.configuration.serverUrl).toBe('https://stack.example.test');
       const active = await getActiveServerProfile();
-      expect(active.serverUrl).toBe('https://stack.example.test');
-      expect(active.webappUrl).toBe('https://stack.example.test');
+      expect(active?.serverUrl).toBe('https://stack.example.test');
+      expect(active?.webappUrl).toBe('https://stack.example.test');
       expect(config.configuration.webappUrl).toBe('https://stack.example.test');
 
       const settingsRaw = JSON.parse(readFileSync(join(homeDir, 'settings.json'), 'utf8'));
       expect(settingsRaw.schemaVersion).toBe(6);
-      expect(settingsRaw.activeServerId).not.toBe('cloud');
+      expect(settingsRaw.activeServerId).toBe(active?.id);
     });
   });
 
@@ -188,8 +188,9 @@ describe('server selection flags', () => {
       expect(config.configuration.activeServerId).toBe('company');
       expect(process.env.HAPPIEST_ACTIVE_SERVER_ID).toBe('company');
 
+      // The first profile added stays the persisted active one.
       const settingsRaw = JSON.parse(readFileSync(join(homeDir, 'settings.json'), 'utf8'));
-      expect(settingsRaw.activeServerId).toBe('cloud');
+      expect(settingsRaw.activeServerId).toBe('stale-profile');
     });
   });
 
@@ -230,7 +231,7 @@ describe('server selection flags', () => {
       expect(process.env.HAPPIEST_SERVER_URL).toBe('https://company.example.test');
       expect(process.env.HAPPIEST_WEBAPP_URL).toBe('https://app.company.example.test');
       expect(process.env.HAPPIEST_ACTIVE_SERVER_ID).toBe('company');
-      expect((await getActiveServerProfile()).id).toBe('cloud');
+      expect((await getActiveServerProfile())?.id).toBe('stale-profile');
     });
   });
 });

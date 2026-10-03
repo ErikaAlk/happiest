@@ -16,8 +16,7 @@ import {
   DaemonStartupSourceSchema,
   type DaemonStartupSource,
 } from '@/daemon/ownership/daemonOwnershipMetadata';
-import { DEFAULT_SERVER_NAME, DEFAULT_SERVER_URL } from '@/server/defaultServer';
-import { isServerIdFilesystemSafe, sanitizeServerIdForFilesystem } from '@/server/serverId';
+import { isServerIdFilesystemSafe } from '@/server/serverId';
 import { isLocalishServerUrl } from '@/server/serverUrlClassification';
 import * as z from 'zod';
 import { decodeBase64, encodeBase64 } from '@/api/encryption';
@@ -116,7 +115,7 @@ export interface Settings {
   onboardingCompleted: boolean
   /**
    * Active server profile id (schema v5+).
-   * Defaults to "cloud" when unset.
+   * Unset until a server is added; the product has no built-in server.
    */
   activeServerId?: string
   /**
@@ -193,18 +192,7 @@ export interface Settings {
 const defaultSettings: Settings = {
   schemaVersion: SUPPORTED_SCHEMA_VERSION,
   onboardingCompleted: false,
-  activeServerId: 'cloud',
-  servers: {
-    cloud: {
-      id: 'cloud',
-      name: DEFAULT_SERVER_NAME,
-      serverUrl: DEFAULT_SERVER_URL,
-      webappUrl: DEFAULT_SERVER_URL,
-      createdAt: 0,
-      updatedAt: 0,
-      lastUsedAt: 0,
-    },
-  },
+  servers: {},
   machineIdByServerId: {},
   machineIdByServerIdByAccountId: {},
   machineReplacementCandidatesByServerIdByAccountId: {},
@@ -237,39 +225,12 @@ function migrateSettings(raw: any, fromVersion: number): any {
 
   // Migration from v4 to v5 (server profiles + per-server state)
   if (fromVersion < 5) {
-    const DEFAULT_SERVER_URL = 'https://api.happier.dev';
-    const DEFAULT_WEBAPP_URL = 'https://cloud.happier.dev';
-    const now = Date.now();
-
-    const cloudId = 'cloud';
-    migrated.activeServerId = cloudId;
-    migrated.servers = {
-      [cloudId]: {
-        id: cloudId,
-        name: 'Happier Cloud',
-        serverUrl: DEFAULT_SERVER_URL,
-        webappUrl: DEFAULT_WEBAPP_URL,
-        createdAt: now,
-        updatedAt: now,
-        lastUsedAt: now,
-      },
-    };
-
-    if (typeof migrated.machineId === 'string' && migrated.machineId.trim()) {
-      migrated.machineIdByServerId = { [cloudId]: migrated.machineId.trim() };
-    } else {
-      migrated.machineIdByServerId = {};
-    }
-    if (typeof migrated.machineIdConfirmedByServer === 'boolean') {
-      migrated.machineIdConfirmedByServerByServerId = { [cloudId]: migrated.machineIdConfirmedByServer };
-    } else {
-      migrated.machineIdConfirmedByServerByServerId = {};
-    }
-
-    const legacyCursor = migrated.lastChangesCursorByAccountId && typeof migrated.lastChangesCursorByAccountId === 'object'
-      ? migrated.lastChangesCursorByAccountId
-      : {};
-    migrated.lastChangesCursorByServerIdByAccountId = { [cloudId]: legacyCursor };
+    // Single-server settings belonged to upstream Happier's hosted server, which this product does
+    // not connect to; the machine id and cursors they carried are not carried over.
+    migrated.servers = {};
+    migrated.machineIdByServerId = {};
+    migrated.machineIdConfirmedByServerByServerId = {};
+    migrated.lastChangesCursorByServerIdByAccountId = {};
 
     // Remove legacy single-server fields from disk representation.
     if ('machineId' in migrated) delete migrated.machineId;
@@ -434,11 +395,9 @@ export async function readSettings(): Promise<Settings> {
     // Derive backwards-compat fields for the *effective* active server (schema v5+).
     // The configuration layer resolves env overrides (HAPPIEST_SERVER_URL/HAPPIEST_WEBAPP_URL) into
     // a deterministic server id; use that id so per-server machine ids/cursors work in hermetic
-    // test homes even if settings.json.activeServerId is left at "cloud".
-    const activeServerId = sanitizeServerIdForFilesystem(
-      configuration.activeServerId ?? merged.activeServerId ?? 'cloud',
-      'cloud',
-    );
+    // test homes whatever settings.json.activeServerId says.
+    const activeServerId = configuration.activeServer?.id;
+    if (!activeServerId) return merged;
     const lastTokenSub =
       merged.lastTokenSubByServerId && typeof merged.lastTokenSubByServerId === 'object'
         ? merged.lastTokenSubByServerId[activeServerId]
@@ -664,15 +623,10 @@ export type Credentials = {
 }
 
 export async function readCredentials(): Promise<Credentials | null> {
-  const primaryPath = configuration.privateKeyFile;
-  const legacyPath = configuration.legacyPrivateKeyFile;
-  const canUseLegacy =
-    configuration.activeServerId === 'cloud' &&
-    existsSync(legacyPath) &&
-    !existsSync(primaryPath);
-
-  const path = existsSync(primaryPath) ? primaryPath : canUseLegacy ? legacyPath : null;
-  if (!path) return null;
+  // Sign-ins are stored per server, so a computer with no server has none.
+  if (!configuration.activeServer) return null;
+  const path = configuration.privateKeyFile;
+  if (!existsSync(path)) return null;
   try {
     const keyBase64 = (await readFile(path, 'utf8'));
     const credentials = credentialsSchema.parse(JSON.parse(keyBase64));
@@ -707,13 +661,6 @@ export async function writeCredentialsLegacy(credentials: { secret: Uint8Array, 
     token: credentials.token
   }, null, 2), { mode: 0o600 });
   await bestEffortChmod(configuration.privateKeyFile, 0o600)
-
-  // Migrate legacy single-server credential file (cloud server only).
-  if (configuration.activeServerId === 'cloud' && configuration.legacyPrivateKeyFile !== configuration.privateKeyFile) {
-    if (existsSync(configuration.legacyPrivateKeyFile)) {
-      await unlink(configuration.legacyPrivateKeyFile).catch(() => {});
-    }
-  }
 }
 
 export async function writeCredentialsDataKey(credentials: { publicKey: Uint8Array, machineKey: Uint8Array, token: string }): Promise<void> {
@@ -723,21 +670,11 @@ export async function writeCredentialsDataKey(credentials: { publicKey: Uint8Arr
     token: credentials.token
   }, null, 2), { mode: 0o600 });
   await bestEffortChmod(configuration.privateKeyFile, 0o600)
-
-  // Migrate legacy single-server credential file (cloud server only).
-  if (configuration.activeServerId === 'cloud' && configuration.legacyPrivateKeyFile !== configuration.privateKeyFile) {
-    if (existsSync(configuration.legacyPrivateKeyFile)) {
-      await unlink(configuration.legacyPrivateKeyFile).catch(() => {});
-    }
-  }
 }
 
 export async function clearCredentials(): Promise<void> {
   if (existsSync(configuration.privateKeyFile)) {
     await unlink(configuration.privateKeyFile).catch(() => {});
-  }
-  if (configuration.activeServerId === 'cloud' && existsSync(configuration.legacyPrivateKeyFile)) {
-    await unlink(configuration.legacyPrivateKeyFile).catch(() => {});
   }
 }
 
@@ -746,11 +683,8 @@ export async function clearMachineId(opts?: Readonly<{
   replacementReason?: MachineReplacementReason;
   now?: number;
 }>): Promise<void> {
+  const activeServerId = configuration.activeServerId;
   await updateSettings((settings) => {
-    const activeServerId = sanitizeServerIdForFilesystem(
-      configuration.activeServerId ?? settings.activeServerId ?? 'cloud',
-      'cloud',
-    );
     const nextMap = { ...(settings.machineIdByServerId ?? {}) };
     const currentMachineId = typeof nextMap[activeServerId] === 'string'
       ? String(nextMap[activeServerId]).trim()
@@ -788,11 +722,8 @@ export async function clearMachineId(opts?: Readonly<{
 
 export async function readAccountChangesCursor(accountId: string): Promise<number> {
   if (!accountId) return 0;
+  const activeServerId = configuration.activeServerId;
   const settings = await readSettings();
-  const activeServerId = sanitizeServerIdForFilesystem(
-    configuration.activeServerId ?? settings.activeServerId ?? 'cloud',
-    'cloud',
-  );
   const cursor = settings.lastChangesCursorByServerIdByAccountId?.[activeServerId]?.[accountId];
   return typeof cursor === 'number' && Number.isFinite(cursor) && cursor >= 0 ? cursor : 0;
 }
@@ -802,11 +733,8 @@ export async function writeAccountChangesCursor(accountId: string, cursor: numbe
   if (!Number.isFinite(cursor) || cursor < 0) return;
   const next = Math.floor(cursor);
 
+  const activeServerId = configuration.activeServerId;
   await updateSettings((settings) => {
-    const activeServerId = sanitizeServerIdForFilesystem(
-      configuration.activeServerId ?? settings.activeServerId ?? 'cloud',
-      'cloud',
-    );
     const byServer = settings.lastChangesCursorByServerIdByAccountId ?? {};
     const currentMap = byServer[activeServerId] ?? {};
     if (next === 0) {
@@ -834,12 +762,9 @@ export async function writeAccountChangesCursor(accountId: string, cursor: numbe
 async function readDaemonStateFallbackFromServersDir(): Promise<DaemonLocallyPersistedState | null> {
   try {
     const settings = await readSettings().catch(() => defaultSettings);
-    const activeServerId = sanitizeServerIdForFilesystem(
-      configuration.activeServerId ?? settings.activeServerId ?? 'cloud',
-      'cloud',
-    );
+    const activeServerId = configuration.activeServerId;
     const currentServerComparableKey = (() => {
-      const raw = String(configuration.publicServerUrl || configuration.serverUrl || '').trim();
+      const raw = configuration.serverUrl.trim();
       if (!raw) return null;
       try {
         return createServerUrlComparableKey(raw);
@@ -910,6 +835,8 @@ async function readDaemonStateFallbackFromServersDir(): Promise<DaemonLocallyPer
 }
 
 export async function readDaemonState(): Promise<DaemonLocallyPersistedState | null> {
+  // Daemon state lives under the active server or an explicit lifecycle scope; with neither there is none to read.
+  if (!configuration.hasDaemonLifecycleDir) return null;
   const candidatePaths = resolveDaemonStateCandidatePathsForCurrentLifecycle();
   for (let attempt = 1; attempt <= 3; attempt++) {
     let sawEnoent = false;

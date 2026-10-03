@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { writeFileSync } from 'node:fs';
+import { readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createEnvKeyScope } from '@/testkit/env/envScope';
 import { createTempDirSync, removeTempDirSync } from '@/testkit/fs/tempDir';
@@ -58,7 +58,7 @@ describe('configuration env url fallback', () => {
     }
   });
 
-  it('connects a fresh home to the Happiest server, which also serves the web app', async () => {
+  it('leaves a fresh home without a server until one is added', async () => {
     const homeDir = createTempDirSync('happier-cli-config-');
     tempDirs.push(homeDir);
     process.env.HAPPIEST_HOME_DIR = homeDir;
@@ -71,9 +71,12 @@ describe('configuration env url fallback', () => {
     const output = captureConsoleText();
     try {
       const configMod = await import('./configuration');
+      const { NoServerConfiguredError } = await import('./server/noServerConfiguredError');
       configMod.reloadConfiguration();
-      expect(configMod.configuration.serverUrl).toBe('https://happiest.erikaalk.click');
-      expect(configMod.configuration.webappUrl).toBe('https://happiest.erikaalk.click');
+      expect(configMod.configuration.activeServer).toBeNull();
+      expect(() => configMod.configuration.serverUrl).toThrow(NoServerConfiguredError);
+      expect(() => configMod.configuration.privateKeyFile).toThrow(NoServerConfiguredError);
+      expect(readdirSync(join(homeDir, 'servers'))).toEqual([]);
     } finally {
       output.restore();
     }
@@ -178,7 +181,7 @@ describe('configuration env url fallback', () => {
     }
   });
 
-  it('falls back to cloud when persisted activeServerId is path-unsafe', async () => {
+  it('has no active server when the persisted activeServerId is path-unsafe', async () => {
     const homeDir = createTempDirSync('happier-cli-config-unsafe-id-');
     tempDirs.push(homeDir);
     const settingsFile = join(homeDir, 'settings.json');
@@ -214,8 +217,8 @@ describe('configuration env url fallback', () => {
 
     const configMod = await import('./configuration');
     configMod.reloadConfiguration();
-    expect(configMod.configuration.activeServerId).toBe('cloud');
-    expect(configMod.configuration.activeServerDir).toBe(join(homeDir, 'servers', 'cloud'));
+    expect(configMod.configuration.activeServer).toBeNull();
+    expect(readdirSync(join(homeDir, 'servers'))).toEqual([]);
   });
 
   it('uses HAPPIEST_ACTIVE_SERVER_ID override for active server scope without changing URL selection', async () => {

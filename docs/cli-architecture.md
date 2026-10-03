@@ -596,7 +596,7 @@ Local state lives under `~/.happiest` (or `HAPPIEST_HOME_DIR`):
 - `logs/`: CLI/daemon logs.
 
 Configuration lives in `src/configuration.ts`:
-- `HAPPIEST_SERVER_URL` and `HAPPIEST_WEBAPP_URL` override defaults.
+- The active server comes from `HAPPIEST_SERVER_URL`/`HAPPIEST_WEBAPP_URL` or from the active profile in `settings.json`. The product ships no public server and no built-in profile, so a fresh install has neither: `configuration.activeServer` is `null` and `servers/` holds no directory. The first server added (`happiest setup` or `happiest server add`) becomes the active one. A command that needs a server calls `requireActiveServer()`, which throws `NoServerConfiguredError` naming `happiest setup` and `happiest server add --server-url <url> --use`; sign-in, `daemon start` and sessions all pass that check (`authAndSetupMachineIfNeeded`). `readCredentials()` returns `null` without a server, and `happiest daemon status --json` reports `server: null`. A default-following background service can be installed before a server exists; the daemon it starts (`HAPPIER_DAEMON_WAIT_FOR_AUTH=1`) waits for a server to be added (`daemon/startup/waitForActiveServer.ts`) and then for credentials, while a pinned service requires a server.
 - `HAPPIER_VARIANT`, `HAPPIER_EXPERIMENTAL`, `HAPPIER_DISABLE_CAFFEINATE` control behavior.
 
 ## API client architecture

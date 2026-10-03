@@ -7,6 +7,7 @@ import {
   getServerProfile,
   listServerProfiles,
   removeServerProfile,
+  requireActiveServerProfile,
   setServerProfileEndpointsById,
   upsertServerProfileByUrl,
   useServerProfile,
@@ -168,7 +169,7 @@ async function cmdList(args: string[]): Promise<void> {
       ok: true,
       kind: 'server_list',
       data: {
-        activeServerId: active.id,
+        activeServerId: active?.id ?? null,
         profiles: profiles.map(summarizeProfile),
       },
     });
@@ -180,7 +181,7 @@ async function cmdList(args: string[]): Promise<void> {
   }
 
   for (const p of profiles.sort((a, b) => (b.lastUsedAt ?? 0) - (a.lastUsedAt ?? 0))) {
-    const marker = p.id === active.id ? chalk.green('✓') : ' ';
+    const marker = p.id === active?.id ? chalk.green('✓') : ' ';
     console.log(`${marker} ${chalk.bold(p.name)} (${p.id})`);
     console.log(`    ${chalk.gray('relay:')} ${p.serverUrl}`);
     if (p.localServerUrl && p.localServerUrl !== p.serverUrl) {
@@ -191,7 +192,7 @@ async function cmdList(args: string[]): Promise<void> {
 }
 
 async function cmdCurrent(args: string[]): Promise<void> {
-  const active = await getActiveServerProfile();
+  const active = await requireActiveServerProfile();
   if (wantsJson(args)) {
     await printJsonEnvelope({
       ok: true,
@@ -345,28 +346,30 @@ async function cmdAdd(args: string[]): Promise<void> {
   }
 
   const created = await addServerProfile({ name, serverUrl, ...(localServerUrl ? { localServerUrl } : {}), webappUrl, use: shouldUse });
-  const active = shouldUse ? created : await getActiveServerProfile();
+  // The first relay added becomes active even without --use.
+  const active = await requireActiveServerProfile();
+  const used = active.id === created.id;
 
   if (json) {
     await printJsonEnvelope({
       ok: true,
       kind: 'server_add',
-      data: { created: summarizeProfile(created), active: summarizeProfile(active), used: shouldUse },
+      data: { created: summarizeProfile(created), active: summarizeProfile(active), used },
     });
     return;
   }
 
-  if (shouldUse) reloadConfiguration();
+  if (used) reloadConfiguration();
   console.log(chalk.green(`✓ Saved relay profile: ${created.name} (${created.id})`));
   const prefix = formatCliCommand(`--server ${created.id}`);
-  if (shouldUse) {
+  if (used) {
     console.log(chalk.gray(`  Active relay is now: ${created.serverUrl}`));
     if (created.localServerUrl && created.localServerUrl !== created.serverUrl) {
       console.log(chalk.gray(`  Local API URL: ${created.localServerUrl}`));
     }
   }
 
-  if (!interactive || shouldUse) {
+  if (!interactive || used) {
     console.log('');
     console.log(chalk.bold('Next steps (optional)'));
     console.log(chalk.gray(`  Start daemon: ${prefix} daemon start`));
@@ -379,7 +382,7 @@ async function cmdAdd(args: string[]): Promise<void> {
   if (startDaemon && !installService) {
     await runCliAction(['--server', created.id, 'daemon', 'start']);
   }
-  if (shouldUse && !installService && !startDaemon) {
+  if (used && !installService && !startDaemon) {
     await runServerSelectionBackgroundServiceFollowUp({
       interactive: isInteractiveTerminal(),
       targetServerUrl: created.serverUrl,
@@ -417,19 +420,23 @@ async function cmdRemove(args: string[]): Promise<void> {
     await printJsonEnvelope({
       ok: true,
       kind: 'server_remove',
-      data: { removed: summarizeProfile(out.removed), active: summarizeProfile(out.active) },
+      data: { removed: summarizeProfile(out.removed), active: out.active ? summarizeProfile(out.active) : null },
     });
     return;
   }
   console.log(chalk.green(`✓ Removed relay profile: ${out.removed.name} (${out.removed.id})`));
-  console.log(chalk.gray(`  Active relay: ${out.active.name} (${out.active.id})`));
+  if (out.active) {
+    console.log(chalk.gray(`  Active relay: ${out.active.name} (${out.active.id})`));
+  } else {
+    console.log(chalk.gray(`  No relay is active. Choose one with "${formatCliCommand('server use <id>')}".`));
+  }
 }
 
 async function cmdTest(args: string[]): Promise<void> {
   const json = wantsJson(args);
   const nonFlagArgs = args.filter((a) => !String(a).startsWith('-'));
   const identifier = String(nonFlagArgs[0] ?? '').trim();
-  const profile = identifier ? await getServerProfile(identifier) : await getActiveServerProfile();
+  const profile = identifier ? await getServerProfile(identifier) : await requireActiveServerProfile();
   const result = await probeServerVersion(profile.localServerUrl ?? profile.serverUrl);
   if (json) {
     await printJsonEnvelope(

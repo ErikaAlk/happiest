@@ -30,7 +30,6 @@ import { formatCliCommand, resolveCliCommandName } from '@/cli/runtime/cliComman
 import { readTailscaleStatusSnapshot } from '@/integrations/tailscale/tailscaleStatus';
 import { resolveProviderCliCommand } from '@/runtime/managedTools/providerCliResolution';
 import { invokeProviderCliInstall } from '@/runtime/managedTools/invokeProviderCliInstall';
-import { DEFAULT_SERVER_NAME, DEFAULT_SERVER_URL } from '@/server/defaultServer';
 import { getActiveServerProfile } from '@/server/serverProfiles';
 import { isLoopbackServerHost } from '@/server/serverUrlClassification';
 import { promptConfirmYesNo } from '@/terminal/prompts/promptConfirmYesNo';
@@ -71,13 +70,12 @@ Usage:
   ${cli} setup [options]
 
 Options:
-  --cloud                 Use ${DEFAULT_SERVER_NAME} without being asked
   --relay <url>           Use a relay you already run
   --this-computer         Install and use a relay on this computer
   --yes                   Ask nothing. Every step that needs no answer runs, then
                           setup stops at signing in, which has to be approved on
                           your phone or in a browser, and names the command that
-                          finishes it. Needs one of --cloud/--relay/--this-computer:
+                          finishes it. Needs --relay or --this-computer:
                           setup never picks a relay for you. Exits non-zero,
                           because setup is unfinished until you sign in.
   --non-interactive       Change nothing. Setup says what it would need and exits
@@ -104,7 +102,7 @@ async function listInstalledAgentIds(): Promise<AgentId[]> {
 }
 
 async function readActiveRelayUrl(): Promise<string | null> {
-    const profile = await getActiveServerProfile().catch(() => null);
+    const profile = await getActiveServerProfile();
     const url = String(profile?.serverUrl ?? '').trim();
     return url || null;
 }
@@ -233,20 +231,18 @@ async function askWhereTheRelayLives(): Promise<SetupRelaySelection> {
         subtitle: 'Connect your devices. Your coding agents run here.',
         question: 'How would you like to connect your devices?',
         choices: [
-            { id: 'cloud', key: 'c', label: `${DEFAULT_SERVER_NAME} (recommended)`, description: new URL(DEFAULT_SERVER_URL).host, isDefault: true },
-            { id: 'existing', key: 'r', label: 'Existing server', description: 'Address from the Happier app or your administrator' },
-            { id: 'thisComputer', key: 't', label: 'Host on this computer', description: 'Installs an additional server; needs a reachable network route' },
+            { id: 'existing', key: 'r', label: 'A server you run', description: 'Its address, for example https://relay.example.com', isDefault: true },
+            { id: 'thisComputer', key: 't', label: 'Host on this computer', description: 'Installs a server here; your devices need a network route to it' },
         ],
     });
     const choice = await promptMultipleChoice(
         setupChoicePrompt.message,
         [
-            { id: 'cloud', keys: ['c', 'cloud', ''], short: 'C' },
-            { id: 'existing', keys: ['r', 'relay'], short: 'r' },
+            { id: 'existing', keys: ['r', 'relay', ''], short: 'R' },
             { id: 'thisComputer', keys: ['t', 'this'], short: 't' },
         ] as const,
         {
-            defaultId: 'cloud',
+            defaultId: 'existing',
             maxAttempts: 3,
             ...(setupChoicePrompt.renderMessage
                 ? { animate: setupChoicePrompt.animate === true, renderMessage: setupChoicePrompt.renderMessage }
@@ -254,10 +250,9 @@ async function askWhereTheRelayLives(): Promise<SetupRelaySelection> {
         },
     );
 
-    if (choice === 'cloud') return { kind: 'cloud' };
     if (choice === 'thisComputer') return { kind: 'thisComputer' };
 
-    const url = (await promptInput('Server address from the Happier app or your administrator: ')).trim();
+    const url = (await promptInput('Address of the server you run: ')).trim();
     if (!url) throw new Error(`A server address is required to continue. Re-run \`${cli} setup\` when you have it.`);
     return { kind: 'existing', url };
 }
@@ -368,11 +363,6 @@ async function runStep(step: SetupStep, unattended: boolean): Promise<boolean> {
                 deferServerSelectionFollowUp: true,
             })) === 0;
         }
-        case 'selectCloudRelay':
-            return (await runCliStep(['server', 'use', 'cloud'], {
-                unattended,
-                deferServerSelectionFollowUp: true,
-            })) === 0;
         case 'authLogin':
             return (await runCliStep(resolveAuthLoginArgv(), { unattended })) === 0;
         case 'setupAgents':
@@ -406,8 +396,8 @@ export async function handleSetupCliCommand(context: CommandContext): Promise<vo
     }
 
     if (parsed.kind === 'invalid') {
-        // Silently ignoring an unknown or contradictory flag is how a misspelled
-        // `--this-computer` became a Cloud account nobody asked for.
+        // Silently ignoring an unknown or contradictory flag would leave setup
+        // choosing a relay nobody named.
         console.error(parsed.message);
         console.error(`Run \`${cli} setup --help\` to see the options.`);
         process.exitCode = 1;
@@ -431,7 +421,7 @@ export async function handleSetupCliCommand(context: CommandContext): Promise<vo
         // nothing about whether the relay still accepts them or whether this
         // machine was ever registered — the two states setup exists to repair.
         resolveActiveServerAuthReadiness(),
-        getActiveServerProfile().catch(() => null),
+        getActiveServerProfile(),
         listInstalledAgentIds(),
     ]);
 

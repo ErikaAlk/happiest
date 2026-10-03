@@ -47,7 +47,7 @@ describe('clearServerScopedAuthStateInSettings', () => {
     expect(out.lastChangesCursorByServerIdByAccountId).toBeUndefined();
   });
 
-  it('clears entries using the sanitized server id key', () => {
+  it('leaves every entry untouched for an id that cannot name a server directory', () => {
     const input: Settings = {
       schemaVersion: 6,
       onboardingCompleted: true,
@@ -60,10 +60,6 @@ describe('clearServerScopedAuthStateInSettings', () => {
 
     const out = clearServerScopedAuthStateInSettings(input, 'cloud/unsafe');
 
-    expect(out.machineIdByServerId).toEqual({ other: 'm2' });
-    expect(out.machineIdByServerIdByAccountId).toEqual({ other: { b: 'm2' } });
-    expect(out.lastTokenSubByServerId).toEqual({ other: 'b' });
-    expect(out.machineIdConfirmedByServerByServerId).toEqual({ other: true });
-    expect(out.lastChangesCursorByServerIdByAccountId).toEqual({ other: { b: 2 } });
+    expect(out).toEqual(input);
   });
 });

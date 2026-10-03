@@ -205,7 +205,7 @@ export function resolveManagedOpenCodeDaemonOwnerIdFromState(
   if (runtimeId && pid !== null && startedAt !== null) {
     return `${runtimeId}:${pid}:${startedAt}`;
   }
-  return runtimeId ?? readNonEmptyString(fallbackActiveServerId) ?? 'cloud';
+  return runtimeId ?? fallbackActiveServerId;
 }
 
 function readCurrentDaemonOwnerIdBestEffort(): string | null {

@@ -52,11 +52,8 @@ describe('server profiles', () => {
         listServerProfiles,
       } = await import('./serverProfiles');
 
-      const before = await getActiveServerProfile();
-      expect(before.id).toBe('cloud');
-      expect(before.name).toBe('Happiest Server');
-      expect(before.serverUrl).toBe('https://happiest.erikaalk.click');
-      expect(before.webappUrl).toBe('https://happiest.erikaalk.click');
+      expect(await listServerProfiles()).toEqual([]);
+      expect(await getActiveServerProfile()).toBeNull();
 
       const created = await addServerProfile({
         name: 'selfhost',
@@ -65,18 +62,48 @@ describe('server profiles', () => {
         use: true,
       });
       expect(created.id).toBe('selfhost');
+      expect((await getActiveServerProfile())?.id).toBe('selfhost');
 
-      const active = await getActiveServerProfile();
-      expect(active.id).toBe('selfhost');
-
-      await useServerProfile('cloud');
-      expect((await getActiveServerProfile()).id).toBe('cloud');
+      await addServerProfile({
+        name: 'other',
+        serverUrl: 'https://other.example.test',
+        webappUrl: 'https://other.example.test',
+        use: true,
+      });
+      expect((await getActiveServerProfile())?.id).toBe('other');
 
       await useServerProfile('SelfHost');
-      expect((await getActiveServerProfile()).id).toBe('selfhost');
+      expect((await getActiveServerProfile())?.id).toBe('selfhost');
 
       const list = await listServerProfiles();
-      expect(list.map((s: { id: string }) => s.id).sort()).toEqual(['cloud', 'selfhost']);
+      expect(list.map((s: { id: string }) => s.id).sort()).toEqual(['other', 'selfhost']);
+    });
+  });
+
+  it('makes the first server added the active one', async () => {
+    await withTempDir('happier-cli-servers-first-', async (homeDir) => {
+      patchServerProfileEnv({
+        HAPPIEST_HOME_DIR: homeDir,
+        HAPPIEST_SERVER_URL: undefined,
+        HAPPIEST_WEBAPP_URL: undefined,
+      });
+
+      vi.resetModules();
+      const { addServerProfile, getActiveServerProfile } = await import('./serverProfiles');
+
+      await addServerProfile({
+        name: 'selfhost',
+        serverUrl: 'https://stack.example.test',
+        webappUrl: 'https://app.example.test',
+      });
+      expect((await getActiveServerProfile())?.id).toBe('selfhost');
+
+      await addServerProfile({
+        name: 'other',
+        serverUrl: 'https://other.example.test',
+        webappUrl: 'https://other.example.test',
+      });
+      expect((await getActiveServerProfile())?.id).toBe('selfhost');
     });
   });
 
@@ -98,13 +125,21 @@ describe('server profiles', () => {
         use: true,
       });
 
-      expect((await getActiveServerProfile()).id).toBe('selfhost');
+      await addServerProfile({
+        name: 'other',
+        serverUrl: 'https://other.example.test',
+        webappUrl: 'https://other.example.test',
+      });
+
+      expect((await getActiveServerProfile())?.id).toBe('selfhost');
 
       await expect(removeServerProfile('selfhost')).rejects.toThrow(/active/i);
 
+      // Removing the active server never picks another one on the user's behalf.
       const out = await removeServerProfile('selfhost', { force: true });
       expect(out.removed.id).toBe('selfhost');
-      expect(out.active.id).toBe('cloud');
+      expect(out.active).toBeNull();
+      expect(await getActiveServerProfile()).toBeNull();
     });
   });
 
@@ -126,9 +161,9 @@ describe('server profiles', () => {
         use: true,
       });
 
-      expect((await getActiveServerProfile()).id).toBe('selfhost');
+      expect((await getActiveServerProfile())?.id).toBe('selfhost');
       expect((await getServerProfile('SelfHost')).id).toBe('selfhost');
-      expect((await getActiveServerProfile()).id).toBe('selfhost');
+      expect((await getActiveServerProfile())?.id).toBe('selfhost');
     });
   });
 
@@ -150,30 +185,9 @@ describe('server profiles', () => {
         use: true,
       });
 
-      expect((await getActiveServerProfile()).id).toBe('remote-dev-tui');
+      expect((await getActiveServerProfile())?.id).toBe('remote-dev-tui');
       expect((await getServerProfile('http://127.0.0.1:52753/')).id).toBe('remote-dev-tui');
-      expect((await getActiveServerProfile()).id).toBe('remote-dev-tui');
-    });
-  });
-
-  it('refuses to create a server profile with reserved name "cloud"', async () => {
-    await withTempDir('happier-cli-servers-reserved-', async (homeDir) => {
-      patchServerProfileEnv({
-        HAPPIEST_HOME_DIR: homeDir,
-        HAPPIEST_SERVER_URL: undefined,
-        HAPPIEST_WEBAPP_URL: undefined,
-      });
-
-      vi.resetModules();
-      const { addServerProfile } = await import('./serverProfiles');
-
-      await expect(
-        addServerProfile({
-          name: 'cloud',
-          serverUrl: 'https://stack.example.test',
-          webappUrl: 'https://app.example.test',
-        }),
-      ).rejects.toThrow(/reserved/i);
+      expect((await getActiveServerProfile())?.id).toBe('remote-dev-tui');
     });
   });
 
@@ -231,7 +245,7 @@ describe('server profiles', () => {
 
       expect(updated.id).toBe(created.id);
       expect(updated.localServerUrl).toBe('http://127.0.0.1:3012');
-      expect(await listServerProfiles()).toHaveLength(2);
+      expect(await listServerProfiles()).toHaveLength(1);
     });
   });
 
@@ -471,6 +485,8 @@ describe('server profiles', () => {
       reloadConfiguration();
 
       const { addServerProfile, upsertServerProfileByUrl } = await import('./serverProfiles');
+      // Another server is active, so adding the named profile does not select it yet.
+      await addServerProfile({ name: 'elsewhere', serverUrl: 'https://elsewhere.example.test', webappUrl: 'https://elsewhere.example.test' });
       const named = await addServerProfile({
         name: 'VM A self-host preview',
         serverUrl: 'http://localhost:33005',
@@ -525,6 +541,8 @@ describe('server profiles', () => {
       reloadConfiguration();
 
       const { addServerProfile, useServerProfile } = await import('./serverProfiles');
+      // Another server is active, so adding the named profile does not select it yet.
+      await addServerProfile({ name: 'elsewhere', serverUrl: 'https://elsewhere.example.test', webappUrl: 'https://elsewhere.example.test' });
       const named = await addServerProfile({
         name: 'VM A self-host preview',
         serverUrl: 'http://localhost:33005',

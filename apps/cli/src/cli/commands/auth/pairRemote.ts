@@ -5,7 +5,7 @@ import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { approveTerminalAuthRequest } from '@/auth/terminalAuthApproval';
 import { writeJsonStdout } from '@/cli/output/jsonEnvelope';
 import { configuration } from '@/configuration';
-import { deriveDefaultWebappUrl } from '@/server/defaultServer';
+import { deriveDefaultWebappUrl } from '@/server/webappUrl';
 import { promptForCurrentMachineReachableServerUrl } from '@/server/reachability/promptCurrentMachineReachableServerUrl';
 import { applyServerSelectionFromArgs } from '@/server/serverSelection';
 import { isLoopbackHttpServerUrl } from '@/server/serverUrlClassification';

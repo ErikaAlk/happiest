@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { reloadConfiguration } from '@/configuration';
-import { getActiveServerProfile } from '@/server/serverProfiles';
+import { addServerProfile, requireActiveServerProfile } from '@/server/serverProfiles';
 import { createEnvKeyScope } from '@/testkit/env/envScope';
 import { createTempDir, removeTempDir } from '@/testkit/fs/tempDir';
 import { captureConsoleLogAndMuteStdout } from '@/testkit/logger/captureOutput';
@@ -181,7 +181,8 @@ describe('happier relay --json', () => {
             expect(parsed.data?.serverUrl).toBe('https://api.example.test');
             expect(parsed.data?.comparableKey).toBe('https://api.example.test');
             expect(parsed.data?.changed).toBe(true);
-            expect(parsed.data?.used).toBe(false);
+            // The first relay on a home with none becomes the active one, even without --use.
+            expect(parsed.data?.used).toBe(true);
             expect(process.exitCode).toBe(0);
         } finally {
             output.restore();
@@ -207,7 +208,7 @@ describe('happier relay --json', () => {
             expect(parsed.data?.used).toBe(true);
             expect(process.exitCode).toBe(0);
 
-            const active = await getActiveServerProfile();
+            const active = await requireActiveServerProfile();
             expect(active.serverUrl).toBe('https://api.example.test');
         } finally {
             output.restore();
@@ -216,6 +217,14 @@ describe('happier relay --json', () => {
     });
 
     it('prints a resolved-target JSON envelope for the active relay profile', async () => {
+        await addServerProfile({
+            name: 'my relay',
+            serverUrl: 'https://api.example.test',
+            webappUrl: 'https://app.example.test',
+            use: true,
+        });
+        reloadConfiguration();
+
         const output = captureConsoleLogAndMuteStdout();
         const prevExitCode = process.exitCode;
         process.exitCode = undefined;
@@ -231,10 +240,33 @@ describe('happier relay --json', () => {
             const parsed = JSON.parse(output.logs.join('\n').trim());
             expect(parsed.ok).toBe(true);
             expect(parsed.kind).toBe('relay_inspect_target');
-            expect(parsed.data?.active?.serverUrl).toBe('https://happiest.erikaalk.click');
-            expect(parsed.data?.active?.webappUrl).toBe('https://happiest.erikaalk.click');
-            expect(parsed.data?.active?.comparableKey).toBe('https://happiest.erikaalk.click');
+            expect(parsed.data?.active?.serverUrl).toBe('https://api.example.test');
+            expect(parsed.data?.active?.webappUrl).toBe('https://app.example.test');
+            expect(parsed.data?.active?.comparableKey).toBe('https://api.example.test');
             expect(process.exitCode).toBe(0);
+        } finally {
+            output.restore();
+            process.exitCode = prevExitCode;
+        }
+    });
+
+    it('reports that no server is configured when a fresh home has no relay profile', async () => {
+        const output = captureConsoleLogAndMuteStdout();
+        const prevExitCode = process.exitCode;
+        process.exitCode = undefined;
+        try {
+            await commandRegistry.relay({
+                args: ['relay', 'inspect-target', '--json'],
+                rawArgv: ['node', 'happiest', 'relay', 'inspect-target', '--json'],
+                terminalRuntime: null,
+            });
+
+            const parsed = JSON.parse(output.logs.join('\n').trim());
+            expect(parsed.ok).toBe(false);
+            expect(parsed.kind).toBe('relay_inspect_target');
+            expect(parsed.error?.code).toBe('not_authenticated');
+            expect(parsed.error?.message).toContain('No server configured');
+            expect(process.exitCode).toBe(1);
         } finally {
             output.restore();
             process.exitCode = prevExitCode;
@@ -329,7 +361,7 @@ describe('happier relay --json', () => {
             expect(parsed.kind).toBe('relay_set');
             expect(parsed.data?.serverUrl).toBe('https://api.example.test');
 
-            const active = await getActiveServerProfile();
+            const active = await requireActiveServerProfile();
             expect(active.serverUrl).toBe('https://api.example.test');
             expect(active.webappUrl).toBe('https://app.example.test');
             expect(active.localServerUrl).toBe('http://127.0.0.1:3005');
@@ -616,7 +648,6 @@ describe('happier relay --json', () => {
             expect(currentParsed.ok).toBe(true);
             expect(currentParsed.kind).toBe('server_current');
             expect(currentParsed.data?.active?.serverUrl).toBe(relayUrl);
-            expect(currentParsed.data?.active?.id).not.toBe('cloud');
             expect(process.exitCode).toBe(0);
         } finally {
             currentOutput.restore();
@@ -639,8 +670,14 @@ describe('happier relay --json', () => {
 
         const relayUrl = 'http://127.0.0.1:3005';
         vi.resetModules();
-        const { getActiveServerProfile, listServerProfiles } = await import('@/server/serverProfiles');
-        const activeBeforeInstall = await getActiveServerProfile();
+        const { addServerProfile, listServerProfiles, requireActiveServerProfile } = await import('@/server/serverProfiles');
+        await addServerProfile({
+            name: 'existing relay',
+            serverUrl: 'https://api.example.test',
+            webappUrl: 'https://app.example.test',
+            use: true,
+        });
+        const activeBeforeInstall = await requireActiveServerProfile();
         vi.doMock('@happier-dev/cli-common/relayHost', () => ({
             createRelayHostEngine: () => ({
                 readStatus: async () => ({
@@ -680,7 +717,7 @@ describe('happier relay --json', () => {
             process.exitCode = prevExitCode;
         }
 
-        const activeAfterInstall = await getActiveServerProfile();
+        const activeAfterInstall = await requireActiveServerProfile();
         expect(activeAfterInstall.id).toBe(activeBeforeInstall.id);
         expect(activeAfterInstall.serverUrl).toBe(activeBeforeInstall.serverUrl);
 
@@ -762,8 +799,8 @@ describe('happier relay --json', () => {
             vi.unmock('@happier-dev/cli-common/relayHost');
         }
 
-        const { getActiveServerProfile } = await import('@/server/serverProfiles');
-        const active = await getActiveServerProfile();
+        const { requireActiveServerProfile } = await import('@/server/serverProfiles');
+        const active = await requireActiveServerProfile();
         expect(active.id).toBe(publicProfile.id);
         expect(active.serverUrl).toBe(publicRelayUrl);
         expect(active.localServerUrl).toBe(localRelayUrl);

@@ -45,10 +45,11 @@ async function resolveDefaultFollowingRelayMatch(
   runtime: DaemonServiceCliRuntime,
 ): Promise<boolean> {
   const settings = await readSettings().catch(() => null);
-  const activeServerId = String(settings?.activeServerId ?? '').trim() || 'cloud';
-  const activeServer = settings?.servers?.[activeServerId];
+  const activeServerId = String(settings?.activeServerId ?? '').trim();
+  const activeServer = activeServerId ? settings?.servers?.[activeServerId] : undefined;
   if (!activeServer) {
-    return runtime.instanceId === 'cloud';
+    // No server is selected yet: the default-following service is current when this runtime has none either.
+    return runtime.activeServerId === null;
   }
 
   if (runtime.instanceId !== activeServer.id) {
@@ -131,10 +132,11 @@ function resolveDefaultFollowingRelayMatchFromSettings(
   settings: SettingsSnapshot | null,
   runtime: DaemonServiceCliRuntime,
 ): boolean {
-  const activeServerId = String(settings?.activeServerId ?? '').trim() || 'cloud';
-  const activeServer = settings?.servers?.[activeServerId];
+  const activeServerId = String(settings?.activeServerId ?? '').trim();
+  const activeServer = activeServerId ? settings?.servers?.[activeServerId] : undefined;
   if (!activeServer) {
-    return runtime.instanceId === 'cloud';
+    // No server is selected yet: the default-following service is current when this runtime has none either.
+    return runtime.activeServerId === null;
   }
 
   if (runtime.instanceId !== activeServer.id) {

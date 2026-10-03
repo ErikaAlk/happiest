@@ -15,7 +15,6 @@ import {
     PUSH_NOTIFICATION_ANDROID_CHANNEL_IDS,
     PUSH_NOTIFICATION_CATEGORY_IDS,
 } from '@happier-dev/protocol'
-import { DEFAULT_SERVER_URL } from '@/server/defaultServer'
 
 export interface PushToken {
     id: string
@@ -101,7 +100,7 @@ export class PushNotificationClient {
     private pushTokenFetchFailureCooldownUntilMs = 0
     private didLogPushTokenFetchCooldown = false
 
-    constructor(token: string, baseUrl: string = DEFAULT_SERVER_URL) {
+    constructor(token: string, baseUrl: string) {
         this.token = token
         this.baseUrl = baseUrl
         this.expo = new Expo()

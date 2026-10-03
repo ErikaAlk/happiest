@@ -52,12 +52,6 @@ describe('buildSetupPlan', () => {
     expect(plan.steps.map((step) => step.kind)).toEqual(['alreadyConfigured']);
   });
 
-  it('goes straight to sign-in for Happier Cloud', () => {
-    const plan = buildSetupPlan({ ...base, relaySelection: { kind: 'cloud' } });
-
-    expect(plan.steps.map((step) => step.kind)).toEqual(['authLogin']);
-  });
-
   it('selects a relay before signing in, because credentials are per relay', () => {
     const plan = buildSetupPlan({
       ...base,
@@ -73,18 +67,18 @@ describe('buildSetupPlan', () => {
     // the finish line, after pairing, as a raw resolver error.
     const plan = buildSetupPlan({
       ...base,
-      relaySelection: { kind: 'cloud' },
+      relaySelection: { kind: 'existing', url: 'https://relay.example.com' },
       installedAgentIds: [],
     });
 
     expect(plan.stop).toBeNull();
-    expect(plan.steps.map((step) => step.kind)).toEqual(['authLogin', 'setupAgents']);
+    expect(plan.steps.map((step) => step.kind)).toEqual(['selectRelay', 'authLogin', 'setupAgents']);
   });
 
   it('does not warn when at least one agent is installed', () => {
     const plan = buildSetupPlan({
       ...base,
-      relaySelection: { kind: 'cloud' },
+      relaySelection: { kind: 'existing', url: 'https://relay.example.com' },
       installedAgentIds: ['codex'],
     });
 
@@ -187,28 +181,6 @@ describe('buildSetupPlan', () => {
   });
 });
 
-describe('buildSetupPlan — choosing Happier Cloud', () => {
-  it('switches an existing custom relay back to Cloud', () => {
-    // The failure this guards: a half-finished earlier setup left a custom relay
-    // active. Choosing Cloud emitted no selection step, so `auth login` bound the
-    // account to the custom relay the user had just declined.
-    const plan = buildSetupPlan({
-      ...base,
-      activeRelayUrl: 'https://relay.example.com',
-      relaySelection: { kind: 'cloud' },
-    });
-
-    expect(plan.steps.map((step) => step.kind)).toEqual(['selectCloudRelay', 'authLogin']);
-  });
-
-  it('does not switch relays when none is configured yet', () => {
-    // A fresh machine already defaults to Cloud; selecting it is a no-op.
-    const plan = buildSetupPlan({ ...base, relaySelection: { kind: 'cloud' } });
-
-    expect(plan.steps.map((step) => step.kind)).toEqual(['authLogin']);
-  });
-});
-
 describe('buildSetupPlan — readiness is more than credential bytes', () => {
   it('keeps an unavailable active relay selected instead of starting another sign-in', () => {
     const unavailableAuth = {
@@ -225,7 +197,8 @@ describe('buildSetupPlan — readiness is more than credential bytes', () => {
     expect(plan.steps).toEqual([]);
     expect(plan.stop?.reason).toBe('relay-unavailable');
     expect(plan.stop?.detail).toContain('temporarily-unavailable.example.com');
-    expect(plan.stop?.detail).toContain('happiest setup --cloud');
+    expect(plan.stop?.detail).toContain('happiest setup --relay <url>');
+    expect(plan.stop?.detail).not.toContain('--cloud');
   });
 
   it('does not call a machine whose credentials the relay rejected already set up', () => {
@@ -283,12 +256,19 @@ describe('buildSetupPlan — no terminal at all', () => {
     const plan = buildSetupPlan({
       ...base,
       autonomy: 'createNothing',
-      relaySelection: { kind: 'cloud' },
+      relaySelection: { kind: 'existing', url: 'https://relay.example.com' },
     });
 
     expect(plan.steps).toEqual([]);
     expect(plan.stop?.reason).toBe('needs-interactive');
     expect(plan.stop?.detail).toContain('--yes');
+  });
+
+  it('names the relay flags when nothing was chosen', () => {
+    const plan = buildSetupPlan({ ...base, autonomy: 'createNothing' });
+
+    expect(plan.stop?.detail).toContain('--relay <url> --yes');
+    expect(plan.stop?.detail).not.toContain('--cloud');
   });
 
   it('creates nothing for a relay hosted on this computer', () => {
@@ -305,19 +285,6 @@ describe('buildSetupPlan — no terminal at all', () => {
 });
 
 describe('buildSetupPlan — unattended runs (--yes)', () => {
-  it('points the machine at Happier Cloud and stops at the step a person has to approve', () => {
-    const plan = buildSetupPlan({
-      ...base,
-      autonomy: 'unattended',
-      activeRelayUrl: 'https://relay.example.com',
-      relaySelection: { kind: 'cloud' },
-    });
-
-    expect(plan.steps.map((step) => step.kind)).toEqual(['selectCloudRelay']);
-    expect(plan.stop?.reason).toBe('needs-sign-in');
-    expect(plan.stop?.detail).toContain('happiest auth login');
-  });
-
   it('never plans a sign-in that has to be approved on a device', () => {
     const plan = buildSetupPlan({
       ...base,
@@ -328,6 +295,7 @@ describe('buildSetupPlan — unattended runs (--yes)', () => {
     expect(plan.steps.map((step) => step.kind)).toEqual(['selectRelay']);
     expect(plan.steps.map((step) => step.kind)).not.toContain('authLogin');
     expect(plan.stop?.reason).toBe('needs-sign-in');
+    expect(plan.stop?.detail).toContain('happiest auth login');
   });
 
   it('installs a relay on this computer but never offers to install Tailscale', () => {
@@ -355,18 +323,20 @@ describe('buildSetupPlan — unattended runs (--yes)', () => {
 
     expect(plan.steps).toEqual([]);
     expect(plan.stop?.reason).toBe('needs-relay-choice');
-    expect(plan.stop?.detail).toContain('--cloud');
+    expect(plan.stop?.detail).toContain('--relay https://relay.example.com --yes');
+    expect(plan.stop?.detail).toContain('--this-computer --yes');
+    expect(plan.stop?.detail).not.toContain('--cloud');
   });
 
   it('still warns about a missing coding agent', () => {
     const plan = buildSetupPlan({
       ...base,
       autonomy: 'unattended',
-      relaySelection: { kind: 'cloud' },
+      relaySelection: { kind: 'existing', url: 'https://relay.example.com' },
       installedAgentIds: [],
     });
 
-    expect(plan.steps.map((step) => step.kind)).toEqual(['warnNoAgent']);
+    expect(plan.steps.map((step) => step.kind)).toEqual(['selectRelay', 'warnNoAgent']);
   });
 
   it('leaves an already configured machine alone', () => {
@@ -393,24 +363,25 @@ describe('parseSetupArgs', () => {
   });
 
   it('rejects two different answers to the same question', () => {
-    const parsed = parseSetupArgs(['--cloud', '--relay', 'https://relay.example.com']);
+    const parsed = parseSetupArgs(['--this-computer', '--relay', 'https://relay.example.com']);
 
     expect(parsed.kind).toBe('invalid');
   });
 
-  it('rejects --this-computer combined with --cloud', () => {
-    expect(parseSetupArgs(['--this-computer', '--cloud']).kind).toBe('invalid');
-  });
-
   it('rejects --relay without a URL', () => {
     expect(parseSetupArgs(['--relay']).kind).toBe('invalid');
-    expect(parseSetupArgs(['--relay', '--cloud']).kind).toBe('invalid');
+    expect(parseSetupArgs(['--relay', '--yes']).kind).toBe('invalid');
   });
 
   it('rejects an option it does not know', () => {
-    // Silently ignoring a typo is how `--this-computer` misspelled once became a
-    // Cloud account nobody asked for.
+    // Silently ignoring a typo would leave setup choosing a relay nobody named.
     expect(parseSetupArgs(['--this-comptuer']).kind).toBe('invalid');
+  });
+
+  it('rejects --cloud, because there is no built-in relay to choose', () => {
+    const parsed = parseSetupArgs(['--cloud']);
+
+    expect(parsed.kind).toBe('invalid');
   });
 
   it('recognises help', () => {
@@ -422,9 +393,9 @@ describe('parseSetupArgs', () => {
     // `--yes` says "do everything that needs no answer"; `--non-interactive`
     // says "change nothing". Collapsing them into one boolean is what made
     // `--yes` refuse to do the work it was asked to do.
-    expect(parseSetupArgs(['--yes', '--cloud'])).toEqual({
+    expect(parseSetupArgs(['--yes', '--this-computer'])).toEqual({
       kind: 'run',
-      relaySelection: { kind: 'cloud' },
+      relaySelection: { kind: 'thisComputer' },
       assumeYes: true,
       forcedNonInteractive: false,
     });
@@ -437,7 +408,7 @@ describe('parseSetupArgs', () => {
   });
 
   it('refuses --yes together with --non-interactive', () => {
-    const parsed = parseSetupArgs(['--cloud', '--yes', '--non-interactive']);
+    const parsed = parseSetupArgs(['--this-computer', '--yes', '--non-interactive']);
 
     expect(parsed.kind).toBe('invalid');
   });

@@ -7,7 +7,6 @@ import { displayQRCode } from "./qrcode";
 import { delay } from "@/utils/time";
 import { writeCredentialsLegacy, readCredentials, readSettings, updateSettings, Credentials, writeCredentialsDataKey } from "@/persistence";
 import { generateWebAuthUrl } from "@/api/webAuth";
-import { sanitizeServerIdForFilesystem } from "@/server/serverId";
 import { openBrowser } from '@/ui/openBrowser';
 import { AuthSelector, AuthMethod } from "./ink/AuthSelector";
 import { render } from 'ink';
@@ -154,25 +153,11 @@ async function applyAutoPublicServerUrlFromTailscaleServeBestEffort(): Promise<v
 }
 
 function rehydrateRelayScopeEnvFromConfiguration(): void {
-    const activeServerId = sanitizeServerIdForFilesystem(configuration.activeServerId ?? '', '');
-    if (activeServerId) {
-        process.env.HAPPIEST_ACTIVE_SERVER_ID = activeServerId;
-    }
-
-    const serverUrl = String(configuration.serverUrl ?? '').trim();
-    if (serverUrl) {
-        process.env.HAPPIEST_SERVER_URL = serverUrl;
-    }
-
-    const publicServerUrl = String(configuration.publicServerUrl ?? '').trim();
-    if (publicServerUrl) {
-        process.env.HAPPIEST_PUBLIC_SERVER_URL = publicServerUrl;
-    }
-
-    const webappUrl = String(configuration.webappUrl ?? '').trim();
-    if (webappUrl) {
-        process.env.HAPPIEST_WEBAPP_URL = webappUrl;
-    }
+    const server = configuration.requireActiveServer();
+    process.env.HAPPIEST_ACTIVE_SERVER_ID = server.id;
+    process.env.HAPPIEST_SERVER_URL = server.serverUrl;
+    process.env.HAPPIEST_PUBLIC_SERVER_URL = server.serverUrl;
+    process.env.HAPPIEST_WEBAPP_URL = server.webappUrl;
 }
 
 export async function doAuth(): Promise<Credentials | null> {
@@ -740,12 +725,8 @@ export async function ensureMachineIdInSettings(opts?: {
     const forceNew = opts?.forceNew ?? false;
     const accountId = typeof opts?.accountId === 'string' ? opts.accountId.trim() : '';
 
+    const activeServerId = configuration.activeServerId;
     const settings = await updateSettings(async s => {
-        const activeServerId = sanitizeServerIdForFilesystem(
-            configuration.activeServerId ?? s.activeServerId ?? 'cloud',
-            'cloud',
-        );
-
         const nextMachineIdByServerId = { ...(s.machineIdByServerId ?? {}) };
         const prevMachineIdForServer = nextMachineIdByServerId[activeServerId];
         const nextLastSubByServerId = { ...(s.lastTokenSubByServerId ?? {}) };
@@ -861,10 +842,7 @@ export async function ensureMachineIdForCredentials(
     if (accountId) {
         try {
             const settings = await readSettings();
-            const activeServerId = sanitizeServerIdForFilesystem(
-                configuration.activeServerId ?? settings.activeServerId ?? 'cloud',
-                'cloud',
-            );
+            const activeServerId = configuration.activeServerId;
             activeServerIdForLog = activeServerId;
             const prev = settings.lastTokenSubByServerId?.[activeServerId];
             previousAccountId = typeof prev === 'string' ? prev.trim() : null;
@@ -898,6 +876,8 @@ export async function authAndSetupMachineIfNeeded(opts: Readonly<{
     machineId: string;
 }> {
     logger.debug('[AUTH] Starting auth and machine setup...');
+    // Sign-in, daemon start and sessions all come through here; with no server there is nothing to sign in to.
+    configuration.requireActiveServer();
 
     // Step 1: Handle authentication
     let credentials = await readCredentials();

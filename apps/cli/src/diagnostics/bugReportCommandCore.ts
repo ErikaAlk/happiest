@@ -27,7 +27,7 @@ import {
 } from '@/diagnostics/bugReportArtifacts';
 import { collectBugReportMachineDiagnosticsSnapshot } from '@/diagnostics/bugReportMachineDiagnostics';
 import type { ServerProfile } from '@/server/serverProfiles';
-import { getActiveServerProfile } from '@/server/serverProfiles';
+import { requireActiveServerProfile } from '@/server/serverProfiles';
 import { isInteractiveTerminal, promptInput } from '@/cli/commands/server/commandUtilities';
 import {
   bugReportUsage,
@@ -89,7 +89,7 @@ export type BugReportCommandDependencies = {
 };
 
 const DEFAULT_DEPS: BugReportCommandDependencies = {
-  getActiveServerProfile: async () => await getActiveServerProfile(),
+  getActiveServerProfile: async () => await requireActiveServerProfile(),
   fetchBugReportsFeature: fetchBugReportsFeatureFromServer,
   collectDiagnosticsArtifacts: collectBugReportDiagnosticsArtifacts,
   submitBugReport: submitBugReportToService,

@@ -233,6 +233,7 @@ import { serializeDaemonInitialGoalForEnv, HAPPIER_DAEMON_INITIAL_GOAL_ENV_KEY }
 import { resolveExistingSessionAttachContext } from './sessionEncryption/resolveExistingSessionAttachContext';
 import { resolveWaitForAuthConfig } from './startup/waitForAuthConfig';
 import { ensureSessionDirectory } from './startup/ensureSessionDirectory';
+import { waitForActiveServer } from './startup/waitForActiveServer';
 import { waitForInitialCredentials } from './startup/waitForInitialCredentials';
 import { resolveDaemonDiagnosticSubsystemGates } from './startup/diagnosticSubsystemGates';
 import { createDaemonEventLoopStallMonitor } from './diagnostics/daemonEventLoopStallMonitor';
@@ -1591,6 +1592,18 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
 
   const isInteractive = Boolean(process.stdin.isTTY && process.stdout.isTTY);
   const { waitForAuthEnabled, waitForAuthTimeoutMs } = resolveWaitForAuthConfig(process.env);
+
+  // Everything below runs for the active server (state, lock and credentials live under it).
+  const serverGate = await waitForActiveServer({
+    isInteractive,
+    waitForAuthEnabled,
+    waitForAuthTimeoutMs,
+    hasActiveServer: () => configuration.activeServer !== null,
+    refresh: () => reloadConfiguration(),
+    resolvesWhenShutdownRequested,
+    logger,
+  });
+  if (serverGate === 'shutdown') return;
 
   let daemonLockHandle: Awaited<ReturnType<typeof acquireDaemonLock>> = null;
   let publishedDaemonStateOwner: Readonly<{ pid: number; startedAt: number }> | null = null;

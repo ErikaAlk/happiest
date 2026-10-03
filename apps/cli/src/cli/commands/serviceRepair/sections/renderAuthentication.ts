@@ -29,7 +29,7 @@ export function renderAuthentication(
     return [
       sectionHeader(SECTION_HEADER),
       `  ${glyph.info()} ${severity.info('No server profiles configured.')}`,
-      `    ${glyph.arrow()} sign in: ${code(authSignInCommand(invoker))}`,
+      `    ${glyph.arrow()} connect to your Relay: ${code(`${invoker} setup`)}`,
     ];
   }
   if (profiles.length === 0) return [];

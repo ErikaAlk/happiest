@@ -1,5 +1,5 @@
 import type { Settings } from '@/persistence';
-import { sanitizeServerIdForFilesystem } from '@/server/serverId';
+import { toFilesystemSafeServerId } from '@/server/serverId';
 
 function deleteKey<T extends Record<string, unknown>>(obj: T | undefined, key: string): T | undefined {
   if (!obj) return obj;
@@ -10,9 +10,9 @@ function deleteKey<T extends Record<string, unknown>>(obj: T | undefined, key: s
 }
 
 export function clearServerScopedAuthStateInSettings(settings: Settings, serverId: string): Settings {
-  const rawTarget = String(serverId ?? '').trim();
-  if (!rawTarget) return settings;
-  const target = sanitizeServerIdForFilesystem(rawTarget, 'cloud');
+  // Server-scoped entries are keyed by filesystem-safe profile ids; any other id owns none.
+  const target = toFilesystemSafeServerId(String(serverId ?? ''));
+  if (!target) return settings;
 
   const nextMachineIds = deleteKey(settings.machineIdByServerId, target);
   const nextMachineIdsByAccountId = deleteKey(settings.machineIdByServerIdByAccountId, target);

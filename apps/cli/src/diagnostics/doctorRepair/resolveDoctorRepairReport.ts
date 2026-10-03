@@ -234,8 +234,8 @@ function buildAutomaticStartupEntries(params: Readonly<{
   // reality, and `relayUrl` isn't stored in the plist for default-following.
   // `overrideActiveServerId` lets `doctor repair --server <id>` scope this
   // resolution to a specific profile without mutating settings.
-  const activeServerId = String(params.overrideActiveServerId ?? configuration.activeServerId ?? '').trim() || null;
-  const activeRelayUrl = String(configuration.serverUrl ?? '').trim() || null;
+  const activeServerId = String(params.overrideActiveServerId ?? configuration.activeServer?.id ?? '').trim() || null;
+  const activeRelayUrl = String(configuration.activeServer?.serverUrl ?? '').trim() || null;
 
   return params.inventory.map((e): AutomaticStartupEntry => {
     const ringId = e.ring as PublicReleaseRingId;
@@ -312,8 +312,9 @@ function buildCurrentlyRunningEntries(params: Readonly<{
   // `configuration` (already loaded). Otherwise fall back to deriving it
   // from loopback-style serverIds (`127.0.0.1-<port>`) — the common shape
   // for local relay profiles.
-  const relayUrl = serverId === configuration.activeServerId
-    ? (configuration.serverUrl ?? null)
+  const activeServer = configuration.activeServer;
+  const relayUrl = activeServer && serverId === activeServer.id
+    ? activeServer.serverUrl
     : (relayUrlFromLoopbackServerId(serverId) ?? null);
   return [{
     serverId,
@@ -410,7 +411,7 @@ async function resolveAuthContext(params: Readonly<{
   const targetProfileExists = params.targetServerId === null
     ? null
     : activeProfile !== null;
-  const activeServerUrl = activeProfile?.serverUrl ?? configuration.serverUrl ?? null;
+  const activeServerUrl = activeProfile?.serverUrl ?? configuration.activeServer?.serverUrl ?? null;
 
   // Live expiry check for the active profile only. The credentials file is
   // per-home, so `credentials.token` is the token we'd use against whichever

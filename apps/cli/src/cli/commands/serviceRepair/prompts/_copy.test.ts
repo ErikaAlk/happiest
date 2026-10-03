@@ -106,10 +106,10 @@ describe('serviceRepair prompt copy', () => {
     expect(copy).not.toContain('happiest-dev auth --server company');
   });
 
-  it('names the parsed sign-in command when no server profile exists yet', () => {
+  it('points a computer with no server profile at setup and server add', () => {
     const copy = copyNoServersConfigured('happiest-dev');
 
-    expect(copy).toContain('  happiest-dev auth login');
-    expect(copy.join('\n')).not.toMatch(/^\s*happiest-dev auth\s*$/m);
+    expect(copy).toContain('  happiest-dev setup');
+    expect(copy).toContain('  happiest-dev server add --server-url <url> --use');
   });
 });

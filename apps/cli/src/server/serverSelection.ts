@@ -1,6 +1,6 @@
 import { reloadConfiguration, configuration } from '@/configuration';
 import { addServerProfile, getServerProfile, useServerProfile } from '@/server/serverProfiles';
-import { deriveDefaultWebappUrl } from '@/server/defaultServer';
+import { deriveDefaultWebappUrl } from '@/server/webappUrl';
 import { deriveServerIdFromUrl } from '@/server/serverId';
 
 function takeFlagValue(args: string[], name: string): { value: string | null; rest: string[] } {

@@ -108,10 +108,10 @@ export async function readDaemonStatusSnapshot(): Promise<DaemonStatusSnapshot> 
     readDaemonState().catch(() => null),
   ]);
 
-  const activeServerId = configuration.activeServerId;
-  const activeServer = settings.servers?.[activeServerId];
-  const localServerUrl = typeof activeServer?.localServerUrl === 'string' && activeServer.localServerUrl.trim()
-    ? activeServer.localServerUrl.trim()
+  const server = configuration.activeServer;
+  const activeServerProfile = server ? settings.servers?.[server.id] : undefined;
+  const localServerUrl = typeof activeServerProfile?.localServerUrl === 'string' && activeServerProfile.localServerUrl.trim()
+    ? activeServerProfile.localServerUrl.trim()
     : null;
 
   const pid = typeof daemonState?.pid === 'number' ? daemonState.pid : null;
@@ -126,14 +126,16 @@ export async function readDaemonStatusSnapshot(): Promise<DaemonStatusSnapshot> 
   const daemonRunning = runtimeConvergence.controlReachable;
 
   return {
-    server: {
-      activeServerId,
-      serverUrl: configuration.serverUrl,
-      localServerUrl,
-      publicServerUrl: configuration.publicServerUrl,
-      webappUrl: configuration.webappUrl,
-      comparableKey: resolveComparableKey(configuration.publicServerUrl || configuration.serverUrl),
-    },
+    server: server
+      ? {
+          activeServerId: server.id,
+          serverUrl: server.serverUrl,
+          localServerUrl,
+          publicServerUrl: server.serverUrl,
+          webappUrl: server.webappUrl,
+          comparableKey: resolveComparableKey(server.serverUrl),
+        }
+      : null,
     daemon: {
       running: daemonRunning,
       pid,

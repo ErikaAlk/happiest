@@ -24,6 +24,30 @@ afterEach(() => {
 });
 
 describe('happier auth status --json', () => {
+  it('tells a computer that has no server yet to run setup', async () => {
+    try {
+      await withTempDir('happier-auth-status-no-server-', async (home) => {
+        const output = captureConsoleText();
+
+        try {
+          envScope.patch({ HAPPIEST_HOME_DIR: home, HAPPIEST_SERVER_URL: undefined, HAPPIEST_WEBAPP_URL: undefined, HAPPIEST_ACTIVE_SERVER_ID: undefined });
+          reloadConfiguration();
+
+          await handleAuthCommand(['status']);
+
+          expect(output.text()).toContain('No server configured');
+          expect(output.text()).toMatch(/setup"/);
+        } finally {
+          output.restore();
+        }
+      });
+    } finally {
+      envScope.restore();
+      envScope = createEnvKeyScope(envKeys);
+      reloadConfiguration();
+    }
+  });
+
   it('prints a not_authenticated JSON envelope when no credentials exist', async () => {
     const prevExitCode = process.exitCode;
     process.exitCode = undefined;
