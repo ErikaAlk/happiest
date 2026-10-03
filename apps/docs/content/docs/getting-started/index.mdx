@@ -1,6 +1,6 @@
 ---
 title: Start here
-description: Get a coding agent running on your computer and drive it from your phone, in about ten minutes.
+description: Connect a coding agent on your computer to a relay you run, and drive it from your phone.
 ---
 
 By the end of this page you will have a coding agent running on your own
@@ -13,7 +13,7 @@ Kilo, Auggie, Pi or Grok — and gives it a remote control.
 
 ## What you need
 
-Four things. Three are quick; the first is the one people miss.
+Five things. Four are quick; the first is the one people miss.
 
 1. **A computer that stays awake.** Happier connects you *to* your machine — it
    does not run your agent in the cloud. A laptop that sleeps stops the session.
@@ -23,29 +23,19 @@ Four things. Three are quick; the first is the one people miss.
    offer supported agents from Happier's catalog and install your choice, or
    let you skip and install one later. Installation does not sign the agent in:
    its own authentication must also be ready before it can code.
-3. **A Happier account**, created in the app or the web client — not from the
-   terminal. The CLI's login is an *approval* step against a client you are
-   already signed in to.
-4. **About ten minutes**, and a phone or second browser tab to approve from.
+3. **A relay of your own.** There is no public server. The relay (some commands
+   and settings call it the server) syncs your encrypted session state between
+   your computer and your phone or browser, and you run it yourself — on the
+   computer that does the work, where setup can install it for you, or on
+   another machine you control.
+4. **A Happier account on your relay**, created in the app or the web client —
+   not from the terminal. The CLI's login is an *approval* step against a client
+   you are already signed in to.
+5. **A phone or second browser tab** to approve from.
 
-You do **not** need a server of your own, Node.js or npm, or a custom app build.
+You do **not** need Node.js or npm, or a custom app build.
 
-## 1. Get a client
-
-Install the app, or just open [cloud.happier.dev](https://cloud.happier.dev/) —
-the web client is the whole product and needs no install. Create your account
-there.
-
-See [Get the apps](/getting-started/get-the-apps) for iPhone, Android, desktop
-and browser.
-
-<Callout type="warn">
-  Your account is a key held on your device, not a password on our server. Back
-  it up from **Settings → Account** once you are signed in. If you lose every
-  signed-in device without a backup, the account cannot be recovered.
-</Callout>
-
-## 2. Install the CLI on the machine that will do the work
+## 1. Install the CLI on the machine that will do the work
 
 <Tabs items={['Linux', 'Windows']}>
 <Tab value="Linux">
@@ -72,7 +62,7 @@ It adds `~/.local/bin` to your shell profile, which the shell you are currently
 in has already read. Open a new terminal, or source your profile, before the
 next step.
 
-## 3. Connect the machine to your account
+## 2. Choose your relay and connect the machine
 
 If the installer was unattended, you skipped guided setup, or sign-in did not
 finish, resume it with:
@@ -81,11 +71,17 @@ finish, resume it with:
 happiest setup
 ```
 
-Setup asks the one question the installer cannot answer for itself — where your
-relay lives — then points this computer at it and signs you in. Your account
+A fresh install has no relay, and any command that needs one stops until you
+add one. Setup asks the one question the installer cannot answer for itself —
+where your relay lives — and offers two answers:
+
+- **Connect to an existing relay**, the default. Setup asks for its address, for
+  example `https://relay.example.com`.
+- **Run a relay on this computer.** Setup installs one here and uses it.
+
+Setup then points this computer at that relay and signs you in. Your account
 lives on the relay you choose, so that gets settled before sign-in rather than
-after. Happier Cloud is the recommended first choice, but setup waits for you to
-choose it or an existing relay you control.
+after. The first relay you add becomes the active one.
 
 The relay hosts your account and syncs the encrypted conversation and session
 state between devices. It does not run the coding agent: that process still runs
@@ -96,10 +92,42 @@ an account or its data between relays.
 If you already know the answer, skip the question:
 
 ```bash
-happiest setup --cloud                # Happier Cloud
 happiest setup --relay https://…      # a relay you already run
 happiest setup --this-computer        # install a relay here too
 ```
+
+To run the relay on a different machine, deploy it first with
+[Run your own relay](/self-hosting/quickstart), or from this computer with
+`happiest relay host install --ssh user@host --mode system`, then pass its
+address to `--relay`. When the relay runs on this computer and you want your
+phone to reach it, read the reachability notes under
+[Guided first run](/apps/cli#guided-first-run).
+
+If the selected relay does not answer, setup cannot verify either the stored
+sign-in or the machine registration. It keeps both the relay choice and stored
+credential, then offers retry or an explicit choice of another relay. An outage
+does not silently switch this computer to another relay or create another
+account.
+
+Setup also checks whether you have a coding agent installed, and says so if you
+do not — it will not stop you, but it is the step people skip and then hit at
+the very end.
+
+## 3. Add your relay in a client and approve the sign-in
+
+Install the app, or open your relay's address in a browser: the relay serves the
+web client itself, so there is nothing else to install. See
+[Get the apps](/getting-started/get-the-apps) for iPhone, Android, desktop and
+browser.
+
+A fresh app has no relay. On the welcome screen choose **Add your Relay**, enter
+the address you gave setup, and create your account on it.
+
+<Callout type="warn">
+  Your account is a key held on your device, not a password on a server. Back
+  it up from **Settings → Account** once you are signed in. If you lose every
+  signed-in device without a backup, the account cannot be recovered.
+</Callout>
 
 When a new sign-in is needed, Happier prints a URL and, when your relay is
 reachable from another device, a QR code. Scan it with the app, or open the URL
@@ -113,16 +141,6 @@ in again.
 The terminal continues on its own after approval. If the request times out, that
 request ends; rerun `happiest setup` or `happiest auth login` to create a new
 request and approve that one.
-
-If the selected relay does not answer, setup cannot verify either the stored
-sign-in or the machine registration. It keeps both the relay choice and stored
-credential, then offers retry or an explicit choice of another relay. An outage
-does not silently switch this computer to Happier Cloud or create another
-account.
-
-Setup also checks whether you have a coding agent installed, and says so if you
-do not — it will not stop you, but it is the step people skip and then hit at
-the very end.
 
 ## 4. Start your first session
 
@@ -163,6 +181,11 @@ could not change the shell you were already in. Open a new terminal. If you use
 fish, add `~/.local/bin` to your `fish_user_paths` yourself; the installer
 writes to `~/.profile`, which fish does not read.
 
+**A command stops and says no server is configured** — a fresh install has no
+relay. Sign-in, starting the daemon and starting a session all need one. Run
+`happiest setup`, or add the relay directly with
+`happiest server add --server-url <url> --use`.
+
 **`Claude CLI (claude) is not available from any configured source`** — you have
 reached the last step without prerequisite 2. Install the agent
 (`curl -fsSL https://claude.ai/install.sh | bash`), sign in to it, confirm
@@ -177,8 +200,8 @@ not registered, `happiest doctor repair` will fix it.
 ## Where to go next
 
 - [Get the apps](/getting-started/get-the-apps) — every client, and which to start with.
-- [Onboarding](/getting-started/onboarding) — the same journey done from the app instead of the terminal, including choosing a relay.
+- [Onboarding](/getting-started/onboarding) — the same journey done from the app instead of the terminal, including adding your relay.
 - [Coding agents](/agents) — setup and limits for each agent.
 - [Local development](/getting-started/local-development) — running the server and UI yourself while iterating.
 - [Agent capabilities](/agents/capabilities) — what varies between them.
-- [Run your own relay](/self-hosting/quickstart) — if you would rather not use Happier Cloud.
+- [Run your own relay](/self-hosting/quickstart) — the minimum configuration for a relay you deploy yourself.

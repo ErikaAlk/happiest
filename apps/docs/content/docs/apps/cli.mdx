@@ -155,8 +155,13 @@ happiest setup
 
 On a fresh interactive install, the installer continues directly into
 `happiest setup`. Run it yourself when the installer was unattended, you skipped
-the guided step, or sign-in did not finish. Setup asks where your relay lives,
-points this computer at it, and runs the sign-in. It leaves an already-finished
+the guided step, or sign-in did not finish. A fresh install has no relay, so
+setup first asks the one question: connect to an existing relay (the default,
+which asks for its address) or run a relay on this computer. It then points this
+computer at it and runs the sign-in. The first relay you add becomes the active
+one. Until a relay exists, commands that need one — sign-in, starting the daemon,
+starting a session — stop and tell you to run `happiest setup` or
+`happiest server add --server-url <url> --use`. Setup leaves an already-finished
 computer alone only when a relay is selected, the relay still accepts the stored
 sign-in, and this machine is registered against it. Credentials the relay has
 since rejected, or credentials with no registered machine behind them, are what
@@ -190,7 +195,6 @@ but the requested setup action did not finish.
 
 | Flag | Effect |
 | --- | --- |
-| `--cloud` | Use Happier Cloud without being asked |
 | `--relay <url>` | Use a relay you already run |
 | `--this-computer` | Install a relay on this computer and use it |
 | `--yes` | Ask nothing, do everything that needs no answer, stop at the sign-in |
@@ -204,8 +208,8 @@ the relay you named and, for `--this-computer`, installs the relay here. It then
 stops, because signing in has to be approved on your phone or in a browser and
 nothing on the command line can approve it for you. Setup names
 `happiest auth login` and exits non-zero — the binary installed, the guided setup
-did not finish. It needs one of `--cloud`, `--relay <url>` or `--this-computer`:
-your account lives on whichever relay is chosen, so setup will not choose one.
+did not finish. It needs one of `--relay <url>` or `--this-computer`: your
+account lives on whichever relay is chosen, so setup will not choose one.
 
 `--non-interactive` writes nothing at all. It is also how setup reads
 `HAPPIER_NONINTERACTIVE=1` and a run with no terminal, which is what installers
@@ -297,6 +301,8 @@ happiest server use company
 ```
 
 `--use` (and `happiest server use ...`) sets the **default server** for future commands, so you can usually omit `--server ...` once it’s selected.
+
+A fresh install has no server profile, and no profile is built in. The first server you add becomes the active one, and `happiest server list` shows only the servers you added.
 
 The selected server hosts the account and synchronized session state; coding
 agents still run on the machine that owns the session. Changing the default

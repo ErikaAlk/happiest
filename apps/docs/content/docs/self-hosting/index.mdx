@@ -4,11 +4,12 @@ description: Running your own Happier relay — how to deploy it, how to configu
 ---
 
 This section is about running **your own Happier relay** (the sync backend that
-clients and machines connect to). Everything here is optional: Happier Cloud
-exists so you do not have to.
+clients and machines connect to). There is no public server, so every setup
+starts here.
 
-Your clients and machines then point at your URL — say `https://api.example.com`
-— instead of the Cloud one. Nothing else about how you use Happier changes.
+Your clients and machines then point at your URL — say `https://api.example.com`.
+In the app, enter it with **Add your Relay** on the welcome screen; on the CLI, run
+`happiest setup --relay https://api.example.com`.
 
 ## Pick how to run it
 

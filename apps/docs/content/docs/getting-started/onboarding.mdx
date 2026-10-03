@@ -1,12 +1,12 @@
 ---
 title: Onboarding
-description: Pick hosted vs self-hosted, choose your Relay, then use the app to get your machines ready.
+description: Run your own Relay, add it in the app, then use the app to get your machines ready.
 ---
 
 Happier always follows the same high-level flow:
 
-1. **Choose a Relay** (Happier Cloud is recommended to start; self-hosting is optional).
-2. **Sign in / create an account** on that Relay.
+1. **Run your own Relay.** There is no public server, so every setup starts with a Relay you run: on this computer, on another machine, or on a VPS.
+2. **Add your Relay** — a fresh app shows **Add your Relay** on its welcome screen — then **create an account** on it and sign in.
 3. **Use the desktop app or web client as your control panel.** Both can start
    and drive sessions; desktop can also install and manage the local background
    service.
@@ -17,34 +17,34 @@ Happier always follows the same high-level flow:
 
 ## Choose your setup
 
-### Option A — Hosted (recommended to start)
-You use Happier Cloud as your Relay.
+### Option A — Relay and background service on this computer (shortest path)
+One computer runs both the Relay and the background service.
 
-1. Open the desktop app (recommended for local setup) or web app.
-2. Choose **Happier Cloud** when the app asks you which Relay to use. It is a
-   deliberate choice, not a migration of an account from another Relay.
-3. Sign in.
-4. In the desktop app, open `/setup` and choose **Set up this computer**.
+1. Install the CLI and let setup install the Relay on this computer:
+
+   ```bash
+   # Node-free (recommended): install the CLI binary via the official installer
+   curl -fsSL https://github.com/ErikaAlk/happiest/releases/download/cli-stable/install.sh | bash
+   happiest setup --this-computer
+   ```
+
+   On Windows, install with `irm https://github.com/ErikaAlk/happiest/releases/download/cli-stable/install.ps1 | iex` instead.
+
+2. Open the desktop app or web client. On the welcome screen choose **Add your Relay**, enter the address setup printed, and create your account. Approve the sign-in setup is waiting for.
+3. In the desktop app, open `/setup` and choose **Set up this computer** if you want to configure or repair the local background service from the app.
    - This configures the local background service against the Relay you just selected.
    - If the app detects Relay drift later, it shows a repair action instead of silently leaving the daemon on another Relay.
 
-Optional CLI path:
-
-```bash
-# Node-free (recommended): install the CLI binary via the official installer
-curl -fsSL https://github.com/ErikaAlk/happiest/releases/download/cli-stable/install.sh | bash
-happiest setup
-```
-
-On Windows, install with `irm https://github.com/ErikaAlk/happiest/releases/download/cli-stable/install.ps1 | iex` instead.
-
-`happiest setup` chooses the relay before authentication, then signs in,
-registers this machine, and reconciles automatic startup. The lower-level
-`happiest auth login` command remains available when the relay profile and
-machine lifecycle are already configured.
+`happiest setup` without a flag asks where your Relay lives: connect to an
+existing Relay (the default, it asks for its address) or run one on this
+computer. It chooses the Relay before authentication, then signs in, registers
+this machine, and reconciles automatic startup. The first Relay you add becomes
+the active one. The lower-level `happiest auth login` command remains available
+when the relay profile and machine lifecycle are already configured.
 
 Notes:
 - The desktop app and the installer-installed CLI are self-contained; you do not need system Node/Yarn installed.
+- A fresh install has no Relay. A CLI command that needs one stops and tells you to run `happiest setup` or `happiest server add --server-url <url> --use`.
 
 ### Option B — Self-host Relay only (background service on your laptop)
 You run your own Relay (remote machine, LAN box, or even your own computer), but keep the background service on another machine.
@@ -54,9 +54,9 @@ You run your own Relay (remote machine, LAN box, or even your own computer), but
    - Any machine (managed service): install the CLI, then run `happiest relay host install --mode system` (or remote: `happiest relay host install --ssh user@host --mode system`)
    - Docker: see [Deployment → Docker](/self-hosting/docker).
 
-2. Open the desktop app or web UI and choose that Relay.
+2. Open the desktop app or web UI and add that Relay: choose **Add your Relay** on the welcome screen and enter its address.
    - Some installers print one-click links/QRs that prefill the Relay URL.
-   - Otherwise, open the app and add/select it in **Relay settings**.
+   - Once the app has a Relay, add or switch Relays in **Relay settings**.
 
    Use an address every device can actually reach. For Tailscale, each device
    must be on the same tailnet and the Relay must be published with Tailscale
@@ -92,7 +92,7 @@ happiest daemon service install
 You install both the Relay and the background service on one box.
 
 1. Install the stack (for example via `hstack setup-from-source --profile=selfhost` or the Proxmox “devbox” option).
-2. Open the desktop app or web UI and choose that Relay (use the printed configure-server link/QR if available).
+2. Open the desktop app or web UI and add that Relay with **Add your Relay** (use the printed configure-server link/QR if available).
 3. Sign in / create an account.
 4. In the app, use `/setup` → **Set up this computer** if you are on that machine, or set up the box over SSH if you are operating it remotely.
 5. If the Relay is local/self-hosted, optionally enable private access so phones and other devices can reach it without exposing it publicly.
