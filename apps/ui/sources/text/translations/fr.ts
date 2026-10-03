@@ -9209,7 +9209,7 @@ settingsSession: {
 
     changelog: {
         // Used by the changelog screen
-        version: ({ version }: { version: number }) => `Version ${version}`,
+        version: ({ version }: { version: string }) => `Version ${version}`,
         noEntriesAvailable: 'Aucune entrée de changelog disponible.',
     },
 

@@ -30,12 +30,14 @@ hmaint release bootstrap --repo <absolute checkout> --json
 
 `apps/ui/CHANGELOG.md` is the single authored authority for one release's
 public Markdown and exact bounded channel text. Put this JSON comment at the
-start of the matching `## Release <project-release-id> - <date>` section. The
-project release ID is a unique lowercase identifier such as `2026-08-09.1`,
-independent of every component version. Use the date plus an ordinal, increase
-the ordinal for another release on that date, and keep the same ID from preview
-through stable. The heading is the only authored source; a workflow
-input only selects and verifies it:
+start of the matching `## Release <project-release-id> - <date>` section.
+Happiest releases one product version on the stable channel only, so the
+project release ID is that product version, such as `0.1.0`. The heading is the
+only authored source; a workflow input only selects and verifies it. After
+editing the changelog, regenerate the changelog screen's data with
+`yarn --cwd apps/ui tsx sources/scripts/parseChangelog.ts`; the screen titles
+each entry with its release ID, and a UI test fails while the committed data is
+stale:
 
 ```markdown
 <!-- happier-release-note-projections:v1

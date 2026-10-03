@@ -26,10 +26,19 @@ const SOURCE_SHA_PATTERN = /^[0-9a-f]{40}$/u;
 const COMPONENT_ID_PATTERN = /^[a-z][a-z0-9_-]*$/u;
 const PROJECT_RELEASE_ID_PATTERN = /^[a-z0-9][a-z0-9._-]*$/u;
 
+/**
+ * @typedef {{ releaseId?: unknown; sourceSha?: unknown; componentVersions?: unknown }} ReleaseInput
+ */
+
+/** @param {string} value */
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+/**
+ * @param {unknown} value
+ * @param {string} label
+ */
 function normalizeRequiredValue(value, label) {
   const normalized = String(value ?? '').trim();
   if (!normalized) {
@@ -38,6 +47,7 @@ function normalizeRequiredValue(value, label) {
   return normalized;
 }
 
+/** @param {string} markdown */
 function trimSectionMarkdown(markdown) {
   return markdown.replace(/^\n+|\n+$/g, '');
 }
@@ -47,6 +57,8 @@ function trimSectionMarkdown(markdown) {
  * still delimit the current section during the one-way changelog migration;
  * they are not selectable owners. Level-two headings within a section remain
  * part of the approved Markdown source.
+ * @param {string} changelog
+ * @param {unknown} releaseId
  */
 export function parseReleaseNoteSection(changelog, releaseId) {
   const normalizedReleaseId = normalizeRequiredValue(releaseId, '--release-id');
@@ -77,7 +89,12 @@ export function parseReleaseNoteSection(changelog, releaseId) {
   return { releaseId: normalizedReleaseId, date, markdown };
 }
 
-function stripMarkdownLine(line) {
+/**
+ * The visible text of one Markdown line: heading and list markers, links, images, code and
+ * emphasis markers removed.
+ * @param {string} line
+ */
+export function stripMarkdownLine(line) {
   return line
     .replace(/^\s{0,3}#{1,6}\s+/, '')
     .replace(/^\s{0,3}(?:[-+*]|\d+[.)])\s+/, '')
@@ -91,6 +108,7 @@ function stripMarkdownLine(line) {
     .trim();
 }
 
+/** @param {string} markdown */
 function hasMeaningfulPublicMarkdown(markdown) {
   const visibleText = String(markdown ?? '')
     .replace(/<!--([\s\S]*?)-->/g, '')
@@ -102,6 +120,11 @@ function hasMeaningfulPublicMarkdown(markdown) {
   return /[\p{L}\p{N}]/u.test(visibleText);
 }
 
+/**
+ * @param {unknown} value
+ * @param {readonly string[]} expectedKeys
+ * @param {string} label
+ */
 function requireExactObject(value, expectedKeys, label) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     throw new Error(`${label} must be an object`);
@@ -113,6 +136,12 @@ function requireExactObject(value, expectedKeys, label) {
   }
 }
 
+/**
+ * @param {unknown} value
+ * @param {readonly string[]} requiredKeys
+ * @param {readonly string[]} allowedKeys
+ * @param {string} label
+ */
 function requireAllowedObject(value, requiredKeys, allowedKeys, label) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     throw new Error(`${label} must be an object`);
@@ -124,6 +153,11 @@ function requireAllowedObject(value, requiredKeys, allowedKeys, label) {
   if (missing) throw new Error(`${label} requires ${missing}`);
 }
 
+/**
+ * @param {unknown} value
+ * @param {string} label
+ * @param {number} maxLength
+ */
 function validateApprovedProjection(value, label, maxLength) {
   if (typeof value !== 'string' || value.trim().length === 0) {
     throw new Error(`${label} must be a non-empty string`);
@@ -138,6 +172,7 @@ function validateApprovedProjection(value, label, maxLength) {
  * The bounded channel text is intentionally authored in the same changelog
  * section as the canonical public narrative. The comment is stripped before
  * Markdown publication so it cannot become a second public text source.
+ * @param {string} markdown
  */
 function parseApprovedProjections(markdown) {
   const normalized = String(markdown ?? '').replace(/\r\n?/g, '\n');
@@ -182,6 +217,25 @@ function parseApprovedProjections(markdown) {
   };
 }
 
+/**
+ * Every project-release section in changelog order (newest first), each with its public Markdown:
+ * the approved projections are validated and stripped exactly as a release projects them.
+ * @param {string} changelog
+ * @returns {{ releaseId: string; date: string; markdown: string }[]}
+ */
+export function listReleaseNoteSections(changelog) {
+  const normalized = String(changelog ?? '').replace(/\r\n?/g, '\n');
+  const releaseIds = [...normalized.matchAll(/^## Release (\S+) - \d{4}-\d{2}-\d{2}$/gm)].map((match) => match[1]);
+  return releaseIds.map((releaseId) => {
+    if (!PROJECT_RELEASE_ID_PATTERN.test(releaseId)) {
+      throw new Error(`Changelog release id must match ${PROJECT_RELEASE_ID_PATTERN}: ${releaseId}`);
+    }
+    const section = parseReleaseNoteSection(normalized, releaseId);
+    return { releaseId, date: section.date, markdown: parseApprovedProjections(section.markdown).markdown };
+  });
+}
+
+/** @param {ReleaseInput} input */
 function normalizeReleaseInput(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
     throw new Error('release input is required');
@@ -214,6 +268,10 @@ function normalizeReleaseInput(input) {
   return { releaseId, sourceSha, componentVersions: normalizedComponents };
 }
 
+/**
+ * @param {string} changelog
+ * @param {ReleaseInput} input
+ */
 export function buildReleaseNotesBundle(changelog, input) {
   const release = normalizeReleaseInput(input);
   const section = parseReleaseNoteSection(changelog, release.releaseId);
@@ -238,10 +296,16 @@ export function buildReleaseNotesBundle(changelog, input) {
   };
 }
 
+/** @param {ReturnType<typeof buildReleaseNotesBundle>} bundle */
 export function renderReleaseNotesBundle(bundle) {
   return `${JSON.stringify(bundle, null, 2)}\n`;
 }
 
+/**
+ * @param {readonly string[]} argv
+ * @param {number} index
+ * @param {string} flag
+ */
 function readFlagValue(argv, index, flag) {
   const next = argv[index + 1];
   if (!next || next.startsWith('--')) {
@@ -250,6 +314,7 @@ function readFlagValue(argv, index, flag) {
   return next;
 }
 
+/** @param {readonly string[]} argv */
 export function parseProjectionArgs(argv) {
   const values = new Map();
   const componentVersions = new Map();

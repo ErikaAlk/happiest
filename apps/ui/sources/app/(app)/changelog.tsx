@@ -125,7 +125,7 @@ function ChangelogScreenEnabled() {
                 {entries.map((entry) => (
                     <View key={entry.version} style={styles.entryContainer}>
                         <Text style={styles.versionHeader}>
-                            {t('changelog.version', { version: entry.version })}
+                            {t('changelog.version', { version: entry.release })}
                         </Text>
                         <Text style={styles.dateText}>
                             {entry.date}

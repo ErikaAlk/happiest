@@ -65,26 +65,33 @@ Run **RELEASE — Publish (preview + production)** (`release.yml`) from the Acti
 Writes use the workflow's own `github.token` with `contents: write`, and `release_actor_guard`
 admits only actors with admin permission on the repository.
 
-1. Add the release entry to `apps/ui/CHANGELOG.md`; its id is the `release_notes_id` input.
-2. Dispatch once with `dry_run=true` to see the plan without pushing or publishing.
-3. Dispatch the release:
-   - `environment=production`, `confirm=release dev to main`;
+1. Move the product version past the one on `main`
+   (`node scripts/pipeline/release/bump-version.mjs --component product --bump <patch|minor|major>`).
+   The release publishes the committed version and refuses a CLI or server version equal to
+   `main`'s.
+2. Add the release entry to `apps/ui/CHANGELOG.md` with the product version as its id (the
+   `release_notes_id` input), then regenerate the changelog screen's data
+   (`yarn --cwd apps/ui tsx sources/scripts/parseChangelog.ts`).
+3. Dispatch once with `dry_run=true` to see the plan without pushing or publishing.
+4. Dispatch the release:
+   - `environment=production`, `confirm=release dev to main`, `validation_profile=stable`;
    - `authorized_promotion_source_sha` — the exact 40-character `dev` SHA you reviewed (required
      whenever `dry_run` is false);
    - `deploy_targets=ui,cli,server_runner` and `desktop_mode=build_and_publish`;
-   - `release_notes_id` from step 1;
+   - `release_notes_id` from step 2;
    - `waive_ci=true` with an `override_reason`, because the fork does not run upstream's push CI
      (most of its lanes need provider API keys and Android emulators);
    - leave `hmaint_operation_id` and `workflow_control_sha` empty; they belong to upstream's private
      release conductor;
    - `qualified_v4_activation_approval` stays false.
-4. The workflow binds that SHA, fast-forwards `main` to it, builds and publishes each product as an
+5. The workflow binds that SHA, fast-forwards `main` to it, builds and publishes each product as an
    immutable Release, verifies the published bytes, promotes them to the rolling Releases, and
    fast-forwards `dev` back onto `main`.
 
 `validation_profile` selects the evidence contract (`node scripts/pipeline/run.mjs release-contract`
-prints it): `integrated` is the default and `stable` adds full source checks. Waivers are narrow and
-recorded in the terminal release status:
+prints it): `integrated` is the input default, but release admission refuses it for production, so
+Happiest releases use `stable`, which adds full source checks. A dry run stops before admission and
+does not catch this. Waivers are narrow and recorded in the terminal release status:
 
 | Approval | May bypass | Never bypasses |
 | --- | --- | --- |
