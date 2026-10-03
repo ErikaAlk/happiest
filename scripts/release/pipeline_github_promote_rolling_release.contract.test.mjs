@@ -15,7 +15,9 @@ import { tmpdir } from 'node:os';
 import { basename, join, resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { createMinisignKeyPair, signMinisignMessage } from '../../packages/release-runtime/tests/minisignFixture.mjs';
+import { getBinaryPublishProductSpec } from '../pipeline/release/publishing/product-specs.mjs';
 
+const serverAssetStem = getBinaryPublishProductSpec('server').checksumProductStem;
 const repoRoot = resolve(new URL('../..', import.meta.url).pathname);
 const scriptPath = resolve(repoRoot, 'scripts/pipeline/github/promote-rolling-release.mjs');
 const nodeArchiveScript = resolve(repoRoot, 'scripts/pipeline/release/node-archive.mjs');
@@ -48,14 +50,14 @@ function fixture({ missingRolling = false } = {}) {
   mkdirSync(staging);
   const archivePlatform = process.platform === 'darwin' ? 'darwin' : 'linux';
   const archiveArch = process.arch === 'arm64' ? 'arm64' : 'x64';
-  const archiveName = `happier-server-v1.2.3-preview.4-${archivePlatform}-${archiveArch}.tar.gz`;
-  const aliasName = `happier-server-${archivePlatform}-${archiveArch}.tar.gz`;
+  const archiveName = `${serverAssetStem}-v1.2.3-preview.4-${archivePlatform}-${archiveArch}.tar.gz`;
+  const aliasName = `${serverAssetStem}-${archivePlatform}-${archiveArch}.tar.gz`;
   const archiveStem = archiveName.slice(0, -'.tar.gz'.length);
   const archiveStage = join(root, 'archive-stage');
   const archiveRoot = join(archiveStage, archiveStem);
   mkdirSync(archiveRoot, { recursive: true });
   writeExecutable(
-    join(archiveRoot, 'happier-server'),
+    join(archiveRoot, serverAssetStem),
     '#!/bin/sh\nprintf \'%s\\n\' \'1.2.3-preview.4\'\n',
   );
   execFileSync(
@@ -69,7 +71,7 @@ function fixture({ missingRolling = false } = {}) {
     { cwd: repoRoot, stdio: 'pipe' },
   );
   const archive = readFileSync(join(source, archiveName));
-  const checksumsName = 'checksums-happier-server-v1.2.3-preview.4.txt';
+  const checksumsName = `checksums-${serverAssetStem}-v1.2.3-preview.4.txt`;
   const checksums = `${sha256(archive)}  ${archiveName}\n`;
   writeFileSync(join(source, checksumsName), checksums);
   writeFileSync(join(source, `${checksumsName}.minisig`), signMinisignMessage({
@@ -427,6 +429,7 @@ exit 2
     bin,
     archiveName,
     aliasName,
+    checksumsName,
     log,
     rolling,
     staging,
@@ -528,7 +531,7 @@ test('rolling promotion audits release assets without buffering their bytes in t
   try {
     const largeMetadata = Buffer.alloc(2 * 1024 * 1024, 'x');
     writeFileSync(join(testFixture.root, 'source', 'large-release-metadata.json'), largeMetadata);
-    const checksumsPath = join(testFixture.root, 'source', 'checksums-happier-server-v1.2.3-preview.4.txt');
+    const checksumsPath = join(testFixture.root, 'source', testFixture.checksumsName);
     writeFileSync(
       checksumsPath,
       `${readFileSync(checksumsPath, 'utf8')}${sha256(largeMetadata)}  large-release-metadata.json\n`,
@@ -711,14 +714,14 @@ test('existing rolling replacement stages privately, restores after publish fail
     assert.deepEqual(
       readdirSync(testFixture.staging).sort(),
       [
-        'checksums-happier-server-v1.2.3-preview.4.txt',
-        'checksums-happier-server-v1.2.3-preview.4.txt.minisig',
-        `happier-server-${process.platform === 'darwin' ? 'darwin' : 'linux'}-${process.arch === 'arm64' ? 'arm64' : 'x64'}.tar.gz`,
+        testFixture.checksumsName,
+        `${testFixture.checksumsName}.minisig`,
+        testFixture.aliasName,
         testFixture.archiveName,
-      ],
+      ].sort(),
     );
     for (const name of readdirSync(testFixture.staging)) {
-      const sourceName = name === `happier-server-${process.platform === 'darwin' ? 'darwin' : 'linux'}-${process.arch === 'arm64' ? 'arm64' : 'x64'}.tar.gz`
+      const sourceName = name === testFixture.aliasName
         ? testFixture.archiveName
         : name;
       assert.deepEqual(
