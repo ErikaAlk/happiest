@@ -303,11 +303,6 @@ jobs:
       contents: read
     env:
       HAPPIER_EMBEDDED_POLICY_ENV: ${{ inputs.environment == 'production' && 'production' || 'preview' }}
-      # Ensure desktop release bundles always bootstrap against the Happiest server unless explicitly
-      # overridden by runtime server profile switching inside the app.
-      EXPO_PUBLIC_HAPPIER_SERVER_URL: https://happiest.erikaalk.click
-      EXPO_PUBLIC_HAPPY_SERVER_URL: https://happiest.erikaalk.click
-      EXPO_PUBLIC_SERVER_URL: https://happiest.erikaalk.click
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.resolve_source.outputs.build_matrix) }}

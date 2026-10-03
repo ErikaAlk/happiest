@@ -2179,9 +2179,9 @@ print_post_install_get_started() {
   echo
   say "${COLOR_BOLD}Get started${COLOR_RESET}"
   if [[ "${POST_INSTALL_SETUP_IS_DONE}" != "1" ]]; then
-    printf '  %-20s %s\n' "${cli_name} setup" "Connect this computer and sign in"
+    printf '  %-20s %s\n' "${cli_name} setup" "Connect to your Relay and sign in"
   fi
-  say "  In the app, browser or phone: New session"
+  say "  In the app, browser or phone: add your Relay, then New session"
   say "  Choose this computer and a project. Keep this computer running."
   printf '  %-20s %s\n' "${cli_name}" "Start from this terminal"
   printf '  %-20s %s\n' "${cli_name} status" "Check this computer's connection"

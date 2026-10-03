@@ -49,7 +49,7 @@ test('the stand-in CLI answers the status read and records the process tree that
   assert.equal(outputs[0].stdout.trim(), '0.2.99');
   const snapshot = JSON.parse(outputs[1].stdout);
   assert.equal(snapshot.service.installed, false);
-  assert.deepEqual([snapshot.server.serverUrl, snapshot.server.publicServerUrl, snapshot.server.webappUrl], Array(3).fill('https://happiest.erikaalk.click'));
+  assert.equal(snapshot.server, null);
   const verdict = evaluateAppIpcInvocations({ invocations: readStubInvocations(recordDir), appPid, isBundledHsetup: isNodeHsetup });
   assert.deepEqual(verdict.statusRead.argv, ['daemon', 'status', '--json']);
   assert.equal(verdict.hsetupExe, process.execPath);

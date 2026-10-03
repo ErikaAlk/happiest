@@ -18,16 +18,9 @@ const POLL_INTERVAL_MS = 250;
 /** A recorded command outside the read-only set: final, no amount of waiting undoes it. */
 class NonReadOnlyInvocationError extends Error {}
 
-/** A fresh computer as `happiest daemon status --json` reports it (DoctorSnapshotDaemonStatusSchema). */
+/** A fresh computer as `happiest daemon status --json` reports it (DoctorSnapshotDaemonStatusSchema): no server added yet. */
 const FRESH_COMPUTER_STATUS = {
-  server: {
-    activeServerId: 'cloud',
-    serverUrl: 'https://happiest.erikaalk.click',
-    localServerUrl: null,
-    publicServerUrl: 'https://happiest.erikaalk.click',
-    webappUrl: 'https://happiest.erikaalk.click',
-    comparableKey: null,
-  },
+  server: null,
   daemon: { running: false, pid: null, httpPort: null },
   service: { installed: false, running: false },
   auth: { authenticated: false, machineRegistered: false, machineId: null, needsAuth: true, accountId: null },

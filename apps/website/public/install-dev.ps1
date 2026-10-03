@@ -1339,9 +1339,9 @@ function Write-PostInstallGetStarted {
   Write-Host ""
   Write-Host "Get started"
   if (-not $script:PostInstallSetupIsDone) {
-    Write-Host ("  {0,-20} {1}" -f "$CliName setup", "Connect this computer and sign in")
+    Write-Host ("  {0,-20} {1}" -f "$CliName setup", "Connect to your Relay and sign in")
   }
-  Write-Host "  In the app, browser or phone: New session"
+  Write-Host "  In the app, browser or phone: add your Relay, then New session"
   Write-Host "  Choose this computer and a project. Keep this computer running."
   Write-Host ("  {0,-20} {1}" -f $CliName, "Start from this terminal")
   Write-Host ("  {0,-20} {1}" -f "$CliName status", "Check this computer's connection")

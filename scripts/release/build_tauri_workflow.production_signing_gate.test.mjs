@@ -7,7 +7,6 @@ import os from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
-import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..', '..');
@@ -332,7 +331,7 @@ test('Tauri build and trusted finalizer share the complete Linux bundling depend
   assert.doesNotMatch(curlCommand, /--retry-all-errors/, 'linuxdeploy must not retry permanent HTTP failures');
 });
 
-test('build-tauri workflow sets the Happiest server as explicit default server for desktop release builds', async () => {
+test('build-tauri workflow presets no server URL for desktop release builds', async () => {
   const workflow = await readFile(workflowPath, 'utf8');
   const parsed = parse(workflow);
   const buildJobEnv = parsed?.jobs?.build?.env;
@@ -341,8 +340,8 @@ test('build-tauri workflow sets the Happiest server as explicit default server f
   for (const name of ['EXPO_PUBLIC_HAPPIER_SERVER_URL', 'EXPO_PUBLIC_HAPPY_SERVER_URL', 'EXPO_PUBLIC_SERVER_URL']) {
     assert.equal(
       buildJobEnv[name],
-      productIdentity.defaultServerUrl,
-      `desktop release builds should set ${name} to the product's default server`,
+      undefined,
+      `desktop release builds must not bake ${name} into the app; users add their own Relay`,
     );
   }
 });

@@ -111,15 +111,10 @@ test('Dockerfiles fetch the product release artifacts', () => {
   assertContainsLine(devBox, `&& ln -sf /opt/happier/cli/${commandName} /usr/local/bin/${commandName}`, 'docker/dev-box/Dockerfile');
 });
 
-test('the desktop workflow builds against the default server and titles releases with the product name', () => {
-  const { productName, defaultServerUrl } = productIdentity;
+test('the desktop workflow titles releases with the product name', () => {
+  const { productName } = productIdentity;
   const source = read('.github/workflows/build-tauri.yml');
   const workflow = YAML.parse(source);
-
-  const buildEnv = workflow.jobs.build.env;
-  for (const key of ['EXPO_PUBLIC_HAPPIER_SERVER_URL', 'EXPO_PUBLIC_HAPPY_SERVER_URL', 'EXPO_PUBLIC_SERVER_URL']) {
-    assert.equal(buildEnv[key], defaultServerUrl, key);
-  }
 
   const titles = Object.values(workflow.jobs)
     .map((job) => job.with?.title)
