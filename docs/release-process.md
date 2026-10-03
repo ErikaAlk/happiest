@@ -91,7 +91,13 @@ admits only actors with admin permission on the repository.
 `validation_profile` selects the evidence contract (`node scripts/pipeline/run.mjs release-contract`
 prints it): `integrated` is the input default, but release admission refuses it for production, so
 Happiest releases use `stable`, which adds full source checks. A dry run stops before admission and
-does not catch this. Waivers are narrow and recorded in the terminal release status:
+does not catch this. `deep` is manual comprehensive source certification (the `deep` profile of
+`tests-dispatch.yml`); the release dispatch rejects it.
+
+A non-dry release needs the repository owner's human go-ahead first. The go-ahead names the
+validation profile and the exact SHA of the reviewed `dev` commit, passed as
+`authorized_promotion_source_sha`; a branch name or a moving channel pointer never stands in for the
+exact SHA. Waivers are narrow and recorded in the terminal release status:
 
 | Approval | May bypass | Never bypasses |
 | --- | --- | --- |
