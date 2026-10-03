@@ -30,15 +30,15 @@ import {
   resolvePublishedStableBaseline,
   stageCliReleaseAssets,
 } from './desktop-setup-artifacts.mjs';
-import { PREDECESSOR_SETUP_PARAMS_BY_DESKTOP_TAG, runHsetupTask } from './desktop-setup-driver.mjs';
+import { resolvePredecessorSetupParams, runHsetupTask } from './desktop-setup-driver.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = resolve(here, '..', '..', '..');
 const RELAY_URL = 'http://relay:3005';
 const APPROVER_SERVER_ID = 'desktop-setup-e2e';
 const APPROVER_HOME = '/approver-home';
 const MACHINE_USER = 'happy';
 const MACHINE_HOME = `/home/${MACHINE_USER}`;
-const DEFAULT_REPO = 'happier-dev/happier';
 // Readiness waits poll a concrete condition. Their bounds mirror the existing release-assets
 // harness (relay: 180 s in run.sh; systemd user manager: the boot it waits on), not a new budget.
 const RELAY_READY_ATTEMPTS = 90;
@@ -46,7 +46,7 @@ const USER_BUS_ATTEMPTS = 60;
 
 /**
  * @typedef {{ check: string; pass: boolean; detail?: unknown }} Check
- * @typedef {{ id: string; status: 'PASS' | 'FAIL' | 'BLOCKED'; checks: Check[]; observations: Record<string, unknown>; durationMs: number; blockedReason?: string }} ScenarioResult
+ * @typedef {{ id: string; status: 'PASS' | 'FAIL' | 'BLOCKED' | 'SKIPPED'; checks: Check[]; observations: Record<string, unknown>; durationMs: number; blockedReason?: string; skipReason?: string }} ScenarioResult
  */
 
 /** @param {Check[]} checks */
@@ -148,6 +148,26 @@ function createCompose({ projectName, envFile }) {
   return { base, run };
 }
 
+/**
+ * The relay the desktop pairs with. Happiest publishes no relay image to a registry: the
+ * repository Dockerfile's `relay-server` target is built from the server runtime this product
+ * released at the CLI's version (one product version), verified against the release key.
+ * @param {{ repo: string; version: string }} params
+ */
+function buildReleasedRelayImage({ repo, version }) {
+  const image = `${productIdentity.commandName}-desktop-setup-relay:${version}`;
+  execFileSync('docker', [
+    'build',
+    '--target', 'relay-server',
+    '--build-arg', `HAPPIER_RELEASE_BASE_URL=https://github.com/${repo}/releases/download`,
+    '--build-arg', `HAPPIER_RELAY_SERVER_RELEASE_TAG=server-v${version}`,
+    '--build-arg', `HAPPIER_RELAY_SERVER_VERSION=${version}`,
+    '--tag', image,
+    REPO_ROOT,
+  ], { stdio: 'inherit' });
+  return image;
+}
+
 /** @param {string} text */
 export function parseLastJsonObject(text) {
   const lines = text.split(/\r?\n/u).map((line) => line.trim()).filter(Boolean).reverse();
@@ -179,7 +199,7 @@ async function main() {
       scenarios: { type: 'string', default: 'fresh-setup,upgrade' },
       'upgrade-from-cli-tag': { type: 'string', default: '' },
       'upgrade-from-desktop-tag': { type: 'string', default: '' },
-      repo: { type: 'string', default: DEFAULT_REPO },
+      repo: { type: 'string', default: productIdentity.githubRepo },
       'work-dir': { type: 'string', default: '' },
       keep: { type: 'boolean', default: false },
     },
@@ -225,11 +245,11 @@ async function main() {
   const newCli = stageCliReleaseAssets({ sourceDir: resolve(cliSourceDir), stageDir: join(feedDir, 'stages', 'new') });
   identity.cli = { version: newCli.version, source: cliTag || resolve(cliSourceDir), ...(cliChannel ? { resolvedFrom: `cli-${cliChannel}` } : {}) };
   const channel = String(values.channel).trim() || resolveChannelForCliVersion(newCli.version);
-  const relayImage = String(values['relay-image']).trim() || `happierdev/relay-server:${channel === 'stable' ? 'stable' : 'preview'}`;
+  const relayImage = String(values['relay-image']).trim() || buildReleasedRelayImage({ repo, version: newCli.version });
   identity.channel = channel;
   identity.relayImage = relayImage;
 
-  /** @type {{ cliTag: string; desktopTag: string; cliVersion: string } | null} */
+  /** @type {{ cliTag: string; desktopTag: string; cliVersion: string; setupParams: NonNullable<ReturnType<typeof resolvePredecessorSetupParams>> } | null} */
   let baseline = null;
   /** @type {ScenarioResult[]} */
   const results = [];
@@ -238,23 +258,31 @@ async function main() {
     let desktopTag = String(values['upgrade-from-desktop-tag']).trim();
     if ((!cliTag || !desktopTag) && channel === 'stable') {
       const resolved = await resolvePublishedStableBaseline({ repo, token });
-      cliTag ||= resolved.cliTag;
-      desktopTag ||= resolved.desktopTag;
+      if (resolved === null) {
+        results.push({ id: 'upgrade', status: 'SKIPPED', checks: [], observations: {}, durationMs: 0, skipReason: `${repo} has published no stable desktop yet: no earlier app set a machine up` });
+        scenarios.delete('upgrade');
+      } else {
+        cliTag ||= resolved.cliTag;
+        desktopTag ||= resolved.desktopTag;
+      }
     }
-    if (!cliTag || !desktopTag) {
-      results.push({ id: 'upgrade', status: 'BLOCKED', checks: [], observations: {}, durationMs: 0, blockedReason: `no pinned ${channel} baseline: pass --upgrade-from-cli-tag and --upgrade-from-desktop-tag` });
-      scenarios.delete('upgrade');
-    } else if (!Object.hasOwn(PREDECESSOR_SETUP_PARAMS_BY_DESKTOP_TAG, desktopTag)) {
-      results.push({ id: 'upgrade', status: 'BLOCKED', checks: [], observations: {}, durationMs: 0, blockedReason: `the setup contract of ${desktopTag} is not characterized: add what that release's app sent to PREDECESSOR_SETUP_PARAMS_BY_DESKTOP_TAG (desktop-setup-driver.mjs) from its tagged source` });
-      scenarios.delete('upgrade');
-    } else {
-      const debPath = await downloadPinnedDesktopDeb({ repo, tag: desktopTag, destDir: join(workDir, 'downloads', 'desktop-prev'), token });
-      identity.previousDesktop = { tag: desktopTag, ...extractBundledHsetup({ artifactPath: debPath, outFile: join(desktopDir, 'prev', 'hsetup') }) };
-      const prevSource = join(workDir, 'downloads', 'cli-prev');
-      await downloadPinnedCliAssets({ repo, tag: cliTag, destDir: prevSource, token });
-      const prevCli = stageCliReleaseAssets({ sourceDir: prevSource, stageDir: join(feedDir, 'stages', 'prev') });
-      baseline = { cliTag, desktopTag, cliVersion: prevCli.version };
-      identity.previousCli = { tag: cliTag, version: prevCli.version };
+    if (scenarios.has('upgrade')) {
+      const predecessorSetupParams = resolvePredecessorSetupParams(desktopTag);
+      if (!cliTag || !desktopTag) {
+        results.push({ id: 'upgrade', status: 'BLOCKED', checks: [], observations: {}, durationMs: 0, blockedReason: `no pinned ${channel} baseline: pass --upgrade-from-cli-tag and --upgrade-from-desktop-tag` });
+        scenarios.delete('upgrade');
+      } else if (!predecessorSetupParams) {
+        results.push({ id: 'upgrade', status: 'BLOCKED', checks: [], observations: {}, durationMs: 0, blockedReason: `the setup contract of ${desktopTag} is not characterized: add how that release's app built its params to PREDECESSOR_SETUP_PARAMS_BY_DESKTOP_TAG (desktop-setup-driver.mjs) from its tagged source` });
+        scenarios.delete('upgrade');
+      } else {
+        const debPath = await downloadPinnedDesktopDeb({ repo, tag: desktopTag, destDir: join(workDir, 'downloads', 'desktop-prev'), token });
+        identity.previousDesktop = { tag: desktopTag, ...extractBundledHsetup({ artifactPath: debPath, outFile: join(desktopDir, 'prev', 'hsetup') }) };
+        const prevSource = join(workDir, 'downloads', 'cli-prev');
+        await downloadPinnedCliAssets({ repo, tag: cliTag, destDir: prevSource, token });
+        const prevCli = stageCliReleaseAssets({ sourceDir: prevSource, stageDir: join(feedDir, 'stages', 'prev') });
+        baseline = { cliTag, desktopTag, cliVersion: prevCli.version, setupParams: predecessorSetupParams };
+        identity.previousCli = { tag: cliTag, version: prevCli.version };
+      }
     }
   }
 
@@ -299,10 +327,10 @@ async function main() {
   };
   const execAs = (/** @type {string} */ machine, /** @type {string} */ script, /** @type {{ allowFailure?: boolean; env?: Record<string, string> }} */ options = {}) =>
     compose.run(['exec', '-T', '-u', MACHINE_USER, '-w', MACHINE_HOME, ...machineEnv(machine, options.env), machine, 'bash', '-lc', script], { allowFailure: options.allowFailure });
-  const hsetup = (/** @type {string} */ machine, /** @type {'new' | 'prev'} */ which, /** @type {string} */ kind, /** @type {unknown} */ params, /** @type {import('./desktop-setup-driver.mjs').PromptHandlers} */ handlers, /** @type {Record<string, string>} */ extraEnv = {}) =>
+  const hsetup = (/** @type {string} */ machine, /** @type {'new' | 'prev'} */ which, /** @type {string} */ kind, /** @type {unknown} */ params, /** @type {import('./desktop-setup-driver.mjs').PromptHandlers} */ handlers) =>
     runHsetupTask({
       command: 'docker',
-      args: [...compose.base, 'exec', '-T', '-u', MACHINE_USER, '-w', MACHINE_HOME, ...machineEnv(machine, extraEnv), machine, `/opt/happier-desktop/${which}/hsetup`, 'system-tasks', 'run'],
+      args: [...compose.base, 'exec', '-T', '-u', MACHINE_USER, '-w', MACHINE_HOME, ...machineEnv(machine), machine, `/opt/happier-desktop/${which}/hsetup`, 'system-tasks', 'run'],
       kind,
       params,
       handlers,
@@ -412,14 +440,8 @@ async function main() {
       const machine = 'desktop2';
       log(`upgrade: desktop2 from ${baseline.desktopTag} + ${baseline.cliTag}`);
       setStage('prev');
-      // 0.2.12's setup takes no relay parameter: it sets up whatever relay the CLI reports as
-      // current, so the relay reaches it the way that version read it — the CLI's env override.
-      // Its params are exactly what that released app sent (PREDECESSOR_SETUP_PARAMS_BY_DESKTOP_TAG).
-      const previousSetup = await hsetup(machine, 'prev', 'setup.thisComputer.v1', PREDECESSOR_SETUP_PARAMS_BY_DESKTOP_TAG[baseline.desktopTag], { approvePairing, serviceConsent: 'decline' }, {
-        HAPPIEST_SERVER_URL: RELAY_URL,
-        HAPPIEST_WEBAPP_URL: RELAY_URL,
-        HAPPIEST_PUBLIC_SERVER_URL: RELAY_URL,
-      });
+      // Exactly what that released app sent for this target (PREDECESSOR_SETUP_PARAMS_BY_DESKTOP_TAG).
+      const previousSetup = await hsetup(machine, 'prev', 'setup.thisComputer.v1', baseline.setupParams(setupParams), { approvePairing, serviceConsent: 'decline' });
       const previousStatus = daemonStatus(machine);
       const previousProbe = probe(machine, previousStatus);
 
@@ -477,13 +499,16 @@ async function main() {
   const summary = { suite: 'desktop-setup', identity, results, elapsedMs: Date.now() - startedAt };
   writeFileSync(join(workDir, 'summary.json'), `${JSON.stringify(summary, null, 2)}\n`);
   for (const result of results) {
-    console.log(`[desktop-setup] ${result.id}: ${result.status}${result.blockedReason ? ` (${result.blockedReason})` : ''} in ${Math.round(result.durationMs / 1000)}s`);
+    const reason = result.blockedReason ?? result.skipReason;
+    console.log(`[desktop-setup] ${result.id}: ${result.status}${reason ? ` (${reason})` : ''} in ${Math.round(result.durationMs / 1000)}s`);
     for (const entry of result.checks) {
       console.log(`  ${entry.pass ? 'PASS' : 'FAIL'} ${entry.check}${entry.pass ? '' : ` — ${JSON.stringify(entry.detail ?? null)}`}`);
     }
   }
   console.log(`[desktop-setup] summary: ${join(workDir, 'summary.json')} (elapsed ${Math.round(summary.elapsedMs / 1000)}s)`);
-  if (exitCode !== 0 || results.some((result) => result.status !== 'PASS')) process.exitCode = 1;
+  // A scenario with nothing to upgrade from is skipped, not passed: the run still needs one pass.
+  const failed = results.some((result) => result.status === 'FAIL' || result.status === 'BLOCKED');
+  if (exitCode !== 0 || failed || !results.some((result) => result.status === 'PASS')) process.exitCode = 1;
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

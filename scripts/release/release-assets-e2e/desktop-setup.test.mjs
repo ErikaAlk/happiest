@@ -5,8 +5,8 @@ import { chmodSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync }
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { resolveChannelForCliVersion, resolvePublishedCliTag, stageCliReleaseAssets } from './desktop-setup-artifacts.mjs';
-import { planPromptResponse, runHsetupTask } from './desktop-setup-driver.mjs';
+import { resolveChannelForCliVersion, resolvePublishedCliTag, resolvePublishedStableBaseline, stageCliReleaseAssets } from './desktop-setup-artifacts.mjs';
+import { planPromptResponse, resolvePredecessorSetupParams, runHsetupTask } from './desktop-setup-driver.mjs';
 import { evaluateFreshSetup, evaluateUpgrade } from './desktop-setup.mjs';
 
 function withTempDir(fn) {
@@ -55,12 +55,9 @@ test('the spec channel follows the ring the CLI build belongs to', () => {
   assert.equal(resolveChannelForCliVersion('0.2.13-dev.6'), 'dev');
 });
 
-test('prompt policy approves pairing (current and 0.2.12 contracts) and refuses anything else by default', () => {
+test('prompt policy approves pairing and refuses anything else by default', () => {
   assert.deepEqual(planPromptResponse({ kind: 'setup.pairThisComputer', publicKeyB64Url: 'pk' }, { approvePairing: async () => {} }), {
     kind: 'setup.pairThisComputer', action: 'approve-pairing', publicKey: 'pk', answer: { approved: true },
-  });
-  assert.deepEqual(planPromptResponse({ kind: 'authRequest', publicKey: 'pk' }, { approvePairing: async () => {} }), {
-    kind: 'authRequest', action: 'approve-pairing', publicKey: 'pk', answer: null,
   });
   assert.equal(planPromptResponse({ kind: 'setup.serviceConsent' }, { approvePairing: async () => {} }).answer.approved, false);
   assert.equal(planPromptResponse({ kind: 'setup.serviceConsent' }, { approvePairing: async () => {}, serviceConsent: 'approve' }).answer.approved, true);
@@ -202,4 +199,40 @@ test('a desktop-only release pins the rolling channel CLI once to its immutable 
   } finally {
     globalThis.fetch = realFetch;
   }
+});
+
+test('the first stable desktop release has no upgrade baseline; a published one is pinned to its immutable tags', async () => {
+  // GitHub's release API is the network boundary; the real baseline resolution runs beneath it.
+  const realFetch = globalThis.fetch;
+  let published = false;
+  globalThis.fetch = async (url) => {
+    if (!published) return new Response(JSON.stringify({ message: 'Not Found' }), { status: 404 });
+    const tag = String(url).split('/releases/tags/')[1];
+    const assets = tag === 'cli-stable'
+      ? [{ name: 'checksums-happiest-v0.1.0.txt' }]
+      : [{ name: 'happier-ui-desktop-linux-x86_64-v0.1.0.deb' }, { name: 'happier-ui-desktop-linux-x86_64-v0.1.0.deb.sha256' }];
+    return new Response(JSON.stringify({ assets }), { status: 200 });
+  };
+  try {
+    assert.equal(await resolvePublishedStableBaseline({ repo: 'o/r' }), null);
+    published = true;
+    assert.deepEqual(await resolvePublishedStableBaseline({ repo: 'o/r' }), { cliTag: 'cli-v0.1.0', desktopTag: 'ui-desktop-v0.1.0' });
+    globalThis.fetch = async () => new Response('{}', { status: 502 });
+    await assert.rejects(resolvePublishedStableBaseline({ repo: 'o/r' }), /502/);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+});
+
+test('the upgrade drives a characterized baseline with what that released app sent', () => {
+  const target = {
+    activeRelayUrl: 'http://relay:3005',
+    activeWebappUrl: 'http://relay:3005',
+    activeLocalRelayUrl: null,
+    channel: 'stable',
+    expectedAccountId: 'account-1',
+    surface: 'release-validation',
+  };
+  assert.deepEqual(resolvePredecessorSetupParams('ui-desktop-v0.1.0')?.(target), { ...target, surface: 'desktop.ui' });
+  assert.equal(resolvePredecessorSetupParams('ui-desktop-v0.2.12'), null);
 });

@@ -66,8 +66,8 @@ export function stageCliReleaseAssets({ sourceDir, stageDir }) {
 /**
  * @param {{ url: string; token?: string; accept?: string }} params
  */
-async function githubRequest({ url, token, accept = 'application/vnd.github+json' }) {
-  const response = await fetch(url, {
+async function fetchGithub({ url, token, accept = 'application/vnd.github+json' }) {
+  return fetch(url, {
     headers: {
       accept,
       'user-agent': 'happier-release-validation-desktop-setup',
@@ -75,8 +75,26 @@ async function githubRequest({ url, token, accept = 'application/vnd.github+json
     },
     redirect: 'follow',
   });
-  if (!response.ok) throw new Error(`GitHub request failed (${response.status}): ${url}`);
+}
+
+/**
+ * @param {{ url: string; token?: string; accept?: string }} params
+ */
+async function githubRequest(params) {
+  const response = await fetchGithub(params);
+  if (!response.ok) throw new Error(`GitHub request failed (${response.status}): ${params.url}`);
   return response;
+}
+
+/** @param {Response} response */
+async function readReleaseAssets(response) {
+  const release = /** @type {{ assets?: { name?: string; url?: string }[] }} */ (await response.json());
+  return (release.assets ?? []).map((asset) => ({ name: String(asset.name ?? ''), url: String(asset.url ?? '') }));
+}
+
+/** @param {{ repo: string; tag: string }} params */
+function releaseByTagUrl({ repo, tag }) {
+  return `https://api.github.com/repos/${repo}/releases/tags/${encodeURIComponent(tag)}`;
 }
 
 /**
@@ -84,9 +102,7 @@ async function githubRequest({ url, token, accept = 'application/vnd.github+json
  * @returns {Promise<{ name: string; url: string }[]>}
  */
 export async function listReleaseAssets({ repo, tag, token }) {
-  const response = await githubRequest({ url: `https://api.github.com/repos/${repo}/releases/tags/${encodeURIComponent(tag)}`, token });
-  const release = /** @type {{ assets?: { name?: string; url?: string }[] }} */ (await response.json());
-  return (release.assets ?? []).map((asset) => ({ name: String(asset.name ?? ''), url: String(asset.url ?? '') }));
+  return readReleaseAssets(await githubRequest({ url: releaseByTagUrl({ repo, tag }), token }));
 }
 
 /**
@@ -107,13 +123,20 @@ export async function downloadReleaseAssets({ repo, tag, names, destDir, token }
 
 /**
  * The newest published stable baseline, pinned to its immutable tags: the rolling `cli-stable` /
- * `ui-desktop-stable` releases only say which version is current.
+ * `ui-desktop-stable` releases only say which version is current. `null` while the repository has
+ * never published a stable desktop (GitHub answers 404 for the rolling release): the first stable
+ * desktop release has nothing to upgrade from.
  * @param {{ repo: string; token?: string }} params
+ * @returns {Promise<{ cliTag: string; desktopTag: string } | null>}
  */
 export async function resolvePublishedStableBaseline({ repo, token }) {
+  const url = releaseByTagUrl({ repo, tag: 'ui-desktop-stable' });
+  const desktopRelease = await fetchGithub({ url, token });
+  if (desktopRelease.status === 404) return null;
+  if (!desktopRelease.ok) throw new Error(`GitHub request failed (${desktopRelease.status}): ${url}`);
   const cliTag = await resolvePublishedCliTag({ repo, channel: 'stable', token }).catch(() => null);
   const cliVersion = cliTag?.slice('cli-v'.length);
-  const desktopNames = (await listReleaseAssets({ repo, tag: 'ui-desktop-stable', token })).map((asset) => asset.name);
+  const desktopNames = (await readReleaseAssets(desktopRelease)).map((asset) => asset.name);
   const desktopVersion = desktopNames.map((name) => DESKTOP_DEB_SHA_RE.exec(name)?.[1]).find(Boolean);
   if (!cliVersion || !desktopVersion) {
     throw new Error(`could not resolve the published stable baseline (cli=${cliVersion ?? 'none'}, desktop=${desktopVersion ?? 'none'})`);

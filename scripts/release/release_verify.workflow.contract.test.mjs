@@ -86,10 +86,10 @@ test('release-verify resolves one public profile with explicit suite refinements
   assert.match(String(resolver.run), /--waive-suites/);
   assert.equal(resolver.env.CANDIDATE_CLI_VERSION, '${{ inputs.candidate_cli_version }}');
   assert.equal(resolver.env.CANDIDATE_SERVER_VERSION, '${{ inputs.candidate_server_version }}');
-  assert.equal(resolver.env.RELEASE_CHANNEL, '${{ inputs.channel }}');
   assert.match(resolver.run, /--has-cli-candidate/);
   assert.match(resolver.run, /--has-server-candidate/);
-  assert.match(resolver.run, /--has-published-relay-predecessor/);
+  // Happiest publishes no relay image, so no channel has a published relay to upgrade from.
+  assert.match(resolver.run, /--has-published-relay-predecessor false \\/);
   assert.match(resolver.run, /--risk-cli-upgrade/);
   assert.match(resolver.run, /--risk-session-continuity/);
   assert.match(resolver.run, /--risk-relay-upgrade/);

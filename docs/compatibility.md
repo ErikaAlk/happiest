@@ -51,9 +51,9 @@ The last direction is conditional, not an excuse to add dual writers or a
 permanent fallback. The release agent derives the affected, reachable
 directions from the actual diff and supported released baselines. Scripts prove
 only named behaviors against exact artifacts; they do not issue a general
-compatibility verdict. The named Docker relay-upgrade scenario is selected
-automatically only when the release changes the server and a supported
-published relay predecessor exists. Installer and broader Docker validation
+compatibility verdict. The named Docker relay-upgrade scenario upgrades a
+published relay image; Happiest publishes none, so releases never select it
+automatically. Installer and broader Docker validation
 remain risk-selected; deep certification owns cross-OS, provider, mobile, and
 comprehensive review.
 Product seams still own the actual compatibility implementation.
@@ -93,10 +93,11 @@ for core usability affected by the changed seam. Check released persisted state
 against current readers/migrations, and current writers against old readers
 only when rollback or coexistence makes that direction reachable.
 
-The registry may automatically select the exact `docker-release-assets`
-published-channel-to-current-source upgrade when the server changed and a
-supported published predecessor exists. That proves one named SQLite/Postgres relay
-upgrade; it is not a generic compatibility verdict. Release orchestration never
+The `docker-release-assets` published-channel-to-current-source upgrade needs a
+published relay image as its predecessor. Happiest publishes no relay image, so
+release verification passes `--has-published-relay-predecessor false` and the
+registry never selects it; run locally, it proves one named SQLite/Postgres relay
+upgrade, not a generic compatibility verdict. Release orchestration never
 waits for client adoption, self-hosted relay upgrades, daemon drain, migration
 cohorts, or a global cutover.
 
@@ -105,8 +106,11 @@ For desktop setup and managed-CLI/service state, the `desktop-setup` suite
 publish in `build-tauri.yml`, using the candidate CLI release) runs the
 hsetup shipped in a Linux desktop artifact against a fresh systemd machine, and
 upgrades a machine set up by the previous published stable desktop + CLI (pinned
-immutable tags) to the candidate. It proves the Linux systemd user-service path
-only; macOS launchd and Windows schtasks are not covered by it.
+immutable tags) to the candidate. The relay is built from the server runtime
+released with the candidate CLI. The first stable desktop release has no
+previous desktop, so it runs the fresh setup only and reports the upgrade
+skipped. It proves the Linux systemd user-service path only; macOS launchd and
+Windows schtasks are not covered by it.
 
 ## Proportionate matrix
 

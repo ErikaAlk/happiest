@@ -219,17 +219,17 @@ jobs:
           WAIVE_VALIDATION_SUITES: ${{ inputs.waive_validation_suites }}
           CANDIDATE_CLI_VERSION: ${{ inputs.candidate_cli_version }}
           CANDIDATE_SERVER_VERSION: ${{ inputs.candidate_server_version }}
-          RELEASE_CHANNEL: ${{ inputs.channel }}
           RISK_CLI_UPGRADE: ${{ inputs.risk_cli_upgrade }}
           RISK_SESSION_CONTINUITY: ${{ inputs.risk_session_continuity }}
           RISK_RELAY_UPGRADE: ${{ inputs.risk_relay_upgrade }}
+        # Happiest publishes no relay image, so no channel has a published relay to upgrade from.
         run: |
           set -euo pipefail
           node "$GITHUB_WORKSPACE/.release-control/scripts/pipeline/release-validation/resolve-validation-plan.mjs" \
             --profile "$VALIDATION_PROFILE" \
             --has-cli-candidate "$([[ -n "$CANDIDATE_CLI_VERSION" ]] && echo true || echo false)" \
             --has-server-candidate "$([[ -n "$CANDIDATE_SERVER_VERSION" ]] && echo true || echo false)" \
-            --has-published-relay-predecessor "$([[ "$RELEASE_CHANNEL" == preview || "$RELEASE_CHANNEL" == production ]] && echo true || echo false)" \
+            --has-published-relay-predecessor false \
             --risk-cli-upgrade "$RISK_CLI_UPGRADE" \
             --risk-session-continuity "$RISK_SESSION_CONTINUITY" \
             --risk-relay-upgrade "$RISK_RELAY_UPGRADE" \

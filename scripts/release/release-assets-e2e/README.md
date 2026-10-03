@@ -106,9 +106,11 @@ What a user hits when they download the desktop app, on Linux: `desktop-setup.mj
 `hsetup` that a desktop `.deb`/`.AppImage` bundles (`usr/lib/<product>/binaries/hsetup-*.gz`) and
 drives `setup.thisComputer.v1` headlessly over its JSON-lines protocol, answering the pairing prompt
 as the signed-in app would. It uses its own small compose project (`compose.desktop-setup.yml`): a
-published `happierdev/relay-server` image, an approver container that owns the account, a
-`release-feed` container, and systemd machines built from `Dockerfile.remote-host-systemd` with no
-Happier CLI, daemon or service installed.
+relay, an approver container that owns the account, a `release-feed` container, and systemd
+machines built from `Dockerfile.remote-host-systemd` with no Happiest CLI, daemon or service
+installed. Happiest publishes no relay image, so the suite builds the root `Dockerfile`'s
+`relay-server` target from the `server-v<version>` release published with the CLI under test (one
+product version), verified against the release key; `--relay-image <image>` uses another image.
 
 ```bash
 node scripts/pipeline/run.mjs release-validate --suite desktop-setup --platform linux \
@@ -125,21 +127,23 @@ node scripts/release/release-assets-e2e/desktop-setup.mjs --desktop-artifact <de
   Assets signed with a throwaway key fail verification by design.
 - **fresh-setup** (desktop1): asserts the CLI was acquired from the feed at the version under test and
   is `managed`, the only prompt is the pairing, a systemd user service is enabled and active,
-  `daemon status` `runtimeConvergence` is fully true (INV8), `happier` on a login PATH is
-  `~/.happier/bin/happier`, and the machine answers a relay-routed `capabilities.describe` RPC with an
+  `daemon status` `runtimeConvergence` is fully true (INV8), `happiest` on a login PATH is
+  `~/.happiest/bin/happiest`, and the machine answers a relay-routed `capabilities.describe` RPC with an
   empty payload (INV10; `bin/machine-rpc-probe.mjs`).
 - **upgrade** (desktop2): the previous published stable desktop + CLI (resolved from `ui-desktop-stable`
   / `cli-stable`, then pinned to their immutable `ui-desktop-v*` / `cli-v*` tags; override with
   `--upgrade-from-desktop-tag` / `--upgrade-from-cli-tag`) set the machine up; then the new hsetup's
   setup and `cli.update.v1` run. The daemon must end on the new CLI (`cliVersionMatches`), as the same
   machine, still answering through the relay. The daemon version between the new setup and the update
-  is recorded in `summary.json` (`afterNewSetup`).
+  is recorded in `summary.json` (`afterNewSetup`). While the repository has published no stable
+  desktop (`ui-desktop-stable` does not exist), the first stable desktop release has nothing to
+  upgrade from: the scenario is reported SKIPPED with that reason and the run passes on fresh-setup.
 - The systemd entrypoint enables lingering for the machine user, so the user manager and its bus exist
   for non-PAM sessions (`docker exec`), as they do in a desktop session.
-- The upgrade drives the baseline hsetup with the params that released app sent, keyed by its tag
-  (`PREDECESSOR_SETUP_PARAMS_BY_DESKTOP_TAG` in `desktop-setup-driver.mjs`; 0.2.12 sent
-  `{ surface: 'desktop.ui', target: 'thisComputer' }`). A baseline not listed there is reported
-  BLOCKED instead of being driven with another version's contract.
+- The upgrade drives the baseline hsetup with the params that released app sent for the same
+  target, keyed by its tag (`PREDECESSOR_SETUP_PARAMS_BY_DESKTOP_TAG` in `desktop-setup-driver.mjs`;
+  0.1.0 sent the explicit relay, account and channel with `surface: 'desktop.ui'`). A baseline not
+  listed there is reported BLOCKED instead of being driven with another version's contract.
 - Requires an x86_64 Linux Docker host (Linux desktop artifacts ship for x86_64 only). The suite
   gates the desktop build, not release verification: `build-tauri.yml` job `desktop_setup` runs it
   on `ubuntu-latest` against the just-finalized `tauri-updates-linux-x86_64` `.deb`, and
