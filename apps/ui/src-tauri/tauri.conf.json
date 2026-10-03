@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Happiest",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "identifier": "click.erikaalk.happiest",
   "build": {
     "frontendDist": "../dist",
