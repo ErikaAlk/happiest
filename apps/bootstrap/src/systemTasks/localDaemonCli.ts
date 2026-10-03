@@ -635,13 +635,15 @@ export async function readDaemonStatus(
   const resolvedCli: LocalHappierCliInvocation = cli ?? await resolveVersionedLocalHappierCli({ releaseRing });
   const parsed = await runInvocationJsonCommand({ args: ['daemon', 'status', '--json'], releaseRing, invocation: resolvedCli });
   const status = parseDaemonStatusResponse(parsed);
+  // `null` until a server is added to that CLI; every server fact is then null.
+  const server = status.server;
 
   return {
     serviceInstalled: status.service.installed,
     daemonRunning: status.daemon.running,
     needsAuth: status.auth.needsAuth,
     machineId: status.auth.machineId,
-    serverComparableKey: status.server.comparableKey,
+    serverComparableKey: server?.comparableKey ?? null,
     acquisition: {
       command: resolvedCli.command,
       provenance: resolvedCli.provenance,
@@ -651,11 +653,11 @@ export async function readDaemonStatus(
         : null,
     },
     server: {
-      activeServerId: status.server.activeServerId,
-      serverUrl: status.server.serverUrl,
-      publicServerUrl: status.server.publicServerUrl,
-      localServerUrl: status.server.localServerUrl,
-      comparableKey: status.server.comparableKey,
+      activeServerId: server?.activeServerId ?? null,
+      serverUrl: server?.serverUrl ?? null,
+      publicServerUrl: server?.publicServerUrl ?? null,
+      localServerUrl: server?.localServerUrl ?? null,
+      comparableKey: server?.comparableKey ?? null,
     },
     auth: {
       authenticated: status.auth.authenticated,

@@ -156,6 +156,29 @@ describe('daemonService system task handlers', () => {
     });
   });
 
+  it('reports every server fact as null for a CLI that has no server yet', async () => {
+    const emptyHome = mkdtempSync(join(tmpdir(), 'hsetup-status-no-server-'));
+    vi.stubEnv('HAPPIEST_HOME_DIR', emptyHome);
+    vi.stubEnv('PATH', '');
+    onTestFinished(() => {
+      vi.unstubAllEnvs();
+      rmSync(emptyHome, { recursive: true, force: true });
+    });
+    runLocalHappierJsonCommandMock.mockResolvedValueOnce({ ...AMBIENT_STATUS_JSON, server: null });
+    const handler = createDaemonServiceStatusHandler();
+
+    const { result } = await collectResult(handler, {
+      target: { kind: 'local' },
+      surface: 'desktop.ui',
+      mode: 'user',
+      channel: 'preview',
+    });
+
+    expect(result).toMatchObject({
+      server: { activeServerId: null, serverUrl: null, publicServerUrl: null, localServerUrl: null, comparableKey: null },
+    });
+  });
+
   /** R12: which CLI this computer chose, and the copy the person may still want to remove or update. */
   it('reports the computer\'s CLI choice and names the other CLI with the commands that remove or update it', async () => {
     const home = mkdtempSync(join(tmpdir(), 'hsetup-status-cli-choice-'));
