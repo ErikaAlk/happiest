@@ -162,6 +162,27 @@ describe('DoctorSnapshotSchema', () => {
     expect(parsed.snapshot.warnings?.[0]?.repairCommands).toEqual(['happier doctor repair --yes']);
   });
 
+  it('accepts a snapshot from a computer that has no server yet', () => {
+    const raw = JSON.stringify({
+      capturedAt: '2026-10-03T00:00:00.000Z',
+      server: null,
+      accountId: null,
+      settings: { activeServerId: null, servers: [], knownAccountIds: [] },
+      daemonStatus: {
+        server: null,
+        daemon: { running: false, pid: null, httpPort: null },
+        service: { installed: false, running: false },
+        auth: { authenticated: false, machineRegistered: false, machineId: null, needsAuth: true, accountId: null },
+      },
+    });
+
+    const parsed = parseDoctorSnapshotSafe(raw);
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) throw new Error('expected ok');
+    expect(parsed.snapshot.server).toBeNull();
+    expect(parsed.snapshot.daemonStatus?.server).toBeNull();
+  });
+
   it('returns a stable error for invalid JSON', () => {
     const parsed = parseDoctorSnapshotSafe('{not json}');
     expect(parsed.ok).toBe(false);

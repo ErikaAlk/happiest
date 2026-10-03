@@ -65,6 +65,7 @@ export const DoctorSnapshotDaemonRuntimeConvergenceSchema = z.object({
 export type DoctorSnapshotDaemonRuntimeConvergence = z.infer<typeof DoctorSnapshotDaemonRuntimeConvergenceSchema>;
 
 export const DoctorSnapshotDaemonStatusSchema = z.object({
+  /** The CLI's active server; `null` until a server is added on that computer. */
   server: z.object({
     activeServerId: NonEmptyString,
     serverUrl: NonEmptyString,
@@ -72,7 +73,7 @@ export const DoctorSnapshotDaemonStatusSchema = z.object({
     publicServerUrl: NonEmptyString,
     webappUrl: NonEmptyString,
     comparableKey: NonEmptyString.nullable(),
-  }),
+  }).nullable(),
   daemon: z.object({
     running: z.boolean(),
     pid: z.number().int().positive().nullable(),
@@ -210,12 +211,13 @@ export const HappierDoctorWarningSchema = z.object({
 
 export const DoctorSnapshotSchema = z.object({
   capturedAt: NonEmptyString,
+  /** The CLI's active server; `null` until a server is added on that computer. */
   server: z.object({
     activeServerId: NonEmptyString,
     serverUrl: NonEmptyString,
     publicServerUrl: NonEmptyString,
     webappUrl: NonEmptyString,
-  }),
+  }).nullable(),
   accountId: NonEmptyString.nullable(),
   settings: z.object({
     activeServerId: NonEmptyString.nullable(),
@@ -240,12 +242,14 @@ export type DoctorSnapshot = z.infer<typeof DoctorSnapshotSchema>;
 export function sanitizeDoctorSnapshotUrls(snapshot: DoctorSnapshot): DoctorSnapshot {
   return {
     ...snapshot,
-    server: {
-      ...snapshot.server,
-      serverUrl: sanitizeUrl(snapshot.server.serverUrl),
-      publicServerUrl: sanitizeUrl(snapshot.server.publicServerUrl),
-      webappUrl: sanitizeUrl(snapshot.server.webappUrl),
-    },
+    server: snapshot.server
+      ? {
+          ...snapshot.server,
+          serverUrl: sanitizeUrl(snapshot.server.serverUrl),
+          publicServerUrl: sanitizeUrl(snapshot.server.publicServerUrl),
+          webappUrl: sanitizeUrl(snapshot.server.webappUrl),
+        }
+      : null,
     settings: {
       ...snapshot.settings,
       servers: snapshot.settings.servers.map((entry) => ({
@@ -282,15 +286,17 @@ export function sanitizeDoctorSnapshotUrls(snapshot: DoctorSnapshot): DoctorSnap
     daemonStatus: snapshot.daemonStatus
       ? {
           ...snapshot.daemonStatus,
-          server: {
-            ...snapshot.daemonStatus.server,
-            serverUrl: sanitizeUrl(snapshot.daemonStatus.server.serverUrl),
-            localServerUrl: snapshot.daemonStatus.server.localServerUrl
-              ? sanitizeUrl(snapshot.daemonStatus.server.localServerUrl)
-              : null,
-            publicServerUrl: sanitizeUrl(snapshot.daemonStatus.server.publicServerUrl),
-            webappUrl: sanitizeUrl(snapshot.daemonStatus.server.webappUrl),
-          },
+          server: snapshot.daemonStatus.server
+            ? {
+                ...snapshot.daemonStatus.server,
+                serverUrl: sanitizeUrl(snapshot.daemonStatus.server.serverUrl),
+                localServerUrl: snapshot.daemonStatus.server.localServerUrl
+                  ? sanitizeUrl(snapshot.daemonStatus.server.localServerUrl)
+                  : null,
+                publicServerUrl: sanitizeUrl(snapshot.daemonStatus.server.publicServerUrl),
+                webappUrl: sanitizeUrl(snapshot.daemonStatus.server.webappUrl),
+              }
+            : null,
         }
       : undefined,
     services: snapshot.services
