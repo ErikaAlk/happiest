@@ -233,6 +233,6 @@ test('the upgrade drives a characterized baseline with what that released app se
     expectedAccountId: 'account-1',
     surface: 'release-validation',
   };
-  assert.deepEqual(resolvePredecessorSetupParams('ui-desktop-v0.1.0')?.(target), { ...target, surface: 'desktop.ui' });
+  assert.deepEqual(resolvePredecessorSetupParams('ui-desktop-v0.1.1')?.(target), { ...target, surface: 'desktop.ui' });
   assert.equal(resolvePredecessorSetupParams('ui-desktop-v0.2.12'), null);
 });

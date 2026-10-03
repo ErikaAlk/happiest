@@ -26,12 +26,12 @@ const SERVICE_CONSENT_PROMPT_KIND = 'setup.serviceConsent';
 
 /**
  * The `setup.thisComputer.v1` params a released desktop sent for a target, per baseline tag.
- * 0.1.0 sent the explicit target with its own surface
- * (`ui-desktop-v0.1.0:apps/ui/sources/components/systemTasks/buildLocalMachineSetupSystemTaskSpec.ts`).
+ * 0.1.1, the first desktop release, sent the explicit target with its own surface
+ * (`ui-desktop-v0.1.1:apps/ui/sources/components/systemTasks/buildLocalMachineSetupSystemTaskSpec.ts`).
  * @type {Readonly<Record<string, (target: SetupTarget) => Readonly<Record<string, unknown>>>>}
  */
 const PREDECESSOR_SETUP_PARAMS_BY_DESKTOP_TAG = Object.freeze({
-  'ui-desktop-v0.1.0': (target) => ({ ...target, surface: 'desktop.ui' }),
+  'ui-desktop-v0.1.1': (target) => ({ ...target, surface: 'desktop.ui' }),
 });
 
 /**
