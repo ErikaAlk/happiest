@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..', '..');
 const installPs1 = join(repoRoot, 'scripts', 'release', 'installers', 'install.ps1');
+const pwshAvailable = spawnSync('pwsh', ['-NoProfile', '-NonInteractive', '-Command', 'exit 0']).status === 0;
 
 // The shape `happiest doctor repair --json` printed on a fresh Windows install of 0.1.0: no
 // background service yet, inventory under `existingServices`.
@@ -72,7 +73,7 @@ $strategy = Resolve-ExistingBackgroundServiceInstallStrategy -Entries $inventory
 `;
 
 for (const noninteractive of ['1', '0']) {
-  test(`install.ps1 plans automatic startup for a fresh install with no background service (noninteractive=${noninteractive})`, () => {
+  test(`install.ps1 plans automatic startup for a fresh install with no background service (noninteractive=${noninteractive})`, { skip: pwshAvailable ? false : 'pwsh is not installed' }, () => {
     const dir = mkdtempSync(join(tmpdir(), 'install-ps1-inventory-'));
     try {
       const harness = join(dir, 'harness.ps1');
