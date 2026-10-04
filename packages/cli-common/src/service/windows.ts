@@ -223,12 +223,14 @@ export function buildApplyWindowsScheduledTaskServicePolicyPowerShellCommand(par
   restartIntervalMinutes?: number;
   restartCount?: number;
   /**
-   * Whether Task Scheduler may run a *missed* scheduled start as soon as possible
-   * (`-StartWhenAvailable`). Defaults to true, which is what a task with a real login/boot trigger
-   * wants: a machine asleep at logon should still start it. Pass false for a task whose trigger is
-   * deliberately in the past — catching that up is the one way such a trigger could ever fire.
+   * A task registered without a real trigger (`persistent: false`): its `ONCE` trigger is pinned to
+   * a start boundary in the past, written as a DateTime because `schtasks /SD` only accepts the
+   * host's regional date format, and Task Scheduler may not run that *missed* start
+   * (`-StartWhenAvailable`). Otherwise the trigger is left as created and a missed start is caught
+   * up, which is what a real login/boot trigger wants: a machine asleep at logon should still
+   * start it.
    */
-  catchUpMissedStart?: boolean;
+  neverDue?: boolean;
 }>): string {
   const { taskName, taskPath } = splitQualifiedWindowsScheduledTaskName(params.qualifiedTaskName);
   const restartIntervalMinutes = Number.isFinite(params.restartIntervalMinutes)
@@ -253,7 +255,7 @@ export function buildApplyWindowsScheduledTaskServicePolicyPowerShellCommand(par
     '-ExecutionTimeLimit (New-TimeSpan -Seconds 0)',
     '-AllowStartIfOnBatteries',
     '-DontStopIfGoingOnBatteries',
-    ...(params.catchUpMissedStart === false ? [] : ['-StartWhenAvailable']),
+    ...(params.neverDue ? [] : ['-StartWhenAvailable']),
     '-MultipleInstances IgnoreNew',
   ].join(' ');
 
@@ -262,6 +264,11 @@ export function buildApplyWindowsScheduledTaskServicePolicyPowerShellCommand(par
     `$taskPath = ${psQuoted(taskPath)}`,
     `$taskName = ${psQuoted(taskName)}`,
     `$settings = New-ScheduledTaskSettingsSet ${settingsArgs}`,
-    'Set-ScheduledTask -TaskPath $taskPath -TaskName $taskName -Settings $settings | Out-Null',
+    ...(params.neverDue
+      ? [
+        '$trigger = New-ScheduledTaskTrigger -Once -At ([datetime]::new(2000, 1, 1))',
+        'Set-ScheduledTask -TaskPath $taskPath -TaskName $taskName -Settings $settings -Trigger $trigger | Out-Null',
+      ]
+      : ['Set-ScheduledTask -TaskPath $taskPath -TaskName $taskName -Settings $settings | Out-Null']),
   ].join('; ');
 }

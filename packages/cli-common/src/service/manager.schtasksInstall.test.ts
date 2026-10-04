@@ -31,6 +31,8 @@ describe('planServiceAction (schtasks install)', () => {
     expect(create?.args).not.toContain('/IT');
     expect(create?.args).toContain('/TR');
     expect(create?.args[create.args.indexOf('/TR') + 1]).toBe('powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\\Users\\test\\.happier\\services\\happier-daemon.default.ps1"');
+    // The logon trigger stays as schtasks created it.
+    expect(String(plan.commands[2]?.args.at(-1) ?? '')).not.toContain('-Trigger');
   });
 
   /**
@@ -55,23 +57,21 @@ describe('planServiceAction (schtasks install)', () => {
     expect(args).toContain('ONCE');
     expect(args).not.toContain('ONLOGON');
     expect(args).not.toContain('ONSTART');
-    // The start boundary is explicit and in the past. A scheduled-once task carries a start date
-    // that is still to come — or none at all, which defaults to the day of installation and is
-    // only "already past" because installs rarely happen at midnight.
-    expect(args).toContain('/SD');
-    const [first = '', second = '', year = ''] = (args[args.indexOf('/SD') + 1] ?? '').split('/');
-    expect(Number(year)).toBeLessThan(2001);
-    // Same calendar day whether the host reads MM/DD/YYYY or DD/MM/YYYY, so no regional format
-    // can turn this boundary into a future date.
-    expect(first).toBe(second);
+    // schtasks reads /SD in the host's regional date format (yyyy/mm/dd on a Chinese Windows,
+    // MM/DD/YYYY or DD/MM/YYYY elsewhere), so no single /SD string is valid everywhere.
+    expect(args).not.toContain('/SD');
     expect(args[args.indexOf('/ST') + 1]).toBe('00:00');
 
-    // …and a start Task Scheduler may not catch up: `-StartWhenAvailable` runs a *missed*
+    // The policy step pins the start boundary in the past as a DateTime, which no regional format
+    // can misread, and Task Scheduler may not catch it up: `-StartWhenAvailable` runs a *missed*
     // scheduled start as soon as possible, which is exactly what a past start boundary is.
     const settings = plan.commands.find((entry) =>
       entry.cmd === 'powershell.exe'
       && String(entry.args.at(-1) ?? '').includes('New-ScheduledTaskSettingsSet'));
-    expect(String(settings?.args.at(-1) ?? '')).not.toContain('-StartWhenAvailable');
+    const policy = String(settings?.args.at(-1) ?? '');
+    expect(policy).toContain('New-ScheduledTaskTrigger -Once -At ([datetime]::new(2000, 1, 1))');
+    expect(policy).toContain('-Trigger $trigger');
+    expect(policy).not.toContain('-StartWhenAvailable');
     // The task is still started now, and still hardened for a long-running process.
     expect(plan.commands.some((entry) => entry.cmd === 'schtasks' && entry.args.includes('/Run'))).toBe(true);
     expect(String(settings?.args.at(-1) ?? '')).toContain('-ExecutionTimeLimit');

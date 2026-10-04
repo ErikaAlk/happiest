@@ -416,10 +416,14 @@ the only difference from the installed unit, the plan applies the login trigger
 daemon the user is working through. macOS and Windows have no equivalent — their trigger lives in
 the definition (`RunAtLoad`) or in the registered task, so applying it re-bootstraps
 (`launchctl bootout` → `bootstrap` → `kickstart -k`) or re-creates and re-runs the task, which
-restarts the daemon. On Windows an `on-demand` task is registered as `schtasks /SC ONCE` with an
-explicitly past `/SD` boundary (schtasks has no manual-only schedule) and **without**
-`-StartWhenAvailable`, so Task Scheduler can neither reach the trigger nor catch it up as a missed
-start; `schtasks /Run` — the CLI's `service start` — remains the only thing that starts it. On macOS
+restarts the daemon. On Windows an `on-demand` task is registered as `schtasks /SC ONCE`
+(schtasks has no manual-only schedule) and the service-policy step then pins its start boundary to
+2000-01-01 with `New-ScheduledTaskTrigger -Once -At ([datetime]::new(2000, 1, 1))`, because
+`schtasks /SD` only accepts the host's regional date format (`yyyy/mm/dd` on a Chinese Windows). The
+task carries no `-StartWhenAvailable`, so Task Scheduler can neither reach the trigger nor catch it
+up as a missed start; `schtasks /Run` — the CLI's `service start` — remains the only thing that
+starts it. Registering the `at-login` (`/SC ONLOGON`) trigger needs an elevated shell; an
+unelevated install fails with "Access is denied" and the installer prints the manual retry. On macOS
 an `on-demand` LaunchAgent also carries **no** `KeepAlive`:
 launchd.plist(5) documents `SuccessfulExit` as implying `RunAtLoad`, so keeping it would re-arm the
 login start the mode exists to remove — at the deliberate cost of no crash relaunch while

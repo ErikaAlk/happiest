@@ -132,24 +132,21 @@ describe('daemon service install plan — autostart dimension', () => {
   describe('win32 (scheduled task)', () => {
     /**
      * schtasks has no manual-only schedule, so on-demand is `ONCE` with a start boundary that has
-     * already passed. That boundary must be stated: without `/SD` the trigger defaults to the
-     * installation day and is "never due" only because installs rarely happen at 00:00.
+     * already passed. schtasks reads `/SD` in the host's regional date format, so the boundary is
+     * pinned by the policy step as a DateTime instead.
      */
     it('registers a trigger that can never come due in on-demand mode', () => {
-      const install = planDaemonServiceInstall({ ...WIN32_BASE, autostart: 'on-demand' })
-        .commands.find((command) => command.cmd === 'schtasks' && command.args.includes('/Create'));
+      const commands = planDaemonServiceInstall({ ...WIN32_BASE, autostart: 'on-demand' }).commands;
+      const install = commands.find((command) => command.cmd === 'schtasks' && command.args.includes('/Create'));
       const args = install?.args ?? [];
 
       expect(args).toContain('ONCE');
       expect(args).not.toContain('ONLOGON');
       expect(args).not.toContain('ONSTART');
-      expect(args).toContain('/SD');
-      const [first = '', second = '', year = ''] = (args[args.indexOf('/SD') + 1] ?? '').split('/');
-      // Already past, and the same calendar day under MM/DD/YYYY or DD/MM/YYYY — a scheduled-once
-      // task would carry a date still to come, or none at all.
-      expect(Number(year)).toBeLessThan(2001);
-      expect(first).toBe(second);
+      expect(args).not.toContain('/SD');
       expect(args[args.indexOf('/ST') + 1]).toBe('00:00');
+      expect(commands.some((command) => command.cmd === 'powershell.exe'
+        && String(command.args.at(-1) ?? '').includes('New-ScheduledTaskTrigger -Once -At ([datetime]::new(2000, 1, 1))'))).toBe(true);
       // Installed and started right now, just never by the scheduler.
       expect(commandLines(planDaemonServiceInstall({ ...WIN32_BASE, autostart: 'on-demand' })))
         .toContain('schtasks /Run /TN Happiest\\happiest-daemon.cloud');
