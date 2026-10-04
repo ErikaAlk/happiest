@@ -194,6 +194,8 @@ test('release-assets-e2e remote host install shims make repeated CLI installs id
 test('systemd test hosts use Docker-private cgroup mounts, not the read-only host root', () => {
   const dockerfile = fs.readFileSync(join(here, 'Dockerfile.remote-host-systemd'), 'utf8');
   assert.doesNotMatch(dockerfile, /^VOLUME\s+\["\/sys\/fs\/cgroup"\]/m);
+  // The lingering user's manager needs a user D-Bus for /run/user/<uid>/bus (`systemctl --user`).
+  assert.match(dockerfile, /^\s+dbus-user-session \\\r?$/m);
   for (const filename of ['compose.remote.yml', 'compose.desktop-setup.yml']) {
     const compose = fs.readFileSync(join(here, filename), 'utf8');
     assert.doesNotMatch(compose, /- \/sys\/fs\/cgroup:\/sys\/fs\/cgroup/);
