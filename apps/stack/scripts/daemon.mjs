@@ -2564,7 +2564,7 @@ function buildDistMissingStatusFallback({ cliHomeDir, internalServerUrl, env, di
       : null;
 
   const lines = [
-    '🩺 Happier CLI Doctor',
+    `🩺 ${productIdentity.productName} CLI Doctor`,
     '',
     '',
     '🤖 Daemon Status',

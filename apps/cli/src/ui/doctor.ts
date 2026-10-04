@@ -2,7 +2,7 @@
  * Doctor command implementation
  * 
  * Provides comprehensive diagnostics and troubleshooting information
- * for Happier CLI including configuration, daemon status, logs, and links
+ * for the CLI including configuration, daemon status, logs, and links
  */
 
 import chalk from 'chalk'
@@ -206,7 +206,7 @@ export async function runDoctorCommand(filter?: 'all' | 'daemon'): Promise<void>
         snapshot = null;
     }
     
-    console.log(chalk.bold.cyan('\n🩺 Happier CLI Doctor\n'));
+    console.log(chalk.bold.cyan(`\n🩺 ${productIdentity.productName} CLI Doctor\n`));
 
     // For 'all' filter, show everything. For 'daemon', only show daemon-related info
     if (filter === 'all') {
@@ -214,7 +214,7 @@ export async function runDoctorCommand(filter?: 'all' | 'daemon'): Promise<void>
 
         // Version and basic info
         console.log(chalk.bold('📋 Basic Information'));
-        console.log(`Happier CLI Version: ${chalk.green(packageJson.version)}`);
+        console.log(`${productIdentity.productName} CLI Version: ${chalk.green(packageJson.version)}`);
         console.log(`Platform: ${chalk.green(process.platform)} ${process.arch}`);
         const runtimeDiagnostics = buildDoctorRuntimeDiagnostics();
         console.log(`Runtime: ${chalk.green(formatDoctorRuntimeLabel(runtimeDiagnostics))}`);
@@ -238,7 +238,7 @@ export async function runDoctorCommand(filter?: 'all' | 'daemon'): Promise<void>
 
 		        // Configuration
 		        console.log(chalk.bold('⚙️  Configuration'));
-		        console.log(`Happier Home: ${chalk.blue(configuration.happyHomeDir)}`);
+		        console.log(`${productIdentity.productName} Home: ${chalk.blue(configuration.happyHomeDir)}`);
 		        console.log(`Relay URL: ${configuration.activeServer ? chalk.blue(configuration.activeServer.serverUrl) : chalk.yellow(`none yet — run ${cli} setup`)}`);
 		        console.log(`Logs Dir: ${chalk.blue(configuration.logsDir)}`);
 
@@ -437,10 +437,9 @@ export async function runDoctorCommand(filter?: 'all' | 'daemon'): Promise<void>
         }
 
         if (shouldShowGlobalProcessInventory(filter)) {
-            // All Happier processes
             const allProcesses = await findAllHappyProcesses();
             if (allProcesses.length > 0) {
-                console.log(chalk.bold('\n🔍 All Happier CLI Processes'));
+                console.log(chalk.bold(`\n🔍 All ${productIdentity.productName} CLI Processes`));
 
                 // Group by type
                 const grouped = allProcesses.reduce((groups, process) => {

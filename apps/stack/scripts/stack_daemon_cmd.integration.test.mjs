@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { resolveStackCredentialPaths } from './utils/auth/credentials_paths.mjs';
 import { buildStackStableScopeId } from './utils/auth/stable_scope_id.mjs';
 import { runNodeCapture as runNode } from './testkit/core/run_node_capture.mjs';
+import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 import { spawnTestProcess } from './testkit/core/spawn_test_process.mjs';
 import { createTempFixture } from './testkit/core/temp_fixture.mjs';
 import { createStackHappierCliCommandFixture } from './testkit/stack_happier_cli_command_testkit.mjs';
@@ -453,7 +454,7 @@ test('hstack stack daemon <name> status does not include global process inventor
   const parsed = JSON.parse(statusRes.stdout.trim());
   const statusText = String(parsed?.status ?? '');
   assert.equal(
-    statusText.includes('🔍 All Happier CLI Processes'),
+    statusText.includes(`🔍 All ${productIdentity.productName} CLI Processes`),
     false,
     `expected stack-scoped daemon status to omit global process inventory\n${statusText}`
   );
