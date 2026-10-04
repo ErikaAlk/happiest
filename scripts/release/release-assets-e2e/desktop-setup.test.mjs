@@ -7,7 +7,7 @@ import { join } from 'node:path';
 
 import { resolveChannelForCliVersion, resolvePublishedCliTag, resolvePublishedStableBaseline, stageCliReleaseAssets } from './desktop-setup-artifacts.mjs';
 import { planPromptResponse, resolvePredecessorSetupParams, runHsetupTask } from './desktop-setup-driver.mjs';
-import { evaluateFreshSetup, evaluateUpgrade } from './desktop-setup.mjs';
+import { evaluateFreshSetup, evaluateUpgrade, resolveInstalledDaemonUnit } from './desktop-setup.mjs';
 
 function withTempDir(fn) {
   const dir = mkdtempSync(join(tmpdir(), 'desktop-setup-test-'));
@@ -222,6 +222,25 @@ test('the first stable desktop release has no upgrade baseline; a published one 
   } finally {
     globalThis.fetch = realFetch;
   }
+});
+
+test('the daemon unit is the definition file the CLI reports, not the launchd-style service label', () => {
+  // The shape of `happiest service status --json` on a systemd machine after setup.
+  const status = {
+    ok: true,
+    platform: 'linux',
+    services: [{
+      serviceType: 'daemon',
+      targetMode: 'default-following',
+      label: 'happiest-daemon.default',
+      path: '/home/happy/.config/systemd/user/happiest-daemon.default.service',
+      installed: true,
+      running: true,
+    }],
+    daemon: { pid: 42, running: true },
+  };
+  assert.equal(resolveInstalledDaemonUnit(status), 'happiest-daemon.default.service');
+  assert.equal(resolveInstalledDaemonUnit({ ok: true, services: [] }), 'missing-service-unit');
 });
 
 test('the upgrade drives a characterized baseline with what that released app sent', () => {

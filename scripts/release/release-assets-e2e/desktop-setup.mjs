@@ -168,6 +168,20 @@ function buildReleasedRelayImage({ repo, version }) {
   return image;
 }
 
+/**
+ * The systemd user unit of the installed default daemon service, as the CLI itself names it: the
+ * definition file of its `service status --json` entry. The daemon's own service label is the
+ * launchd-style label on every platform and does not name the unit.
+ * @param {any} serviceStatus
+ */
+export function resolveInstalledDaemonUnit(serviceStatus) {
+  const services = Array.isArray(serviceStatus?.services) ? serviceStatus.services : [];
+  const entry = services.find((service) => service?.installed === true && service?.targetMode === 'default-following')
+    ?? services.find((service) => service?.installed === true);
+  const path = typeof entry?.path === 'string' ? entry.path : '';
+  return path ? path.split('/').pop() : 'missing-service-unit';
+}
+
 /** @param {string} text */
 export function parseLastJsonObject(text) {
   const lines = text.split(/\r?\n/u).map((line) => line.trim()).filter(Boolean).reverse();
@@ -347,8 +361,9 @@ async function main() {
     const out = execAs(machine, `node /opt/happier-npm-e2e/bin/machine-rpc-probe.mjs --relay-url ${RELAY_URL} --machine-id '${status?.auth?.machineId ?? ''}' --server-id '${status?.server?.activeServerId ?? ''}'`, { allowFailure: true });
     return parseLastJsonObject(out.stdout);
   };
-  const systemdState = (/** @type {string} */ machine, /** @type {any} */ status) => {
-    const unit = `${status?.daemon?.serviceLabel ?? status?.service?.label ?? 'missing-service-label'}.service`;
+  const systemdState = (/** @type {string} */ machine) => {
+    const serviceStatus = execAs(machine, `"$HOME/${productIdentity.homeDirName}/bin/${productIdentity.commandName}" service status --json`, { allowFailure: true });
+    const unit = resolveInstalledDaemonUnit(parseLastJsonObject(serviceStatus.stdout));
     return {
       unit,
       active: execAs(machine, `systemctl --user is-active '${unit}'`, { allowFailure: true }).stdout.trim(),
@@ -431,7 +446,7 @@ async function main() {
         pathCommandResolved: pathCommand ? execAs(machine, `readlink -f '${pathCommand}'`).stdout.trim() : '',
         pathVersion: execAs(machine, 'happiest --version 2>/dev/null | head -n 1 || true').stdout.trim(),
         status,
-        systemd: systemdState(machine, status),
+        systemd: systemdState(machine),
         probe: probe(machine, status),
       };
       const checks = evaluateFreshSetup(observed);
@@ -466,7 +481,7 @@ async function main() {
         newSetup,
         update,
         finalStatus,
-        systemd: systemdState(machine, finalStatus),
+        systemd: systemdState(machine),
         finalProbe: probe(machine, finalStatus),
       };
       const checks = evaluateUpgrade(observed);
