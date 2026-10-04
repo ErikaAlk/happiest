@@ -245,9 +245,7 @@ async function main() {
   const newCli = stageCliReleaseAssets({ sourceDir: resolve(cliSourceDir), stageDir: join(feedDir, 'stages', 'new') });
   identity.cli = { version: newCli.version, source: cliTag || resolve(cliSourceDir), ...(cliChannel ? { resolvedFrom: `cli-${cliChannel}` } : {}) };
   const channel = String(values.channel).trim() || resolveChannelForCliVersion(newCli.version);
-  const relayImage = String(values['relay-image']).trim() || buildReleasedRelayImage({ repo, version: newCli.version });
   identity.channel = channel;
-  identity.relayImage = relayImage;
 
   /** @type {{ cliTag: string; desktopTag: string; cliVersion: string; setupParams: NonNullable<ReturnType<typeof resolvePredecessorSetupParams>> } | null} */
   let baseline = null;
@@ -285,6 +283,11 @@ async function main() {
       }
     }
   }
+
+  // Built after every GitHub request: on the release runner the first GitHub request made after a
+  // ~35 s build failed at once with "fetch failed" (twice), while one after a 25 s build succeeded.
+  const relayImage = String(values['relay-image']).trim() || buildReleasedRelayImage({ repo, version: newCli.version });
+  identity.relayImage = relayImage;
 
   createFeedTlsMaterial({ dir: join(feedDir, 'tls') });
   writeFileSync(join(feedDir, 'current'), 'new\n');
@@ -513,7 +516,9 @@ async function main() {
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   main().catch((error) => {
-    console.error(error instanceof Error ? error.message : String(error));
+    console.error(error instanceof Error ? (error.stack ?? error.message) : String(error));
+    // Network errors ("fetch failed") carry the actual socket/DNS/TLS failure only in `cause`.
+    if (error instanceof Error && error.cause !== undefined) console.error('cause:', error.cause);
     process.exit(1);
   });
 }
