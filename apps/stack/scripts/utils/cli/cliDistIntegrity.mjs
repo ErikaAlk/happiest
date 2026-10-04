@@ -1,9 +1,13 @@
 import { spawn } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 
 import { DEFAULT_CLI_RUNTIME_IMPORT_TIMEOUT_MS } from '@happier-dev/cli-common/runtimeImportProbePolicy';
-import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
+
+// The workspace build bootstrap loads this module before release-runtime is built, so it reads the
+// committed CommonJS identity rather than the package's ESM build output.
+const { productIdentity } = createRequire(import.meta.url)('@happier-dev/release-runtime/productIdentity');
 
 export const CLI_DIST_INTEGRITY_PROBE_ENV = 'HAPPIER_CLI_DIST_INTEGRITY_PROBE';
 export const CLI_DIST_BUILD_MANIFEST = '.build-manifest.json';

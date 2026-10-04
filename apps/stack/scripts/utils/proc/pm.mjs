@@ -2,8 +2,8 @@ import { homedir } from 'node:os';
 import { dirname, join, resolve, sep } from 'node:path';
 import { existsSync } from 'node:fs';
 import { chmod, lstat, mkdir, readFile, readdir, realpath, rm, stat, unlink, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
-import { productIdentity } from '@happier-dev/release-runtime/productIdentity';
 
 import { pathExists } from '../fs/fs.mjs';
 import { writeJsonAtomic } from '../fs/json.mjs';
@@ -22,6 +22,10 @@ import { withDependencyRefresh } from './dependency_refresh.mjs';
 import { probeCliDistRuntimeImport, readCliDistIntegrity } from '../cli/cliDistIntegrity.mjs';
 import { resolveHappyCliRuntimeInputPaths } from './cli_runtime_inputs.mjs';
 import { isDevRuntimeReloadIgnoredPath } from '../dev/devRuntimeInputPolicy.mjs';
+
+// This module builds the workspace packages, so it reads the committed CommonJS identity rather
+// than release-runtime's ESM build output, which does not exist before that build.
+const { productIdentity } = createRequire(import.meta.url)('@happier-dev/release-runtime/productIdentity');
 
 export { isCliDistBuildLockActive } from './cliDistBuildLock.mjs';
 

@@ -6,6 +6,12 @@ import { join, resolve } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
+import { getBinaryPublishProductSpec } from '../../../scripts/pipeline/release/publishing/product-specs.mjs';
+
+// The release build names each archive and its executable after the product's published stem.
+const cliProduct = getBinaryPublishProductSpec('cli').manifestProduct;
+const serverProduct = getBinaryPublishProductSpec('server').manifestProduct;
+
 function formatSpawnSyncResult(result) {
   const stdout = String(result.stdout || '').trim();
   const stderr = String(result.stderr || '').trim();
@@ -84,7 +90,7 @@ async function extractBinaryFromArtifact({ artifactPath, binaryName }) {
   };
 }
 
-test('compiled happier and server binaries execute from isolated cwd', async (t) => {
+test('compiled CLI and server binaries execute from isolated cwd', async (t) => {
   if (!commandExists('bun')) {
     t.skip('bun is required for compiled binary smoke tests');
     return;
@@ -124,8 +130,8 @@ test('compiled happier and server binaries execute from isolated cwd', async (t)
   );
   assert.equal(buildCli.status, 0, formatSpawnSyncResult(buildCli));
 
-  const cliArtifactPath = join(repoRoot, 'dist', 'release-assets', 'cli', `happier-v${version}-${target}.tar.gz`);
-  const cliExtract = await extractBinaryFromArtifact({ artifactPath: cliArtifactPath, binaryName: 'happier' });
+  const cliArtifactPath = join(repoRoot, 'dist', 'release-assets', 'cli', `${cliProduct}-v${version}-${target}.tar.gz`);
+  const cliExtract = await extractBinaryFromArtifact({ artifactPath: cliArtifactPath, binaryName: cliProduct });
   t.after(() => {
     spawnSync('bash', ['-lc', `rm -rf "${cliExtract.extractDir.replaceAll('"', '\\"')}"`], { stdio: 'ignore' });
   });
@@ -160,8 +166,8 @@ test('compiled happier and server binaries execute from isolated cwd', async (t)
     );
     assert.equal(buildServer.status, 0, formatSpawnSyncResult(buildServer));
 
-    const serverArtifactPath = join(repoRoot, 'dist', 'release-assets', 'server', `happier-server-v${version}-${target}.tar.gz`);
-    const serverExtract = await extractBinaryFromArtifact({ artifactPath: serverArtifactPath, binaryName: 'happier-server' });
+    const serverArtifactPath = join(repoRoot, 'dist', 'release-assets', 'server', `${serverProduct}-v${version}-${target}.tar.gz`);
+    const serverExtract = await extractBinaryFromArtifact({ artifactPath: serverArtifactPath, binaryName: serverProduct });
     t.after(() => {
       spawnSync('bash', ['-lc', `rm -rf "${serverExtract.extractDir.replaceAll('"', '\\"')}"`], { stdio: 'ignore' });
     });
