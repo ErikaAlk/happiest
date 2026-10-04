@@ -142,7 +142,7 @@ node scripts/release/release-assets-e2e/desktop-setup.mjs --desktop-artifact <de
   for non-PAM sessions (`docker exec`), as they do in a desktop session.
 - The upgrade drives the baseline hsetup with the params that released app sent for the same
   target, keyed by its tag (`PREDECESSOR_SETUP_PARAMS_BY_DESKTOP_TAG` in `desktop-setup-driver.mjs`;
-  0.1.1, the first desktop release, sent the explicit relay, account and channel with
+  0.1.2, the first desktop release, sent the explicit relay, account and channel with
   `surface: 'desktop.ui'`). A baseline not
   listed there is reported BLOCKED instead of being driven with another version's contract.
 - Requires an x86_64 Linux Docker host (Linux desktop artifacts ship for x86_64 only). The suite

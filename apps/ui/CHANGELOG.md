@@ -1,6 +1,6 @@
 # Changelog
 
-## Release 0.1.1 - 2026-10-03
+## Release 0.1.2 - 2026-10-04
 
 <!-- happier-release-note-projections:v1
 {
@@ -20,3 +20,4 @@ Happiest 是基于 Happier 的独立版本。第一个版本可以与正式版 H
 - 修复 Windows 上后台服务约每分钟卡顿数秒的问题。
 - 应答超时或断线后，排队的消息会重新核对并送达，不再一直停在“投递中”。
 - 手机发起的 Windows 会话可以在 Windows Terminal 中继续；控制台模式和 Windows Terminal 模式打开的窗口都能看到历史对话。
+- 中文 Windows 上不用管理员权限也能安装按需启动的后台服务（`happiest service install --no-autostart`）；登录时自动启动仍需要在管理员权限下安装。
