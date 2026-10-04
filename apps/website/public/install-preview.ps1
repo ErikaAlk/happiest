@@ -936,8 +936,9 @@ function Get-InstalledBackgroundServiceInventory {
     if ($doctorPreflightResult.ExitCode -eq 0 -and $preflightJsonIsSupported -and -not $preflightLooksLikePlainReport) {
       $payload = $preflightOutput | ConvertFrom-Json
       $propertyNames = @($payload.PSObject.Properties.Name)
-      $entries = if ($propertyNames -contains 'entries') { @($payload.entries) } elseif ($propertyNames -contains 'existingServices') { @($payload.existingServices) } else { @() }
-      $services = if ($propertyNames -contains 'services') { @($payload.services) } elseif ($propertyNames -contains 'existingServices') { @($payload.existingServices) } else { @() }
+      # @(...) around the whole if: an empty inventory must stay an empty array, not unroll to $null.
+      $entries = @(if ($propertyNames -contains 'entries') { $payload.entries } elseif ($propertyNames -contains 'existingServices') { $payload.existingServices })
+      $services = @(if ($propertyNames -contains 'services') { $payload.services } elseif ($propertyNames -contains 'existingServices') { $payload.existingServices })
       if ($entries.Count -gt 0 -or $services.Count -gt 0 -or $propertyNames -contains 'existingServices' -or $propertyNames -contains 'entries' -or $propertyNames -contains 'services') {
         return @{
           Supported = $true
@@ -947,7 +948,7 @@ function Get-InstalledBackgroundServiceInventory {
           DaemonStatus = if ($propertyNames -contains 'daemonStatus') { $payload.daemonStatus } else { $null }
           DaemonRunning = if ($propertyNames -contains 'daemonRunning') { $payload.daemonRunning } else { $null }
           DefaultFollowingMatchesSelectedReleaseChannel = if ($propertyNames -contains 'defaultFollowingMatchesSelectedReleaseChannel') { $payload.defaultFollowingMatchesSelectedReleaseChannel } else { $null }
-          Relays = if ($propertyNames -contains 'relays') { @($payload.relays) } else { @() }
+          Relays = @(if ($propertyNames -contains 'relays') { $payload.relays })
           Payload = $payload
         }
       }
@@ -980,8 +981,8 @@ function Get-InstalledBackgroundServiceInventory {
     }
     $payload = $serviceListResult.Output | ConvertFrom-Json
     $propertyNames = @($payload.PSObject.Properties.Name)
-    $entries = if ($propertyNames -contains 'entries') { @($payload.entries) } else { @() }
-    $services = if ($propertyNames -contains 'services') { @($payload.services) } else { @() }
+    $entries = @(if ($propertyNames -contains 'entries') { $payload.entries })
+    $services = @(if ($propertyNames -contains 'services') { $payload.services })
     if ($entries.Count -gt 0 -or $services.Count -gt 0 -or $propertyNames -contains 'entries' -or $propertyNames -contains 'services') {
       return @{
         Supported = $true
@@ -1025,7 +1026,7 @@ function Get-InstalledBackgroundServiceInventory {
 
 function Test-BackgroundServiceInventoryHasDefaultFollowing {
   param (
-    [Parameter(Mandatory = $true)] [object[]] $Entries
+    [Parameter(Mandatory = $true)] [AllowEmptyCollection()] [object[]] $Entries
   )
 
   return @($Entries | Where-Object { $_.targetMode -eq 'default-following' }).Count -gt 0
@@ -1033,7 +1034,7 @@ function Test-BackgroundServiceInventoryHasDefaultFollowing {
 
 function Get-BackgroundServiceDefaultFollowingChannel {
   param (
-    [Parameter(Mandatory = $true)] [object[]] $Entries
+    [Parameter(Mandatory = $true)] [AllowEmptyCollection()] [object[]] $Entries
   )
 
   $entry = @($Entries | Where-Object { $_.targetMode -eq 'default-following' } | Select-Object -First 1)
@@ -1046,7 +1047,7 @@ function Get-BackgroundServiceDefaultFollowingChannel {
 
 function Test-BackgroundServiceInventoryHasMatchingDefaultFollowing {
   param (
-    [Parameter(Mandatory = $true)] [object[]] $Entries,
+    [Parameter(Mandatory = $true)] [AllowEmptyCollection()] [object[]] $Entries,
     [Parameter()] $DefaultFollowingMatchesSelectedReleaseChannel = $null
   )
 
@@ -1151,7 +1152,7 @@ function Invoke-DoctorRepairIfSupported {
 
 function Resolve-ExistingBackgroundServiceInstallStrategy {
   param (
-    [Parameter(Mandatory = $true)] [object[]] $Entries,
+    [Parameter(Mandatory = $true)] [AllowEmptyCollection()] [object[]] $Entries,
     [Parameter()] $DefaultFollowingMatchesSelectedReleaseChannel = $null
   )
 
