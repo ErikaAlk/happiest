@@ -23,16 +23,21 @@ export function petCompanionSizeScaleToPercent(value: unknown): number {
     return Math.round(normalizePetCompanionSizeScale(value) * 100);
 }
 
-export function resolvePetCompanionSizeScaleFromTrackPosition(params: Readonly<{
-    locationX: number;
-    trackWidth: number;
-}>): number {
-    const trackWidth = Number.isFinite(params.trackWidth) && params.trackWidth > 0
-        ? params.trackWidth
-        : 1;
-    const progress = clamp(params.locationX / trackWidth, 0, 1);
+/** The scale's stops from minimum to maximum, counted as intervals. */
+export const PET_COMPANION_SIZE_SCALE_STEPS = Math.round(
+    (PET_COMPANION_SIZE_SCALE_MAX - PET_COMPANION_SIZE_SCALE_MIN) / PET_COMPANION_SIZE_SCALE_STEP,
+);
+
+/** Where a scale sits between the minimum (0) and the maximum (1). */
+export function petCompanionSizeScaleToProgress(value: unknown): number {
+    return (normalizePetCompanionSizeScale(value) - PET_COMPANION_SIZE_SCALE_MIN)
+        / (PET_COMPANION_SIZE_SCALE_MAX - PET_COMPANION_SIZE_SCALE_MIN);
+}
+
+/** The scale at a position between the minimum (0) and the maximum (1), snapped to a step. */
+export function petCompanionSizeScaleFromProgress(progress: number): number {
     const raw =
         PET_COMPANION_SIZE_SCALE_MIN
-        + progress * (PET_COMPANION_SIZE_SCALE_MAX - PET_COMPANION_SIZE_SCALE_MIN);
+        + clamp(progress, 0, 1) * (PET_COMPANION_SIZE_SCALE_MAX - PET_COMPANION_SIZE_SCALE_MIN);
     return normalizePetCompanionSizeScale(raw);
 }

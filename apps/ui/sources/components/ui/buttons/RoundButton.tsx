@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, Pressable, StyleProp, TextStyle, View, ViewStyle, type GestureResponderEvent } from 'react-native';
+import { Platform, Pressable, View } from 'react-native';
 import { iOSUIKit } from 'react-native-typography';
 import { Typography } from '@/constants/Typography';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
@@ -9,27 +9,15 @@ import { ActivitySpinner } from '@/components/ui/feedback/ActivitySpinner';
 import { FocusRing, WEB_FOCUS_OUTLINE_RESET } from '@/components/ui/interaction/FocusRing';
 import { useIsKeyboardModality } from '@/components/ui/interaction/inputModalityStore';
 
+import { useRoundButtonPress, useRoundButtonSize, type RoundButtonDisplay, type RoundButtonProps, type RoundButtonSize } from './roundButtonModel';
 
-export type RoundButtonSize = 'large' | 'normal' | 'small';
-const RoundButtonSizeContext = React.createContext<RoundButtonSize | undefined>(undefined);
+export { RoundButtonSizeScope, type RoundButtonDisplay, type RoundButtonProps, type RoundButtonSize } from './roundButtonModel';
 
-export function RoundButtonSizeScope(props: Readonly<{
-    size: RoundButtonSize;
-    children: React.ReactNode;
-}>) {
-    return (
-        <RoundButtonSizeContext.Provider value={props.size}>
-            {props.children}
-        </RoundButtonSizeContext.Provider>
-    );
-}
 const sizes: { [key in RoundButtonSize]: { fontSize: number, hitSlop: number, pad: number } } = {
     large: { fontSize: 21, hitSlop: 0, pad: Platform.OS == 'ios' ? 0 : -1 },
     normal: { fontSize: 16, hitSlop: 8, pad: Platform.OS == 'ios' ? 1 : -2 },
     small: { fontSize: 14, hitSlop: 12, pad: Platform.OS == 'ios' ? -1 : -1 }
 }
-
-export type RoundButtonDisplay = 'default' | 'inverted';
 
 const stylesheet = StyleSheet.create((theme) => ({
     loadingContainer: {
@@ -73,69 +61,11 @@ const stylesheet = StyleSheet.create((theme) => ({
     },
 }));
 
-export type RoundButtonProps = {
-    size?: RoundButtonSize,
-    display?: RoundButtonDisplay,
-    title?: any,
-    /**
-     * A mark drawn before the title, inside the same fill.
-     *
-     * The button still hugs its content — the mark widens it rather than sitting in
-     * a fixed box — so a logo-and-label button is this primitive with one more
-     * child, not a second pill implementation beside it.
-     */
-    leading?: React.ReactNode,
-    /**
-     * The same mark, drawn after the title instead.
-     *
-     * Which side a mark belongs on is a property of the sentence, not of the
-     * button: "Continue with {Agent}" closes with the Agent while "{Agent} で続ける"
-     * opens with it. Both slots exist so the caller can put the mark where its
-     * words put it, rather than the button imposing an order on every language.
-     */
-    trailing?: React.ReactNode,
-    style?: StyleProp<ViewStyle>,
-    textStyle?: StyleProp<TextStyle>,
-    disabled?: boolean,
-    loading?: boolean,
-    testID?: string,
-    accessibilityLabel?: string,
-    /**
-     * Why the button is in the state it is in — most usefully, why a disabled one
-     * cannot be pressed. The name says what the press does; the hint says what is
-     * missing, and without it a disabled pill reads to a screen reader as an
-     * action with no explanation.
-     */
-    accessibilityHint?: string,
-    onPress?: (event: GestureResponderEvent) => void,
-    action?: () => Promise<any>
-};
-
-export const RoundButton = React.memo(React.forwardRef<
-    React.ElementRef<typeof Pressable>,
-    RoundButtonProps
->(function RoundButton(props, ref) {
+export const RoundButton = React.memo(function RoundButton(props: RoundButtonProps) {
     const { theme } = useUnistyles();
-    const scopedSize = React.useContext(RoundButtonSizeContext);
+    const resolvedSize = useRoundButtonSize(props.size);
     const styles = stylesheet;
-    const [loading, setLoading] = React.useState(false);
-    const doLoading = props.loading !== undefined ? props.loading : loading;
-    const doAction = React.useCallback((event: GestureResponderEvent) => {
-        if (props.onPress) {
-            props.onPress(event);
-            return;
-        }
-        if (props.action) {
-            setLoading(true);
-            (async () => {
-                try {
-                    await props.action!();
-                } finally {
-                    setLoading(false);
-                }
-            })();
-        }
-    }, [props.onPress, props.action]);
+    const { loading: doLoading, press: doAction } = useRoundButtonPress(props);
     const displays: { [key in RoundButtonDisplay]: {
         textColor: string,
         backgroundColor: string,
@@ -155,7 +85,7 @@ export const RoundButton = React.memo(React.forwardRef<
         }
     }
 
-    const size = sizes[props.size ?? scopedSize ?? 'large'];
+    const size = sizes[resolvedSize];
     const display = displays[props.display || 'default'];
 
     // React Native has no `:focus-visible`, so the ring is gated on keyboard modality by the
@@ -171,7 +101,6 @@ export const RoundButton = React.memo(React.forwardRef<
 
     return (
         <Pressable
-            ref={ref}
             testID={props.testID}
             accessibilityRole="button"
             accessibilityLabel={props.accessibilityLabel}
@@ -251,6 +180,6 @@ export const RoundButton = React.memo(React.forwardRef<
             ) : null}
         </Pressable>
     )
-}));
+});
 
 RoundButton.displayName = 'RoundButton';

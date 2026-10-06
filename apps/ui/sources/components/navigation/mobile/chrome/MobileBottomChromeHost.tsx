@@ -40,7 +40,7 @@ import { hapticsLight, hapticsSelection } from '@/components/ui/theme/haptics';
 import { t } from '@/text';
 import type { SessionNavigationDirection } from '@/sync/domains/session/navigation/sessionNavigationOrder';
 import { TabBar, type TabType } from '@/components/ui/navigation/TabBar';
-import { TabBarNewSessionButton } from '@/components/ui/navigation/TabBarNewSessionButton';
+import { useNewSessionTabBarAccessory } from '@/components/navigation/mobile/chrome/useNewSessionTabBarAccessory';
 import { useKeyboardHeight } from '@/hooks/ui/useKeyboardHeight';
 import { useReducedMotionPreference } from '@/hooks/ui/useReducedMotionPreference';
 import { useTabState } from '@/hooks/ui/useTabState';
@@ -148,6 +148,7 @@ export const MobileBottomChromeHost = React.memo(function MobileBottomChromeHost
 }>) {
     const pathname = usePathname();
     const router = useRouter();
+    const newSessionAccessory = useNewSessionTabBarAccessory();
     const params = useGlobalSearchParams<{ mobileSurface?: string | string[]; serverId?: string | string[] }>();
     const auth = useAuth();
     const deviceType = useDeviceType();
@@ -248,10 +249,10 @@ export const MobileBottomChromeHost = React.memo(function MobileBottomChromeHost
                 onTabPress={handleTabPress}
                 // Session creation belongs to the sessions surface; settings, inbox
                 // and friends keep the bar as a pure navigation control.
-                trailingAccessory={tab === 'sessions' ? <TabBarNewSessionButton /> : undefined}
+                trailingAccessory={tab === 'sessions' ? newSessionAccessory : undefined}
             />
         ),
-    }), [handleTabPress]);
+    }), [handleTabPress, newSessionAccessory]);
 
     // An overlay route (`/new`, the zen modals, …) is presented OVER the current screen rather than
     // replacing it, so it should not change which bar the chrome host is showing — it simply covers

@@ -1,23 +1,12 @@
 import * as React from 'react';
 import { View } from 'react-native';
 
+import { QuietTextButton } from '@/components/ui/buttons/QuietTextButton';
 import { CenteredInfoTile } from '@/components/ui/lists/CenteredInfoTile';
 
-type EmptyStateProps = Readonly<{
-    /** Leading glyph (e.g. an `Ionicons`/`SvgXml` element). Already themed by the caller. */
-    icon: React.ReactNode;
-    /** Already-translated title string. */
-    title: string;
-    /** Already-translated supporting copy. */
-    subtitle?: React.ReactNode;
-    /** Optional call-to-action rendered below the copy (e.g. a button/card). */
-    action?: React.ReactNode;
-    testID?: string;
-    titleTestID?: string;
-    subtitleTestID?: string;
-    actionTestID?: string;
-    paddingHorizontal?: number;
-}>;
+import type { EmptyStateProps } from './EmptyState.types';
+
+export type { EmptyStateAction, EmptyStateProps } from './EmptyState.types';
 
 /**
  * Generic, app-wide empty state: themed icon + title + subtitle + optional
@@ -41,7 +30,7 @@ export const EmptyState = React.memo((props: EmptyStateProps) => {
                     testID={props.actionTestID}
                     style={{ width: '100%', maxWidth: 520, alignItems: 'center', marginTop: 16 }}
                 >
-                    {props.action}
+                    <QuietTextButton label={props.action.label} onPress={props.action.onPress} testID={props.action.testID} />
                 </View>
             ) : null}
         </View>

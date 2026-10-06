@@ -30,6 +30,7 @@ export async function createUnistylesMock(overrides?: TestUnistylesOverrides) {
             setTheme: (..._args: unknown[]) => {},
             updateTheme: (..._args: unknown[]) => {},
             setRootViewBackgroundColor: (..._args: unknown[]) => {},
+            getTheme: () => theme,
         },
         overrides?.runtime,
     );

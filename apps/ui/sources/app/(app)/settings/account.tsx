@@ -605,11 +605,6 @@ export default React.memo(() => {
                                     const optOut = !value;
                                     setAnalyticsOptOut(optOut);
                                 }}
-                                trackColor={{
-                                    false: theme.colors.switch.track.inactive,
-                                    true: theme.colors.switch.track.active,
-                                }}
-                                thumbColor={!analyticsOptOut ? theme.colors.switch.thumb.active : theme.colors.switch.thumb.inactive}
                             />
                         }
                         showChevron={false}
@@ -625,11 +620,6 @@ export default React.memo(() => {
                                     const optOut = !value;
                                     setCrashReportsOptOut(optOut);
                                 }}
-                                trackColor={{
-                                    false: theme.colors.switch.track.inactive,
-                                    true: theme.colors.switch.track.active,
-                                }}
-                                thumbColor={!crashReportsOptOut ? theme.colors.switch.thumb.active : theme.colors.switch.thumb.inactive}
                             />
                         }
                         showChevron={false}

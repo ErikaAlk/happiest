@@ -1,0 +1,60 @@
+diff --git a/node_modules/expo-modules-core/common/cpp/fabric/ExpoViewComponentDescriptor.h b/node_modules/expo-modules-core/common/cpp/fabric/ExpoViewComponentDescriptor.h
+--- a/node_modules/expo-modules-core/common/cpp/fabric/ExpoViewComponentDescriptor.h
++++ b/node_modules/expo-modules-core/common/cpp/fabric/ExpoViewComponentDescriptor.h
+@@ -68,20 +68,5 @@
+     if (!isnan(width) || !isnan(height)) {
+-      auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(
+-        snode->getProps());
+-
+-      // The node has width and/or height set as style props, so we should not override it
+-      auto widthProp = props.yogaStyle.dimension(facebook::yoga::Dimension::Width);
+-      auto heightProp = props.yogaStyle.dimension(facebook::yoga::Dimension::Height);
+-
+-      if (widthProp.value().isDefined()) {
+-        // view has fixed dimension size set in props, so we should not autosize it in that axis
+-        width = widthProp.value().unwrap();
+-      }
+-      if (heightProp.value().isDefined()) {
+-        height = heightProp.value().unwrap();
+-      }
+-
+-      snode->setSize({width, height});
++      snode->setSizeFromContent({width, height});
+     }
+ 
+     // handle layout style prop update
+diff --git a/node_modules/expo-modules-core/common/cpp/fabric/ExpoViewShadowNode.h b/node_modules/expo-modules-core/common/cpp/fabric/ExpoViewShadowNode.h
+--- a/node_modules/expo-modules-core/common/cpp/fabric/ExpoViewShadowNode.h
++++ b/node_modules/expo-modules-core/common/cpp/fabric/ExpoViewShadowNode.h
+@@ -10,3 +10,4 @@
+ #include <algorithm>
++#include <cmath>
+ #include <memory>
+ 
+@@ -62,6 +63,26 @@
+     return traits;
+   }
+ 
++  // React Native 的尺寸保留原单位；只有未指定的方向使用原生内容尺寸。
++  void setSizeFromContent(react::Size size) const {
++    this->ensureUnsealed();
++    auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(
++      this->getProps());
++    auto style = this->yogaNode_.style();
++    auto width = props.yogaStyle.dimension(facebook::yoga::Dimension::Width);
++    auto height = props.yogaStyle.dimension(facebook::yoga::Dimension::Height);
++    if (!width.value().isDefined() && !std::isnan(size.width)) {
++      style.setDimension(facebook::yoga::Dimension::Width,
++                         facebook::yoga::StyleSizeLength::points(size.width));
++    }
++    if (!height.value().isDefined() && !std::isnan(size.height)) {
++      style.setDimension(facebook::yoga::Dimension::Height,
++                         facebook::yoga::StyleSizeLength::points(size.height));
++    }
++    this->yogaNode_.setStyle(style);
++    this->yogaNode_.setDirty(true);
++  }
++
+   /**
+    Used by `RNHostView`. Reports where this view's contents were actually drawn, for views laid
+    out by SwiftUI or Compose instead of Yoga. Without it `measure()` returns this node's Yoga box,

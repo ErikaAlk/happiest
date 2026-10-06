@@ -60,10 +60,10 @@ export type WizardModalShellProps = Readonly<{
     onBack?: () => void;
     onPrimary?: () => void;
     onSecondary?: () => void;
-    primaryLabel?: React.ReactNode;
-    secondaryLabel?: React.ReactNode;
-    skipLabel?: React.ReactNode;
-    backLabel?: React.ReactNode;
+    primaryLabel?: string;
+    secondaryLabel?: string;
+    skipLabel?: string;
+    backLabel?: string;
     primaryDisabled?: boolean;
     secondaryDisabled?: boolean;
     showSkip?: boolean;

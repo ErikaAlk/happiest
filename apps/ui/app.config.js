@@ -109,16 +109,13 @@ const androidUsesCleartextTraffic = readBoolEnv('HAPPIER_ANDROID_USES_CLEARTEXT_
 // week in July 2026 after a prebuild regenerated ios/ without the property.
 // Enforced by the verify-native-patch-compilation postinstall task.
 //
-// Android SDK levels and the Kotlin version follow the ColorOS UI kit build
-// (~/Workspace/code/coloros-ui-kit/android): compileSdk 37, minSdk 26, Kotlin 2.4.20.
+// Android SDK levels, Kotlin, the Android Gradle plugin and the Gradle wrapper follow the
+// ColorOS UI kit build and are owned by ./plugins/withColorOsUiKit.js.
 const expoBuildPropertiesPlugin = [
     "expo-build-properties",
     {
         android: {
             usesCleartextTraffic: androidUsesCleartextTraffic === true,
-            minSdkVersion: 26,
-            compileSdkVersion: 37,
-            kotlinVersion: "2.4.20",
         },
         ios: {
             buildReactNativeFromSource: true,
@@ -357,6 +354,7 @@ const baseExpoConfig = {
         },
         plugins: [
             expoBuildPropertiesPlugin,
+            require("./plugins/withColorOsUiKit.js"),
             require("./plugins/withEinkCompatibility.js"),
             require("./plugins/withAndroidReactNativeArchitectures.js"),
             require("./modules/happier-hardware-keyboard-shortcuts/app.plugin.js"),

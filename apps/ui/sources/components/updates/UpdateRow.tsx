@@ -24,7 +24,7 @@ import { fireAndForget } from '@/utils/system/fireAndForget';
 import type { UpdateItem } from '@/updates/items/updateItem';
 
 import { describeUpdateItem } from './describeUpdateItem';
-import { UpdatesTextButton } from './UpdatesTextButton';
+import { QuietTextButton } from '@/components/ui/buttons/QuietTextButton';
 
 export type UpdateRowPresentation = 'popover' | 'screen';
 
@@ -145,7 +145,7 @@ export const UpdateRow = React.memo(function UpdateRow(props: Readonly<{
                         {copyFeedback.isCopied() ? (
                             <CopiedPill visible testID={`updates.row.${item.id}.viewLog.copied`} />
                         ) : (
-                            <UpdatesTextButton
+                            <QuietTextButton
                                 label={t('updates.action.viewLog')}
                                 accessibilityLabel={t('updates.a11y.actionOn', { action: t('updates.action.viewLog'), title: item.title, where: props.where })}
                                 onPress={viewLog}

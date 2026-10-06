@@ -11,6 +11,15 @@ vi.mock('@expo/vector-icons', () => ({
     Ionicons: 'Ionicons',
 }));
 
+// The checkbox draws its mark through Pressable's render-function children, which the host-string stub never calls.
+vi.mock('react-native', async () => {
+    const { createReactNativeWebMock } = await import('@/dev/testkit/mocks/reactNative');
+    return createReactNativeWebMock({
+        Pressable: ({ children, ...props }: any) =>
+            React.createElement('Pressable', props, typeof children === 'function' ? children({ pressed: false }) : children),
+    });
+});
+
 function CheckboxHarness() {
     const actions = useTranscriptSelectionActions();
     return (
@@ -36,21 +45,6 @@ function findPressableByTestId(screen: Awaited<ReturnType<typeof renderScreen>>,
 
 function findAllPressablesByTestId(screen: Awaited<ReturnType<typeof renderScreen>>, testID: string) {
     return screen.findAll((node) => node.props?.testID === testID && typeof node.props?.onPress === 'function');
-}
-
-function flattenStyle(style: unknown): Record<string, unknown> {
-    if (Array.isArray(style)) {
-        return Object.assign({}, ...style.filter(Boolean).map(flattenStyle));
-    }
-    return style && typeof style === 'object' ? style as Record<string, unknown> : {};
-}
-
-function resolvePressableStyle(node: { props: { style?: unknown } }): Record<string, unknown> {
-    const style = node.props.style;
-    if (typeof style === 'function') {
-        return flattenStyle(style({ pressed: false }));
-    }
-    return flattenStyle(style);
 }
 
 async function pressByTestId(screen: Awaited<ReturnType<typeof renderScreen>>, testID: string): Promise<void> {
@@ -94,7 +88,6 @@ describe('MessageSelectionCheckbox', () => {
         const unchecked = findPressableByTestId(screen, 'checkbox-m1');
         expect(unchecked.props.accessibilityRole).toBe('checkbox');
         expect(unchecked.props.accessibilityState).toEqual({ checked: false });
-        expect(resolvePressableStyle(unchecked).backgroundColor).toEqual(expect.any(String));
         expect(screen.findByType('Icon').props.name).toBe('square');
 
         await pressByTestId(screen, 'checkbox-m1');

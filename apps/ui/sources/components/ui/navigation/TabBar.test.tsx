@@ -96,13 +96,13 @@ function hasTextChild(node: renderer.ReactTestInstance, value: string) {
 function hasIndicatorDot(node: renderer.ReactTestInstance) {
     return node.findAll((child) => {
         if (String(child.type) !== 'View') return false;
-        const style = child.props?.style ?? {};
+        const style = Object.assign({}, ...styleObjects(child.props?.style));
         return style.width === 6 && style.height === 6;
     }).length > 0;
 }
 
 function styleObjects(style: unknown): Record<string, unknown>[] {
-    const styles = Array.isArray(style) ? style : [style];
+    const styles = Array.isArray(style) ? style.flat(Infinity) : [style];
     return styles.filter((value): value is Record<string, unknown> => Boolean(value) && typeof value === 'object');
 }
 
@@ -133,16 +133,23 @@ describe('TabBar', () => {
 
     it('renders a trailing accessory beside the tabs without adding a tab', async () => {
         const { TabBar } = await import('./TabBar');
+        const onAccessoryPress = vi.fn();
 
         const screen = await renderScreen(
             <TabBar
                 activeTab="sessions"
                 onTabPress={() => {}}
-                trailingAccessory={React.createElement('TrailingAccessory')}
+                trailingAccessory={{
+                    testID: 'trailing-accessory',
+                    accessibilityLabel: 'Start',
+                    icon: 'plus',
+                    onPress: onAccessoryPress,
+                }}
             />,
         );
 
-        expect(screen.tree.findAllByType('TrailingAccessory' as never)).toHaveLength(1);
+        screen.pressByTestId('trailing-accessory');
+        expect(onAccessoryPress).toHaveBeenCalledTimes(1);
         expect(screen.findAllHostsByTestId('tabbar-tab-sessions')).toHaveLength(1);
         expect(screen.findAll((node) => typeof node.props?.testID === 'string'
             && node.props.testID.startsWith('tabbar-tab-')

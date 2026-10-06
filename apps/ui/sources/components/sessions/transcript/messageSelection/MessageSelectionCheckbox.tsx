@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { Pressable } from 'react-native';
-import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { StyleSheet } from 'react-native-unistyles';
 
 import type { TranscriptSelectableMessageRole } from './_types';
 import { formatMessageSelectionRowAccessibilityLabel } from './messageSelectionAccessibility';
 import { useOptionalTranscriptSelectionRow } from './TranscriptMessageSelectionContext';
-import { Icon } from '@/components/ui/icons/Icon';
+import { CheckboxMark } from '@/components/ui/forms/CheckboxMark';
 
 export function MessageSelectionCheckbox(props: Readonly<{
     messageId: string;
@@ -13,7 +13,6 @@ export function MessageSelectionCheckbox(props: Readonly<{
     previewText: string;
     testID?: string;
 }>): React.ReactElement | null {
-    const { theme } = useUnistyles();
     const row = useOptionalTranscriptSelectionRow(props.messageId);
     if (!row.isSelectionMode) return null;
 
@@ -30,35 +29,19 @@ export function MessageSelectionCheckbox(props: Readonly<{
             accessibilityState={{ checked: row.isSelected }}
             accessibilityLabel={accessibilityLabel}
             hitSlop={10}
-            style={({ pressed }) => [
-                styles.checkbox,
-                row.isSelected ? styles.checkboxSelected : null,
-                pressed ? styles.checkboxPressed : null,
-            ]}
+            style={styles.checkbox}
         >
-            <Icon
-                name={row.isSelected ? 'check-square' : 'square'}
-                size={16}
-                color={row.isSelected ? theme.colors.state.active.foreground : theme.colors.text.secondary}
-            />
+            {({ pressed }) => <CheckboxMark appearance="chip" checked={row.isSelected} pressed={pressed} />}
         </Pressable>
     );
 }
 
-const styles = StyleSheet.create((theme) => ({
+const styles = StyleSheet.create({
     checkbox: {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: 32,
         minWidth: 32,
-        borderRadius: 16,
         marginRight: 6,
-        backgroundColor: theme.colors.surface.base,
     },
-    checkboxSelected: {
-        backgroundColor: theme.colors.state.active.background,
-    },
-    checkboxPressed: {
-        backgroundColor: theme.colors.state.neutral.background,
-    },
-}));
+});

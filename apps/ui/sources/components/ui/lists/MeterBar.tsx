@@ -1,42 +1,14 @@
 import * as React from 'react';
-import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
-import { Text } from '@/components/ui/text/Text';
+import { clampMeterFill, MeterBarCaption, meterBarAccessibilityProps, type MeterBarProps } from './meterBarModel';
 
-export type MeterTone = 'success' | 'warning' | 'danger' | 'neutral';
-
-export interface MeterBarProps {
-    tone: MeterTone;
-    /**
-     * Fill fraction in 0..1 (clamped). Canonical semantic: fill = consumed / progress — the bar
-     * GROWS as work happens (tokens consumed, agents completed). Pass the progress ratio directly;
-     * do not invert it.
-     */
-    fillFraction: number;
-    caption?: React.ReactNode;
-    /** Track height in px (default 6). */
-    height?: number;
-    trackColor?: string;
-    /**
-     * When the bar reports progress (not a capacity), its accessible name. The bar then exposes
-     * `progressbar` semantics with the fill as a 0–100 value.
-     */
-    progressAccessibilityLabel?: string;
-    testID?: string;
-    style?: StyleProp<ViewStyle>;
-}
+export type { MeterBarProps, MeterTone } from './meterBarModel';
 
 const DEFAULT_TRACK_HEIGHT_PX = 6;
 
-function clamp01(value: number): number {
-    if (!Number.isFinite(value)) return 0;
-    if (value <= 0) return 0;
-    if (value >= 1) return 1;
-    return value;
-}
-
-const stylesheet = StyleSheet.create((theme) => ({
+const stylesheet = StyleSheet.create(() => ({
     track: {
         width: '100%',
         borderRadius: 999,
@@ -46,12 +18,6 @@ const stylesheet = StyleSheet.create((theme) => ({
         height: '100%',
         borderRadius: 999,
     },
-    caption: {
-        color: theme.colors.text.secondary,
-        marginTop: 4,
-        fontSize: 12,
-        lineHeight: 16,
-    },
 }));
 
 export const MeterBar = React.memo<MeterBarProps>((props) => {
@@ -59,7 +25,7 @@ export const MeterBar = React.memo<MeterBarProps>((props) => {
     const styles = stylesheet;
 
     const height = props.height ?? DEFAULT_TRACK_HEIGHT_PX;
-    const fill = clamp01(props.fillFraction);
+    const fill = clampMeterFill(props.fillFraction);
     // Read the token directly — never apply a runtime opacity/rgba transform to a
     // theme token (web var-ification turns such transforms into silent no-ops).
     const fillColor = theme.colors.state[props.tone].foreground;
@@ -69,12 +35,7 @@ export const MeterBar = React.memo<MeterBarProps>((props) => {
         <View
             testID={props.testID}
             style={props.style}
-            {...(props.progressAccessibilityLabel ? {
-                accessible: true,
-                accessibilityRole: 'progressbar' as const,
-                accessibilityLabel: props.progressAccessibilityLabel,
-                accessibilityValue: { min: 0, max: 100, now: Math.round(fill * 100) },
-            } : null)}
+            {...meterBarAccessibilityProps(props.progressAccessibilityLabel, fill)}
         >
             <View
                 testID={props.testID ? `${props.testID}:track` : undefined}
@@ -85,18 +46,7 @@ export const MeterBar = React.memo<MeterBarProps>((props) => {
                     style={[styles.fill, { width: `${fill * 100}%`, backgroundColor: fillColor }]}
                 />
             </View>
-            {props.caption != null ? (
-                typeof props.caption === 'string' || typeof props.caption === 'number' ? (
-                    <Text
-                        testID={props.testID ? `${props.testID}:caption` : undefined}
-                        style={styles.caption}
-                    >
-                        {props.caption}
-                    </Text>
-                ) : (
-                    props.caption
-                )
-            ) : null}
+            {props.caption != null ? <MeterBarCaption caption={props.caption} testID={props.testID} /> : null}
         </View>
     );
 });

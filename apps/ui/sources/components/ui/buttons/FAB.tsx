@@ -5,6 +5,11 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { shadowLevelStyle } from '@/shadowElevation';
 import { GradientSurface } from '@/components/ui/surfaces/GradientSurface';
 import { Icon } from '@/components/ui/icons/Icon';
+import { t } from '@/text';
+
+import type { FABProps } from './FAB.types';
+
+export type { FABProps } from './FAB.types';
 
 const stylesheet = StyleSheet.create((theme, runtime) => ({
     container: {
@@ -27,7 +32,7 @@ const stylesheet = StyleSheet.create((theme, runtime) => ({
     },
 }));
 
-export const FAB = React.memo((props: { onPress: () => void; accessibilityLabel?: string }) => {
+export const FAB = React.memo((props: FABProps) => {
     const { theme } = useUnistyles();
     const styles = stylesheet;
     const safeArea = useSafeAreaInsets();
@@ -42,7 +47,7 @@ export const FAB = React.memo((props: { onPress: () => void; accessibilityLabel?
                 style={styles.button}
                 onPress={props.onPress}
                 accessibilityRole="button"
-                accessibilityLabel={props.accessibilityLabel}
+                accessibilityLabel={props.accessibilityLabel ?? t('common.add')}
             >
                 {({ pressed }) => (
                     <GradientSurface
