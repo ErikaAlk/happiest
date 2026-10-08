@@ -30,7 +30,7 @@ type CacheEntry = {
 const cache = new Map<string, CacheEntry>();
 const listeners = new Map<string, Set<(state: MachineCapabilitiesCacheState) => void>>();
 
-const DEFAULT_STALE_MS = 24 * 60 * 60 * 1000; // 24 hours
+export const DEFAULT_STALE_MS = 24 * 60 * 60 * 1000; // 24 hours
 const DEFAULT_FETCH_TIMEOUT_MS = 2500;
 const DEFAULT_ERROR_BACKOFF_MS = 60_000;
 const DEFAULT_SLOW_FETCH_TIMEOUT_MS = 12_000;
@@ -507,7 +507,7 @@ export function prefetchMachineCapabilitiesIfStale(params: {
 }): Promise<void> {
     const cacheKey = toCacheKey(params.machineId, params.serverId, params.cacheKeySalt);
     const existing = getEntry(cacheKey);
-    if (!existing || existing.state.status === 'idle') {
+    if (!existing || existing.state.status === 'idle' || existing.state.status === 'loading') {
         return fetchAndMerge({
             machineId: params.machineId,
             serverId: params.serverId,

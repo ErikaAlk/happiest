@@ -2,7 +2,7 @@ type ScrollRoot = {
     scrollTop: number;
 };
 
-type RequestFrame = (callback: FrameRequestCallback) => number;
+type RequestFrame = (callback: FrameRequestCallback) => void;
 
 export function preserveWebScrollAnchorAfterToggle(params: Readonly<{
     anchorY: number;

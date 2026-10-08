@@ -106,9 +106,13 @@ export type UseSessionInlineDragParams = Readonly<{
     onLongPressActivated?: (sessionKey: string) => void;
 }>;
 
+type SessionInlineDragStyle = Pick<ViewStyle,
+    'position' | 'transform' | 'zIndex' | 'shadowColor' | 'shadowOffset'
+    | 'shadowOpacity' | 'shadowRadius' | 'elevation' | 'opacity'>;
+
 export type UseSessionInlineDragResult = Readonly<{
     gesture: GestureType | LegacyComposedGesture | undefined;
-    animatedStyle: AnimatedStyle<ViewStyle>;
+    animatedStyle: AnimatedStyle<SessionInlineDragStyle>;
 }>;
 
 function pointerFromAbsoluteCoordinates(absoluteX: number | null | undefined, absoluteY: number | null | undefined): WindowPointer | null {
@@ -403,7 +407,7 @@ export function useSessionInlineDrag(params: UseSessionInlineDragParams): UseSes
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [enabled, sessionKey, groupKey, dataIndex, overlayShared]);
 
-    const animatedStyle = useAnimatedStyle<ViewStyle>(() => {
+    const animatedStyle = useAnimatedStyle<SessionInlineDragStyle>(() => {
         if (!enabled) {
             return {
                 position: 'relative' as const,

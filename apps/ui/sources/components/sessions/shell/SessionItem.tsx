@@ -1,4 +1,5 @@
 import React from 'react';
+import { getSessionStorageKind } from '@/sync/domains/session/sessionStorageKind';
 import { Animated, Platform, Pressable, View, type GestureResponderEvent, type LayoutChangeEvent, type ViewInstance } from 'react-native';
 import { GestureDetector, type GestureType, type LegacyComposedGesture } from 'react-native-gesture-handler';
 import Swipeable, { type SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -1432,6 +1433,11 @@ const SessionItemContent = React.memo(
                                 </Text>
                             </View>
                         ) : null}
+                        <View style={styles.serverBadgeContainer}>
+                            <Text style={styles.serverBadgeText} numberOfLines={1}>
+                                {getSessionStorageKind(resolvedSession) === 'direct' ? t('sessionsList.storageDirectTab') : 'Happiest'}
+                            </Text>
+                        </View>
                         {draft ? (
                             <View
                                 testID={`session-list-draft-indicator:${resolvedSession.id}`}

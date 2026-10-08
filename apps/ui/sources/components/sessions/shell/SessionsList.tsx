@@ -1,4 +1,5 @@
 import React from 'react';
+import { DirectSessionListRow } from '@/components/sessions/directSessions/DirectSessionListRow';
 import {
     View,
     FlatList,
@@ -360,7 +361,7 @@ function buildSessionCandidateKeySet(items: ReadonlyArray<SessionListViewItem>):
     if (items.length === 0) return EMPTY_MEMORY_MATCHED_SESSION_KEYS;
     const keys = new Set<string>();
     for (const item of items) {
-        if (item.type !== 'session') continue;
+        if (item.type !== 'session' || item.session.directCandidate) continue;
         const serverId = String(item.serverId ?? '').trim();
         const sessionId = String(item.session?.id ?? '').trim();
         if (serverId && sessionId) {
@@ -581,14 +582,18 @@ export function SessionsList(props: Readonly<{
     React.useEffect(() => {
         fireAndForget(preloadEnrichedMarkdownRuntime(), { tag: 'SessionsList.preloadEnrichedMarkdownRuntime' });
     }, []);
+    const refreshDirectSessionsRef = React.useRef<(() => Promise<void>) | null>(null);
+    const refreshDirectSessions = React.useCallback(async () => { await refreshDirectSessionsRef.current?.(); }, []);
     const data = useVisibleSessionListViewData(props.storageKind ?? 'all', {
         activeSessionId,
         sessionListSurfaceDataActive: surfaceOwnership.dataActive,
+        refreshDirectSessionsRef,
     });
     return (
         <SessionsListContent
             storageKind={props.storageKind}
             data={data}
+            refreshDirectSessions={refreshDirectSessions}
             pathname={pathname}
             surfaceOwnership={surfaceOwnership}
         />
@@ -598,6 +603,7 @@ export function SessionsList(props: Readonly<{
 export const SessionsListContent = React.memo(function SessionsListContent(props: Readonly<{
     storageKind?: SessionListStorageFilter;
     data: SessionListViewItem[] | null;
+    refreshDirectSessions?: () => Promise<void>;
     pathname?: string;
     surfaceOwnership?: Partial<SessionListSurfaceOwnership>;
 }>) {
@@ -942,7 +948,7 @@ export const SessionsListContent = React.memo(function SessionsListContent(props
     });
     const renderedListItems = frozenListProjection.viewItems;
     const rowStoreScopesRaw = React.useMemo(() => renderedListItems
-        .filter((item): item is SessionListSessionItem => item.type === 'session')
+        .filter((item): item is SessionListSessionItem => item.type === 'session' && !item.session.directCandidate)
         .map((item) => ({
             sessionId: item.session.id,
             serverId: item.serverId ?? null,
@@ -1121,13 +1127,17 @@ export const SessionsListContent = React.memo(function SessionsListContent(props
         try {
             await runRefreshDiagnosticAction(
                 { action: 'pull_to_refresh', screen: 'session_list' },
-                () => sync.refreshSessions(),
+                async () => {
+                    const results = await Promise.allSettled([sync.refreshSessions(), props.refreshDirectSessions?.()]);
+                    const failures = results.flatMap((result) => result.status === 'rejected' ? [result.reason] : []);
+                    if (failures.length > 0) throw new AggregateError(failures, '会话列表刷新失败');
+                },
             );
         } finally {
             refreshingSessionsRef.current = false;
             setRefreshingSessions(false);
         }
-    }, []);
+    }, [props.refreshDirectSessions]);
     const handleVirtualizedListScroll = React.useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
         if (surfaceDataActiveRef.current) {
             sync.markSessionListScrollActivity();
@@ -1701,7 +1711,7 @@ export const SessionsListContent = React.memo(function SessionsListContent(props
         const targets = new Map<string, SessionBulkActionTarget>();
         if (!sessionListSelectionSnapshot.isSelectionMode) return targets;
         for (const item of selectionScopeListItems ?? EMPTY_SESSION_LIST_VIEW_ITEMS) {
-            if (item.type !== 'session') continue;
+            if (item.type !== 'session' || item.session.directCandidate) continue;
             const target = buildSessionBulkActionTargetFromSessionItem(
                 item as SessionListSessionItem,
                 rowPresentationSettings,
@@ -2222,6 +2232,7 @@ export const SessionsListContent = React.memo(function SessionsListContent(props
         workspaceMachineSubtitlesEnabled,
     ]);
     const renderSessionItem = React.useCallback((item: SessionListSessionItem, index: number) => {
+        if (item.session.directCandidate) return <DirectSessionListRow value={item.session.directCandidate} />;
         const groupKey = String(item.groupKey ?? '').trim();
         const effectiveOrderingMode = resolveEffectiveSessionListOrderingModeForGroup({
             section: sessionListSectionMode === 'single' ? 'sessions' : item.section,

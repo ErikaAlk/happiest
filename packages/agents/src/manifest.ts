@@ -1,5 +1,6 @@
 import type { AgentCore, AgentId } from './types.js';
 import { getProviderCliRuntimeSpec } from './providers/providerCliRuntime.js';
+import { resolveCodexVendorSessionSource, resolveOpenCodeVendorSessionSource } from './sessionControls/agentRuntimeDescriptor.js';
 
 export const DEFAULT_AGENT_ID: AgentId = 'claude';
 
@@ -47,6 +48,7 @@ export const AGENTS_CORE = {
         resume: {
             vendorResume: 'supported',
             vendorResumeIdField: 'claudeSessionId',
+            resolveVendorSessionSource: () => ({ kind: 'claudeConfig' as const }),
             // The Agent's own session-log POINTER for the handoff brief, not a
             // resume gate (`AM-24`). The predecessor key name is retained
             // deliberately — see `AgentResumeConfig`.
@@ -105,7 +107,7 @@ export const AGENTS_CORE = {
                 openai: ['token'],
             },
         },
-        resume: { vendorResume: 'experimental', vendorResumeIdField: 'codexSessionId' },
+        resume: { vendorResume: 'experimental', vendorResumeIdField: 'codexSessionId', resolveVendorSessionSource: resolveCodexVendorSessionSource },
         sessionStorage: { direct: true, persisted: true },
         sessionCapabilities: {
             sessionListing: 'supported',
@@ -181,7 +183,7 @@ export const AGENTS_CORE = {
                 anthropic: ['token'],
             },
         },
-        resume: { vendorResume: 'supported', vendorResumeIdField: 'opencodeSessionId' },
+        resume: { vendorResume: 'supported', vendorResumeIdField: 'opencodeSessionId', resolveVendorSessionSource: resolveOpenCodeVendorSessionSource },
         sessionStorage: { direct: true, persisted: true },
         sessionCapabilities: {
             sessionListing: 'supported',

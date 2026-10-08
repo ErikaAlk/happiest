@@ -1,4 +1,8 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { setPreferredLanguageFromSettings } from '@/text';
+
+beforeEach(() => setPreferredLanguageFromSettings('en'));
+afterEach(() => setPreferredLanguageFromSettings(null));
 
 import { syncPerformanceTelemetry } from '@/sync/runtime/syncPerformanceTelemetry';
 import { SESSION_RUNTIME_STATUS_STALE_SIGNAL_MS } from '@/sync/domains/session/attention/deriveSessionRuntimePresentationState';

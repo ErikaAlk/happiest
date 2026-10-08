@@ -1,4 +1,5 @@
 import type { Metadata, Session } from '@/sync/domains/state/storageTypes';
+import { readSessionVendorIdentity } from '../directSessions/directSessionListCandidates';
 import { computeHasUnreadActivity } from '@/sync/domains/messages/unread';
 import type {
     PrimaryTurnStatusV1,
@@ -39,6 +40,7 @@ import {
 export { derivePendingRequestFlagsFromAgentState } from '@/sync/domains/session/pending/listPendingSessionRequests';
 
 export interface SessionListRenderableMetadata {
+    vendorIdentity?: ReturnType<typeof readSessionVendorIdentity>;
     name?: string;
     summaryText?: string | null;
     path: string;
@@ -83,6 +85,7 @@ export interface SessionListRenderableMetadata {
 }
 
 export interface SessionListRenderableSession {
+    directCandidate?: import('../directSessions/directSessionListCandidates').DirectSessionListCandidate;
     id: string;
     seq: number;
     createdAt: number;
@@ -217,6 +220,7 @@ export function buildSessionListRenderableMetadata(metadata: Metadata | null | u
         };
     })();
     return {
+        vendorIdentity: readSessionVendorIdentity(metadata),
         name: typeof metadata.name === 'string' ? metadata.name : undefined,
         summaryText: typeof metadata.summary?.text === 'string' ? metadata.summary.text : null,
         path: typeof metadata.path === 'string' ? metadata.path : '',
@@ -465,6 +469,7 @@ function areSessionListRenderableMetadataEqual(
         && (previous.host ?? null) === (next.host ?? null)
         && (previous.machineId ?? null) === (next.machineId ?? null)
         && (previous.flavor ?? null) === (next.flavor ?? null)
+        && JSON.stringify(previous.vendorIdentity) === JSON.stringify(next.vendorIdentity)
         && (previous.directSessionV1?.v ?? null) === (next.directSessionV1?.v ?? null)
         && (previous.directSessionV1?.providerId ?? null) === (next.directSessionV1?.providerId ?? null)
         && (previous.readStateV1?.v ?? null) === (next.readStateV1?.v ?? null)
@@ -870,6 +875,7 @@ export function didSessionListRenderableWarmCacheFieldsChange(
     if ((prevMeta?.flavor ?? null) !== (nextMeta?.flavor ?? null)) return true;
     if ((prevMeta?.hiddenSystemSession === true) !== (nextMeta?.hiddenSystemSession === true)) return true;
     if ((prevMeta?.directSessionV1?.v ?? null) !== (nextMeta?.directSessionV1?.v ?? null)) return true;
+    if (JSON.stringify(prevMeta?.vendorIdentity) !== JSON.stringify(nextMeta?.vendorIdentity)) return true;
     if ((prevMeta?.directSessionV1?.providerId ?? null) !== (nextMeta?.directSessionV1?.providerId ?? null)) return true;
 
     if ((previous.hasPendingPermissionRequests ?? null) !== (next.hasPendingPermissionRequests ?? null)) return true;

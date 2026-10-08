@@ -4,6 +4,7 @@ import {
     type ConnectedServiceId,
     type ConnectedServicesProviderConfigSharingModeV1,
     type ConnectedServicesProviderStateSharingModeV1,
+    type DirectSessionsSource,
 } from '@happier-dev/protocol';
 import type { AnyAgentRuntimeKindsManifest } from './runtimeKinds.js';
 
@@ -109,6 +110,7 @@ export type ConnectedServicesProviderStateSharingCapability = Readonly<{
 export type AgentResumeConfig = Readonly<{
     vendorResume: VendorResumeSupportLevel;
     vendorResumeIdField?: VendorResumeIdField | null;
+    resolveVendorSessionSource?: (metadata: Readonly<Record<string, unknown>>) => DirectSessionsSource | null;
     /**
      * Session-metadata key where this Agent publishes its OWN on-disk session-log
      * path for the current vendor resume id, when it keeps one (Claude's

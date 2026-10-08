@@ -85,7 +85,7 @@ export function PierreScrollRootVirtualizerProvider(props: Readonly<{ children: 
         if (!anchor) return;
         if (!instance) return;
 
-        const raf: (cb: FrameRequestCallback) => number =
+        const raf: (cb: FrameRequestCallback) => void =
             typeof globalThis.requestAnimationFrame === 'function'
                 ? globalThis.requestAnimationFrame.bind(globalThis)
                 : (cb) => globalThis.setTimeout(() => cb(Date.now()), 0);

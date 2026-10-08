@@ -215,6 +215,12 @@ Revision repair uses message identities and available sequence hints to fetch bo
 
 A repair captures the existing immutable stale-marker sequence map before reading. It can acknowledge those markers only while that exact snapshot remains current. Every new stale mark replaces the snapshot, including another edit to the same row at the same sequence position, so an older response cannot clear newer repair demand after a clear or reset.
 
+### 直连会话列表发现（当前开发分支）
+
+开启 `sessions.direct` 后，UI 从所选服务器上可达电脑的现有能力缓存选择可用提供方，使用既有候选分页 RPC 完整发现，并将临时候选送入统一会话列表的排序、筛选和分组。服务器、电脑、提供方、来源和提供方会话身份共同决定去重；托管会话的来源由 `AGENTS_CORE.resume.resolveVendorSessionSource` 提供。候选使用提供方原始活动时间，未取得可靠运行证据时保留原有未知状态。
+
+点击候选时调用既有 `linkEnsure`，成功后使用真实服务器会话标识导航。发现操作不会批量创建服务器记录，临时候选不能执行持久化会话操作。前台恢复和列表重新启用执行完整发现，电脑心跳执行增量发现且复用尚未完成的请求；离线保留已观察候选并禁用打开操作，授权来源移除后清除对应观察。已链接行继续使用提供方活动时间，同时保留后续托管活动。该接入保持原有 RPC 数据格式。
+
 ### Direct transcript continuation
 
 The development direct-session RPC response retains each agent's existing `truncated` boolean and adds optional `truncationReason: "page_limit" | "source_discontinuity"`. Old readers continue to see the original boolean; new readers use the explicit reason when present to distinguish an ordinary bounded page from invalidated source history. In particular, Claude can report `page_limit` while retaining its legacy `truncated: false`. A legacy response without a reason remains conservative.

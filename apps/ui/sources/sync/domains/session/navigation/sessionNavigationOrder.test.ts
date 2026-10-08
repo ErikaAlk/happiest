@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
+it('keeps unlinked discovery identities out of persisted navigation and selection orders', () => {
+    const entries = buildVisibleSessionNavigationEntries([
+        { type: 'session', serverId: 'server', session: { id: 'managed' } },
+        { type: 'session', serverId: 'server', session: { id: 'temporary', directCandidate: {} } },
+    ]);
+    expect(entries.map((entry) => entry.sessionId)).toEqual(['managed']);
+});
+
 import {
     buildVisibleSessionNavigationEntries,
     moveSessionMruEntryToFront,

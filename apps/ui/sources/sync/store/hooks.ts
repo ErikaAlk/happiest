@@ -1574,6 +1574,8 @@ export function buildSessionListShellViewItemSignature(item: SessionListViewItem
     metadata?.machineId ?? '',
     metadata?.flavor ?? '',
     metadata?.directSessionV1?.providerId ?? '',
+    item.session.directCandidate?.candidate.activity ?? '',
+    item.session.directCandidate?.machine?.active === false ? 'offline' : '',
     metadata?.hiddenSystemSession === true ? '1' : '0',
     readState?.sessionSeq ?? '',
     readState?.pendingActivityAt ?? '',

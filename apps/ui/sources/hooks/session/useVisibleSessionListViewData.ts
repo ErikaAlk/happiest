@@ -57,6 +57,8 @@ import { useResolvedActiveServerSelection } from '@/hooks/server/useEffectiveSer
 import { useSessionAttentionStandingInputs } from './useSessionAttentionStandingInputs';
 import { useSessionListRuntimeNowMs, useSessionListRuntimeWake } from './sessionListRuntimeClock';
 import { syncPerformanceTelemetry } from '@/sync/runtime/syncPerformanceTelemetry';
+import { useDiscoveredDirectSessions } from './useDiscoveredDirectSessions';
+import { mergeDiscoveredDirectSessions } from '@/sync/domains/session/listing/mergeDiscoveredDirectSessions';
 
 const EMPTY_SESSION_LIST_GROUP_ORDER: Readonly<Record<string, ReadonlyArray<string> | undefined>> = Object.freeze({});
 const EMPTY_SESSION_WORKSPACE_ORDER: SessionWorkspaceOrderV1 = Object.freeze({});
@@ -75,9 +77,11 @@ export type VisibleSessionListViewDataOptions = Readonly<{
     activeSessionId?: string | null;
     retainedSessionListViewData?: ReadonlyArray<SessionListViewItem> | null;
     sessionListSurfaceDataActive?: boolean;
+    refreshDirectSessionsRef?: React.Ref<() => Promise<void>>;
 }>;
 
 type SessionListDataState = Readonly<{
+    refreshDirectSessions: () => Promise<void>;
     hideInactiveSessions: boolean;
     pinnedSessionKeysV1: ReadonlyArray<string>;
     sessionAttentionStandingPolicy: SessionAttentionStandingPolicy;
@@ -103,7 +107,7 @@ function collectVisibleSessionIdsByServer(items: ReadonlyArray<SessionListViewIt
     const idsByServer: Record<string, string[]> = {};
     if (!items) return idsByServer;
     for (const item of items) {
-        if (item.type !== 'session') continue;
+        if (item.type !== 'session' || item.session.directCandidate) continue;
         const serverId = typeof item.serverId === 'string' ? item.serverId.trim() : '';
         const sessionId = typeof item.session?.id === 'string' ? item.session.id.trim() : '';
         if (!serverId || !sessionId) continue;
@@ -777,7 +781,7 @@ function reuseStableVisibleSessionListRows(
 
 function useSessionListDataState(
     storageFilter: SessionListStorageFilter,
-    options: Pick<VisibleSessionListViewDataOptions, 'sessionListSurfaceDataActive'> = {},
+    options: Pick<VisibleSessionListViewDataOptions, 'sessionListSurfaceDataActive' | 'refreshDirectSessionsRef'> = {},
 ): SessionListDataState {
     const sessionListSurfaceDataActive = options.sessionListSurfaceDataActive !== false;
     const activeData = useSessionListViewData();
@@ -810,21 +814,46 @@ function useSessionListDataState(
         ? selection.allowedServerIds
         : EMPTY_SELECTED_SESSION_LIST_SERVER_IDS;
     const dataByServerId = useSessionListViewDataByServerId(selectedServerIdsForCache);
+    const { candidates: directCandidates, refresh: refreshDirectSessions } = useDiscoveredDirectSessions(sessionListSurfaceDataActive);
+    React.useImperativeHandle(options.refreshDirectSessionsRef, () => refreshDirectSessions, [refreshDirectSessions]);
+    const groupInactiveSessionsByProject = useSetting('groupInactiveSessionsByProject');
+    const activeGroupingV1 = useSetting('sessionListActiveGroupingV1');
+    const inactiveGroupingV1 = useSetting('sessionListInactiveGroupingV1');
+    const workspacePathDisplayModeV1 = useSetting('workspacePathDisplayModeV1');
+    const previousDiscoveredSource = React.useRef<SessionListViewItem[] | null>(null);
 
     const source = React.useMemo(() => {
-        return resolveSessionListSourceData({
+        const persisted = resolveSessionListSourceData({
             enabled: selection.enabled,
             activeServerId: selection.activeServerId,
             activeData,
             byServerId: dataByServerId,
             selectedServerIds: selection.allowedServerIds,
         });
+        const merged = mergeDiscoveredDirectSessions(persisted, directCandidates, {
+            groupInactiveSessionsByProject,
+            activeGroupingV1,
+            inactiveGroupingV1,
+            sectionModeV1: sessionListSectionModeV1,
+            serverScope: { serverId: selection.activeServerId },
+            workspacePathDisplayModeV1,
+        });
+        const stable = reuseStableVisibleSessionListRows(previousDiscoveredSource.current, merged,
+            merged ? buildSessionListIndexFromViewData(merged) : null);
+        previousDiscoveredSource.current = stable;
+        return stable;
     }, [
         activeData,
         dataByServerId,
         selectedServerIdsKey,
         selection.activeServerId,
         selection.enabled,
+        directCandidates,
+        groupInactiveSessionsByProject,
+        activeGroupingV1,
+        inactiveGroupingV1,
+        sessionListSectionModeV1,
+        workspacePathDisplayModeV1,
     ]);
 
     const storageFilteredSource = React.useMemo(
@@ -925,6 +954,7 @@ function useSessionListDataState(
     }, [assignmentFetchBatches, sessionFolderViewModeV1, sessionFoldersEnabled, sessionListSurfaceDataActive]);
 
     return React.useMemo(() => ({
+        refreshDirectSessions,
         hideInactiveSessions,
         pinnedSessionKeysV1,
         sessionAttentionStandingPolicy,
@@ -945,6 +975,7 @@ function useSessionListDataState(
         normalizedWorkspaceOrder,
         sessionFoldersEnabled,
     }), [
+        refreshDirectSessions,
         attentionSource,
         folderSource,
         hideInactiveSessions,

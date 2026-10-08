@@ -171,14 +171,14 @@ vi.mock('./SessionRightPanelGitHistoryTab', () => ({
 
 function createTimeoutCapture() {
     const scheduledTimeouts: Array<() => void> = [];
-    const setTimeoutSpy = vi.spyOn(globalThis, 'setTimeout').mockImplementation(((callback: TimerHandler, _delay?: number, ...args: Array<unknown>) => {
+    const setTimeoutSpy = vi.spyOn(globalThis, 'setTimeout').mockImplementation((callback: TimerHandler, _delay?: number, ...args: Array<unknown>) => {
         if (typeof callback === 'function') {
             scheduledTimeouts.push(() => {
                 callback(...args);
             });
         }
-        return 0 as ReturnType<typeof setTimeout>;
-    }) as typeof setTimeout);
+        return 0 as unknown as ReturnType<typeof setTimeout>;
+    });
 
     return {
         scheduledTimeouts,

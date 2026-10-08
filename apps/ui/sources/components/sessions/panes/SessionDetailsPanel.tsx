@@ -711,7 +711,7 @@ const DetailsTabSurface = React.memo((props: Readonly<{ isActive: boolean; child
         // after tab activation, which can override the first restore write. Re-apply for a short,
         // bounded window so tab switches feel stable and scroll positions don't "jump" when the
         // tab becomes visible.
-        const raf: (cb: FrameRequestCallback) => number =
+        const raf: (cb: FrameRequestCallback) => void =
             typeof globalThis.requestAnimationFrame === 'function'
                 ? globalThis.requestAnimationFrame.bind(globalThis)
                 : (cb) => globalThis.setTimeout(() => cb(Date.now()), 0);

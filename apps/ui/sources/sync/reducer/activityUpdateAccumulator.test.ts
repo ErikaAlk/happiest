@@ -13,7 +13,7 @@ function captureTimeoutCallbacks() {
     const callbacks: CapturedTimeout[] = [];
     let nextHandle = 1;
 
-    vi.spyOn(globalThis, 'setTimeout').mockImplementation(((callback: TimerHandler, delay?: number) => {
+    vi.spyOn(globalThis, 'setTimeout').mockImplementation((callback: TimerHandler, delay?: number) => {
         const handle = nextHandle++;
         const entry: CapturedTimeout = {
             handle,
@@ -32,7 +32,7 @@ function captureTimeoutCallbacks() {
 
         callbacks.push(entry);
         return handle as unknown as ReturnType<typeof setTimeout>;
-    }) as typeof setTimeout);
+    });
 
     vi.spyOn(globalThis, 'clearTimeout').mockImplementation(((handle: number) => {
         const entry = callbacks.find((candidate) => candidate.handle === handle);

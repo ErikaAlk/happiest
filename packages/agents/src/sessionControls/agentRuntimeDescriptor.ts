@@ -1,4 +1,4 @@
-import { readAgentRuntimeDescriptorV1ForProvider } from '@happier-dev/protocol';
+import { readAgentRuntimeDescriptorV1ForProvider, type DirectSessionsSource } from '@happier-dev/protocol';
 
 import { normalizeCodexBackendMode, type CodexBackendMode } from '../providerSettings/definitions/codex.js';
 import {
@@ -14,6 +14,22 @@ import {
 import {
   readOpenCodeRuntimeDescriptorProviderExtra,
 } from './opencodeRuntimeDescriptorExtra.js';
+
+export function resolveCodexVendorSessionSource(metadata: Readonly<Record<string, unknown>>): DirectSessionsSource {
+  const runtime = readSessionMetadataRuntimeDescriptor(metadata, 'codex');
+  return {
+    kind: 'codexHome', home: runtime?.home ?? 'user',
+    ...(runtime?.homePath ? { homePath: runtime.homePath } : {}),
+    ...(runtime?.connectedServiceId ? { connectedServiceId: runtime.connectedServiceId } : {}),
+    ...(runtime?.connectedServiceProfileId ? { connectedServiceProfileId: runtime.connectedServiceProfileId } : {}),
+    ...(runtime?.connectedServiceGroupId ? { connectedServiceGroupId: runtime.connectedServiceGroupId } : {}),
+  };
+}
+
+export function resolveOpenCodeVendorSessionSource(metadata: Readonly<Record<string, unknown>>): DirectSessionsSource {
+  const runtime = readSessionMetadataRuntimeDescriptor(metadata, 'opencode');
+  return { kind: 'opencodeServer', ...(runtime?.serverBaseUrl ? { baseUrl: runtime.serverBaseUrl } : {}) };
+}
 
 type SupportedRuntimeDescriptorProviderId = 'codex' | 'opencode' | 'pi';
 

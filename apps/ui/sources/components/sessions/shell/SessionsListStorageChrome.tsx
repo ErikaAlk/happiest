@@ -4,9 +4,8 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { Item } from '@/components/ui/lists/Item';
 import { ItemGroup } from '@/components/ui/lists/ItemGroup';
-import type { SessionStorageKind } from '@/sync/domains/session/sessionStorageKind';
+import type { SessionStorageKind, SessionListStorageFilter } from '@/sync/domains/session/sessionStorageKind';
 import { t } from '@/text';
-import { SessionListStorageTabsBar } from './SessionListStorageTabsBar';
 import { Icon } from '@/components/ui/icons/Icon';
 
 const stylesheet = StyleSheet.create(() => ({
@@ -24,7 +23,7 @@ const stylesheet = StyleSheet.create(() => ({
 
 export type SessionsListStorageChromeProps = Readonly<{
     directSessionsEnabled: boolean;
-    storageKind: SessionStorageKind;
+    storageKind: SessionListStorageFilter;
     onSelectStorageKind: (storageKind: SessionStorageKind) => void;
 }>;
 
@@ -32,16 +31,10 @@ export const SessionsListStorageChrome = React.memo((props: SessionsListStorageC
     const router = useRouter();
     const { theme } = useUnistyles();
     const styles = stylesheet;
-    const showDirectBrowseAction = props.directSessionsEnabled && props.storageKind === 'direct';
+    const showDirectBrowseAction = props.directSessionsEnabled;
 
     return (
         <>
-            {props.directSessionsEnabled ? (
-                <SessionListStorageTabsBar
-                    activeTabId={props.storageKind}
-                    onSelectTab={props.onSelectStorageKind}
-                />
-            ) : null}
             {showDirectBrowseAction ? (
                 <ItemGroup
                     style={styles.browseActionContainer}

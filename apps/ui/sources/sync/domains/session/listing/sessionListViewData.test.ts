@@ -1,4 +1,8 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { setPreferredLanguageFromSettings } from '@/text';
+
+beforeEach(() => setPreferredLanguageFromSettings('en'));
+afterEach(() => setPreferredLanguageFromSettings(null));
 import type { Machine, Session } from '@/sync/domains/state/storageTypes';
 import { applySessionFoldersToSessionListViewData, buildSessionListViewData, type SessionListViewItem } from './sessionListViewData';
 import { buildSessionListRenderableFromSession } from './sessionListRenderable';
@@ -137,7 +141,7 @@ describe('buildSessionListViewData', () => {
             'header:active:Active',
             'header:project:repoA',
             'session:active:active:no-path',
-            'header:inactive:Inactive',
+            'header:inactive:Inactive sessions',
             'header:project:repoB',
             'session:b1:inactive:no-path',
             'header:project:repoA',
@@ -690,7 +694,7 @@ describe('buildSessionListViewData', () => {
                 'session:act2:active:no-path',
                 'header:project:repoA',
                 'session:act1:active:no-path',
-                'header:inactive:Inactive',
+                'header:inactive:Inactive sessions',
                 'header:date:Yesterday',
                 'session:in1:inactive:default',
             ]);
@@ -757,7 +761,7 @@ describe('buildSessionListViewData', () => {
                 'session:sharedActive:active:shared',
                 'header:project:own-active',
                 'session:ownActive:active:project',
-                'header:inactive:Inactive',
+                'header:inactive:Inactive sessions',
                 'header:shared:Shared sessions',
                 'session:sharedInactive:inactive:shared',
                 'header:date:Yesterday',

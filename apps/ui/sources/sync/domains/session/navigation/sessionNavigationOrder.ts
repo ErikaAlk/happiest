@@ -24,7 +24,7 @@ export type VisibleSessionNavigationEntry = Readonly<{
 export type SessionListLikeItem = Readonly<{
     type: string;
     serverId?: unknown;
-    session?: Readonly<{ id?: unknown }>;
+    session?: Readonly<{ id?: unknown; directCandidate?: unknown }>;
 }>;
 
 const DEFAULT_SESSION_MRU_MAX_ENTRIES = 50;
@@ -72,7 +72,7 @@ export function buildVisibleSessionNavigationEntries(
 
     const entries: VisibleSessionNavigationEntry[] = [];
     items.forEach((item, index) => {
-        if (item.type !== 'session') return;
+        if (item.type !== 'session' || item.session?.directCandidate) return;
         const sessionId = normalizeSessionKeyPart(item.session?.id);
         if (!sessionId) return;
         entries.push({

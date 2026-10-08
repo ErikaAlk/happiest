@@ -1,4 +1,5 @@
 import React from 'react';
+import { buildServerScopedSessionKey } from '@/sync/domains/session/navigation/sessionNavigationOrder';
 
 import { useResolvedActiveServerSelection } from '@/hooks/server/useEffectiveServerSelection';
 import { useFeatureDecision } from '@/hooks/server/useFeatureDecision';
@@ -237,11 +238,16 @@ export function useSessionListViewState({
         });
     }, []);
 
+    const unlinkedKeys = React.useMemo(() => new Set((data ?? []).flatMap((item) => (
+        item.type === 'session' && item.session.directCandidate
+            ? [buildServerScopedSessionKey(item.session.id, item.serverId)] : []
+    ))), [data]);
+
     const setPinnedSessionKeysV1 = React.useCallback((nextKeysRaw: readonly string[]) => {
         runOrganizationMutation(async () => {
             const mutation = await getOrganizationMutationContext();
             if (!mutation) return;
-            const nextKeys = new Set(normalizeStringArray(nextKeysRaw));
+            const nextKeys = new Set(normalizeStringArray(nextKeysRaw).filter((key) => !unlinkedKeys.has(key)));
             const currentKeys = new Set(pinnedKeyList);
             const changes: Array<{ sessionId: string; pinned: boolean; sortKey?: string | null }> = [];
             for (const key of nextKeys) {
@@ -261,7 +267,7 @@ export function useSessionListViewState({
                 sortKey: change.sortKey,
             })));
         });
-    }, [getOrganizationMutationContext, pinnedKeyList, runOrganizationMutation]);
+    }, [getOrganizationMutationContext, pinnedKeyList, runOrganizationMutation, unlinkedKeys]);
 
     const setSessionTagsV1 = React.useCallback((nextTagsRaw: Record<string, readonly string[]>) => {
         runOrganizationMutation(async () => {
@@ -270,6 +276,7 @@ export function useSessionListViewState({
             const keys = new Set([...Object.keys(sessionTagsV1 ?? {}), ...Object.keys(nextTagsRaw ?? {})]);
             const changes: Array<{ sessionId: string; tagIds: string[] }> = [];
             for (const key of keys) {
+                if (unlinkedKeys.has(key)) continue;
                 const sessionId = parseServerScopedSessionKey(mutation.serverId, key);
                 if (!sessionId) continue;
                 const current = normalizeStringArray(sessionTagsV1?.[key]);
@@ -283,7 +290,7 @@ export function useSessionListViewState({
                 tags: change.tagIds,
             })));
         });
-    }, [getOrganizationMutationContext, runOrganizationMutation, sessionTagsV1]);
+    }, [getOrganizationMutationContext, runOrganizationMutation, sessionTagsV1, unlinkedKeys]);
 
     const setSessionListGroupOrderV1 = React.useCallback((nextOrder: Record<string, readonly string[] | undefined>) => {
         runOrganizationMutation(async () => {
@@ -293,12 +300,12 @@ export function useSessionListViewState({
                 .map(([scopeKey, itemKeys]) => buildSessionOrganizationReorderRequestFromGroupOrder({
                     serverId: mutation.serverId,
                     scopeKey,
-                    itemKeys: itemKeys ?? [],
+                    itemKeys: (itemKeys ?? []).filter((key) => !unlinkedKeys.has(key)),
                 }))
                 .filter((request): request is NonNullable<typeof request> => request != null);
             await Promise.all(requests.map((request) => reorderSessionOrganization({ ...mutation, request })));
         });
-    }, [getOrganizationMutationContext, runOrganizationMutation]);
+    }, [getOrganizationMutationContext, runOrganizationMutation, unlinkedKeys]);
 
     const setSessionWorkspaceOrderV1 = React.useCallback((nextOrder: Record<string, readonly string[] | undefined>) => {
         runOrganizationMutation(async () => {

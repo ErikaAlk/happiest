@@ -110,25 +110,28 @@ type SnapshotRun = Readonly<{
     hydratedRenderable: SessionListRenderableSession;
 }>;
 
-async function runSessionListSnapshot(): Promise<SnapshotRun> {
+async function runSessionListSnapshot(options: Readonly<{ cacheEntry?: SessionListCacheEntryV1; row?: V2SessionRecord; required?: boolean }> = {}): Promise<SnapshotRun> {
     const firstPaintRenderables: SessionListRenderableSession[][] = [];
     const hydratedSessions: Session[] = [];
+    let markHydrated!: () => void;
+    const hydrationFinished = new Promise<void>((resolve) => { markHydrated = resolve; });
 
     await fetchAndApplySessions({
         credentials: { token: 't', secret: 's' } as AuthCredentials,
         encryption: createEncryptionHarness(),
         sessionDataKeys: new Map<string, Uint8Array>(),
         request: async () => jsonResponse({
-            sessions: [buildUnreadPlainRow()],
+            sessions: [options.row ?? buildUnreadPlainRow()],
             nextCursor: null,
             hasNext: false,
         }),
-        cachedSessionListEntries: { [SESSION_ID]: buildWarmCacheEntry() },
-        requiredHydrationSessionIds: [SESSION_ID],
+        cachedSessionListEntries: { [SESSION_ID]: options.cacheEntry ?? buildWarmCacheEntry() },
+        requiredHydrationSessionIds: options.required === false ? [] : [SESSION_ID],
         awaitSessionListHydration: true,
         applySessionListRenderables: (renderables) => {
             firstPaintRenderables.push(renderables);
         },
+        getCurrentSessionListRenderable: (id) => firstPaintRenderables.at(-1)?.find((entry) => entry.id === id) ?? null,
         applySessions: (sessions) => {
             // The store resolves `presence` before it builds a renderable from a
             // hydrated session; resolving it the same way here keeps the hydrated
@@ -136,10 +139,12 @@ async function runSessionListSnapshot(): Promise<SnapshotRun> {
             for (const session of sessions) {
                 hydratedSessions.push({ ...session, presence: session.presence ?? session.activeAt });
             }
+            markHydrated();
         },
         repairInvalidReadStateV1: async () => {},
         log: { log: () => {} },
     });
+    await hydrationFinished;
 
     const firstPaintRenderable = firstPaintRenderables[0]?.find((entry) => entry.id === SESSION_ID);
     const hydratedSession = hydratedSessions.find((session) => session.id === SESSION_ID);
@@ -158,6 +163,21 @@ afterEach(() => {
 });
 
 describe('warm first-paint session-list renderables', () => {
+    it('retains cached vendor identity in snapshots and hydrates older caches that lack it', async () => {
+        const vendorIdentity = { machineId: 'machine', providerId: 'codex', remoteSessionId: 'vendor', source: { kind: 'codexHome' as const, home: 'user' as const } };
+        const metadata = { path: '/repo', host: 'host', machineId: 'machine', flavor: 'codex', directSessionV1: { v: 1, ...vendorIdentity } };
+        for (const cachedIdentity of [vendorIdentity, undefined, null]) {
+            const legacy = cachedIdentity == null;
+            const result = await runSessionListSnapshot({
+                row: { ...buildUnreadPlainRow(), metadata: JSON.stringify(metadata) },
+                cacheEntry: { ...buildWarmCacheEntry(), directSessionV1: { v: 1, providerId: 'codex' }, vendorIdentity: cachedIdentity },
+                required: legacy ? false : true,
+            });
+            if (!legacy) expect(result.firstPaintRenderable.metadata?.vendorIdentity).toEqual(vendorIdentity);
+            expect(result.hydratedRenderable.metadata?.vendorIdentity).toEqual(vendorIdentity);
+        }
+    });
+
     it('carries the server-materialized unreadSince onto the warm first-paint renderable', async () => {
         const { firstPaintRenderable } = await runSessionListSnapshot();
 

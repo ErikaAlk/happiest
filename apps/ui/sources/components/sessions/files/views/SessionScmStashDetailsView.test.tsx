@@ -185,7 +185,7 @@ describe('SessionScmStashDetailsView', () => {
         let nextTimerId = 1;
         let nowMs = 0;
 
-        const setTimeoutSpy = vi.spyOn(globalThis, 'setTimeout').mockImplementation(((handler: TimerHandler, timeout?: number) => {
+        const setTimeoutSpy = vi.spyOn(globalThis, 'setTimeout').mockImplementation((handler: TimerHandler, timeout?: number) => {
             const timerId = nextTimerId++;
             const delayMs = typeof timeout === 'number' && Number.isFinite(timeout) ? timeout : 0;
             pendingTimers.push({
@@ -200,9 +200,9 @@ describe('SessionScmStashDetailsView', () => {
                 },
             });
             return timerId as unknown as ReturnType<typeof setTimeout>;
-        }) as typeof setTimeout);
+        });
         const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout').mockImplementation(((timerId: ReturnType<typeof setTimeout>) => {
-            const pendingIndex = pendingTimers.findIndex((timer) => timer.id === timerId);
+            const pendingIndex = pendingTimers.findIndex((timer) => timer.id === (timerId as unknown as number));
             if (pendingIndex >= 0) {
                 pendingTimers.splice(pendingIndex, 1);
             }

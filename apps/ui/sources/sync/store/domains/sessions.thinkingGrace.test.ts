@@ -128,7 +128,7 @@ describe('sessions domain: thinking grace', () => {
         let nowMs = Date.parse('2026-02-05T00:00:00.000Z');
 
         vi.spyOn(Date, 'now').mockImplementation(() => nowMs);
-        vi.spyOn(globalThis, 'setTimeout').mockImplementation((((callback: TimerHandler, delay?: number) => {
+        vi.spyOn(globalThis, 'setTimeout').mockImplementation((callback: TimerHandler, delay?: number) => {
             const timeoutId = nextTimeoutId++;
             if (typeof callback === 'function') {
                 scheduledTimeouts.set(timeoutId, {
@@ -137,7 +137,7 @@ describe('sessions domain: thinking grace', () => {
                 });
             }
             return timeoutId as unknown as ReturnType<typeof setTimeout>;
-        }) as typeof setTimeout));
+        });
         vi.spyOn(globalThis, 'clearTimeout').mockImplementation((((timeoutId: ReturnType<typeof setTimeout>) => {
             scheduledTimeouts.delete(timeoutId as unknown as number);
         }) as typeof clearTimeout));

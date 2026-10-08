@@ -126,6 +126,14 @@ function resolveSessionListRowSession(
     rowSession: Session | SessionListRenderableSession,
 ): Session | SessionListRenderableSession {
     if (!storeSession) return rowSession;
+    if (rowSession.metadata?.directSessionV1 && rowSession.createdAt !== storeSession.createdAt) {
+        const storeActivity = storeSession.meaningfulActivityAt;
+        const subsequentActivity = typeof storeActivity === 'number' && storeActivity > storeSession.createdAt
+            ? storeActivity : null;
+        storeSession = { ...storeSession, createdAt: rowSession.createdAt, updatedAt: rowSession.updatedAt,
+            meaningfulActivityAt: subsequentActivity === null ? rowSession.meaningfulActivityAt
+                : Math.max(subsequentActivity, rowSession.meaningfulActivityAt ?? 0) };
+    }
     const rowRenderable = rowSession as Partial<SessionListRenderableSession>;
     const hasPendingPermissionRequests =
         rowRenderable.hasPendingPermissionRequests === true || storeSession.hasPendingPermissionRequests === true;

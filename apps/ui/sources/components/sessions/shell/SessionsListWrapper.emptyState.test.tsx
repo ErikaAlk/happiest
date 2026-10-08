@@ -351,10 +351,10 @@ describe('SessionsListWrapper (empty state)', () => {
             }
         });
 
-        expect(sessionListState.paneOptions).toContainEqual({
+        expect(sessionListState.paneOptions).toContainEqual(expect.objectContaining({
             activeSessionId: null,
             sessionListSurfaceDataActive: true,
-        });
+        }));
         expect(screen.findByType('SessionsListContent' as any).props.surfaceOwnership).toMatchObject({
             visible: true,
             interactive: false,
@@ -385,11 +385,11 @@ describe('SessionsListWrapper (empty state)', () => {
             }
         });
 
-        expect(sessionListState.paneOptions).toContainEqual({
+        expect(sessionListState.paneOptions).toContainEqual(expect.objectContaining({
             activeSessionId: null,
             retainedSessionListViewData: retainedData,
             sessionListSurfaceDataActive: true,
-        });
+        }));
         expect(screen.findByType('SessionsListContent' as any).props.data).toBe(retainedData);
 
         await screen.unmount();
@@ -411,11 +411,11 @@ describe('SessionsListWrapper (empty state)', () => {
 
         const remountedScreen = await renderScreen(<SessionsListWrapper pathname="/" surfaceRoutePathname="/" />);
 
-        expect(sessionListState.paneOptions).toContainEqual({
+        expect(sessionListState.paneOptions).toContainEqual(expect.objectContaining({
             activeSessionId: null,
             retainedSessionListViewData: retainedData,
             sessionListSurfaceDataActive: true,
-        });
+        }));
         expect(remountedScreen.findByType('SessionsListContent' as any).props.data).toBe(retainedData);
 
         await remountedScreen.unmount();
@@ -482,7 +482,7 @@ describe('SessionsListWrapper (empty state)', () => {
 
         const screen = await renderScreen(<SessionsListWrapper pathname="/" surfaceRoutePathname="/" />);
 
-        expect(sessionListState.paneOptions[0]).toEqual({
+        expect(sessionListState.paneOptions[0]).toMatchObject({
             activeSessionId: null,
             sessionListSurfaceDataActive: true,
         });
@@ -495,7 +495,7 @@ describe('SessionsListWrapper (empty state)', () => {
         routeState.pathname = '/';
         await screen.update(<SessionsListWrapper pathname="/" surfaceRoutePathname="/" />);
 
-        expect(sessionListState.paneOptions.at(-1)).toEqual({
+        expect(sessionListState.paneOptions.at(-1)).toMatchObject({
             activeSessionId: 'session-2',
             retainedSessionListViewData: retainedData,
             sessionListSurfaceDataActive: true,
@@ -514,7 +514,7 @@ describe('SessionsListWrapper (empty state)', () => {
 
         const screen = await renderScreen(<SessionsListWrapper pathname="/" />);
 
-        expect(sessionListState.paneOptions[0]).toEqual({
+        expect(sessionListState.paneOptions[0]).toMatchObject({
             activeSessionId: null,
             sessionListSurfaceDataActive: true,
         });
@@ -525,7 +525,7 @@ describe('SessionsListWrapper (empty state)', () => {
         await setRoutePathname('/new');
         await setRoutePathname('/');
 
-        expect(sessionListState.paneOptions.at(-1)).toEqual({
+        expect(sessionListState.paneOptions.at(-1)).toMatchObject({
             activeSessionId: 'session-2',
             retainedSessionListViewData: retainedData,
             sessionListSurfaceDataActive: true,
@@ -639,7 +639,7 @@ describe('SessionsListWrapper (empty state)', () => {
 
         const screen = await renderScreen(<SessionsListWrapper pathname="/" surfaceRoutePathname="/" />);
 
-        expect(sessionListState.paneOptions[0]).toEqual({
+        expect(sessionListState.paneOptions[0]).toMatchObject({
             activeSessionId: null,
             sessionListSurfaceDataActive: true,
         });
@@ -659,7 +659,7 @@ describe('SessionsListWrapper (empty state)', () => {
         await screen.update(<SessionsListWrapper pathname="/" surfaceRoutePathname="/" />);
 
         expect(sessionListState.storageKinds.at(-1)).toBe('direct');
-        expect(sessionListState.paneOptions.at(-1)).toEqual({
+        expect(sessionListState.paneOptions.at(-1)).toMatchObject({
             activeSessionId: null,
             sessionListSurfaceDataActive: true,
         });

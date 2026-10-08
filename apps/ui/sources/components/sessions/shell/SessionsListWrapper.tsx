@@ -144,6 +144,8 @@ const SessionsListWrapperContent = React.memo((props: { pathname: string; surfac
     const paneStateStorageKindRef = React.useRef<typeof storageKind | null>(null);
     const paneStateSourceScopeKeyRef = React.useRef<string | null>(null);
     const [paneState, setPaneState] = React.useState<SessionsListPaneState>(EMPTY_SESSIONS_LIST_PANE_STATE);
+    const refreshDirectSessionsRef = React.useRef<(() => Promise<void>) | null>(null);
+    const refreshDirectSessions = React.useCallback(async () => { await refreshDirectSessionsRef.current?.(); }, []);
     const handlePaneState = React.useCallback((nextPaneState: SessionsListPaneState) => {
         paneStateStorageKindRef.current = storageKind;
         paneStateSourceScopeKeyRef.current = sourceScopeKey;
@@ -207,6 +209,7 @@ const SessionsListWrapperContent = React.memo((props: { pathname: string; surfac
                 ? { retainedSessionListViewData }
                 : {}),
             sessionListSurfaceDataActive: true,
+            refreshDirectSessionsRef,
         };
     }, [retainedPaneStateForActivation, routeActiveSessionId, shouldSeedRetainedSessionListViewData]);
     const retainedDisplayPaneState = !surfaceOwnership.dataActive
@@ -230,9 +233,10 @@ const SessionsListWrapperContent = React.memo((props: { pathname: string; surfac
                 data={sessionListViewData}
                 pathname={pathname}
                 surfaceOwnership={surfaceOwnership}
+                refreshDirectSessions={refreshDirectSessions}
             />
         ),
-        [pathname, sessionListViewData, storageKind, surfaceOwnership],
+        [pathname, refreshDirectSessions, sessionListViewData, storageKind, surfaceOwnership],
     );
 
     if (!surfaceOwnership.visible) {

@@ -4,7 +4,26 @@ import {
   buildCodexAgentRuntimeDescriptor,
   buildOpenCodeAgentRuntimeDescriptor,
   readSessionMetadataRuntimeDescriptor,
+  resolveCodexVendorSessionSource,
+  resolveOpenCodeVendorSessionSource,
 } from './agentRuntimeDescriptor.js';
+
+describe('vendor session source affinity', () => {
+  it('preserves the canonical connected Codex profile and home', () => {
+    expect(resolveCodexVendorSessionSource({ agentRuntimeDescriptorV1: buildCodexAgentRuntimeDescriptor({
+      backendMode: 'appServer', home: 'connectedService', connectedServiceId: 'openai-codex',
+      connectedServiceProfileId: 'work', connectedServiceGroupId: 'team', homePath: 'C:\\Users\\alice\\codex',
+    }) })).toEqual({ kind: 'codexHome', home: 'connectedService', connectedServiceId: 'openai-codex',
+      connectedServiceProfileId: 'work', connectedServiceGroupId: 'team', homePath: 'C:\\Users\\alice\\codex' });
+    expect(resolveCodexVendorSessionSource({})).toEqual({ kind: 'codexHome', home: 'user' });
+  });
+
+  it('preserves the canonical OpenCode server affinity', () => {
+    expect(resolveOpenCodeVendorSessionSource({ agentRuntimeDescriptorV1: buildOpenCodeAgentRuntimeDescriptor({
+      backendMode: 'server', serverBaseUrl: 'http://127.0.0.1:4096/', serverBaseUrlExplicit: true,
+    }) })).toEqual({ kind: 'opencodeServer', baseUrl: 'http://127.0.0.1:4096/' });
+  });
+});
 
 describe('readSessionMetadataRuntimeDescriptor', () => {
   it('builds a canonical codex runtime descriptor with provider-owned runtime affinity', () => {

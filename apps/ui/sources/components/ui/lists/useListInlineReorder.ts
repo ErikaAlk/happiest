@@ -18,7 +18,11 @@ const DRAG_ACTIVATE_MIN_DISTANCE = 4;
 /** Fallback row height used before a row has reported its measured layout. */
 export const DEFAULT_REORDER_ROW_HEIGHT = 56;
 
-const STATIC_ROW_STYLE: ViewStyle = Object.freeze({ position: 'relative', transform: [{ translateY: 0 }, { scale: 1 }] });
+type ListInlineReorderStyle = Pick<ViewStyle,
+    'position' | 'transform' | 'zIndex' | 'shadowColor' | 'shadowOffset'
+    | 'shadowOpacity' | 'shadowRadius' | 'elevation' | 'opacity'>;
+
+const STATIC_ROW_STYLE: ListInlineReorderStyle = Object.freeze({ position: 'relative', transform: [{ translateY: 0 }, { scale: 1 }] });
 
 /**
  * Moves `draggedId` to `targetIndex` within the flat id list. `targetIndex` is
@@ -90,7 +94,7 @@ export type UseListInlineReorderResult<T extends { id: string }> = Readonly<{
     /** Pan gesture for a row (index seeds the drag-start position), or `undefined` when disabled. */
     gestureForRow: (id: string, index?: number) => GestureType | undefined;
     /** Animated lift style for a row (active transform only on the dragged row). */
-    animatedStyleForRow: (id: string) => AnimatedStyle<ViewStyle>;
+    animatedStyleForRow: (id: string) => AnimatedStyle<ListInlineReorderStyle>;
     /** Report a row's measured layout so variable-height reorder math stays exact. */
     onRowLayout: (id: string, event: LayoutChangeEvent) => void;
     /** Frozen snapshot during a drag; live items otherwise. */
@@ -260,7 +264,7 @@ export function useListInlineReorder<T extends { id: string }>(
             });
     }, [enabled, beginDrag, updateDrag, completeDrag, cancelDrag, translateY, scale, isDragging, didEnd]);
 
-    const dragAnimatedStyle = useAnimatedStyle<ViewStyle>(() => ({
+    const dragAnimatedStyle = useAnimatedStyle<ListInlineReorderStyle>(() => ({
         position: 'relative',
         // Force the transform back to identity the instant the drag ends. On web,
         // Reanimated writes inline styles that linger after the row swaps to the
@@ -280,7 +284,7 @@ export function useListInlineReorder<T extends { id: string }>(
     }));
 
     const animatedStyleForRow = useCallback(
-        (id: string): AnimatedStyle<ViewStyle> => (id === draggingId ? dragAnimatedStyle : STATIC_ROW_STYLE),
+        (id: string): AnimatedStyle<ListInlineReorderStyle> => (id === draggingId ? dragAnimatedStyle : STATIC_ROW_STYLE),
         [draggingId, dragAnimatedStyle],
     );
 

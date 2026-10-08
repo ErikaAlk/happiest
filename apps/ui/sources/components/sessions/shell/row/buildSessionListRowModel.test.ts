@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { setPreferredLanguageFromSettings } from '@/text';
 
 import type { Message } from '@/sync/domains/messages/messageTypes';
 import type { SessionListViewItem } from '@/sync/domains/session/listing/sessionListViewData';
@@ -17,6 +18,21 @@ import { buildSessionListRowModel } from './buildSessionListRowModel';
 import type { SessionListRowPresentationSettings } from './sessionListRowModelTypes';
 
 const NOW_MS = 1_000_000;
+beforeEach(() => setPreferredLanguageFromSettings('en'));
+afterEach(() => setPreferredLanguageFromSettings(null));
+
+it('keeps projected direct vendor activity when the store contains only the link timestamp', () => {
+    const store = createRenderable('linked', { createdAt: 900_000, updatedAt: 900_000, meaningfulActivityAt: 900_000 });
+    const projected: SessionListRenderableSession = { ...store, createdAt: 600_000, updatedAt: 700_000, meaningfulActivityAt: 700_000,
+        metadata: { ...store.metadata, path: '/repo/linked', directSessionV1: { v: 1, providerId: 'claude' } } };
+    const model = buildSessionListRowModel({ item: createSessionItem(projected), state: { renderable: store },
+        isFirst: true, isLast: true, isSingle: true, settings: createSettings() });
+    expect(model.activity.timestamp).toBe(700_000);
+    const continued = buildSessionListRowModel({ item: createSessionItem(projected),
+        state: { renderable: { ...store, meaningfulActivityAt: 950_000 } },
+        isFirst: true, isLast: true, isSingle: true, settings: createSettings() });
+    expect(continued.activity.timestamp).toBe(950_000);
+});
 
 function createRenderable(
     id: string,

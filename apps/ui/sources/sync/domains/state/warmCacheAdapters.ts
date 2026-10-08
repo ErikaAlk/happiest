@@ -1,6 +1,7 @@
 import type { MachineDisplayRenderable } from '@/sync/domains/machines/machineDisplayRenderable';
 import {
     readRollbackEligibleTurnStarts,
+    type SessionListRenderableMetadata,
     type SessionListRenderableSession,
 } from '@/sync/domains/session/listing/sessionListRenderable';
 import { parseSessionRuntimeActivityProjectionFields } from '@happier-dev/protocol';
@@ -168,6 +169,7 @@ function areSessionListCacheEntriesEqual(
         && nextEntry.host === previousEntry.host
         && nextEntry.machineId === previousEntry.machineId
         && nextEntry.flavor === previousEntry.flavor
+        && areCacheJsonValuesEqual(nextEntry.vendorIdentity, previousEntry.vendorIdentity)
         && areDirectSessionCacheEntriesEqual(nextEntry.directSessionV1, previousEntry.directSessionV1)
         && nextEntry.hiddenSystemSession === previousEntry.hiddenSystemSession
         && nextEntry.hasPendingPermissionRequests === previousEntry.hasPendingPermissionRequests
@@ -204,6 +206,22 @@ function countOwnEntries(record: Readonly<Record<string, unknown>> | null | unde
     return count;
 }
 
+export function buildSessionListRenderableMetadataFromCacheEntry(entry: SessionListCacheEntryV1 | undefined): SessionListRenderableMetadata | null {
+    if (!isSessionListCacheEntryMetadataUsable(entry)) return null;
+    return {
+        name: entry.name,
+        summaryText: entry.summaryText ?? null,
+        path: entry.path,
+        homeDir: entry.homeDir ?? null,
+        host: entry.host ?? null,
+        machineId: entry.machineId ?? null,
+        flavor: entry.flavor ?? null,
+        vendorIdentity: entry.vendorIdentity,
+        directSessionV1: entry.directSessionV1 ?? null,
+        hiddenSystemSession: entry.hiddenSystemSession === true,
+    };
+}
+
 export function buildSessionListRenderableFromCacheEntry(entry: SessionListCacheEntryV1): SessionListRenderableSession {
     const metadataUsable = isSessionListCacheEntryMetadataUsable(entry);
     return {
@@ -222,17 +240,7 @@ export function buildSessionListRenderableFromCacheEntry(entry: SessionListCache
         lastViewedSessionSeq: normalizeNonNegativeInteger(entry.lastViewedSessionSeq),
         metadataVersion: entry.metadataVersion,
         agentStateVersion: entry.agentStateVersion,
-        metadata: metadataUsable ? {
-            name: entry.name,
-            summaryText: entry.summaryText ?? null,
-            path: entry.path,
-            homeDir: entry.homeDir ?? null,
-            host: entry.host ?? null,
-            machineId: entry.machineId ?? null,
-            flavor: entry.flavor ?? null,
-            directSessionV1: entry.directSessionV1 ?? null,
-            hiddenSystemSession: entry.hiddenSystemSession === true,
-        } : null,
+        metadata: buildSessionListRenderableMetadataFromCacheEntry(entry),
         thinking: false,
         thinkingAt: 0,
         presence: entry.active ? 'online' : entry.activeAt,
@@ -338,6 +346,7 @@ export function buildSessionListCacheEntryFromRenderable(
         host: preserveMetadata ? previousEntry.host ?? null : session.metadata?.host ?? null,
         machineId: preserveMetadata ? previousEntry.machineId ?? null : session.metadata?.machineId ?? null,
         flavor: preserveMetadata ? previousEntry.flavor ?? null : session.metadata?.flavor ?? null,
+        vendorIdentity: preserveMetadata ? previousEntry.vendorIdentity : session.metadata?.vendorIdentity,
         directSessionV1: preserveMetadata ? previousEntry.directSessionV1 ?? null : session.metadata?.directSessionV1 ?? null,
         hiddenSystemSession: preserveMetadata
             ? previousEntry.hiddenSystemSession === true

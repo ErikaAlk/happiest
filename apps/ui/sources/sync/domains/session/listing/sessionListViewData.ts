@@ -276,7 +276,7 @@ function pushProjectGroupsToList(params: Readonly<{
                     rootPath: group.workspaceRootPath,
                 }
                 : null,
-            seedSessionId: group.sessions[0]?.id ?? null,
+            seedSessionId: group.sessions.find((session) => !session.directCandidate)?.id ?? null,
             machine: group.machine,
             subtitle: group.machine.metadata?.displayName || group.machine.metadata?.host || group.machine.id,
             ...params.serverScopeMeta,
@@ -747,7 +747,7 @@ export function buildSessionListViewData(
 
     if (inactiveSessions.length > 0 || inactiveSharedSessions.length > 0) {
         const grouping = resolveGroupingForSection('inactive', options);
-        listData.push({ type: 'header', title: 'Inactive', headerKind: 'inactive', ...serverScopeMeta });
+        listData.push({ type: 'header', title: t('settingsFeatures.hiddenInactiveSessionsSectionTitle'), headerKind: 'inactive', ...serverScopeMeta });
         pushSharedSessionsToList({
             listData,
             sessions: inactiveSharedSessions,

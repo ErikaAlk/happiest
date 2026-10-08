@@ -551,7 +551,7 @@ function ChangedFilesReviewInner(props: ChangedFilesReviewProps) {
         toggleCollapsed(path);
 
         if (typeof anchorY !== 'number') return;
-        const raf: (cb: FrameRequestCallback) => number =
+        const raf: (cb: FrameRequestCallback) => void =
             typeof globalThis.requestAnimationFrame === 'function'
                 ? globalThis.requestAnimationFrame.bind(globalThis)
                 : (cb) => globalThis.setTimeout(() => cb(Date.now()), 0);
@@ -572,7 +572,7 @@ function ChangedFilesReviewInner(props: ChangedFilesReviewProps) {
     React.useEffect(() => {
         if (Platform.OS !== 'web') return;
         let cancelled = false;
-        const raf: (cb: FrameRequestCallback) => number =
+        const raf: (cb: FrameRequestCallback) => void =
             typeof globalThis.requestAnimationFrame === 'function'
                 ? globalThis.requestAnimationFrame.bind(globalThis)
                 : (cb) => globalThis.setTimeout(() => cb(Date.now()), 0);

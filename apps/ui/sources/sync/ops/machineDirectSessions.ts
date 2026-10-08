@@ -48,8 +48,8 @@ type MachineDirectSessionsOpts = Readonly<{
     timeoutMs?: number | null;
 }>;
 
-function throwUnsupportedResponse(method: string): never {
-    throw new Error(`Unsupported response from machine RPC (${method})`);
+function throwUnsupportedResponse(method: string, cause: unknown): never {
+    throw new Error(`Unsupported response from machine RPC (${method})`, { cause });
 }
 
 async function callDirectSessionMachineRpc<Request, Response>(params: Readonly<{
@@ -74,7 +74,7 @@ async function callDirectSessionMachineRpc<Request, Response>(params: Readonly<{
     });
     const parsed = params.responseSchema.safeParse(response);
     if (!parsed.success) {
-        throwUnsupportedResponse(params.method);
+        throwUnsupportedResponse(params.method, parsed.error);
     }
     return parsed.data;
 }

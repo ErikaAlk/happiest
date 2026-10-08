@@ -8,10 +8,34 @@ import {
     SESSION_LIST_WARM_CACHE_MAX_ENTRIES,
 } from './warmCacheAdapters';
 import { SessionListCacheEntryV1Schema } from './warmCachePersistence';
-import { resolveSessionListRenderableAttentionPromotionPlacement } from '@/sync/domains/session/listing/sessionListRenderable';
+import { buildSessionListRenderableMetadata, resolveSessionListRenderableAttentionPromotionPlacement } from '@/sync/domains/session/listing/sessionListRenderable';
 import type { SessionListRenderableSession } from '@/sync/domains/session/listing/sessionListRenderable';
 
 describe('warmCacheAdapters', () => {
+    it('preserves vendor identity through cache validation and restoration for linked and managed sessions', () => {
+        for (const direct of [true, false]) {
+            const identity = { machineId: 'machine', providerId: 'codex', remoteSessionId: 'vendor', source: { kind: 'codexHome' as const, home: 'user' as const, homePath: 'C:\\Users\\alice\\.codex' } };
+            const session: SessionListRenderableSession = {
+                id: 'session', seq: 1, createdAt: 10, updatedAt: 20, active: false, activeAt: 20,
+                metadataVersion: 1, agentStateVersion: 1, thinking: false, thinkingAt: 0, presence: 20,
+                metadata: buildSessionListRenderableMetadata({
+                    path: 'C:\\project', host: 'computer', machineId: 'machine', flavor: 'codex', codexSessionId: 'vendor',
+                    ...(direct ? { directSessionV1: { v: 1, ...identity } } : {}),
+                }),
+            };
+            const originalIdentity = session.metadata?.vendorIdentity;
+            expect(originalIdentity?.remoteSessionId).toBe('vendor');
+            const entry = SessionListCacheEntryV1Schema.parse(buildSessionListCacheEntryFromRenderable(session));
+            const restored = buildSessionListRenderableFromCacheEntry(entry);
+            expect(restored.metadata?.vendorIdentity).toEqual(originalIdentity);
+            const changed = buildSessionListCacheEntryFromRenderable({
+                ...session, metadata: { ...session.metadata!, vendorIdentity: { ...originalIdentity!, remoteSessionId: 'other' } },
+            }, entry);
+            expect(changed).not.toBe(entry);
+            expect(buildSessionListRenderableFromCacheEntry(changed).metadata?.vendorIdentity?.remoteSessionId).toBe('other');
+        }
+    });
+
     it('preserves previous session cache metadata and agent-state flags while a replacement renderable is still stale', () => {
         const previousEntry = {
             sessionId: 's1',

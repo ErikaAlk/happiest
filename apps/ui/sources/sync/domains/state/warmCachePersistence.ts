@@ -6,6 +6,7 @@ import {
     SessionRuntimeActivityStateSchema,
     SessionRuntimeIssueV1Schema,
     PendingActivationAuthorizationV1Schema,
+    DirectSessionsSourceSchema,
     type SessionOrganizationSnapshot,
 } from '@happier-dev/protocol';
 import { z } from 'zod';
@@ -239,6 +240,12 @@ export const SessionListCacheEntryV1Schema = z.object({
     host: z.string().nullable().optional(),
     machineId: z.string().nullable().optional(),
     flavor: z.string().nullable().optional(),
+    vendorIdentity: z.object({
+        machineId: z.string().min(1),
+        providerId: z.string().min(1),
+        remoteSessionId: z.string().min(1),
+        source: DirectSessionsSourceSchema.optional(),
+    }).nullable().optional(),
     directSessionV1: z.object({
         v: z.literal(1),
         providerId: z.string().optional(),

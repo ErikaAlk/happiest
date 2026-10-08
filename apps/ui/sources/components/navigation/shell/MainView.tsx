@@ -304,6 +304,8 @@ const SidebarMainViewContent = React.memo(function SidebarMainViewContent({
     const router = useRouter();
     const resolveNewSessionOrdinaryEntryRoute = useResolveNewSessionOrdinaryEntryRoute();
     const activeSessionId = React.useMemo(() => readSessionIdFromPathname(pathname), [pathname]);
+    const refreshDirectSessionsRef = React.useRef<(() => Promise<void>) | null>(null);
+    const refreshDirectSessions = React.useCallback(async () => { await refreshDirectSessionsRef.current?.(); }, []);
     const surfaceOwnership = React.useMemo(
         () => resolveSessionListSurfaceOwnership({
             ownerKey: SESSION_LIST_SURFACE_OWNER_SIDEBAR,
@@ -320,6 +322,7 @@ const SidebarMainViewContent = React.memo(function SidebarMainViewContent({
     } = useVisibleSessionListPaneState(storageKind, {
         activeSessionId,
         sessionListSurfaceDataActive: surfaceOwnership.dataActive,
+        refreshDirectSessionsRef,
     });
 
     const handleNewSession = React.useCallback((event?: unknown) => {
@@ -380,6 +383,7 @@ const SidebarMainViewContent = React.memo(function SidebarMainViewContent({
                         data={sessionListViewData}
                         pathname={pathname}
                         surfaceOwnership={surfaceOwnership}
+                        refreshDirectSessions={refreshDirectSessions}
                     />
                 </View>
             </View>
