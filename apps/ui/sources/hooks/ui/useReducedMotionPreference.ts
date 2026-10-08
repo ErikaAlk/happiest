@@ -102,3 +102,9 @@ function readSnapshot(): boolean {
 export function useReducedMotionPreference(): boolean {
     return React.useSyncExternalStore(subscribe, readSnapshot, readSnapshot);
 }
+
+/** The current preference for code outside React; starts the same single platform listener. */
+export function readReducedMotionPreference(): boolean {
+    startWatching();
+    return readSnapshot();
+}

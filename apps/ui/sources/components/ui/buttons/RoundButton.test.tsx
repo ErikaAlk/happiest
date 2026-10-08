@@ -80,6 +80,28 @@ describe('RoundButton keyboard focus', () => {
 });
 
 describe('RoundButton', () => {
+    it('runs an asynchronous action once until it settles, including presses in the same turn', async () => {
+        const { RoundButton } = await import('./RoundButton');
+        let calls = 0;
+        let finish!: () => void;
+        const pending = new Promise<void>((resolve) => { finish = resolve; });
+        const action = () => { calls += 1; return pending; };
+        const screen = await renderScreen(<RoundButton title="Continue" testID="pending-button" action={action} loading={false} />);
+
+        await act(async () => {
+            const press = screen.findByTestId('pending-button')!.props.onPress;
+            press();
+            press();
+        });
+        expect(calls).toBe(1);
+        expect(screen.findByTestId('pending-button')!.props.disabled).toBe(true);
+
+        await act(async () => { finish(); await pending; });
+        expect(screen.findByTestId('pending-button')!.props.disabled).toBe(false);
+        await act(async () => { screen.findByTestId('pending-button')!.props.onPress(); });
+        expect(calls).toBe(2);
+    });
+
     it('forwards the press event to modifier-aware actions', async () => {
         const { RoundButton } = await import('./RoundButton');
         const onPress = vi.fn();

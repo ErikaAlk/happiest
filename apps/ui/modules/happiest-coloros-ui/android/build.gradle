@@ -1,0 +1,34 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  }
+}
+
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+
+group = 'click.erikaalk.happiest'
+version = '0.0.0'
+
+android {
+  namespace "click.erikaalk.happiest.colorosui"
+  defaultConfig {
+    versionCode 1
+    versionName version
+  }
+  buildFeatures {
+    compose true
+  }
+}
+
+dependencies {
+  // 由 withColorOsUiKit 写入 settings.gradle 的 includeBuild 替换成设计库源码构建
+  implementation 'click.erikaalk.coloroskit:kit'
+}

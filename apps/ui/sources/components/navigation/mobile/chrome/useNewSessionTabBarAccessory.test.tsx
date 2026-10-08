@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { installNavigationCommonModuleMocks } from './navigationTestHelpers';
+import { installNavigationCommonModuleMocks } from '@/components/ui/navigation/navigationTestHelpers';
 import { renderScreen, resetBrowserSessionDraftPersistenceForTest, standardCleanup } from '@/dev/testkit';
 import { createExpoRouterMock } from '@/dev/testkit/mocks/router';
 
@@ -26,8 +26,6 @@ installNavigationCommonModuleMocks({
         return {
             ...actual,
             useSetting: ((key: string) => {
-                if (key === 'tabBarShowLabels') return true;
-                if (key === 'tabBarSize') return 'regular';
                 if (key === 'newSessionDraftEntryMode') return 'resumePrevious';
                 return undefined;
             }) as typeof import('@/sync/domains/state/storage').useSetting,
@@ -53,11 +51,22 @@ vi.mock('expo-blur', () => ({
 // Keep the production module load outside each test's timeout while retaining the installed mocks.
 await Promise.all([
     import('@/sync/ops/sessionDrafts/sessionDraftRepository'),
-    import('./TabBarNewSessionButton'),
+    import('./useNewSessionTabBarAccessory'),
+    import('@/components/ui/navigation/TabBarAccessoryCapsule'),
     import('@/keyboard/runtime'),
 ]);
 
-describe('TabBarNewSessionButton', () => {
+/** The accessory as the tab bar draws it on iOS, web and desktop. */
+async function renderNewSessionAccessory() {
+    const { useNewSessionTabBarAccessory } = await import('./useNewSessionTabBarAccessory');
+    const { TabBarAccessoryCapsule } = await import('@/components/ui/navigation/TabBarAccessoryCapsule');
+    function NewSessionAccessory() {
+        return <TabBarAccessoryCapsule accessory={useNewSessionTabBarAccessory()} iconSize={24} />;
+    }
+    return await renderScreen(<NewSessionAccessory />);
+}
+
+describe('useNewSessionTabBarAccessory', () => {
     beforeEach(async () => {
         await resetBrowserSessionDraftPersistenceForTest();
     });
@@ -76,9 +85,8 @@ describe('TabBarNewSessionButton', () => {
             materializationIntent: 'userEdit',
         });
         expect(setOrdinaryEntryDraftId(ordinaryEntryScope, ordinaryEntryDraftId)).toBe(true);
-        const { TabBarNewSessionButton } = await import('./TabBarNewSessionButton');
 
-        const screen = await renderScreen(<TabBarNewSessionButton />);
+        const screen = await renderNewSessionAccessory();
         screen.pressByTestId('tabbar-start-new-session');
 
         expect(expoRouterMock.spies.push).toHaveBeenCalledWith({
@@ -99,10 +107,9 @@ describe('TabBarNewSessionButton', () => {
             materializationIntent: 'userEdit',
         });
         expect(setOrdinaryEntryDraftId(ordinaryEntryScope, ordinaryEntryDraftId)).toBe(true);
-        const { TabBarNewSessionButton } = await import('./TabBarNewSessionButton');
         const { resolveKeyboardPlatform } = await import('@/keyboard/runtime');
 
-        const screen = await renderScreen(<TabBarNewSessionButton />);
+        const screen = await renderNewSessionAccessory();
         const platform = resolveKeyboardPlatform();
         screen.findByTestId('tabbar-start-new-session')?.props.onPress({
             nativeEvent: platform === 'macos' ? { metaKey: true } : { ctrlKey: true },
@@ -118,9 +125,7 @@ describe('TabBarNewSessionButton', () => {
     });
 
     it('exposes the new-session action to assistive technology', async () => {
-        const { TabBarNewSessionButton } = await import('./TabBarNewSessionButton');
-
-        const screen = await renderScreen(<TabBarNewSessionButton />);
+        const screen = await renderNewSessionAccessory();
         const button = screen.findByTestId('tabbar-start-new-session');
 
         expect(button?.props.accessibilityRole).toBe('button');

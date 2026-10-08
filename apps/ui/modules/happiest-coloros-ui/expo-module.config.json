@@ -1,0 +1,8 @@
+{
+    "name": "HappiestColorOsUi",
+    "platforms": ["android"],
+    "coreFeatures": ["compose"],
+    "android": {
+        "modules": ["click.erikaalk.happiest.colorosui.HappiestColorOsUiModule"]
+    }
+}

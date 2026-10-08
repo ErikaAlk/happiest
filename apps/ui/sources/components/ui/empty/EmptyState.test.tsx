@@ -45,21 +45,25 @@ describe('EmptyState', () => {
         expect(subtitle?.props.children).toBe('Connect an account to get started');
     });
 
-    it('renders the action when provided', async () => {
+    it('renders the action as a text button that calls onPress', async () => {
         const { EmptyState } = await import('./EmptyState');
+        const onPress = vi.fn();
 
         const screen = await renderScreen(
             <EmptyState
                 icon={<Stub />}
                 title="No pools yet"
-                action={<Stub testID="cta" />}
+                action={{ label: 'Check now', onPress, testID: 'cta' }}
                 actionTestID="empty-action"
             />,
         );
 
         const ids = collectRenderedTestIds(screen.tree.toJSON());
         expect(ids).toContain('empty-action');
-        expect(ids).toContain('cta');
+        const button = screen.findByTestId('cta');
+        expect(button?.props.accessibilityLabel).toBe('Check now');
+        button?.props.onPress();
+        expect(onPress).toHaveBeenCalledTimes(1);
     });
 
     it('omits the action slot when no action is provided', async () => {

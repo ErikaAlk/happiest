@@ -1,59 +1,34 @@
 import * as React from 'react';
-import { View, type GestureResponderEvent, type LayoutChangeEvent, type ViewStyle } from 'react-native';
+import { View, type ViewStyle } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { Typography } from '@/constants/Typography';
+import { Slider } from '@/components/ui/forms/Slider';
 import { Text } from '@/components/ui/text/Text';
 import {
-    PET_COMPANION_SIZE_SCALE_MAX,
-    PET_COMPANION_SIZE_SCALE_MIN,
-    normalizePetCompanionSizeScale,
+    PET_COMPANION_SIZE_SCALE_STEPS,
+    petCompanionSizeScaleFromProgress,
     petCompanionSizeScaleToPercent,
-    resolvePetCompanionSizeScaleFromTrackPosition,
+    petCompanionSizeScaleToProgress,
 } from '@/sync/domains/pets/companionSizeScale';
 import { t } from '@/text';
 
 type PetCompanionSizeSliderProps = Readonly<{
     value: number;
     onValueChange: (value: number) => void;
-    showDivider?: boolean;
 }>;
-
-function readLocationX(event: GestureResponderEvent): number | null {
-    const locationX = event.nativeEvent.locationX;
-    return typeof locationX === 'number' && Number.isFinite(locationX) ? locationX : null;
-}
 
 export function PetCompanionSizeSlider(props: PetCompanionSizeSliderProps): React.ReactElement {
     const { theme } = useUnistyles();
-    const [trackWidth, setTrackWidth] = React.useState(0);
-    const value = normalizePetCompanionSizeScale(props.value);
-    const progress =
-        (value - PET_COMPANION_SIZE_SCALE_MIN)
-        / (PET_COMPANION_SIZE_SCALE_MAX - PET_COMPANION_SIZE_SCALE_MIN);
-    const percent = petCompanionSizeScaleToPercent(value);
-
-    const updateFromEvent = React.useCallback((event: GestureResponderEvent) => {
-        const locationX = readLocationX(event);
-        if (locationX == null) return;
-        props.onValueChange(resolvePetCompanionSizeScaleFromTrackPosition({
-            locationX,
-            trackWidth,
-        }));
-    }, [props, trackWidth]);
-
-    const handleTrackLayout = React.useCallback((event: LayoutChangeEvent) => {
-        setTrackWidth(event.nativeEvent.layout.width);
-    }, []);
+    const percent = petCompanionSizeScaleToPercent(props.value);
+    const valueText = t('settingsPets.companionSizeValue', { percent });
+    const { onValueChange } = props;
+    const handleProgressChange = React.useCallback((progress: number) => {
+        onValueChange(petCompanionSizeScaleFromProgress(progress));
+    }, [onValueChange]);
 
     return (
-        <View
-            testID="settings-pets-companion-size-slider"
-            accessibilityRole="adjustable"
-            accessibilityLabel={t('settingsPets.companionSizeTitle')}
-            accessibilityValue={{ min: 75, max: 150, now: percent, text: t('settingsPets.companionSizeValue', { percent }) }}
-            style={styles.row}
-        >
+        <View testID="settings-pets-companion-size-slider" style={styles.row}>
             <View style={styles.header}>
                 <View style={styles.copy}>
                     <Text numberOfLines={1} style={[styles.title, { color: theme.colors.text.primary }]}>
@@ -67,45 +42,17 @@ export function PetCompanionSizeSlider(props: PetCompanionSizeSliderProps): Reac
                     testID="settings-pets-companion-size-slider-value"
                     style={[styles.value, { color: theme.colors.text.secondary }]}
                 >
-                    {t('settingsPets.companionSizeValue', { percent })}
+                    {valueText}
                 </Text>
             </View>
-            <View
+            <Slider
                 testID="settings-pets-companion-size-slider-track"
-                onLayout={handleTrackLayout}
-                onStartShouldSetResponder={() => true}
-                onMoveShouldSetResponder={() => true}
-                onResponderGrant={updateFromEvent}
-                onResponderMove={updateFromEvent}
-                style={[
-                    styles.trackHitbox,
-                    props.showDivider === false ? styles.lastRowPadding : null,
-                ]}
-            >
-                <View style={[styles.track, { backgroundColor: theme.colors.border.default }]}>
-                    <View
-                        testID="settings-pets-companion-size-slider-fill"
-                        style={[
-                            styles.fill,
-                            {
-                                width: `${Math.round(progress * 100)}%`,
-                                backgroundColor: theme.colors.button.primary.background,
-                            },
-                        ]}
-                    />
-                    <View
-                        testID="settings-pets-companion-size-slider-thumb"
-                        style={[
-                            styles.thumb,
-                            {
-                                left: `${Math.round(progress * 100)}%`,
-                                backgroundColor: theme.colors.button.primary.background,
-                                borderColor: theme.colors.surface.base,
-                            },
-                        ]}
-                    />
-                </View>
-            </View>
+                value={petCompanionSizeScaleToProgress(props.value)}
+                steps={PET_COMPANION_SIZE_SCALE_STEPS}
+                onValueChange={handleProgressChange}
+                accessibilityLabel={t('settingsPets.companionSizeTitle')}
+                accessibilityValueText={valueText}
+            />
         </View>
     );
 }
@@ -142,32 +89,5 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontVariant: ['tabular-nums'],
         lineHeight: 18,
-    },
-    trackHitbox: {
-        height: 40,
-        justifyContent: 'center',
-    },
-    lastRowPadding: {
-        paddingBottom: 2,
-    },
-    track: {
-        borderRadius: 999,
-        height: 6,
-        overflow: 'visible',
-        position: 'relative',
-    },
-    fill: {
-        borderRadius: 999,
-        height: 6,
-    },
-    thumb: {
-        borderRadius: 12,
-        borderWidth: 3,
-        height: 24,
-        marginLeft: -12,
-        marginTop: -9,
-        position: 'absolute',
-        top: 0,
-        width: 24,
     },
 });

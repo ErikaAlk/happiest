@@ -1,19 +1,22 @@
-import { Platform, Switch as RNSwitch, SwitchProps, View } from 'react-native';
+import { Switch as RNSwitch, View } from 'react-native';
 import { useUnistyles } from 'react-native-unistyles';
 import { Deferred } from './Deferred';
+import type { AppSwitchProps } from './Switch.types';
+
+export type { AppSwitchProps } from './Switch.types';
 
 const COMPACT_SCALE = 0.78;
 
-export type AppSwitchProps = SwitchProps & {
-    compact?: boolean;
-};
-
-export const Switch = ({ compact, style, ...props }: AppSwitchProps) => {
+export const Switch = ({ value, onValueChange, disabled, compact, accessibilityLabel, testID, style }: AppSwitchProps) => {
     const { theme } = useUnistyles();
     const inner = (
-        <Deferred enabled={Platform.OS === 'android'}>
+        <Deferred>
             <RNSwitch
-                {...props}
+                value={value}
+                onValueChange={onValueChange}
+                disabled={disabled}
+                accessibilityLabel={accessibilityLabel}
+                testID={testID}
                 style={compact ? undefined : style}
                 trackColor={{ false: theme.colors.switch.track.inactive, true: theme.colors.switch.track.active }}
                 ios_backgroundColor={theme.colors.switch.track.inactive}

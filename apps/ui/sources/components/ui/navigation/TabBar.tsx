@@ -2,33 +2,18 @@ import * as React from 'react';
 import { View, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
-import { t } from '@/text';
 import { Typography } from '@/constants/Typography';
-import { useInboxHasContent } from '@/hooks/inbox/useInboxHasContent';
-import { useInboxAvailable } from '@/hooks/inbox/useInboxAvailable';
-import { useFriendsEnabled } from '@/hooks/server/useFriendsEnabled';
 import { Text } from '@/components/ui/text/Text';
 import { FloatingTabBarSurface } from '@/components/ui/navigation/FloatingTabBarSurface';
 import { TabBadge } from '@/components/ui/navigation/tabBadge/TabBadge';
 import { resolveTabBarMetrics } from '@/components/ui/navigation/tabBarMetrics';
-import { useFriendRequestCount, useSetting } from '@/sync/domains/state/storage';
-import type { TabType } from './tabTypes';
-import { resolveTabBarTabs } from './resolveTabBarTabs';
-import { Icon, type IconName } from '@/components/ui/icons/Icon';
+import { useSetting } from '@/sync/domains/state/storage';
+import { Icon } from '@/components/ui/icons/Icon';
 
+import { TabBarAccessoryCapsule } from './TabBarAccessoryCapsule';
+import { useTabBarTabs, type TabBarProps } from './tabBarModel';
 
-export type { TabType };
-
-interface TabBarProps {
-    activeTab: TabType;
-    onTabPress: (tab: TabType) => void;
-    /**
-     * A sibling capsule rendered beside the pill (see `FloatingTabBarSurface`).
-     * It is deliberately not a tab: the bar stays a pure navigation control, and
-     * the caller owns which surfaces offer the action.
-     */
-    trailingAccessory?: React.ReactNode;
-}
+export type { TabBarAccessory, TabBarProps, TabType } from './tabBarModel';
 
 const styles = StyleSheet.create((theme) => ({
     innerContainer: {
@@ -74,33 +59,16 @@ const styles = StyleSheet.create((theme) => ({
 export const TabBar = React.memo(({ activeTab, onTabPress, trailingAccessory }: TabBarProps) => {
     const { theme } = useUnistyles();
     const insets = useSafeAreaInsets();
-    const friendsEnabled = useFriendsEnabled();
-    const friendRequestCount = useFriendRequestCount();
-    const inboxEnabled = useInboxAvailable();
-    const inboxHasContent = useInboxHasContent();
-    const friendsBadgeEnabled = useSetting('tabBarFriendsBadgeEnabled');
-    const inboxBadgeEnabled = useSetting('tabBarInboxBadgeEnabled');
+    const tabs = useTabBarTabs();
     const metrics = resolveTabBarMetrics(useSetting('tabBarSize'), useSetting('tabBarShowLabels'));
 
-    const tabs: { key: TabType; label: string }[] = React.useMemo(() => {
-        const tabKeys = resolveTabBarTabs({ inboxEnabled, friendsEnabled });
-        return tabKeys.map((key) => {
-            switch (key) {
-                case 'inbox':
-                    return { key, label: t('tabs.inbox') };
-                case 'friends':
-                    return { key, label: t('tabs.friends') };
-                case 'settings':
-                    return { key, label: t('tabs.settings') };
-                case 'sessions':
-                default:
-                    return { key: 'sessions', label: t('tabs.sessions') };
-            }
-        });
-    }, [friendsEnabled, inboxEnabled]);
-
     return (
-        <FloatingTabBarSurface bottomInset={insets.bottom} trailingAccessory={trailingAccessory}>
+        <FloatingTabBarSurface
+            bottomInset={insets.bottom}
+            trailingAccessory={trailingAccessory
+                ? <TabBarAccessoryCapsule accessory={trailingAccessory} iconSize={metrics.iconSize} />
+                : undefined}
+        >
             <View style={[styles.innerContainer, { gap: metrics.rowGap }]}>
                 {tabs.map((tab) => {
                     const isActive = activeTab === tab.key;
@@ -119,17 +87,13 @@ export const TabBar = React.memo(({ activeTab, onTabPress, trailingAccessory }: 
                         >
                             {isActive ? <View pointerEvents="none" style={[styles.activePill, { borderRadius: metrics.activePillRadius }]} /> : null}
                             <View style={styles.tabContent}>
-                                {renderMainTabIcon(
-                                    tab.key,
-                                    metrics.iconSize,
-                                    isActive ? theme.colors.text.primary : theme.colors.text.secondary,
-                                )}
-                                {tab.key === 'friends' && friendsBadgeEnabled && friendRequestCount > 0 && (
-                                    <TabBadge variant="count" value={friendRequestCount} />
-                                )}
-                                {tab.key === 'inbox' && inboxBadgeEnabled && inboxHasContent ? (
-                                    <TabBadge variant="dot" />
-                                ) : null}
+                                <Icon
+                                    name={tab.icon}
+                                    size={metrics.iconSize}
+                                    color={isActive ? theme.colors.text.primary : theme.colors.text.secondary}
+                                />
+                                {tab.badge?.kind === 'count' ? <TabBadge variant="count" value={tab.badge.value} /> : null}
+                                {tab.badge?.kind === 'dot' ? <TabBadge variant="dot" /> : null}
                             </View>
                             {metrics.showLabels ? (
                                 <Text
@@ -151,16 +115,3 @@ export const TabBar = React.memo(({ activeTab, onTabPress, trailingAccessory }: 
         </FloatingTabBarSurface>
     );
 });
-
-// Match the app's cockpit-bar line icons (all Phosphor, same weight):
-// mailbox for Inbox, chat for Sessions, sliders for Settings, people for Friends.
-function renderMainTabIcon(key: TabType, size: number, color: string): React.ReactNode {
-    const name: IconName = key === 'inbox'
-        ? 'mailbox'
-        : key === 'settings'
-            ? 'sliders-horizontal'
-            : key === 'friends'
-                ? 'users'
-                : 'chats-circle';
-    return <Icon name={name} size={size} color={color} />;
-}

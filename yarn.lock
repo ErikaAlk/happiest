@@ -2306,6 +2306,13 @@
   resolved "https://registry.npmjs.org/@expo/sudo-prompt/-/sudo-prompt-9.3.2.tgz"
   integrity sha512-HHQigo3rQWKMDzYDLkubN5WQOYXJJE2eNqIQC2axC2iO3mHdwnIR7FgZVvHWtBwAdzBgAP0ECp8KqS8TiMKvgw==
 
+"@expo/ui@58.0.8":
+  version "58.0.8"
+  resolved "https://registry.yarnpkg.com/@expo/ui/-/ui-58.0.8.tgz#3cc71f7d121fd483b509a34bb008f5873be8f457"
+  integrity sha512-wLpgYG3sIzAVbuWQvxhwdcrjW0vtdRsgoG+f7Jx3vt0OvwoLOz6qw3OS0Ve7ODTIxtJxep1Mm91REUx1tHEIXA==
+  dependencies:
+    sf-symbols-typescript "^2.1.0"
+
 "@expo/vector-icons@^15.0.2":
   version "15.0.3"
   resolved "https://registry.npmjs.org/@expo/vector-icons/-/vector-icons-15.0.3.tgz"
@@ -16912,6 +16919,11 @@ smart-buffer@^4.2.0:
   version "4.2.0"
   resolved "https://registry.npmjs.org/smart-buffer/-/smart-buffer-4.2.0.tgz"
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
+
+smol-toml@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/smol-toml/-/smol-toml-1.9.0.tgz#f36b8dc7eb621c541c48f9fba6925dab95172817"
+  integrity sha512-hpd+HLON7HdZXqYchMM/+LaTTbdK0AU3NngIJ4KVyWbY9bfQqdL9cD+4yf6dUoU2Ap4VsU0JkQi6FxAI1B2mXQ==
 
 socket.io-adapter@^2.5.5, socket.io-adapter@~2.5.2:
   version "2.5.6"

@@ -1,5 +1,6 @@
-import { Platform, Alert } from 'react-native';
+import { Platform } from 'react-native';
 import { t } from '@/text';
+import { showNativeAlert } from './nativeAlert';
 import { AlertButton, ModalConfig, CustomModalConfig, IModal, type CustomModalShowConfig, type CustomModalComponentType, type CustomModalInjectedProps } from './types';
 
 type ModalProviderFunctions = Readonly<{
@@ -94,8 +95,7 @@ class ModalManagerClass implements IModal {
                 buttons: buttons || [{ text: t('common.ok') }]
             } as Omit<ModalConfig, 'id'>);
         } else {
-            // Use native alert
-            Alert.alert(title, message, buttons);
+            showNativeAlert(title, message, buttons && buttons.length > 0 ? buttons : [{ text: t('common.ok') }], { cancelable: true });
         }
     }
 
@@ -137,7 +137,7 @@ class ModalManagerClass implements IModal {
                 },
             }));
 
-            Alert.alert(title, message, safeButtons, { cancelable: false });
+            showNativeAlert(title, message, safeButtons, { cancelable: false });
         });
     }
 
@@ -170,9 +170,8 @@ class ModalManagerClass implements IModal {
                 this.confirmResolvers.set(modalId, resolve);
             });
         } else {
-            // Use native alert
             return new Promise<boolean>((resolve) => {
-                Alert.alert(
+                showNativeAlert(
                     title,
                     message,
                     [
@@ -187,7 +186,7 @@ class ModalManagerClass implements IModal {
                             onPress: () => resolve(true)
                         }
                     ],
-                    { cancelable: false }
+                    { cancelable: false, recommendedIndex: 1 }
                 );
             });
         }

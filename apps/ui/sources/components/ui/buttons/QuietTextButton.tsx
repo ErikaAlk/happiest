@@ -6,13 +6,13 @@ import { Text } from '@/components/ui/text/Text';
 import { Typography } from '@/constants/Typography';
 
 /**
- * The Updates surface's quiet text action ("Check for updates", "Stop after this one", "View log"):
- * the inbox's mark-all-read label style, with the platform hit slop.
+ * A quiet text action ("Check for updates", "Stop after this one", "View log"): the inbox's
+ * mark-all-read label style, with the platform hit slop.
  */
-export const UpdatesTextButton = React.memo(function UpdatesTextButton(props: Readonly<{
+export const QuietTextButton = React.memo(function QuietTextButton(props: Readonly<{
     label: string;
     onPress: () => void;
-    testID: string;
+    testID?: string;
     accessibilityLabel?: string;
 }>) {
     return (

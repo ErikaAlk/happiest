@@ -84,7 +84,7 @@ describe('SessionListSelectionCheckbox', () => {
             checkbox.props.onPress();
         });
 
-        const selectedInner = screen.findByProps({ testID: 'session-list-selection-checkbox-inner-session-a' });
+        const selectedInner = screen.findByProps({ testID: 'session-list-selection-checkbox-mark-session-a-fill' });
         const selectedInnerStyle = StyleSheet.flatten(selectedInner.props.style);
 
         expect(selectedInnerStyle.width).toBe(
