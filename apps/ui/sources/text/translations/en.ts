@@ -9978,6 +9978,9 @@ settingsSession: {
     },
 
     chatFooter: {
+        switchToLocal: '还给电脑',
+        switchingToLocal: '等待电脑接入此会话…',
+        returnToComputerAvailable: '可以在电脑终端继续此会话',
         permissionsTerminalOnly: 'Permissions are shown in the terminal only. Reset or send a message to control from the app.',
         sessionRunningLocally: 'This session is running locally on this computer. You can switch to remote to control it from the app.',
         sessionRunningLocallyAndRemotely: 'This session is attached locally in OpenCode and is still controllable from the app.',

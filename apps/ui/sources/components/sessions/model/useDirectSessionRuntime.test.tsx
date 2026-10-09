@@ -120,7 +120,7 @@ describe('useDirectSessionRuntime', () => {
     }
   });
 
-  it('returns the current status instead of rejecting when status refresh fails', async () => {
+  it('reports unavailable status when a runtime refresh fails', async () => {
     const refreshMessages = createDeferred<void>();
     machineDirectSessionStatusGetSpy.mockRejectedValueOnce(Object.assign(new Error('RPC method not available'), {
       rpcErrorCode: 'RPC_METHOD_NOT_AVAILABLE',

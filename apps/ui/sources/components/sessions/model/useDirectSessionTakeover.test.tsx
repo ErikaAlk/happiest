@@ -11,18 +11,12 @@ const machineDirectSessionTakeoverSpy = vi.hoisted(() => vi.fn(async () => ({ ok
 const machineDirectSessionTakeoverPersistSpy = vi.hoisted(() => vi.fn(async () => ({ ok: true, converted: true })));
 const refreshSessionMessagesSpy = vi.hoisted(() => vi.fn(async () => {}));
 const refreshSessionsSpy = vi.hoisted(() => vi.fn(async () => {}));
-const showDirectSessionTakeoverDialogSpy = vi.hoisted(() =>
-  vi.fn<() => Promise<{ action: 'direct' | 'persisted' | null; forceStop: boolean }>>(async () => ({ action: null, forceStop: false })),
-);
 const modalAlertSpy = vi.hoisted(() => vi.fn());
 const modalConfirmSpy = vi.hoisted(() => vi.fn(async (_title: string, _body: string, _options?: unknown) => false));
 const resolvePreferredServerIdForSessionIdSpy = vi.hoisted(() => vi.fn());
 
 let activeServerId = 'server-1';
 
-vi.mock('@/components/sessions/directSessions/takeover/showDirectSessionTakeoverDialog', () => ({
-  showDirectSessionTakeoverDialog: showDirectSessionTakeoverDialogSpy,
-}));
 vi.mock('@/modal', async () => {
     const { createModalModuleMock } = await import('@/dev/testkit/mocks/modal');
     return createModalModuleMock({
@@ -101,8 +95,6 @@ describe('useDirectSessionTakeover', () => {
     refreshSessionMessagesSpy.mockResolvedValue(undefined);
     refreshSessionsSpy.mockReset();
     refreshSessionsSpy.mockResolvedValue(undefined);
-    showDirectSessionTakeoverDialogSpy.mockReset();
-    showDirectSessionTakeoverDialogSpy.mockResolvedValue({ action: null, forceStop: false });
     modalAlertSpy.mockReset();
     modalConfirmSpy.mockReset();
     modalConfirmSpy.mockResolvedValue(false);
@@ -150,7 +142,6 @@ describe('useDirectSessionTakeover', () => {
 
   it('uses the owning session server when send takeover is confirmed after an active-server switch', async () => {
     const refreshNow = vi.fn(async () => status);
-    showDirectSessionTakeoverDialogSpy.mockResolvedValueOnce({ action: 'direct', forceStop: false });
     const harness = await renderHarness({ directSessionLink, status, refreshNow });
 
     activeServerId = 'server-2';
@@ -158,12 +149,6 @@ describe('useDirectSessionTakeover', () => {
       await harness.getCurrent().ensureReadyForSend();
     });
 
-    expect(showDirectSessionTakeoverDialogSpy).toHaveBeenCalledWith({
-      canTakeOverDirect: true,
-      canTakeOverPersist: true,
-      canForceStop: false,
-      externalProcessActive: false,
-    });
     expect(machineDirectSessionTakeoverSpy).toHaveBeenCalledWith(
       { machineId: 'machine-1', sessionId: 's1' },
       { serverId: 'server-owned' },
@@ -186,7 +171,6 @@ describe('useDirectSessionTakeover', () => {
 
     expect(ready).toBe(true);
     expect(refreshNow).toHaveBeenCalledTimes(1);
-    expect(showDirectSessionTakeoverDialogSpy).not.toHaveBeenCalled();
     expect(machineDirectSessionTakeoverSpy).not.toHaveBeenCalled();
     await harness.unmount();
   });
@@ -229,9 +213,9 @@ describe('useDirectSessionTakeover', () => {
       await harness.unmount();
     });
 
-    it('stops that program as part of whichever takeover the user picks', async () => {
+    it('confirms once before directly continuing a session running on the computer', async () => {
       const refreshNow = vi.fn(async () => runningElsewhere);
-      showDirectSessionTakeoverDialogSpy.mockResolvedValueOnce({ action: 'persisted', forceStop: false });
+      modalConfirmSpy.mockResolvedValue(true);
       const harness = await renderHarness({ directSessionLink, status, refreshNow });
 
       let ready = false;
@@ -240,8 +224,8 @@ describe('useDirectSessionTakeover', () => {
       });
 
       expect(ready).toBe(true);
-      expect(showDirectSessionTakeoverDialogSpy).toHaveBeenCalledWith(expect.objectContaining({ externalProcessActive: true }));
-      expect(machineDirectSessionTakeoverPersistSpy).toHaveBeenCalledWith(
+      expect(modalConfirmSpy).toHaveBeenCalledTimes(1);
+      expect(machineDirectSessionTakeoverSpy).toHaveBeenCalledWith(
         { machineId: 'machine-1', sessionId: 's1', forceStop: true },
         { serverId: 'server-owned' },
       );

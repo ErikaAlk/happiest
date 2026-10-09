@@ -8,6 +8,8 @@ import {
 } from '@/backends/directSessions/providerOps';
 
 import { getCodexDirectSessionActivity } from './getCodexDirectSessionActivity';
+import { findLiveCodexSessionProcesses } from './findLiveCodexSessionProcesses';
+import { resolveCodexHomesForDirectSessionsSource } from './resolveCodexHomesForDirectSessionsSource';
 import { getCodexDirectSessionWorkingDirectory } from './getCodexDirectSessionWorkingDirectory';
 import { listCodexSessionCandidates } from './listCodexSessionCandidates';
 import { pageCodexTranscript } from './pageCodexTranscript';
@@ -22,10 +24,12 @@ export const codexDirectSessionProviderOps: DirectSessionProviderOps = {
   },
   getActivity: async ({ source, remoteSessionId }) => {
     const res = await getCodexDirectSessionActivity({ source, activeServerDir: configuration.activeServerDir, remoteSessionId });
+    const homes = await resolveCodexHomesForDirectSessionsSource({ source, activeServerDir: configuration.activeServerDir, env: process.env });
+    const runningProcesses = (await Promise.all(homes.map(codexHome => findLiveCodexSessionProcesses({ codexHome, remoteSessionId })))).flat();
     return {
       lastActivityAtMs: typeof res.lastActivityAtMs === 'number' && Number.isFinite(res.lastActivityAtMs) ? res.lastActivityAtMs : null,
-      isRunning: false,
-      runningProcesses: [],
+      isRunning: runningProcesses.length > 0,
+      runningProcesses,
     };
   },
   pageTranscript: async ({ source, remoteSessionId, direction, cursor, maxBytes, maxItems }) => {

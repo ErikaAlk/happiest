@@ -42,6 +42,7 @@ export async function readExternalDirectSessionProcesses(params: Readonly<{
 /** Ends processes just returned by {@link readExternalDirectSessionProcesses}, whose identity it verified. */
 export async function stopExternalDirectSessionProcesses(processes: readonly DirectSessionRunningProcess[]): Promise<void> {
   for (const running of processes) {
+    await running.verifyBeforeStop?.();
     await killProcessTree({ pid: running.pid });
   }
 }

@@ -11,6 +11,12 @@ This document is an implementation inventory for the current low-level Codex int
 
 ## Runtime surfaces
 
+### Happiest 开发分支的接管与交还
+
+手机接管由 `sync/domains/session/control/directSessionTakeover.ts` 判断是否需要确认，电脑会话仍有运行进程时确认一次。Codex 的会话写入进程由 `findLiveCodexSessionProcesses.ts` 识别；Windows 使用 Restart Manager，Linux 使用写入锁的设备号与 inode，终止前再次核实进程身份。共享 app-server 或同时写入多个会话的进程不能由此流程终止。
+
+“还给电脑”由 `useSessionControlSwitch` 和 `sessionLocalControl` 处理。已有可接入终端使用控制切换；Windows 隐藏 runner 停止后，以同一 Happiest 会话及原始 Codex 身份打开终端恢复。界面等到实际控制状态确认接入后结束进度。`CodexRolloutMirror` 分别读取主会话及子代理的历史模式，并使用源记录身份写入历史，重复读取保持消息身份连续。Windows 与 Linux 的实际进程识别、Windows 手机接管及交还已经验证；这些变化尚未发布。
+
 | Feature | Status | Exact source files | Special cases | Unified architecture migration notes |
 | --- | --- | --- | --- | --- |
 | Backend mode selection (`appServer` / `acp` / `mcp`) | `supported` | `packages/agents/src/providerSettings/definitions/codex.ts`, `apps/ui/sources/agents/providers/codex/settings/plugin.ts`, `apps/ui/sources/agents/providers/codex/uiBehavior.ts`, `apps/cli/src/backends/codex/utils/resolveCodexBackendModeForRun.ts`, `apps/cli/src/backends/codex/runCodex.ts`, `apps/cli/src/rpc/handlers/spawnSessionOptionsContract.ts` | Account default is `appServer`; legacy `mcp_resume` is normalized to `acp`; resume/wake payloads persist `codexBackendMode` separately from the old `experimentalCodexAcp` flag. | Remove the ACP-era boolean shadow flag and carry one transport-neutral runtime descriptor from settings -> spawn payload -> persisted session metadata. |

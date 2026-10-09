@@ -439,9 +439,6 @@ vi.mock('@/sync/domains/session/control/localControlSwitch', () => ({
     shouldRequestRemoteControl: () => false,
     shouldRequestRemoteControlAfterPendingEnqueue: () => false,
 }));
-vi.mock('@/sync/domains/session/control/controlSwitchUiTimeout', () => ({
-    readControlSwitchUiTimeoutMsFromEnv: () => 1000,
-}));
 
 describe('SessionView read cursor on blur', () => {
     beforeEach(() => {

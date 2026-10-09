@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- 手机接管电脑会话时，仅在原进程仍在运行时确认；切换进度等待实际控制状态更新。
+- 会话支持“还给电脑”，在 Windows 终端中继续原有对话。
+- 修复 Codex 接续时的历史重复与原生历史正文缺失，终端显示消息发送者。
+
 ## Release 0.1.2 - 2026-10-04
 
 <!-- happier-release-note-projections:v1

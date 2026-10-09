@@ -2367,6 +2367,7 @@ export const ChatListInternal = React.memo((props: ChatListInternalProps) => {
         olderPaginationCanContinue: !targetWindowActive && olderPagination.hasMore && !isScrollable(),
         onContinueOlderPagination: olderPagination.continueOlderLoad,
         onRequestSwitchToRemote: props.onRequestSwitchToRemote,
+        onRequestSwitchToLocal: props.onRequestSwitchToLocal,
         prependRangeReservePx: prependHost.slots.rangeReservePx,
         renderTranscriptItemAtIndex,
         sessionId: props.sessionId,

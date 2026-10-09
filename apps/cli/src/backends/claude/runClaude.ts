@@ -104,7 +104,7 @@ import {
     createClaudeModelEffortLevelsTracker,
     type ClaudeModelEffortLevelsTracker,
 } from '@/backends/claude/models/claudeModelEffortLevelsTracker';
-import { buildClaudeAgentState } from '@/backends/claude/localControl/buildClaudeAgentState';
+import { buildClaudeAgentState, canUseClaudeLocalTerminal } from '@/backends/claude/localControl/buildClaudeAgentState';
 import { serializeAxiosErrorForLog } from '@/api/client/serializeAxiosErrorForLog';
 import type { SessionRuntimeActivityContributionHandle } from '@/session/runtimeActivity/types';
 import type { RuntimeActivityApplicability } from '@/session/runtimeActivity/types';
@@ -306,6 +306,11 @@ export async function runClaude(credentials: Credentials, options: StartOptions 
 
     const startedBy = options.startedBy ?? 'terminal';
     const startingMode = options.startingMode ?? 'local';
+    const localTerminalAvailable = canUseClaudeLocalTerminal({
+        stdinIsTTY: process.stdin.isTTY,
+        stdoutIsTTY: process.stdout.isTTY,
+        terminalMode: options.terminalRuntime?.mode,
+    });
     const initialClaudeRemoteMetaState = resolveInitialClaudeRemoteMetaState({ metaDefaults: options.claudeRemoteMetaDefaults });
     const existingSessionId =
         typeof options.existingSessionId === 'string' && options.existingSessionId.trim().length > 0
@@ -851,6 +856,7 @@ export async function runClaude(credentials: Credentials, options: StartOptions 
             tuiRuntimeControlEnabled: claudeTuiRuntimeControlEnabled,
             localPermissionBridgeEnabled,
             userMessageHandlerReady,
+            localTerminalAvailable,
         }),
         '[claude]',
         'initial_agent_state',
@@ -1042,6 +1048,7 @@ export async function runClaude(credentials: Credentials, options: StartOptions 
                     tuiRuntimeControlEnabled: claudeTuiRuntimeControlEnabled,
                     localPermissionBridgeEnabled,
                     userMessageHandlerReady,
+                    localTerminalAvailable,
                 }),
                 '[claude]',
                 'local_permission_bridge_mode_change',
@@ -1120,6 +1127,7 @@ export async function runClaude(credentials: Credentials, options: StartOptions 
             tuiRuntimeControlEnabled: claudeTuiRuntimeControlEnabled,
             localPermissionBridgeEnabled,
             userMessageHandlerReady,
+            localTerminalAvailable,
         }),
         '[claude]',
         'user_message_handler_ready',
@@ -1320,6 +1328,7 @@ export async function runClaude(credentials: Credentials, options: StartOptions 
                         tuiRuntimeControlEnabled: claudeTuiRuntimeControlEnabled,
                         localPermissionBridgeEnabled,
                         userMessageHandlerReady,
+                        localTerminalAvailable,
                     }),
                     '[claude]',
                     'mode_change',
@@ -1467,6 +1476,11 @@ function cleanupClaudeSessionBestEffort(session: unknown): void {
 async function runClaudeLocalFastStart(credentials: Credentials, options: StartOptions): Promise<void> {
     const workingDirectory = resolveRequestedSessionDirectory();
     const sessionTag = randomUUID();
+    const localTerminalAvailable = canUseClaudeLocalTerminal({
+        stdinIsTTY: process.stdin.isTTY,
+        stdoutIsTTY: process.stdout.isTTY,
+        terminalMode: options.terminalRuntime?.mode,
+    });
 
     const startedBy: 'terminal' | 'daemon' = options.startedBy ?? 'terminal';
     const startingMode: 'local' | 'remote' = options.startingMode ?? 'local';
@@ -1804,6 +1818,7 @@ async function runClaudeLocalFastStart(credentials: Credentials, options: StartO
                         tuiRuntimeControlEnabled: claudeTuiRuntimeControlEnabled,
                         localPermissionBridgeEnabled,
                         userMessageHandlerReady,
+                        localTerminalAvailable,
                     }),
                     '[claude]',
                     'initial_agent_state',
@@ -1952,6 +1967,7 @@ async function runClaudeLocalFastStart(credentials: Credentials, options: StartO
                                 tuiRuntimeControlEnabled: claudeTuiRuntimeControlEnabled,
                                 localPermissionBridgeEnabled,
                                 userMessageHandlerReady,
+                                localTerminalAvailable,
                             }),
                             '[claude]',
                             'local_permission_bridge_mode_change',
@@ -2141,6 +2157,7 @@ async function runClaudeLocalFastStart(credentials: Credentials, options: StartO
                                     tuiRuntimeControlEnabled: claudeTuiRuntimeControlEnabled,
                                     localPermissionBridgeEnabled,
                                     userMessageHandlerReady,
+                                    localTerminalAvailable,
                                 }),
                                 '[claude]',
                                 'mode_change',

@@ -7,11 +7,13 @@ import {
     resolvePathForComparison,
 } from '@/utils/path/normalizePathForComparison';
 import { parseCodexRolloutFilename } from '../utils/codexSessionFiles';
+import type { CodexRolloutHistoryMode } from './rolloutMapper';
 
 export type CodexSessionMetaPayload = {
     id?: string;
     timestamp?: string;
     cwd?: string;
+    history_mode?: CodexRolloutHistoryMode;
     [key: string]: unknown;
 };
 

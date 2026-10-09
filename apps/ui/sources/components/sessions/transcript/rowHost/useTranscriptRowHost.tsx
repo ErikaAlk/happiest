@@ -519,6 +519,7 @@ export type TranscriptItemsEdgeSlotsDeps = Readonly<{
     isLoadingOlder: boolean;
     mainTranscriptListShellFrame: Parameters<typeof resolveTranscriptListShellEdgeSlots>[0]['frame'];
     onRequestSwitchToRemote: ChatListInternalProps['onRequestSwitchToRemote'];
+    onRequestSwitchToLocal?: ChatListInternalProps['onRequestSwitchToLocal'];
     olderPaginationIsLoadingOlder: boolean;
     olderPaginationCanContinue: boolean;
     onContinueOlderPagination: () => void;
@@ -545,6 +546,7 @@ export function useTranscriptItemsEdgeSlots(deps: TranscriptItemsEdgeSlotsDeps) 
         isLoadingOlder,
         mainTranscriptListShellFrame,
         onRequestSwitchToRemote,
+        onRequestSwitchToLocal,
         olderPaginationIsLoadingOlder,
         olderPaginationCanContinue,
         onContinueOlderPagination,
@@ -576,6 +578,7 @@ export function useTranscriptItemsEdgeSlots(deps: TranscriptItemsEdgeSlotsDeps) 
                 controlledByUserOverride={controlledByUserOverride}
                 controlSwitchTo={controlSwitchTo ?? null}
                 onRequestSwitchToRemote={onRequestSwitchToRemote}
+                onRequestSwitchToLocal={onRequestSwitchToLocal}
                 directControl={directControlFooter}
                 onComposerInsetHeightChange={handleComposerInsetHeightChange}
             />
@@ -587,6 +590,7 @@ export function useTranscriptItemsEdgeSlots(deps: TranscriptItemsEdgeSlotsDeps) 
         directControlFooter,
         handleComposerInsetHeightChange,
         onRequestSwitchToRemote,
+        onRequestSwitchToLocal,
         prependRangeReservePx,
         sessionId,
     ]);

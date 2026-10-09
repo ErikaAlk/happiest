@@ -174,6 +174,7 @@ export function useChatListRootState(props: ChatListProps) {
             controlledByUserOverride: props.controlledByUserOverride,
             controlSwitchTo: props.controlSwitchTo ?? null,
             onRequestSwitchToRemote: props.onRequestSwitchToRemote,
+            onRequestSwitchToLocal: props.onRequestSwitchToLocal,
             directControlFooter: props.directControlFooter,
             approvalRequests: props.approvalRequests,
             interaction,

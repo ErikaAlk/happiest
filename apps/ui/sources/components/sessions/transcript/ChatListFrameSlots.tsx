@@ -18,8 +18,9 @@ export const ListFooter = React.memo((props: {
     sessionId: string;
     bottomNotice?: ChatListBottomNotice | null;
     controlledByUserOverride?: boolean;
-    controlSwitchTo?: 'remote' | null;
+    controlSwitchTo?: 'remote' | 'local' | null;
     onRequestSwitchToRemote?: () => void;
+    onRequestSwitchToLocal?: () => void;
     directControl?: ChatFooterDirectControlState;
 }) => {
     const footerState = useSessionChatFooterState(props.sessionId);
@@ -34,6 +35,7 @@ export const ListFooter = React.memo((props: {
             notice={props.bottomNotice ?? null}
             controlSwitchTo={props.controlSwitchTo ?? null}
             onRequestSwitchToRemote={props.onRequestSwitchToRemote}
+            onRequestSwitchToLocal={props.onRequestSwitchToLocal}
             directControl={props.directControl ?? null}
         />
     )
@@ -43,8 +45,9 @@ export const ChatListFooterWithKeyboardInset = React.memo((props: {
     sessionId: string;
     bottomNotice?: ChatListBottomNotice | null;
     controlledByUserOverride?: boolean;
-    controlSwitchTo?: 'remote' | null;
+    controlSwitchTo?: 'remote' | 'local' | null;
     onRequestSwitchToRemote?: () => void;
+    onRequestSwitchToLocal?: () => void;
     directControl?: ChatFooterDirectControlState;
     onComposerInsetHeightChange?: (height: number) => void;
 }) => {
@@ -56,6 +59,7 @@ export const ChatListFooterWithKeyboardInset = React.memo((props: {
                 controlledByUserOverride={props.controlledByUserOverride}
                 controlSwitchTo={props.controlSwitchTo ?? null}
                 onRequestSwitchToRemote={props.onRequestSwitchToRemote}
+                onRequestSwitchToLocal={props.onRequestSwitchToLocal}
                 directControl={props.directControl ?? null}
             />
             <ComposerKeyboardScrollInset

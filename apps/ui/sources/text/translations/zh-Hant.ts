@@ -8581,6 +8581,9 @@ settingsSession: {
     },
 
     chatFooter: {
+        switchToLocal: '还给电脑',
+        switchingToLocal: '等待电脑接入此会话…',
+        returnToComputerAvailable: '可以在电脑终端继续此会话',
         permissionsTerminalOnly: '權限只會顯示在終端機中。重設或傳送訊息即可從 app 控制。',
         sessionRunningLocally: '此工作階段正在這台電腦上以本機模式執行。你可以切換到遠端，從 app 控制它。',
         sessionRunningLocallyAndRemotely: '此工作階段已在 OpenCode 中本機附加，且仍可從 app 控制。',

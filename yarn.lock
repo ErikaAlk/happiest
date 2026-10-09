@@ -12711,6 +12711,11 @@ loose-envify@^1.0.0, loose-envify@^1.1.0:
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
 
+lossless-json@^4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/lossless-json/-/lossless-json-4.3.1.tgz#ae1275f2f7e3aafdbf6985a42b6b604d848d716f"
+  integrity sha512-SqD/Bg3ZfltBJ2Z14hJ/BihnvtV553WO4g9/ePtlp4lrnl9jF3AdIJt53A/Wkg/0Li+LMfxaBqgx1MiFZdQlpQ==
+
 loupe@^3.1.0, loupe@^3.1.4:
   version "3.2.1"
   resolved "https://registry.npmjs.org/loupe/-/loupe-3.2.1.tgz"

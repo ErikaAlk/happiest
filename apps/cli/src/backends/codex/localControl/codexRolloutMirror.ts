@@ -5,7 +5,8 @@ import { DEFAULT_JSONL_FOLLOW_POLICY, normalizeJsonlFollowPolicy, type JsonlFoll
 import { createKeyedStreamedTranscriptBridge } from '@/api/session/createKeyedStreamedTranscriptBridge';
 import { collectCodexSessionRolloutFiles } from '../directSessions/collectCodexSessionRolloutFiles';
 import { createCodexSyntheticSubagentTracker } from '../collaboration/createCodexSyntheticSubagentTracker';
-import { mapCodexRolloutEventToActions, type CodexRolloutAction } from './rolloutMapper';
+import { mapCodexRolloutEventToActions, readCodexRolloutHistoryMode, type CodexRolloutAction, type CodexRolloutHistoryMode } from './rolloutMapper';
+import { z } from 'zod';
 import { projectCodexRolloutActions } from '../rollout/projectCodexRolloutActions';
 import { createCodexRolloutSemanticTracker } from '../rollout/createCodexRolloutSemanticTracker';
 import {
@@ -18,6 +19,11 @@ type MirrorContext = Readonly<{
     sidechainId: string | null;
     streamScopeId: string;
 }>;
+
+const rolloutMetadataSchema = z.object({
+    type: z.literal('session_meta'),
+    payload: z.object({ history_mode: z.unknown().optional() }),
+});
 
 type RolloutActionSource = JsonlLineSource & Readonly<{
     actionIndex: number;
@@ -32,6 +38,7 @@ function createRolloutActionLocalId(source: RolloutActionSource, fileIdentity: s
 }
 
 type SubagentMirrorState = {
+    historyMode: CodexRolloutHistoryMode;
     threadId: string;
     prompt: string | null;
     nickname: string | null;
@@ -56,6 +63,7 @@ function resolveCodexHomeFromRolloutFilePath(filePath: string): string | null {
 }
 
 export class CodexRolloutMirror {
+    private historyMode: CodexRolloutHistoryMode = 'legacy';
     private controller: JsonlFollowController | null = null;
     private readonly itemTranscriptBridge;
     private readonly syntheticSubagentTracker;
@@ -149,6 +157,7 @@ export class CodexRolloutMirror {
 
         const now = Date.now();
         const state: SubagentMirrorState = {
+            historyMode: 'legacy',
             threadId: action.threadId,
             prompt: action.prompt,
             nickname: action.nickname,
@@ -259,11 +268,20 @@ export class CodexRolloutMirror {
             }
 
             if (projected.type === 'assistant-text') {
-                this.itemTranscriptBridge.appendAssistantDelta({
-                    deltaText: projected.text,
-                    streamKey: `${context.streamScopeId}:assistant`,
-                    sidechainId: projected.sidechainId,
-                });
+                if (localId) {
+                    this.itemTranscriptBridge.appendAssistantDeltaExact({
+                        deltaText: projected.text,
+                        streamKey: `${context.streamScopeId}:assistant:${localId}`,
+                        sidechainId: projected.sidechainId,
+                        localId,
+                    });
+                } else {
+                    this.itemTranscriptBridge.appendAssistantDelta({
+                        deltaText: projected.text,
+                        streamKey: `${context.streamScopeId}:assistant`,
+                        sidechainId: projected.sidechainId,
+                    });
+                }
                 continue;
             }
 
@@ -388,8 +406,10 @@ export class CodexRolloutMirror {
         const state = this.subagentMirrorByThreadId.get(threadId);
         if (state) {
             state.lastTouchedAtMs = Date.now();
+            const metadata = rolloutMetadataSchema.safeParse(value);
+            if (metadata.success) state.historyMode = readCodexRolloutHistoryMode(metadata.data.payload.history_mode);
         }
-        const actions = mapCodexRolloutEventToActions(value, { debug: this.opts.debug });
+        const actions = mapCodexRolloutEventToActions(value, { debug: this.opts.debug, historyMode: state?.historyMode });
         await this.rolloutSemanticTracker.consumeAfterAcknowledgement(actions, async (normalizedActions) => {
             let actionIndex = 0;
             for (const normalizedAction of normalizedActions) {
@@ -452,7 +472,9 @@ export class CodexRolloutMirror {
     }
 
     private async onJson(value: unknown, source?: JsonlLineSource): Promise<void> {
-        const actions = mapCodexRolloutEventToActions(value, { debug: this.opts.debug });
+        const metadata = rolloutMetadataSchema.safeParse(value);
+        if (metadata.success) this.historyMode = readCodexRolloutHistoryMode(metadata.data.payload.history_mode);
+        const actions = mapCodexRolloutEventToActions(value, { debug: this.opts.debug, historyMode: this.historyMode });
         await this.rolloutSemanticTracker.consumeAfterAcknowledgement(actions, async (normalizedActions) => {
             let actionIndex = 0;
             for (const normalizedAction of normalizedActions) {

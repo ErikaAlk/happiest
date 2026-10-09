@@ -24,6 +24,8 @@ export type DirectSessionCandidatesPage = Readonly<{
 export type DirectSessionRunningProcess = Readonly<{
   pid: number;
   parentPid: number | null;
+  /** Provider-owned final identity check before terminating an externally owned process. */
+  verifyBeforeStop?: () => Promise<void>;
 }>;
 
 export type DirectSessionActivitySample = Readonly<{

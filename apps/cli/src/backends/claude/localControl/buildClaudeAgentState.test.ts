@@ -1,8 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildClaudeAgentState } from './buildClaudeAgentState';
+import { buildClaudeAgentState, canUseClaudeLocalTerminal } from './buildClaudeAgentState';
 
 describe('buildClaudeAgentState', () => {
+  it('rejects hidden runners and accepts an actual interactive or Windows hosted terminal', () => {
+    expect(canUseClaudeLocalTerminal({ stdinIsTTY: false, stdoutIsTTY: false, terminalMode: 'plain' })).toBe(false);
+    expect(canUseClaudeLocalTerminal({ stdinIsTTY: true, stdoutIsTTY: false })).toBe(false);
+    expect(canUseClaudeLocalTerminal({ stdinIsTTY: true, stdoutIsTTY: true })).toBe(true);
+    expect(canUseClaudeLocalTerminal({ stdinIsTTY: false, stdoutIsTTY: false, terminalMode: 'windows_console' })).toBe(true);
+    expect(canUseClaudeLocalTerminal({ stdinIsTTY: false, stdoutIsTTY: false, terminalMode: 'windows_terminal' })).toBe(true);
+  });
   it('does not advertise user-message handler readiness until explicitly ready', () => {
     expect(buildClaudeAgentState({
       currentState: {},
@@ -77,7 +84,7 @@ describe('buildClaudeAgentState', () => {
     expect((legacy.capabilities as Record<string, unknown>).inFlightConfigApplySupported).toBeUndefined();
   });
 
-  it('preserves legacy Claude local-control semantics when unified terminal is disabled', () => {
+  it('publishes exclusive local control for legacy Claude with an interactive terminal', () => {
     expect(buildClaudeAgentState({
       currentState: {
         localControl: {
@@ -89,14 +96,38 @@ describe('buildClaudeAgentState', () => {
       mode: 'local',
       claudeUnifiedTerminalEnabled: false,
       localPermissionBridgeEnabled: false,
+      localTerminalAvailable: true,
     })).toMatchObject({
       controlledByUser: true,
-      localControl: null,
+      localControl: {
+        attached: true,
+        topology: 'exclusive',
+        remoteWritable: false,
+        canAttach: false,
+        canDetach: true,
+      },
       capabilities: {
         askUserQuestionAnswersInPermission: true,
         localPermissionBridgeInLocalMode: false,
         permissionsInUiWhileLocal: false,
       },
     });
+  });
+
+  it('offers return to the computer only when the legacy runner has an interactive terminal', () => {
+    const input = {
+      currentState: {},
+      mode: 'remote' as const,
+      claudeUnifiedTerminalEnabled: false,
+      localPermissionBridgeEnabled: false,
+    };
+    expect(buildClaudeAgentState({ ...input, localTerminalAvailable: true }).localControl).toMatchObject({
+      attached: false,
+      topology: 'exclusive',
+      remoteWritable: true,
+      canAttach: true,
+      canDetach: false,
+    });
+    expect(buildClaudeAgentState({ ...input, localTerminalAvailable: false }).localControl?.canAttach).toBe(false);
   });
 });

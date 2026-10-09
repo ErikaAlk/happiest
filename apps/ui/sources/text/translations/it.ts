@@ -10938,6 +10938,9 @@ settingsSession: {
   },
 
   chatFooter: {
+    switchToLocal: '还给电脑',
+    switchingToLocal: '等待电脑接入此会话…',
+    returnToComputerAvailable: '可以在电脑终端继续此会话',
     permissionsTerminalOnly:
       "I permessi vengono mostrati solo nel terminale. Reimposta o invia un messaggio per controllare dall’app.",
     sessionRunningLocally:

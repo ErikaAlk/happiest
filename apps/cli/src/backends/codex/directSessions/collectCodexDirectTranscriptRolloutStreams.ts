@@ -23,7 +23,7 @@ async function discoverSpawnedThreadIdsFromFilesBounded(files: readonly CodexRol
         maxItems: Math.min(64, CHILD_DISCOVERY_MAX_ITEMS - scannedItems),
       });
       for (const line of page.items) {
-        const normalizedActions = mapCodexRolloutEventToActions(line.value, { debug: true })
+        const normalizedActions = mapCodexRolloutEventToActions(line.value, { debug: true, historyMode: file.historyMode })
           .flatMap((action) => semanticTracker.consume(action));
         for (const action of normalizedActions) {
           if (action.type === 'subagent-spawn') {

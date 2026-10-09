@@ -1,5 +1,6 @@
 import { render } from "ink";
 import { Session } from "./session";
+import { canUseClaudeLocalTerminal } from './localControl/buildClaudeAgentState';
 import type { Metadata } from '@/api/types';
 import { MessageBuffer } from "@/ui/ink/messageBuffer";
 import { RemoteModeDisplay } from "@/backends/claude/ui/RemoteModeDisplay";
@@ -559,11 +560,16 @@ export async function claudeRemoteLauncher(
 
     // When to abort
     session.client.rpcHandlerManager.registerHandler('abort', doAbort); // When abort clicked
-    session.client.rpcHandlerManager.registerHandler('switch', async (params: any) => {
+    session.client.rpcHandlerManager.registerHandler('switch', async (params: unknown) => {
         // Newer clients send a target mode. Older clients send no params.
         // Remote launcher is already in remote mode, so {to:'remote'} is a no-op.
         const to = resolveSwitchRequestTarget(params);
         if (to === 'remote') return true;
+        if (!canUseClaudeLocalTerminal({
+            stdinIsTTY: process.stdin.isTTY,
+            stdoutIsTTY: process.stdout.isTTY,
+            terminalMode: readRemoteControlTerminalMode(session),
+        })) return false;
         await doSwitch();
         return true;
     }); // When switch clicked

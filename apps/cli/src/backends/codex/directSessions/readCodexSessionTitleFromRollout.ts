@@ -1,7 +1,8 @@
 import { readJsonlFileForward } from '@/api/directSessions/filePaging/jsonlForwardReader';
 import { readDirectSessionTitleCandidate } from '@/api/directSessions/title/readDirectSessionTitleCandidate';
 
-import { mapCodexRolloutEventToActions } from '../localControl/rolloutMapper';
+import { mapCodexRolloutEventToActions, readCodexRolloutHistoryMode } from '../localControl/rolloutMapper';
+import { readCodexSessionMetaFromRollout } from '../localControl/rolloutDiscovery';
 
 const TITLE_SCAN_CHUNK_MAX_BYTES = 128 * 1024;
 const TITLE_SCAN_CHUNK_MAX_ITEMS = 64;
@@ -17,6 +18,8 @@ function readTitleFromToolInput(input: unknown): string | null {
 }
 
 export async function readCodexSessionTitleFromRollout(filePath: string): Promise<string | null> {
+  const metadata = await readCodexSessionMetaFromRollout(filePath);
+  const historyMode = readCodexRolloutHistoryMode(metadata?.history_mode);
   let fallbackAssistantText: string | null = null;
   let offsetBytes = 0;
   let scannedBytes = 0;
@@ -31,7 +34,7 @@ export async function readCodexSessionTitleFromRollout(filePath: string): Promis
     });
 
     for (const line of page.items) {
-      const actions = mapCodexRolloutEventToActions(line.value, { debug: false });
+      const actions = mapCodexRolloutEventToActions(line.value, { debug: false, historyMode });
       for (const action of actions) {
         if (action.type === 'tool-call' && action.name === 'change_title') {
           const fromTool = readTitleFromToolInput(action.input);

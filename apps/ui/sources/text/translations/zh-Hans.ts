@@ -10234,6 +10234,9 @@ settingsSession: {
   },
 
   chatFooter: {
+    switchToLocal: '还给电脑',
+    switchingToLocal: '等待电脑接入此会话…',
+    returnToComputerAvailable: '可以在电脑终端继续此会话',
     permissionsTerminalOnly:
       "权限仅在终端中显示。重置或发送消息即可从应用中控制。",
     sessionRunningLocally:

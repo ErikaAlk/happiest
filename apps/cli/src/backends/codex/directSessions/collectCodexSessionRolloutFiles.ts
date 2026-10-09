@@ -2,9 +2,10 @@ import { readdir, stat } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 
 import { readCodexSessionMetaFromRollout } from '../localControl/rolloutDiscovery';
+import { readCodexRolloutHistoryMode, type CodexRolloutHistoryMode } from '../localControl/rolloutMapper';
 import { isMatchingCodexRolloutFileName, isMatchingCodexRolloutIdentity, parseCodexRolloutFilename } from '../utils/codexSessionFiles';
 
-export type CodexRolloutFile = Readonly<{ filePath: string; fileRelPath: string; sortMs: number; mtimeMs: number }>;
+export type CodexRolloutFile = Readonly<{ filePath: string; fileRelPath: string; sortMs: number; mtimeMs: number; historyMode?: CodexRolloutHistoryMode }>;
 
 function parseRolloutTimestampFromFilename(filePath: string): number | null {
   const name = filePath.split(/[/\\\\]/).pop() ?? '';
@@ -100,7 +101,8 @@ async function collectRolloutMatchesFromFlatDir(params: Readonly<{ codexHome: st
       const fromBirth = Number.isFinite(s.birthtimeMs) && s.birthtimeMs > 0 ? s.birthtimeMs : null;
       const sortMs = Math.max(fromName ?? 0, fromBirth ?? 0, s.mtimeMs);
       const fileRelPath = relative(params.codexHome, filePath);
-      matches.push({ filePath, fileRelPath, sortMs, mtimeMs: s.mtimeMs });
+      const metadata = await readCodexSessionMetaFromRollout(filePath);
+      matches.push({ filePath, fileRelPath, sortMs, mtimeMs: s.mtimeMs, historyMode: readCodexRolloutHistoryMode(metadata?.history_mode) });
     } catch {
       // ignore unreadable
     }
@@ -168,7 +170,8 @@ export async function collectCodexSessionRolloutFiles(params: Readonly<{ codexHo
         const fromBirth = Number.isFinite(s.birthtimeMs) && s.birthtimeMs > 0 ? s.birthtimeMs : null;
         const sortMs = Math.max(fromName ?? 0, fromBirth ?? 0, s.mtimeMs);
         const fileRelPath = relative(params.codexHome, full);
-        matches.push({ filePath: full, fileRelPath, sortMs, mtimeMs: s.mtimeMs });
+        const metadata = await readCodexSessionMetaFromRollout(full);
+        matches.push({ filePath: full, fileRelPath, sortMs, mtimeMs: s.mtimeMs, historyMode: readCodexRolloutHistoryMode(metadata?.history_mode) });
       } catch {
         // ignore
       }

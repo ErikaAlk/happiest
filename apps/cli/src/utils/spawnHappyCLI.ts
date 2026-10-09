@@ -93,6 +93,7 @@ const PINNED_RUNNER_REQUIRED_ASSET_RELATIVE_PATHS = [
   ['scripts', 'childProcessOptions.cjs'],
   ['scripts', 'ripgrep_launcher.cjs'],
   ['scripts', 'node_pty_relay.cjs'],
+  ['scripts', 'runtime', 'readWindowsFileUsers.ps1'],
 ] as const;
 
 function getSubprocessRuntime(): 'node' | 'bun' {

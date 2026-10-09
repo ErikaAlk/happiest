@@ -9,8 +9,8 @@ export type CodexRolloutAction =
     | { type: 'codex-session-id'; id: string }
     | { type: 'turn-lifecycle'; event: LocalTurnLifecycleEvent }
     | { type: 'context-compaction'; phase: 'completed'; lifecycleId: string; source: 'provider-event' | 'transcript-inference'; providerEventId?: string }
-    | { type: 'user-text'; text: string }
-    | { type: 'assistant-text'; text: string }
+    | { type: 'user-text'; text: string; providerItemId?: string; clientId?: string; threadId?: string }
+    | { type: 'assistant-text'; text: string; providerItemId?: string; threadId?: string }
     | { type: 'tool-call'; callId: string; name: string; input: unknown }
     | { type: 'tool-result'; callId: string; output: unknown }
     | { type: 'collaboration-tool-call'; callId: string; name: 'spawn_agent' | 'wait_agent' | 'close_agent'; prompt: string | null; nickname: string | null; role: string | null }
@@ -20,6 +20,12 @@ export type CodexRolloutAction =
     | { type: 'debug'; message: string; value?: unknown };
 
 type RolloutEnvelope = { timestamp?: string; type?: string; payload?: any };
+
+export type CodexRolloutHistoryMode = 'legacy' | 'paginated';
+
+export function readCodexRolloutHistoryMode(value: unknown): CodexRolloutHistoryMode {
+    return value === 'paginated' ? 'paginated' : 'legacy';
+}
 
 function asRecord(value: unknown): Record<string, unknown> | null {
     if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
@@ -152,7 +158,7 @@ function readWaitingEndSubagentCompletions(payload: Record<string, unknown>): Co
     return actions;
 }
 
-export function mapCodexRolloutEventToActions(event: unknown, opts: { debug: boolean }): CodexRolloutAction[] {
+export function mapCodexRolloutEventToActions(event: unknown, opts: { debug: boolean; historyMode?: CodexRolloutHistoryMode }): CodexRolloutAction[] {
     const env = asRecord(event) as RolloutEnvelope | null;
     if (!env || typeof env.type !== 'string') return [];
 
@@ -166,6 +172,24 @@ export function mapCodexRolloutEventToActions(event: unknown, opts: { debug: boo
     if (env.type === 'event_msg') {
         const payload = asRecord(env.payload) ?? {};
         const payloadType = typeof payload.type === 'string' ? String(payload.type) : '';
+
+        if (payloadType === 'item_completed' && opts.historyMode === 'paginated') {
+            const item = asRecord(payload.item);
+            if (item?.type === 'UserMessage' || item?.type === 'AgentMessage') {
+                const text = readCodexMessageContentText(item.content);
+                const providerItemId = readStringField(item, 'id');
+                const threadId = readStringField(payload, 'thread_id');
+                if (!text || !providerItemId || !threadId) return [];
+                if (item.type === 'UserMessage') {
+                    const notification = parseSubagentNotification(text);
+                    if (notification) return [notification];
+                    if (shouldFilterHarnessBlob(text)) return [];
+                    const clientId = readStringField(item, 'client_id');
+                    return [{ type: 'user-text', text, providerItemId, threadId, ...(clientId ? { clientId } : {}) }];
+                }
+                return [{ type: 'assistant-text', text, providerItemId, threadId }];
+            }
+        }
 
         if (payloadType === 'task_started') {
             return [{
@@ -261,6 +285,7 @@ export function mapCodexRolloutEventToActions(event: unknown, opts: { debug: boo
     const payloadType = typeof (payload as any).type === 'string' ? String((payload as any).type) : '';
 
     if (payloadType === 'message') {
+        if (opts.historyMode === 'paginated') return [];
         const role = typeof (payload as any).role === 'string' ? String((payload as any).role) : '';
         const content = readCodexMessageContentText((payload as any).content);
         if (!content) return [];

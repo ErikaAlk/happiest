@@ -147,7 +147,10 @@ export const RemoteControlDisplay: React.FC<RemoteControlDisplayProps> = ({
           ) : (
             messages.slice(-Math.max(1, terminalHeight - 10)).map((msg) => (
               <Box key={msg.id} flexDirection="column" flexShrink={0} marginBottom={1}>
-                <Text color={getMessageColor(msg.type)} dimColor>
+                <Text color={getMessageColor(msg.type)} dimColor={msg.type !== 'user' && msg.type !== 'assistant'}>
+                  {msg.type === 'user' || msg.type === 'assistant' ? (
+                    <Text bold>{msg.type === 'user' ? '你' : providerName}： </Text>
+                  ) : null}
                   {formatMessage(msg)}
                 </Text>
               </Box>

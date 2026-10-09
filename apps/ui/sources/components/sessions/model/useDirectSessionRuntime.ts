@@ -162,15 +162,15 @@ export function useDirectSessionRuntime(params: UseDirectSessionRuntimeParams): 
 
             const statusResult = await statusPromise;
             if (!statusResult.ok) {
-                return statusRef.current;
+                return null;
             }
             const response = statusResult.response;
             if (!response.ok) {
-                return statusRef.current;
+                return null;
             }
 
             if (generationRef.current !== currentGeneration) {
-                return statusRef.current;
+                return null;
             }
 
             if (!areDirectSessionRuntimeStatusesEqual(statusRef.current, response)) {

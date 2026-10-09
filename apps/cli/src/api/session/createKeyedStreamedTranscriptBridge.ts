@@ -62,6 +62,10 @@ export function createKeyedStreamedTranscriptBridge<TArgs extends KeyedStreamArg
       getOrCreateWriter(args).appendAssistantDelta(args.deltaText, { sidechainId: args.sidechainId });
     },
 
+    appendAssistantDeltaExact(args: TArgs & Readonly<{ deltaText: string; localId: string }>) {
+      getOrCreateWriter(args).appendAssistantDeltaExact(args.deltaText, { sidechainId: args.sidechainId, localId: args.localId });
+    },
+
     appendThinkingDelta(args: TArgs & Readonly<{ deltaText: string }>) {
       getOrCreateWriter(args).appendThinkingDelta(args.deltaText, { sidechainId: args.sidechainId });
     },

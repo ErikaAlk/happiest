@@ -23,12 +23,9 @@ interface ChatFooterProps {
     localControl?: SessionLocalControlState | null;
     permissionsInUiWhileLocal?: boolean;
     notice?: ChatFooterNotice | null;
-    /**
-     * UI-only ephemeral state while a local-controlled session is switching back to remote.
-     * This is intentionally not persisted to the session transcript.
-    */
-    controlSwitchTo?: 'remote' | null;
+    controlSwitchTo?: 'remote' | 'local' | null;
     onRequestSwitchToRemote?: () => void;
+    onRequestSwitchToLocal?: () => void;
     directControl?: ChatFooterDirectControlState;
 }
 
@@ -42,7 +39,7 @@ export const ChatFooter = React.memo((props: ChatFooterProps) => {
 
     const localControlBanner = React.useMemo(() => {
         const localControl = props.localControl ?? null;
-        if (!localControl && !props.controlledByUser) return null;
+        if (!localControl && !props.controlledByUser && !props.onRequestSwitchToLocal && !props.controlSwitchTo) return null;
 
         const derived = localControl ?? {
             attached: props.controlledByUser === true,
@@ -53,6 +50,21 @@ export const ChatFooter = React.memo((props: ChatFooterProps) => {
         } satisfies SessionLocalControlState;
 
         const switchingToRemote = props.controlSwitchTo === 'remote';
+        if (props.controlSwitchTo === 'local' || (!derived.attached && props.onRequestSwitchToLocal)) {
+            return (
+                <ComposerAuxiliaryFrame>
+                    <SessionWarningActionBanner
+                        testID="session-chatFooter-localControl"
+                        iconName="info"
+                        body={t(props.controlSwitchTo === 'local' ? 'chatFooter.switchingToLocal' : 'chatFooter.returnToComputerAvailable')}
+                        actionTestID={props.controlSwitchTo ? undefined : 'session-chatFooter-switchToLocal'}
+                        actionLabel={props.controlSwitchTo ? undefined : t('chatFooter.switchToLocal')}
+                        actionAccessibilityLabel={props.controlSwitchTo ? undefined : t('chatFooter.switchToLocal')}
+                        onActionPress={props.controlSwitchTo ? undefined : props.onRequestSwitchToLocal}
+                    />
+                </ComposerAuxiliaryFrame>
+            );
+        }
         if (!derived.attached) return null;
 
         const isSharedAttached = derived.attached && derived.topology === 'shared';
@@ -106,12 +118,13 @@ export const ChatFooter = React.memo((props: ChatFooterProps) => {
         props.controlledByUser,
         props.localControl,
         props.onRequestSwitchToRemote,
+        props.onRequestSwitchToLocal,
         props.permissionsInUiWhileLocal,
     ]);
 
     const directModeBanner = React.useMemo(() => {
         if (!props.directControl) return null;
-        if (props.directControl.runnerActive) return null;
+        if (props.directControl.runnerActive && !props.directControl.takeoverInFlight) return null;
 
         const switchingToDirect = props.directControl.takeoverInFlight === 'direct';
         const switchingToPersisted = props.directControl.takeoverInFlight === 'persisted';

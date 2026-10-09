@@ -15,12 +15,14 @@ import { expandHomeDirPath } from '@happier-dev/cli-common/providers';
 import { resolveWindowsCommandInvocation } from '@happier-dev/cli-common/process';
 import { resolveCodexCliInvocation } from './utils/resolveCodexCliInvocation';
 import { probeCodexCliVersion } from './utils/probeCodexCliVersion';
+import { resolveCodexTuiTerm } from './utils/resolveCodexTuiTerm';
 import { isVersionAtLeast } from './mcp/version';
 import { delay } from '@/utils/time';
 import { resolveConfiguredCodexHome } from './utils/resolveConfiguredCodexHome';
 import { configuration } from '@/configuration';
 
 import { CodexRolloutMirror } from './localControl/codexRolloutMirror';
+import { buildCodexLocalLauncherAgentState } from './localControl/buildCodexLocalLauncherAgentState';
 import { discoverCodexRolloutFileOnce } from './localControl/rolloutDiscovery';
 import { resolveCodexMcpPolicyForPermissionMode } from './utils/permissionModePolicy';
 import {
@@ -95,7 +97,7 @@ async function resolveCodexTuiInvocation(opts: {
   });
 }
 
-function buildCodexTuiChildEnv(): NodeJS.ProcessEnv {
+function buildCodexTuiChildEnv(interactive: boolean): NodeJS.ProcessEnv {
   // Ensure Happy-managed Codex TUI sessions start a fresh Codex thread.
   //
   // The Codex Desktop app (and other wrappers) can inject Codex-internal env vars such as
@@ -103,6 +105,7 @@ function buildCodexTuiChildEnv(): NodeJS.ProcessEnv {
   // thread instead of creating a new one. That prevents the TUI from creating a new rollout
   // file and breaks local-control discovery + switching.
   const env: NodeJS.ProcessEnv = { ...process.env };
+  env.TERM = resolveCodexTuiTerm({ term: env.TERM, platform: process.platform, interactive });
   const expandedSessionsDir = resolveCodexSessionsRootDir();
   if (typeof env.HAPPIER_CODEX_SESSIONS_DIR === 'string' || typeof env.HAPPY_CODEX_SESSIONS_DIR === 'string') {
     env.HAPPIER_CODEX_SESSIONS_DIR = expandedSessionsDir;
@@ -198,7 +201,7 @@ export async function codexLocalLauncher<TMode>(opts: {
   }
   updateAgentStateBestEffort(
     opts.session,
-    (current) => ({ ...current, controlledByUser: true }),
+    (current) => buildCodexLocalLauncherAgentState(current, 'local'),
     '[codex]',
     'codex_local_launcher_start',
   );
@@ -248,7 +251,7 @@ export async function codexLocalLauncher<TMode>(opts: {
     }
     updateAgentStateBestEffort(
       opts.session,
-      (current) => ({ ...current, controlledByUser: false }),
+      (current) => buildCodexLocalLauncherAgentState(current, 'remote'),
       '[codex]',
       `codex_local_launcher_${tag}`,
     );
@@ -415,7 +418,7 @@ export async function codexLocalLauncher<TMode>(opts: {
     const maxBufferedStderrChars = 16_000;
     child = spawn(invocation.command, invocation.args, {
       cwd: opts.path,
-      env: buildCodexTuiChildEnv(),
+      env: buildCodexTuiChildEnv(interactive),
       stdio: interactive ? 'inherit' : 'pipe',
       windowsHide: true,
       windowsVerbatimArguments: invocation.windowsVerbatimArguments,
@@ -561,7 +564,7 @@ export async function codexLocalLauncher<TMode>(opts: {
       }
       updateAgentStateBestEffort(
         opts.session,
-        (current) => ({ ...current, controlledByUser: false }),
+        (current) => buildCodexLocalLauncherAgentState(current, 'remote'),
         '[codex]',
         'codex_local_launcher_exit',
       );

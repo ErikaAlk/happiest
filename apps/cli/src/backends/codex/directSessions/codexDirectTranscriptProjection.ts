@@ -48,7 +48,7 @@ export function projectCodexRolloutLineToTranscriptRecords(params: Readonly<{
   semanticTracker: ReturnType<typeof createCodexRolloutSemanticTracker>;
 }>): Readonly<{ records: readonly CodexProjectedTranscriptRecord[]; discoveredChildThreadIds: readonly string[] }> {
   const discoveredChildThreadIds = new Set<string>();
-  const normalizedActions = mapCodexRolloutEventToActions(params.lineValue, { debug: true })
+  const normalizedActions = mapCodexRolloutEventToActions(params.lineValue, { debug: true, historyMode: params.stream.historyMode })
     .flatMap((action) => params.semanticTracker.consume(action));
   for (const action of normalizedActions) {
     if (action.type === 'subagent-spawn') {

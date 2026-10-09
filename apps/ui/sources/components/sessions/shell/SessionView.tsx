@@ -100,7 +100,7 @@ import { resolveNewSessionDraftRouteIdentity } from '@/components/sessions/new/n
 import { buildNewSessionLaunchRouteParams } from '@/components/sessions/new/navigation/newSessionRouteParams';
 import { sessionAbort, resumeSession } from '@/sync/ops';
 import { storage, useActiveServerAccountScope, useEndpointConnectivity, useIsDataReady, useLaunchSelectionMachines, useLocalSetting, useMachine, useOpenApprovalArtifactsForSession, useProfile, useRealtimeStatus, useSessionAutomationsEnabledCount, useSessionConnectedServiceAccountSwitchEvents, useSessionMessages, useSessionOrganizationProjection, useSessionPendingMessages, useSessionTranscriptIds, useSessionUsage, useSessionVisibleReadSeq, useSetting, useSettingMutable, useSettings, useSocketStatus, useSyncError, useWorkspaceReviewCommentsDrafts } from '@/sync/domains/state/storage';
-import { canContinueSessionWithFreshSpawn, canResumeSessionWithOptions } from '@/agents/runtime/resumeCapabilities';
+import { canContinueSessionWithFreshSpawn, canResumeSessionWithOptions, getAgentVendorResumeId } from '@/agents/runtime/resumeCapabilities';
 import { DEFAULT_AGENT_ID, getAgentCore, resolveAgentIdFromFlavor, buildResumeSessionExtrasFromUiState } from '@/agents/catalog/catalog';
 import {
     buildSessionComposerNextMessageMetaOverridesFromUiState,
@@ -218,7 +218,8 @@ import {
 } from '@/sync/domains/session/input/resolveSessionComposerSendDestination';
 import { submitSessionUserMessage } from '@/sync/domains/session/input/submitSessionUserMessage';
 import { createSyncBackedSubmitPort } from '@/sync/domains/session/input/syncBackedSubmitPort';
-import { isSessionLocallyAttached } from '@/sync/domains/session/control/sessionLocalControl';
+import { getSessionLocalControlState, isSessionLocallyAttached, resolveSessionReturnToComputerMode } from '@/sync/domains/session/control/sessionLocalControl';
+import { useSessionControlSwitch } from '@/components/sessions/model/useSessionControlSwitch';
 import { resolveSessionWorkspacePresentation } from '@/sync/domains/session/listing/sessionWorkspacePresentation';
 import { isModelSelectableForSession, type SessionModelOptionsContext } from '@/sync/domains/models/modelOptions';
 import { getInactiveSessionUiState } from '@/components/sessions/model/inactiveSessionUi';
@@ -253,10 +254,8 @@ import { Keyboard, Platform, Pressable, View, type LayoutChangeEvent, useWindowD
 import { ActivitySpinner } from '@/components/ui/feedback/ActivitySpinner';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUnistyles } from 'react-native-unistyles';
-import { sessionSwitch } from '@/sync/ops';
 import { shouldRenderChatTimelineForSession, shouldRequestRemoteControl, shouldRequestRemoteControlAfterPendingEnqueue } from '@/sync/domains/session/control/localControlSwitch';
 import { supportsEffectiveLocalControlForSession } from '@/sync/domains/session/control/effectiveRuntimeControlSurface';
-import { readControlSwitchUiTimeoutMsFromEnv } from '@/sync/domains/session/control/controlSwitchUiTimeout';
 import { getActiveServerSnapshot } from '@/sync/domains/server/serverRuntime';
 import { useVoiceSessionSnapshot, voiceSessionManager } from '@/voice/session/voiceSession';
 import { getVoiceAdapterRegistry } from '@/voice/session/voiceAdapterRegistry';
@@ -2051,9 +2050,9 @@ function useSessionTranscriptRenderState({
             // Some sessions can have a non-zero committed transcript seq but end up with 0 visible
             // main-timeline messages (e.g. newest page is sidechain-only). In that case, we must
             // still render the transcript so it can page backwards to find visible messages.
-            forceRenderFooter: isForkedSessionV1 || (isLoaded === true && (session.seq ?? 0) > 0 && committedMessageIds.length === 0),
+            forceRenderFooter: getSessionLocalControlState(session)?.canAttach === true || isForkedSessionV1 || (isLoaded === true && (session.seq ?? 0) > 0 && committedMessageIds.length === 0),
         });
-    }, [committedMessageIds.length, hasRetainedContent, isEncryptedSessionLocked, isForkedSessionV1, isLoaded, isLocallyAttached, pendingMessagesCount, session.seq]);
+    }, [committedMessageIds.length, hasRetainedContent, isEncryptedSessionLocked, isForkedSessionV1, isLoaded, isLocallyAttached, pendingMessagesCount, session.agentState, session.seq]);
 
     return {
         committedMessagesCount: committedMessageIds.length,
@@ -2113,6 +2112,7 @@ type SessionTranscriptContentProps = Readonly<{
     controlledByUserOverride: ChatListProps['controlledByUserOverride'];
     controlSwitchTo: ChatListProps['controlSwitchTo'];
     onRequestSwitchToRemote: ChatListProps['onRequestSwitchToRemote'];
+    onRequestSwitchToLocal: ChatListProps['onRequestSwitchToLocal'];
     directControlFooter: ChatListProps['directControlFooter'];
     approvalRequests: ChatListProps['approvalRequests'];
     jumpToSeq: ChatListProps['jumpToSeq'];
@@ -2134,6 +2134,7 @@ const SessionTranscriptContent = React.memo(function SessionTranscriptContent({
     controlledByUserOverride,
     controlSwitchTo,
     onRequestSwitchToRemote,
+    onRequestSwitchToLocal,
     directControlFooter,
     approvalRequests,
     jumpToSeq,
@@ -2155,7 +2156,7 @@ const SessionTranscriptContent = React.memo(function SessionTranscriptContent({
         };
     }
 
-    const { committedMessagesCount, hasRetainedContent, isLoaded, shouldRenderChatTimeline } = useSessionTranscriptRenderState({
+    const { committedMessagesCount, hasRetainedContent, isLoaded, shouldRenderChatTimeline: shouldRenderRetainedTimeline } = useSessionTranscriptRenderState({
         sessionId,
         session,
         isEncryptedSessionLocked,
@@ -2163,6 +2164,7 @@ const SessionTranscriptContent = React.memo(function SessionTranscriptContent({
         isLocallyAttached,
         pendingMessagesCount,
     });
+    const shouldRenderChatTimeline = shouldRenderRetainedTimeline || (!isEncryptedSessionLocked && Boolean(onRequestSwitchToLocal || controlSwitchTo));
 
     React.useEffect(() => {
         if (!syncPerformanceTelemetry.isEnabled()) return;
@@ -2252,6 +2254,7 @@ const SessionTranscriptContent = React.memo(function SessionTranscriptContent({
                     controlledByUserOverride={controlledByUserOverride}
                     controlSwitchTo={controlSwitchTo}
                     onRequestSwitchToRemote={onRequestSwitchToRemote}
+                    onRequestSwitchToLocal={onRequestSwitchToLocal}
                     directControlFooter={directControlFooter}
                     approvalRequests={approvalRequests}
                     jumpToSeq={jumpToSeq}
@@ -4993,60 +4996,47 @@ function SessionViewLoaded({
         serverId: capabilityServerId,
     });
     const cliAuthStatus = cliAvailability.authStatus[agentId] ?? null;
-    const canRequestRemoteControl = shouldRequestRemoteControl(session, cliAuthStatus?.state ?? null);
-    const [controlSwitchTo, setControlSwitchTo] = React.useState<'remote' | null>(null);
-    const controlSwitchAttemptIdRef = React.useRef(0);
-    React.useEffect(() => {
-        if (controlSwitchTo === 'remote' && !isLocallyAttached) {
-            setControlSwitchTo(null);
-            return;
-        }
-    }, [controlSwitchTo, isLocallyAttached]);
-
-    React.useEffect(() => {
-        if (!controlSwitchTo) return;
-        const attemptId = controlSwitchAttemptIdRef.current;
-        const timeoutMs = readControlSwitchUiTimeoutMsFromEnv();
-        if (timeoutMs <= 0) return;
-        const timeoutId = setTimeout(() => {
-            if (controlSwitchAttemptIdRef.current !== attemptId) return;
-            setControlSwitchTo(null);
-            controlSwitchAttemptIdRef.current = 0;
-            Modal.alert(t('common.error'), t('errors.failedToSwitchControl'));
-        }, timeoutMs);
-        return () => clearTimeout(timeoutId);
-    }, [controlSwitchTo]);
-
-    const finishControlSwitchAttempt = React.useCallback((attemptId: number): boolean => {
-        if (controlSwitchAttemptIdRef.current !== attemptId) return false;
-        controlSwitchAttemptIdRef.current = 0;
-        setControlSwitchTo(null);
-        return true;
-    }, []);
-
-    const handleRequestSwitchToRemote = React.useCallback(() => {
-        if (!hasWriteAccess) {
-            Modal.alert(t('common.error'), t('session.sharing.noEditPermission'));
-            return;
-        }
-        const attemptId = controlSwitchAttemptIdRef.current + 1;
-        controlSwitchAttemptIdRef.current = attemptId;
-        setControlSwitchTo('remote');
-        fireAndForget((async () => {
-            try {
-                const ok = await sessionSwitch(sessionId, 'remote');
-                if (ok !== true) {
-                    if (!finishControlSwitchAttempt(attemptId)) return;
-                    Modal.alert(t('common.error'), t('errors.failedToSwitchControl'));
-                    return;
-                }
-                finishControlSwitchAttempt(attemptId);
-            } catch {
-                if (!finishControlSwitchAttempt(attemptId)) return;
-                Modal.alert(t('common.error'), t('errors.failedToSwitchControl'));
-            }
-        })(), { tag: 'SessionView.requestSwitchToRemote' });
-    }, [finishControlSwitchAttempt, hasWriteAccess, sessionId]);
+    const localControlState = getSessionLocalControlState(session);
+    const canRequestRemoteControl = shouldRequestRemoteControl(session, cliAuthStatus?.state ?? null)
+        || (localControlState?.attached === true && localControlState.canDetach && cliAuthStatus?.state !== 'logged_out');
+    const vendorResumeId = getAgentVendorResumeId(session.metadata, agentId, resumeCapabilityOptions);
+    const returnToComputerMode = resolveSessionReturnToComputerMode({
+        machinePlatform: goalControlMachine?.metadata?.platform,
+        machineOnline: isMachineReachable,
+        supportsLocalControl,
+        vendorResumeId,
+        localControl: localControlState,
+        windowsLaunchMode: goalControlMachine?.metadata?.windowsRemoteSessionLaunchMode,
+    });
+    const buildReturnResumeOptions = React.useCallback(() => {
+        if (returnToComputerMode?.type !== 'resume') return null;
+        const base = buildResumeSessionBaseOptionsFromSession({
+            sessionId,
+            session,
+            resumeCapabilityOptions,
+            resumeTargetOverride: controlMachineTarget ? {
+                machineId: controlMachineTarget.machineId,
+                directory: controlMachineTarget.basePath,
+            } : null,
+            permissionOverride: getPermissionModeOverrideForSpawn(session),
+            modelOverride: getModelOverrideForSpawn(session),
+        });
+        if (!base?.resume) throw new Error('Cannot return a session without its original provider identity');
+        return {
+            ...base,
+            ...buildResumeSessionExtrasFromUiState({ agentId, settings, session: sessionRuntimeStatusSource }),
+            serverId: capabilityServerId,
+            preferRequestedMachineTarget: true,
+            windowsRemoteSessionLaunchMode: returnToComputerMode.windowsRemoteSessionLaunchMode,
+        };
+    }, [agentId, capabilityServerId, controlMachineTarget, resumeCapabilityOptions, returnToComputerMode, session, sessionId, sessionRuntimeStatusSource, settings]);
+    const { controlSwitchTo, requestRemote: handleRequestSwitchToRemote, requestLocal: handleRequestSwitchToLocal } = useSessionControlSwitch({
+        session: sessionRuntimeStatusSource,
+        machineOnline: isMachineReachable,
+        hasWriteAccess,
+        buildReturnResumeOptions,
+        vendorResumeId,
+    });
     const directSessionTakeover = useDirectSessionTakeover({
         sessionId,
         hasWriteAccess,
@@ -5065,10 +5055,10 @@ function SessionViewLoaded({
             canTakeOverPersist: status?.canTakeOverPersist ?? false,
             takeoverInFlight: directSessionTakeover.takeoverInFlight,
             onRequestTakeOverDirect: (status?.canTakeOverDirect ?? false)
-                ? () => { void directSessionTakeover.requestTakeover('direct'); }
+                ? () => { fireAndForget(directSessionTakeover.requestTakeover('direct'), { tag: 'SessionView.directTakeover' }); }
                 : undefined,
             onRequestTakeOverPersist: (status?.canTakeOverPersist ?? false)
-                ? () => { void directSessionTakeover.requestTakeover('persisted'); }
+                ? () => { fireAndForget(directSessionTakeover.requestTakeover('persisted'), { tag: 'SessionView.persistedTakeover' }); }
                 : undefined,
         } as const;
     }, [directSessionLink, directSessionRuntime.status, directSessionTakeover, isHiddenSystemSessionSession]);
@@ -5161,7 +5151,8 @@ function SessionViewLoaded({
             bottomNotice={bottomNotice}
             controlledByUserOverride={isLocallyAttached}
             controlSwitchTo={controlSwitchTo}
-            onRequestSwitchToRemote={isHiddenSystemSessionSession || !canRequestRemoteControl ? undefined : handleRequestSwitchToRemote}
+            onRequestSwitchToRemote={isHiddenSystemSessionSession || !hasWriteAccess || session.presence !== 'online' || !canRequestRemoteControl ? undefined : handleRequestSwitchToRemote}
+            onRequestSwitchToLocal={isHiddenSystemSessionSession || !hasWriteAccess || !returnToComputerMode ? undefined : handleRequestSwitchToLocal}
             directControlFooter={directControlFooter}
             approvalRequests={openApprovalRequests}
             jumpToSeq={jumpToSeq}

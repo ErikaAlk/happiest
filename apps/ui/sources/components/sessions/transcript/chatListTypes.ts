@@ -63,8 +63,9 @@ export type ChatListProps = Readonly<{
     session: Session;
     bottomNotice?: ChatListBottomNotice | null;
     controlledByUserOverride?: boolean;
-    controlSwitchTo?: 'remote' | null;
+    controlSwitchTo?: 'remote' | 'local' | null;
     onRequestSwitchToRemote?: () => void;
+    onRequestSwitchToLocal?: () => void;
     directControlFooter?: ChatFooterDirectControlState;
     approvalRequests?: readonly OpenApprovalArtifactForSession[];
     jumpToSeq?: number | null;
@@ -99,8 +100,9 @@ export type ChatListInternalProps = Readonly<{
     isLoaded: boolean;
     bottomNotice?: ChatListBottomNotice | null;
     controlledByUserOverride?: boolean;
-    controlSwitchTo?: 'remote' | null;
+    controlSwitchTo?: 'remote' | 'local' | null;
     onRequestSwitchToRemote?: () => void;
+    onRequestSwitchToLocal?: () => void;
     directControlFooter?: ChatFooterDirectControlState;
     approvalRequests?: readonly OpenApprovalArtifactForSession[];
     interaction: TranscriptInteraction;

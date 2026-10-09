@@ -1,13 +1,23 @@
 import { createAgentLocalControlState } from '@/agent/localControl/createAgentLocalControlState';
 import type { AgentState } from '@/api/types';
+import { isWindowsHostedTerminalMode } from '@/terminal/runtime/terminalConfig';
 
 type ClaudeControlMode = 'local' | 'remote';
+
+export function canUseClaudeLocalTerminal(params: Readonly<{
+    stdinIsTTY: boolean | undefined;
+    stdoutIsTTY: boolean | undefined;
+    terminalMode?: string | null;
+}>): boolean {
+    return Boolean(params.stdinIsTTY && params.stdoutIsTTY) || isWindowsHostedTerminalMode(params.terminalMode);
+}
 
 export function buildClaudeAgentState(params: Readonly<{
     currentState: AgentState;
     mode: ClaudeControlMode;
     claudeUnifiedTerminalEnabled: boolean;
     localPermissionBridgeEnabled: boolean;
+    localTerminalAvailable?: boolean;
     userMessageHandlerReady?: boolean;
     /**
      * Lane Q: TUI runtime-control feature decision. When on (with unified terminal), the runtime
@@ -52,7 +62,13 @@ export function buildClaudeAgentState(params: Readonly<{
     return {
         ...params.currentState,
         controlledByUser: params.mode === 'local',
-        localControl: null,
+        localControl: createAgentLocalControlState({
+            attached: params.mode === 'local',
+            topology: 'exclusive',
+            canAttach: params.mode === 'remote' && params.localTerminalAvailable === true,
+            canDetach: params.mode === 'local',
+            remoteWritable: params.mode === 'remote',
+        }),
         capabilities,
     };
 }

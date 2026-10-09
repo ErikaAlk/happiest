@@ -1,12 +1,12 @@
 import * as React from 'react';
 
-import { showDirectSessionTakeoverDialog } from '@/components/sessions/directSessions/takeover/showDirectSessionTakeoverDialog';
 import { Modal } from '@/modal';
 import type { UseDirectSessionRuntimeResult } from '@/components/sessions/model/useDirectSessionRuntime';
 import { machineDirectSessionTakeover, machineDirectSessionTakeoverPersist } from '@/sync/ops/machineDirectSessions';
 import { resolvePreferredServerIdForSessionId } from '@/sync/runtime/orchestration/serverScopedRpc/resolvePreferredServerIdForSessionId';
 import { sync } from '@/sync/sync';
 import { t } from '@/text';
+import { requiresDirectSessionStopConfirmation, resolveDirectSessionSendTakeover } from '@/sync/domains/session/control/directSessionTakeover';
 
 type DirectTakeoverMode = 'direct' | 'persisted';
 
@@ -18,7 +18,7 @@ type UseDirectSessionTakeoverParams = Readonly<{
 
 type UseDirectSessionTakeoverResult = Readonly<{
     takeoverInFlight: DirectTakeoverMode | null;
-    requestTakeover: (mode: DirectTakeoverMode, options?: Readonly<{ forceStop?: boolean; promptForForceStop?: boolean }>) => Promise<boolean>;
+    requestTakeover: (mode: DirectTakeoverMode) => Promise<boolean>;
     ensureReadyForSend: () => Promise<boolean>;
 }>;
 
@@ -28,6 +28,7 @@ function resolveServerId(sessionId: string): string | undefined {
 
 export function useDirectSessionTakeover(params: UseDirectSessionTakeoverParams): UseDirectSessionTakeoverResult {
     const [takeoverInFlight, setTakeoverInFlight] = React.useState<DirectTakeoverMode | null>(null);
+    const takeoverBusyRef = React.useRef(false);
 
     const readLatestStatus = React.useCallback(async () => {
         return await params.directSessionRuntime.refreshNow();
@@ -35,7 +36,6 @@ export function useDirectSessionTakeover(params: UseDirectSessionTakeoverParams)
 
     const requestTakeover = React.useCallback(async (
         mode: DirectTakeoverMode,
-        options?: Readonly<{ forceStop?: boolean; promptForForceStop?: boolean }>,
     ): Promise<boolean> => {
         if (!params.hasWriteAccess) {
             Modal.alert(t('common.error'), t('session.sharing.noEditPermission'));
@@ -47,42 +47,43 @@ export function useDirectSessionTakeover(params: UseDirectSessionTakeoverParams)
             return false;
         }
 
-        const latestStatus = await readLatestStatus();
-        if (!latestStatus) {
-            return false;
-        }
-        if (!latestStatus.machineOnline) {
-            Modal.alert(t('common.error'), t('chatFooter.directSessionMachineOffline'));
-            return false;
-        }
-
-        let forceStop = options?.forceStop === true;
-        if (!forceStop && latestStatus.canForceStop && options?.promptForForceStop !== false) {
-            const confirmed = latestStatus.externalProcessActive === true
-                ? await Modal.confirm(
-                    t('chatFooter.directSessionRunningOnComputerTitle'),
-                    t('chatFooter.directSessionRunningOnComputerBody'),
-                    {
-                        confirmText: t('chatFooter.directSessionRunningOnComputerAction'),
-                        cancelText: t('common.cancel'),
-                    },
-                )
-                : await Modal.confirm(
-                    t('chatFooter.directTakeoverForceStopConfirmTitle'),
-                    t('chatFooter.directTakeoverForceStopConfirmBody'),
-                    {
-                        confirmText: t('chatFooter.directTakeoverForceStopConfirmAction'),
-                        cancelText: t('common.cancel'),
-                    },
-                );
-            if (!confirmed) {
-                return false;
-            }
-            forceStop = true;
-        }
-
+        if (takeoverBusyRef.current) return false;
+        takeoverBusyRef.current = true;
         setTakeoverInFlight(mode);
         try {
+            const latestStatus = await readLatestStatus();
+            if (!latestStatus) {
+                Modal.alert(t('common.error'), t('errors.failedToSwitchControl'));
+                return false;
+            }
+            if (!latestStatus.machineOnline) {
+                Modal.alert(t('common.error'), t('chatFooter.directSessionMachineOffline'));
+                return false;
+            }
+
+            let forceStop = false;
+            if (requiresDirectSessionStopConfirmation(latestStatus)) {
+                const confirmed = latestStatus.externalProcessActive === true
+                    ? await Modal.confirm(
+                        t('chatFooter.directSessionRunningOnComputerTitle'),
+                        t('chatFooter.directSessionRunningOnComputerBody'),
+                        {
+                            confirmText: t('chatFooter.directSessionRunningOnComputerAction'),
+                            cancelText: t('common.cancel'),
+                        },
+                    )
+                    : await Modal.confirm(
+                        t('chatFooter.directTakeoverForceStopConfirmTitle'),
+                        t('chatFooter.directTakeoverForceStopConfirmBody'),
+                        {
+                            confirmText: t('chatFooter.directTakeoverForceStopConfirmAction'),
+                            cancelText: t('common.cancel'),
+                        },
+                    );
+                if (!confirmed) return false;
+                forceStop = true;
+            }
+
             const request = {
                 machineId: directSessionLink.machineId,
                 sessionId: params.sessionId,
@@ -105,10 +106,8 @@ export function useDirectSessionTakeover(params: UseDirectSessionTakeoverParams)
             ]);
 
             return true;
-        } catch (error) {
-            Modal.alert(t('common.error'), error instanceof Error ? error.message : t('errors.failedToSwitchControl'));
-            return false;
         } finally {
+            takeoverBusyRef.current = false;
             setTakeoverInFlight(null);
         }
     }, [params, readLatestStatus]);
@@ -121,35 +120,20 @@ export function useDirectSessionTakeover(params: UseDirectSessionTakeoverParams)
 
         const latestStatus = await readLatestStatus();
         if (!latestStatus) {
+            Modal.alert(t('common.error'), t('errors.failedToSwitchControl'));
+            return false;
+        }
+        const intent = resolveDirectSessionSendTakeover(latestStatus);
+        if (intent === 'ready') {
             return true;
         }
-        // Another program on the computer still writing this session would fork it; it has to stop first.
-        const externalProcessActive = latestStatus.externalProcessActive === true;
-        if (latestStatus.runnerActive && !externalProcessActive) {
-            return true;
-        }
-        if (!latestStatus.machineOnline) {
+        if (intent === 'offline') {
             Modal.alert(t('common.error'), t('chatFooter.directSessionMachineOffline'));
             return false;
         }
-        if (latestStatus.runnerActive) {
-            return requestTakeover('direct');
-        }
-
-        const resolution = await showDirectSessionTakeoverDialog({
-            canTakeOverDirect: latestStatus.canTakeOverDirect,
-            canTakeOverPersist: latestStatus.canTakeOverPersist,
-            canForceStop: latestStatus.canForceStop,
-            externalProcessActive,
-        });
-        if (!resolution.action) {
-            return false;
-        }
-
-        return requestTakeover(resolution.action, {
-            forceStop: externalProcessActive || resolution.forceStop,
-            promptForForceStop: false,
-        });
+        if (intent === 'direct') return requestTakeover('direct');
+        Modal.alert(t('common.error'), t('errors.failedToSwitchControl'));
+        return false;
     }, [params.directSessionRuntime, readLatestStatus, requestTakeover]);
 
     return {
