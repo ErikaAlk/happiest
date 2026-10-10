@@ -1,6 +1,7 @@
 import type { TranslationStructure } from "../_types";
 
 import { newSessionDisplayOptions } from './newSessionDisplayOptions';
+import { accountUsageText } from './accountUsageText';
 
 const mcpServersUxTranslationExtension = {
   mcpServersConfiguredEmptySubtitle: 'Crea un servidor, importa JSON del host o instala un preajuste recomendado.',
@@ -6637,6 +6638,7 @@ export const es: TranslationStructure = {
     },
     dropToAttach: "Suelta para adjuntar archivos",
     providerUsage: {
+        ...accountUsageText,
       title: "Uso del proveedor",
       titleForProvider: ({ provider }: { provider: string }) => `Uso de ${provider}`,
       activeAccount: ({ account }: { account: string }) => `Cuenta: ${account}`,

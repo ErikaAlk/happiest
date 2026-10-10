@@ -9,6 +9,7 @@ import type { TranslationStructure } from '../_types';
 import { zhHans } from './zh-Hans';
 
 import { newSessionDisplayOptions } from './newSessionDisplayOptions';
+import { accountUsageText } from './accountUsageText';
 
 const mcpServersUxTranslationExtension = {
   mcpServersConfiguredEmptySubtitle: '建立一個伺服器、匯入主機 JSON，或安裝推薦預設。',
@@ -5573,6 +5574,7 @@ const zhHantOverrides: DeepPartial<TranslationStructure> = {
         },
         dropToAttach: '拖放以附加檔案',
         providerUsage: {
+            ...accountUsageText,
             title: '提供者使用量',
             titleForProvider: ({ provider }: { provider: string }) => `${provider} 使用量`,
             activeAccount: ({ account }: { account: string }) => `帳號：${account}`,

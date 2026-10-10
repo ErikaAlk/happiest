@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { useAuth } from '@/auth/context/AuthContext';
 import { resolveAuthCredentialsScopeKey } from '@/auth/storage/resolveAuthCredentialsScopeKey';
-import { useFeatureEnabled } from '@/hooks/server/useFeatureEnabled';
+import { isHostVisible, subscribeToRuntimeActiveChange } from '@/utils/runtime/isRuntimeActive';
 import { getProviderAccountUsageSnapshotSealed } from '@/sync/api/account/apiProviderAccountUsageV2';
 import { getProviderAccountUsageSnapshotPlain } from '@/sync/api/account/apiProviderAccountUsageV3';
 import {
@@ -45,17 +45,11 @@ function computeErrorBackoffMs(consecutiveErrors: number): number {
 }
 
 function computeSnapshotFreshUntilMs(snapshot: ProviderAccountUsageSnapshotV1): number {
-  return snapshot.fetchedAtMs + Math.max(
-    ACCOUNT_USAGE_SNAPSHOTS_POLL_MS,
-    Math.trunc(snapshot.staleAfterMs),
-  );
+  return snapshot.fetchedAtMs + ACCOUNT_USAGE_SNAPSHOTS_POLL_MS;
 }
 
-function computeFetchedSnapshotNextFetchAtMs(nowMs: number, snapshot: ProviderAccountUsageSnapshotV1): number {
-  return nowMs + Math.max(
-    ACCOUNT_USAGE_SNAPSHOTS_POLL_MS,
-    Math.trunc(snapshot.staleAfterMs),
-  );
+function computeFetchedSnapshotNextFetchAtMs(nowMs: number): number {
+  return nowMs + ACCOUNT_USAGE_SNAPSHOTS_POLL_MS;
 }
 
 function normalizeRecordIds(recordIds: ReadonlyArray<string>): ProviderAccountUsageRecordId[] {
@@ -76,12 +70,15 @@ function buildRecordIdsSignature(recordIds: ReadonlyArray<string>): string {
 
 export function useProviderAccountUsageSnapshots(
   recordIds: ReadonlyArray<string>,
-): Record<string, ProviderAccountUsageSnapshotV1 | null> {
+  enabled = true,
+): Record<string, ProviderAccountUsageSnapshotV1 | null | undefined> {
   const auth = useAuth();
   const credentials = auth.credentials;
-  const quotasEnabled = useFeatureEnabled('connectedServices.quotas');
+  const [visible, setVisible] = React.useState(isHostVisible);
+  React.useEffect(() => subscribeToRuntimeActiveChange(() => setVisible(isHostVisible())), []);
+  const quotasEnabled = enabled && visible;
   const [wakeSeq, setWakeSeq] = React.useState(0);
-  const credentialScope = quotasEnabled && credentials ? resolveAuthCredentialsScopeKey(credentials) : '';
+  const credentialScope = credentials ? resolveAuthCredentialsScopeKey(credentials) : '';
 
   const [cacheState, setCacheState] = React.useState<SnapshotCacheState>({
     credentialScope: '',
@@ -127,7 +124,10 @@ export function useProviderAccountUsageSnapshots(
   }, []);
 
   React.useEffect(() => {
-    if (!quotasEnabled) return;
+    if (!quotasEnabled) {
+      for (const controller of activeControllersRef.current) controller.abort();
+      return;
+    }
     if (!credentials) return;
 
     const now = Date.now();
@@ -179,6 +179,7 @@ export function useProviderAccountUsageSnapshots(
 
     const controller = new AbortController();
     const requestCredentialScope = credentialScope;
+    const completedRecordIds = new Set<string>();
     activeControllersRef.current.add(controller);
     fireAndForget((async () => {
       try {
@@ -211,7 +212,7 @@ export function useProviderAccountUsageSnapshots(
                   [recordId]: {
                     snapshot: opened,
                     nextFetchAtMs: opened
-                      ? computeFetchedSnapshotNextFetchAtMs(now, opened)
+                      ? computeFetchedSnapshotNextFetchAtMs(now)
                       : now + ACCOUNT_USAGE_SNAPSHOTS_MISS_RETRY_MS,
                     consecutiveErrors: 0,
                   },
@@ -237,11 +238,30 @@ export function useProviderAccountUsageSnapshots(
               };
             });
           } finally {
+            completedRecordIds.add(recordId);
             inFlightKeysRef.current.delete(`${requestCredentialScope}\u0000${recordId}`);
           }
         }));
       } finally {
+        if (!controller.signal.aborted && activeCredentialScopeRef.current === requestCredentialScope) {
+          const unfinished = toFetch.filter((recordId) => !completedRecordIds.has(recordId));
+          if (unfinished.length > 0) setCacheState((prev) => {
+            const entries = { ...(prev.credentialScope === requestCredentialScope ? prev.entries : {}) };
+            for (const recordId of unfinished) {
+              const existing = entries[recordId];
+              const consecutiveErrors = (existing?.consecutiveErrors ?? 0) + 1;
+              entries[recordId] = {
+                snapshot: existing?.snapshot ?? null,
+                nextFetchAtMs: Date.now() + computeErrorBackoffMs(consecutiveErrors),
+                consecutiveErrors,
+              };
+            }
+            return { credentialScope: requestCredentialScope, entries };
+          });
+        }
+        for (const recordId of toFetch) inFlightKeysRef.current.delete(`${requestCredentialScope}\u0000${recordId}`);
         activeControllersRef.current.delete(controller);
+        if (controller.signal.aborted && isHostVisible()) setWakeSeq((value) => value + 1);
       }
     })(), { tag: 'useProviderAccountUsageSnapshots.refresh' });
 
@@ -252,14 +272,13 @@ export function useProviderAccountUsageSnapshots(
     };
   }, [accountUsageCacheVersion, credentialScope, quotasEnabled, credentials, normalizedRecordIds, wakeSeq, resolveAccountMode]);
 
-  const snapshotsByRecordId: Record<string, ProviderAccountUsageSnapshotV1 | null> = {};
-  if (!quotasEnabled || !credentialScope) return snapshotsByRecordId;
+  const snapshotsByRecordId: Record<string, ProviderAccountUsageSnapshotV1 | null | undefined> = {};
+  if (!credentialScope) return snapshotsByRecordId;
 
   for (const recordId of normalizedRecordIds) {
     snapshotsByRecordId[recordId] =
       readProviderAccountUsageSnapshotFromCache({ credentialScope, recordId })
-      ?? cacheByRecordId[recordId]?.snapshot
-      ?? null;
+      ?? (cacheByRecordId[recordId] ? cacheByRecordId[recordId].snapshot : undefined);
   }
 
   return snapshotsByRecordId;

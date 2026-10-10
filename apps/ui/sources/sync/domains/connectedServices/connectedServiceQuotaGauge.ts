@@ -11,6 +11,7 @@ import { getAgentCore, resolveAgentIdFromFlavor } from '@/agents/registry/regist
 import type { MeterTone } from '@/components/ui/lists/MeterBar';
 
 import { clampQuotaPct, deriveQuotaUtilizationPct } from './deriveQuotaUtilizationPct';
+import { selectAccountUsageWindows } from './accountUsage/windows';
 import {
     summarizeConnectedServiceQuotaRecoveryCredits,
     type ConnectedServiceQuotaRecoveryCreditSummary,
@@ -59,6 +60,7 @@ export type ConnectedServiceQuotaGaugeLabelFormatter = Readonly<{
 }>;
 
 export type ConnectedServiceQuotaGaugeViewModel = Readonly<{
+    accountWindows?: ReturnType<typeof selectAccountUsageWindows>;
     subscription?: Readonly<{
         summary: string;
         period: string | null;
@@ -372,6 +374,7 @@ export function computeConnectedServiceQuotaGaugeViewModel(_params: Readonly<{
     } : undefined;
     return {
         subscription,
+        accountWindows: selectAccountUsageWindows(params.snapshot.meters),
         serviceId: params.snapshot.serviceId,
         providerDisplayName: params.providerDisplayName ?? null,
         activeAccountDisplayLabel: params.activeAccountDisplayLabel ?? params.snapshot.accountLabel ?? null,

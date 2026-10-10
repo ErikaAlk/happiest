@@ -58,6 +58,18 @@ const formatter: ConnectedServiceQuotaGaugeLabelFormatter = {
 };
 
 describe('computeConnectedServiceQuotaGaugeViewModel', () => {
+    it('同时保留5小时与每周窗口的已用比例和绝对重置时间', () => {
+        const viewModel = computeConnectedServiceQuotaGaugeViewModel({
+            snapshot: snapshot([
+                meter({ meterId: 'primary', label: 'Primary', utilizationPct: 0, windowDurationMs: 18_000_000, resetsAt: 50_000 }),
+                meter({ meterId: 'secondary', label: 'Secondary', utilizationPct: 25, windowDurationMs: 604_800_000, resetsAt: 60_000 }),
+            ]), windowMode: 'most_constrained', nowMs: 2_000, formatter,
+        });
+        expect(viewModel?.accountWindows?.map(({ kind, usedPct, resetsAt }) => ({ kind, usedPct, resetsAt }))).toEqual([
+            { kind: 'fiveHour', usedPct: 0, resetsAt: 50_000 },
+            { kind: 'weekly', usedPct: 25, resetsAt: 60_000 },
+        ]);
+    });
     it('retains subscription lifecycle independently of fresh quota meters', () => {
         const subscription = {
             status: 'subscribed' as const,

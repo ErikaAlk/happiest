@@ -35,6 +35,12 @@ export const SessionsListStorageChrome = React.memo((props: SessionsListStorageC
 
     return (
         <>
+            <ItemGroup constrainToContentWidth={false}>
+                <Item testID="account-usage-limits-entry"
+                    title={t('agentInput.providerUsage.limitsTitle')}
+                    icon={<Icon name="chart-bar" size={20} color={theme.colors.text.secondary} />}
+                    onPress={() => router.push('/usage-limits')} />
+            </ItemGroup>
             {showDirectBrowseAction ? (
                 <ItemGroup
                     style={styles.browseActionContainer}

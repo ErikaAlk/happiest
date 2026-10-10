@@ -8,6 +8,7 @@
 import type { TranslationStructure } from "../_types";
 
 import { newSessionDisplayOptions } from './newSessionDisplayOptions';
+import { accountUsageText } from './accountUsageText';
 
 const mcpServersUxTranslationExtension = {
   mcpServersConfiguredEmptySubtitle: '创建一个服务器、导入主机 JSON，或安装推荐预设。',
@@ -6429,6 +6430,7 @@ export const zhHans: TranslationStructure = {
     },
     dropToAttach: "拖放以附加文件",
     providerUsage: {
+      ...accountUsageText,
       title: "提供商使用量",
       titleForProvider: ({ provider }: { provider: string }) => `${provider} 使用量`,
       activeAccount: ({ account }: { account: string }) => `账号：${account}`,

@@ -78,6 +78,7 @@ function areProviderUsageViewModelsEqual(
         && leftSubscription.accessUntilLabel === rightSubscription.accessUntilLabel
         && leftSubscription.isLastKnown === rightSubscription.isLastKnown);
     return subscriptionEqual && left.serviceId === right.serviceId
+        && left.accountWindows === right.accountWindows
         && left.providerDisplayName === right.providerDisplayName
         && left.activeAccountDisplayLabel === right.activeAccountDisplayLabel
         && left.remainingPct === right.remainingPct
@@ -157,7 +158,17 @@ export const AgentInputProviderUsageBadge = React.memo(function AgentInputProvid
                     ];
                 }}
             >
-                <TokenUsageRing
+                {props.viewModel.accountWindows?.length ? (
+                    <View>
+                        {props.viewModel.accountWindows.map((window) => (
+                            <Text key={window.kind} style={styles.meterRight}>
+                                {t(window.kind === 'fiveHour' ? 'agentInput.providerUsage.fiveHourWindow' : 'agentInput.providerUsage.weeklyWindow')}
+                                {' '}{window.usedPct === null ? t('agentInput.providerUsage.limitsUnavailable')
+                                    : t('agentInput.providerUsage.usedPercent', { percent: String(window.usedPct) })}
+                            </Text>
+                        ))}
+                    </View>
+                ) : <TokenUsageRing
                     used={props.viewModel.usedPct}
                     limit={100}
                     label={accessibilityLabel}
@@ -165,7 +176,7 @@ export const AgentInputProviderUsageBadge = React.memo(function AgentInputProvid
                     tone={mapQuotaToneToTokenTone(props.viewModel.tone)}
                     ringTestID="agent-input-provider-usage-ring"
                     valueTestID="agent-input-provider-usage-value"
-                />
+                />}
             </Pressable>
             </View>
 
@@ -258,6 +269,11 @@ export const AgentInputProviderUsageBadge = React.memo(function AgentInputProvid
                                         {row.usedLimitLabel}
                                     </Text>
                                 ) : null}
+                                {props.viewModel.accountWindows?.filter((window) => window.meterId === row.meterId && window.resetsAt !== null).map((window) => (
+                                    <Text key={window.kind} style={styles.meterUsage}>
+                                        {t('agentInput.providerUsage.resetTime', { time: new Date(window.resetsAt!).toLocaleString() })}
+                                    </Text>
+                                ))}
                             </View>
                         ))}
                         {recoveryCreditSummary ? (

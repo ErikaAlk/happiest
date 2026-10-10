@@ -8,6 +8,7 @@
 import type { TranslationStructure } from "../_types";
 
 import { newSessionDisplayOptions } from './newSessionDisplayOptions';
+import { accountUsageText } from './accountUsageText';
 
 const mcpServersUxTranslationExtension = {
   mcpServersConfiguredEmptySubtitle: 'サーバーを作成し、ホスト JSON をインポートするか、推奨プリセットをインストールしてください。',
@@ -6908,6 +6909,7 @@ localTailscale: {
     },
     dropToAttach: "ドロップして添付",
     providerUsage: {
+        ...accountUsageText,
       title: "プロバイダー使用量",
       titleForProvider: ({ provider }: { provider: string }) => `${provider} 使用量`,
       activeAccount: ({ account }: { account: string }) => `アカウント: ${account}`,

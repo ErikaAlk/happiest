@@ -1,6 +1,7 @@
 import type { TranslationStructure } from "../_types";
 
 import { newSessionDisplayOptions } from './newSessionDisplayOptions';
+import { accountUsageText } from './accountUsageText';
 
 const mcpServersUxTranslationExtension = {
   mcpServersConfiguredEmptySubtitle:
@@ -6766,6 +6767,7 @@ export const pt: TranslationStructure = {
     },
     dropToAttach: "Solte para anexar arquivos",
     providerUsage: {
+        ...accountUsageText,
       title: "Uso do provedor",
       titleForProvider: ({ provider }: { provider: string }) => `Uso de ${provider}`,
       activeAccount: ({ account }: { account: string }) => `Conta: ${account}`,

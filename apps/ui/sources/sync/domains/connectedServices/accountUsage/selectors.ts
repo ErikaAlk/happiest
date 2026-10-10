@@ -97,13 +97,6 @@ export function selectProviderUsageDisplaySnapshot(params: Readonly<{
     ) {
       return null;
     }
-    if (params.connectedServiceQuotaView) {
-      return {
-        kind: 'connected_service_quota_view',
-        snapshot: params.connectedServiceQuotaView,
-        connectedServiceRefProvenance: connectedRef.provenance,
-      };
-    }
     if (connectedRef.provenance === 'published_quota_ref') {
       const nativeSource = selectNativeAccountUsageDisplaySnapshot({
         providerId: params.providerId,
@@ -111,6 +104,13 @@ export function selectProviderUsageDisplaySnapshot(params: Readonly<{
         connectedServiceRefProvenance: connectedRef.provenance,
       });
       if (nativeSource) return nativeSource;
+    }
+    if (params.connectedServiceQuotaView) {
+      return {
+        kind: 'connected_service_quota_view',
+        snapshot: params.connectedServiceQuotaView,
+        connectedServiceRefProvenance: connectedRef.provenance,
+      };
     }
     return null;
   }

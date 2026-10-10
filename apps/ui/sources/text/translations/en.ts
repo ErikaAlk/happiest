@@ -1,4 +1,5 @@
 import { newSessionDisplayOptions } from './newSessionDisplayOptions';
+import { accountUsageText } from './accountUsageText';
 
 const mcpServersUxTranslationExtension = {
   mcpServersConfiguredEmptySubtitle: 'Create a server, import host JSON, or install a recommended preset.',
@@ -6296,6 +6297,7 @@ export const en = {
         },
         dropToAttach: 'Drop to attach files',
         providerUsage: {
+            ...accountUsageText,
             title: 'Provider usage',
             titleForProvider: ({ provider }: { provider: string }) => `${provider} usage`,
             activeAccount: ({ account }: { account: string }) => `Account: ${account}`,

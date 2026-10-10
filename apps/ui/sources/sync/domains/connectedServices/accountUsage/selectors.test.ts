@@ -75,6 +75,15 @@ function legacyQuotaSnapshot(): ConnectedServiceQuotaSnapshotV1 {
 }
 
 describe('selectProviderUsageDisplaySnapshot', () => {
+  it('原生账号记录优先于之前实验功能留下的配额缓存', () => {
+    const usage = accountUsageSnapshot();
+    expect(selectProviderUsageDisplaySnapshot({
+      providerId: 'codex', metadataRecordIds: [usage.recordId],
+      accountUsageSnapshotsByRecordId: { [usage.recordId]: usage },
+      connectedServiceProfileRef: { serviceId: 'openai-codex', profileId: 'native', provenance: 'published_quota_ref' },
+      connectedServiceQuotaView: legacyQuotaSnapshot(),
+    })?.kind).toBe('account_usage');
+  });
   it('projects native account usage metadata into a non-connected provider usage display snapshot', () => {
     const usage = accountUsageSnapshot();
 
@@ -99,7 +108,7 @@ describe('selectProviderUsageDisplaySnapshot', () => {
     }));
   });
 
-  it('keeps the connected-service quota view authoritative when a published quota ref also has native account usage metadata', () => {
+  it('原生账号记录提供已发布账号的当前用量', () => {
     const usage = accountUsageSnapshot({
       meters: [meter({ meterId: 'native-weekly', used: 70, limit: 100 })],
     });
@@ -118,12 +127,12 @@ describe('selectProviderUsageDisplaySnapshot', () => {
     });
 
     expect(source).toEqual(expect.objectContaining({
-      kind: 'connected_service_quota_view',
+      kind: 'account_usage',
       connectedServiceRefProvenance: 'published_quota_ref',
     }));
     expect(source?.snapshot).toEqual(expect.objectContaining({
-      profileId: 'work',
-      meters: [expect.objectContaining({ meterId: 'legacy-weekly' })],
+      profileId: `acct:${usage.recordId}`,
+      meters: [expect.objectContaining({ meterId: 'native-weekly' })],
     }));
   });
 
