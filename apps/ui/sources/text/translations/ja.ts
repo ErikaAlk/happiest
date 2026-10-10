@@ -7,6 +7,8 @@
 
 import type { TranslationStructure } from "../_types";
 
+import { newSessionDisplayOptions } from './newSessionDisplayOptions';
+
 const mcpServersUxTranslationExtension = {
   mcpServersConfiguredEmptySubtitle: 'サーバーを作成し、ホスト JSON をインポートするか、推奨プリセットをインストールしてください。',
   mcpServersHeroSubtitle: ({ configuredCount }: { configuredCount: number }) => `Happiest で ${configuredCount} 件が設定済み`,
@@ -5073,6 +5075,7 @@ localTailscale: {
   },
 
   newSession: {
+    displayOptions: newSessionDisplayOptions,
     ...newSessionMcpTranslationExtension,
     ...acpCatalogTranslationExtension.newSession,
     // Used by new-session screen and launch flows

@@ -13,7 +13,16 @@ export function getRecentPathsForMachine(params: {
     recentMachinePaths: ReadonlyArray<Readonly<{ machineId: string; path: string }>>;
     sessions: ReadonlyArray<Session | SessionRecentPathEntry | string> | null | undefined;
 }): string[] {
-    const paths: string[] = [];
+    return getRecentMachinePaths(params)
+        .filter((entry) => entry.machineId === params.machineId)
+        .map((entry) => entry.path);
+}
+
+export function getRecentMachinePaths(params: {
+    recentMachinePaths: ReadonlyArray<Readonly<{ machineId: string; path: string }>>;
+    sessions: ReadonlyArray<Session | SessionRecentPathEntry | string> | null | undefined;
+}): Array<{ machineId: string; path: string }> {
+    const paths: Array<{ machineId: string; path: string }> = [];
     const pathSet = new Set<string>();
     // Canonicalisation runs once per recent entry and once per session below; the store's id-keyed
     // record is the index those lookups need, so it is used directly instead of a flattened list.
@@ -23,15 +32,16 @@ export function getRecentPathsForMachine(params: {
     for (const entry of params.recentMachinePaths) {
         const canonical = resolveCanonicalMachineId(entry.machineId, machines);
         const entryMachineId = canonical?.machineId ?? entry.machineId;
-        if (entryMachineId === params.machineId && !pathSet.has(entry.path)) {
-            paths.push(entry.path);
-            pathSet.add(entry.path);
+        const key = JSON.stringify([entryMachineId, entry.path]);
+        if (!pathSet.has(key)) {
+            paths.push({ machineId: entryMachineId, path: entry.path });
+            pathSet.add(key);
         }
     }
 
     // Then add paths from sessions if we need more
     if (params.sessions) {
-        const pathsWithTimestamps: Array<{ path: string; timestamp: number }> = [];
+        const pathsWithTimestamps: Array<{ machineId: string; path: string; timestamp: number }> = [];
 
         params.sessions.forEach((item) => {
             const sessionPathEntry = typeof item === 'string'
@@ -57,10 +67,11 @@ export function getRecentPathsForMachine(params: {
                 ? resolveCanonicalMachineId(sessionMachineId, machines)
                 : null;
             const canonicalSessionMachineId = canonical?.machineId ?? sessionMachineId;
-            if (canonicalSessionMachineId === params.machineId && path) {
-                if (!pathSet.has(path)) {
-                    pathSet.add(path);
+            if (canonicalSessionMachineId && path) {
+                const key = JSON.stringify([canonicalSessionMachineId, path]);
+                if (!pathSet.has(key)) {
                     pathsWithTimestamps.push({
+                        machineId: canonicalSessionMachineId,
                         path,
                         timestamp: sessionPathEntry?.createdAt ?? session?.updatedAt ?? session?.createdAt ?? 0,
                     });
@@ -70,7 +81,12 @@ export function getRecentPathsForMachine(params: {
 
         pathsWithTimestamps
             .sort((a, b) => b.timestamp - a.timestamp)
-            .forEach((item) => paths.push(item.path));
+            .forEach(({ machineId, path }) => {
+                const key = JSON.stringify([machineId, path]);
+                if (pathSet.has(key)) return;
+                pathSet.add(key);
+                paths.push({ machineId, path });
+            });
     }
 
     return paths;

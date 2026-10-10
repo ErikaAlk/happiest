@@ -8,6 +8,8 @@
 import type { TranslationStructure } from '../_types';
 import { zhHans } from './zh-Hans';
 
+import { newSessionDisplayOptions } from './newSessionDisplayOptions';
+
 const mcpServersUxTranslationExtension = {
   mcpServersConfiguredEmptySubtitle: '建立一個伺服器、匯入主機 JSON，或安裝推薦預設。',
   mcpServersHeroSubtitle: ({ configuredCount }: { configuredCount: number }) => `Happiest 中已設定 ${configuredCount} 個`,
@@ -4236,6 +4238,7 @@ const zhHantOverrides: DeepPartial<TranslationStructure> = {
     },
 
   newSession: {
+    displayOptions: newSessionDisplayOptions,
     ...newSessionMcpTranslationExtension,
     ...acpCatalogTranslationExtension.newSession,
     // Used by new-session screen and launch flows

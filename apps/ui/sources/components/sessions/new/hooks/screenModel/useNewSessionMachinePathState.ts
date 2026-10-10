@@ -5,6 +5,7 @@ import { normalizeOptionalParam } from '@/profileRouteParams';
 import type { Machine, Session } from '@/sync/domains/state/storageTypes';
 import { isMachineOnline } from '@/utils/sessions/machineUtils';
 import { useStableRecentPathsResolver } from '@/utils/sessions/useStableRecentPathsForMachine';
+import { getRecentMachinePaths } from '@/utils/sessions/recentPaths';
 
 type RecentMachinePathsList = Array<{ machineId: string; path: string }>;
 
@@ -39,10 +40,17 @@ export function useNewSessionMachinePathState(params: Readonly<{
     setDraftSelectedPath: (path: string) => void;
     getRequestedPath: () => string;
     getBestPathForMachine: (machineId: string | null) => string;
+    selectProject: (project: Readonly<{ machineId: string; path: string }>) => void;
 }> {
     const recentMachinePaths = React.useMemo((): RecentMachinePathsList => {
-        return Array.isArray(params.recentMachinePaths) ? (params.recentMachinePaths as any[]).slice() as any : [];
-    }, [params.recentMachinePaths]);
+        const entries = Array.isArray(params.recentMachinePaths)
+            ? params.recentMachinePaths.filter((entry): entry is { machineId: string; path: string } => (
+                entry !== null && typeof entry === 'object'
+                && typeof entry.machineId === 'string' && typeof entry.path === 'string'
+            ))
+            : [];
+        return getRecentMachinePaths({ recentMachinePaths: entries, sessions: params.sessions });
+    }, [params.recentMachinePaths, params.sessions]);
     const resolveRecentPathsForMachine = useStableRecentPathsResolver({
         recentMachinePaths,
         sessions: params.sessions,
@@ -98,6 +106,7 @@ export function useNewSessionMachinePathState(params: Readonly<{
     const selectedMachineIdRef = React.useRef<string | null>(selectedMachineId);
     selectedMachineIdRef.current = selectedMachineId;
     const hasUserSelectedMachineRef = React.useRef(false);
+    const hasAppliedRecentProjectRef = React.useRef(false);
     const selectedMachineOnlineSeenByIdRef = React.useRef<Map<string, boolean>>(new Map());
     const lastAppliedPersistedMachineIdRef = React.useRef<string>('');
 
@@ -137,6 +146,25 @@ export function useNewSessionMachinePathState(params: Readonly<{
     const getRequestedPath = React.useCallback(() => {
         return selectedPathDraftRef.current;
     }, []);
+    const selectProject = React.useCallback((project: Readonly<{ machineId: string; path: string }>) => {
+        hasUserSelectedMachineRef.current = true;
+        hasUserEditedPathRef.current = true;
+        setSelectedMachineIdState(project.machineId);
+        applyCommittedSelectedPath(project.path);
+    }, [applyCommittedSelectedPath]);
+
+    React.useEffect(() => {
+        if (hasAppliedRecentProjectRef.current) return;
+        if (recentMachinePaths.length === 0) return;
+        if (hasUserSelectedMachineRef.current || hasUserEditedPathRef.current) return;
+        if (normalizeMachineIdParam(params.machineIdParam) || normalizePathParam(params.pathParam)) return;
+        if (normalizeMachineIdParam(params.persistedMachineId) || normalizePathParam(params.persistedPath)) return;
+        const machineId = resolveMachineId(null);
+        if (!machineId) return;
+        hasAppliedRecentProjectRef.current = true;
+        setSelectedMachineIdState(machineId);
+        applyCommittedSelectedPath(getBestPathForMachine(machineId));
+    }, [recentMachinePaths, params.machineIdParam, params.pathParam, params.persistedMachineId, params.persistedPath, resolveMachineId, getBestPathForMachine, applyCommittedSelectedPath]);
 
     const hasMachine = React.useCallback((machineId: string | null): boolean => {
         if (!machineId) return false;
@@ -323,5 +351,6 @@ export function useNewSessionMachinePathState(params: Readonly<{
         setDraftSelectedPath,
         getRequestedPath,
         getBestPathForMachine,
+        selectProject,
     };
 }

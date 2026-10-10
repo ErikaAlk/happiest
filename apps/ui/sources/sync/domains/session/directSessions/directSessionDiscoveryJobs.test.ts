@@ -1,13 +1,22 @@
 import { describe, expect, it } from 'vitest';
-import { runDirectSessionDiscoveryJob, settleDirectSessionDiscoveryJobs, type DirectSessionDiscoveryJob } from './directSessionDiscoveryJobs';
+import { collectUnreportedDirectSessionDiscoveryErrors, runDirectSessionDiscoveryJob, settleDirectSessionDiscoveryJobs, type DirectSessionDiscoveryJob } from './directSessionDiscoveryJobs';
 import { createDeferred } from '@/dev/testkit/hooks/createDeferred';
 
 describe('direct session discovery refresh', () => {
+    it('reports a recovered source failing again while another source remains failed', () => {
+        const reported = new Map<string, string>();
+        const first = Object.assign(new Error('first source disconnected'), { discoveryKey: 'first' });
+        const second = Object.assign(new Error('second source disconnected'), { discoveryKey: 'second' });
+        expect(collectUnreportedDirectSessionDiscoveryErrors(new AggregateError([first, second]), reported)).toEqual([first.message, second.message]);
+        reported.delete('first');
+        expect(collectUnreportedDirectSessionDiscoveryErrors(new AggregateError([second]), reported)).toEqual([]);
+        expect(collectUnreportedDirectSessionDiscoveryErrors(new AggregateError([first, second]), reported)).toEqual([first.message]);
+    });
     it('settles cancelled discovery failures without reporting an obsolete batch error', async () => {
         const pages = createDeferred<void>();
         let cancelled = false;
         const pending = settleDirectSessionDiscoveryJobs([pages.promise], () => cancelled);
-        const settled = expect(pending).resolves.toBeUndefined();
+        const settled = expect(pending).resolves.toBeNull();
         cancelled = true;
         pages.reject(new Error('discovery transport disconnected'));
         await settled;
@@ -17,9 +26,19 @@ describe('direct session discovery refresh', () => {
         const pages = createDeferred<void>();
         const failure = new Error('discovery transport disconnected');
         const pending = settleDirectSessionDiscoveryJobs([pages.promise], () => false);
-        const rejected = expect(pending).rejects.toMatchObject({ errors: [failure] });
+        const rejected = expect(pending).resolves.toMatchObject({ errors: [failure] });
         pages.reject(failure);
         await rejected;
+    });
+
+    it('preserves every failed cause while successful discoveries finish', async () => {
+        const first = new Error('machine capability detection failed');
+        const second = new Error('candidate transport disconnected');
+        const result = await settleDirectSessionDiscoveryJobs([
+            Promise.reject(first), Promise.resolve(), Promise.reject(second),
+        ], () => false);
+        expect(result?.errors).toEqual([first, second]);
+        expect(await settleDirectSessionDiscoveryJobs([Promise.resolve()], () => false)).toBeNull();
     });
 
     it('finishes a pending first-page observation and then waits for the requested full refresh', async () => {

@@ -34,6 +34,13 @@ export const NEW_SESSION_WIZARD_SECTION_PRESENTATIONS = [
 
 export const NEW_SESSION_DRAFT_ENTRY_MODES = ['resumePrevious', 'alwaysFresh'] as const;
 
+export const NEW_SESSION_OPTION_IDS = [
+    'engine', 'models', 'mode', 'providerOption', 'permission', 'profile',
+    'machine', 'path', 'resume', 'connectedServices', 'mcp', 'checkout',
+    'automation', 'server', 'storage', 'windowsRemoteSessionMode', 'linkedFiles', 'attachments', 'shortcuts',
+] as const;
+export type NewSessionOptionId = typeof NEW_SESSION_OPTION_IDS[number];
+
 export type NewSessionWizardSelectionSectionId = typeof NEW_SESSION_WIZARD_SELECTION_SECTION_IDS[number];
 export type NewSessionWizardSectionPresentation = typeof NEW_SESSION_WIZARD_SECTION_PRESENTATIONS[number];
 export type NewSessionDraftEntryMode = typeof NEW_SESSION_DRAFT_ENTRY_MODES[number];
@@ -109,6 +116,12 @@ const SessionTranscriptStorageModeByTargetKeySchema = z.preprocess((value) => {
 }, z.record(BackendTargetKeySchema, SessionTranscriptStorageModeSchema).default({}));
 
 export const ACCOUNT_SESSION_CREATION_SETTING_DEFINITIONS = defineSettingDefinitions({
+    newSessionHiddenOptionsV1: {
+        schema: z.array(z.enum(NEW_SESSION_OPTION_IDS)),
+        default: [] as NewSessionOptionId[],
+        description: 'Optional controls hidden on new-session surfaces without changing launch selections',
+        storageScope: 'account',
+    },
     newSessionDraftEntryMode: {
         schema: z.enum(NEW_SESSION_DRAFT_ENTRY_MODES),
         default: 'resumePrevious',

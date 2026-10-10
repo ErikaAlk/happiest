@@ -21,6 +21,7 @@ type SessionModeChipControlLike = Readonly<{
 
 export function useRenderedAgentInputControlRows(params: Readonly<{
     layout: 'scroll' | 'wrap' | 'collapsed';
+    hiddenControlIds?: readonly AgentInputControlId[];
     chips: ReadonlyArray<AgentInputExtraActionChip> | undefined;
     overlayAnchorRef: React.RefObject<ViewInstance | null>;
     onToggleExtraChipCollapsedPopover: (chipKey: string) => void;
@@ -174,6 +175,7 @@ export function useRenderedAgentInputControlRows(params: Readonly<{
         });
 
         const renderedControls = resolveRenderedAgentInputControls({
+            hiddenControlIds: params.hiddenControlIds,
             layout: params.layout,
             coreControlNodesById,
             extraControlNodesById: extraControlNodesById.extraControlNodesById,
@@ -186,6 +188,7 @@ export function useRenderedAgentInputControlRows(params: Readonly<{
             extraChipAnchorRefsByKey: extraControlNodesById.extraChipAnchorRefsByKey as Readonly<Record<string, React.RefObject<ViewInstance | null>>>,
         };
     }, [
+        params.hiddenControlIds,
         params.actionBarIsCollapsed,
         params.actionButtonPressedStyle,
         params.actionButtonStyle,

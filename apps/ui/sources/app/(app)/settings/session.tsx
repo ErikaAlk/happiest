@@ -448,14 +448,12 @@ export default React.memo(function SessionSettingsScreen() {
                     showChevron={false}
                     onPress={() => setUseEnhancedSessionWizard(useEnhancedSessionWizard !== true)}
                 />
-                {useEnhancedSessionWizard === true ? (
                     <Item
-                        title={t('settingsSession.sessionCreation.wizardDispositionTitle')}
-                        subtitle={t('settingsSession.sessionCreation.wizardDispositionSubtitle')}
+                        testID="settings-new-session-options"
+                        title={t('newSession.displayOptions.title')}
                         icon={<Icon name="sliders-horizontal" size={29} color={theme.colors.accent.indigo} />}
                         onPress={() => router.push('/settings/session/new-session-wizard')}
                     />
-                ) : null}
                 <Item
                     testID="settings-new-session-default-worktree"
                     title={t('settingsSession.sessionCreation.defaultWorktreeTitle')}

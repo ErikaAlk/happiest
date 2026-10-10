@@ -9,6 +9,7 @@ import { ItemList } from '@/components/ui/lists/ItemList';
 import { useSettingMutable } from '@/sync/domains/state/storage';
 import {
     NEW_SESSION_WIZARD_SELECTION_SECTION_IDS,
+    NEW_SESSION_OPTION_IDS,
     type NewSessionWizardSectionPresentation,
     type NewSessionWizardSelectionSectionId,
 } from '@/sync/domains/settings/registry/account/accountSessionCreationSettingDefinitions';
@@ -100,6 +101,7 @@ export const NewSessionWizardSettingsView = React.memo(function NewSessionWizard
     const popoverBoundaryRef = React.useRef<any>(null);
     const [presentationBySection, setPresentationBySection] = useSettingMutable('newSessionWizardSectionPresentationV1');
     const [columnsEnabled, setColumnsEnabled] = useSettingMutable('newSessionWizardColumnsEnabled');
+    const [hiddenOptions, setHiddenOptions] = useSettingMutable('newSessionHiddenOptionsV1');
 
     const normalizedPresentationBySection = React.useMemo(() => {
         const record = presentationBySection && typeof presentationBySection === 'object' && !Array.isArray(presentationBySection)
@@ -130,6 +132,24 @@ export const NewSessionWizardSettingsView = React.memo(function NewSessionWizard
 
     return (
         <ItemList ref={popoverBoundaryRef} style={{ paddingTop: 0 }}>
+            <ItemGroup title={t('newSession.displayOptions.title')}>
+                {NEW_SESSION_OPTION_IDS.map((option) => {
+                    const visible = !hiddenOptions.includes(option);
+                    const setVisible = (next: boolean) => setHiddenOptions(next
+                        ? hiddenOptions.filter((id) => id !== option)
+                        : [...new Set([...hiddenOptions, option])]);
+                    return (
+                        <Item
+                            key={option}
+                            testID={`settings-new-session-option-${option}`}
+                            title={t(`newSession.displayOptions.${option}`)}
+                            rightElement={<Switch value={visible} onValueChange={setVisible} />}
+                            showChevron={false}
+                            onPress={() => setVisible(!visible)}
+                        />
+                    );
+                })}
+            </ItemGroup>
             <ItemGroup
                 title={t('settingsSession.sessionCreation.wizardLayoutTitle')}
                 footer={t('settingsSession.sessionCreation.wizardLayoutFooter')}

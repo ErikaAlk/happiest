@@ -88,6 +88,47 @@ function renderMachinePathState(initialProps: HookParams) {
 }
 
 describe('useNewSessionMachinePathState', () => {
+    it('selects the recent project after sessions hydrate without replacing a user selection', async () => {
+        const initialProps: HookParams = {
+            machines: toMachines(
+                { id: 'machine-first', active: true, activeAt: Date.now() },
+                { id: 'machine-recent', active: true, activeAt: Date.now() },
+            ),
+            recentMachinePaths: [], machineIdParam: null, pathParam: null, sessions: null,
+        };
+        const hook = await renderMachinePathState(initialProps);
+        const hydrated = { ...initialProps, sessions: [createSession({ id: 'newer', machineId: 'machine-recent', path: '/newer', updatedAt: 20 })] };
+        await hook.rerender(hydrated);
+        expect(getSelection(hook.getCurrent())).toEqual({ selectedMachineId: 'machine-recent', selectedPath: '/newer' });
+        await act(async () => hook.getCurrent().selectProject({ machineId: 'machine-first', path: '/chosen' }));
+        await hook.rerender({ ...hydrated, sessions: [...hydrated.sessions, createSession({ id: 'latest', machineId: 'machine-recent', path: '/latest', updatedAt: 30 })] });
+        expect(getSelection(hook.getCurrent())).toEqual({ selectedMachineId: 'machine-first', selectedPath: '/chosen' });
+        expect(hook.getCurrent().getRequestedPath()).toBe('/chosen');
+        await hook.unmount();
+    });
+
+    it('selects the machine of the newest project when recent launch history is empty', async () => {
+        const hook = await renderMachinePathState({
+            machines: toMachines(
+                { id: 'machine-first', active: true, activeAt: Date.now() },
+                { id: 'machine-recent', active: true, activeAt: Date.now() },
+            ),
+            recentMachinePaths: [],
+            machineIdParam: null,
+            pathParam: null,
+            sessions: [
+                createSession({ id: 'older', machineId: 'machine-first', path: '/older', updatedAt: 1 }),
+                createSession({ id: 'newer', machineId: 'machine-recent', path: '/newer', updatedAt: 20 }),
+            ],
+        });
+
+        expect(getSelection(hook.getCurrent())).toEqual({
+            selectedMachineId: 'machine-recent',
+            selectedPath: '/newer',
+        });
+        await hook.unmount();
+    });
+
     it('seeds the selected path from previous sessions when no stored recent path exists', async () => {
         const initialProps = {
             machines: toMachines({ id: 'machine-1', metadata: { homeDir: '/Users/test' } }),

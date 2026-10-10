@@ -59,6 +59,7 @@ type FavoriteModelSnapshot = Readonly<{
 }>;
 
 export type NewSessionFavoriteModelsDetailProps = Readonly<{
+    showConfigSelection?: boolean;
     favoriteModelSelections: readonly FavoriteModelSelectionV1[];
     resolvedBackendEntries: readonly ResolvedBackendCatalogEntry[];
     selectedBackendTargetKey: string;
@@ -455,7 +456,7 @@ export function NewSessionFavoriteModelsDetail(props: NewSessionFavoriteModelsDe
                     optionTestIDPrefix="new-session-favorite-model-option"
                     refreshTestID="new-session-favorite-model-refresh"
                     probe={unifiedProbe ?? undefined}
-                    selectedOptionControls={selectedSnapshot?.selectedOptionControls ?? undefined}
+                    selectedOptionControls={props.showConfigSelection === false ? undefined : selectedSnapshot?.selectedOptionControls ?? undefined}
                     onSelectOptionControlValue={(configId, valueId) => {
                         if (!selectedSnapshot || selectedValue.length === 0) return;
                         const model = selectedSnapshot.modelByValue.get(selectedValue);

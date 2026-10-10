@@ -4,11 +4,15 @@ import type { NewSessionSimplePanelProps } from '@/components/sessions/new/compo
 import type { NewSessionWizardProfilesProps } from '@/components/sessions/new/components/NewSessionWizard';
 import type { NewSessionWizardSectionProps } from '@/components/sessions/new/hooks/useNewSessionWizardProps';
 import type { NewSessionCheckoutCreationDraft } from '@/sync/domains/state/newSessionCheckoutDraft';
+import type { NewSessionProjectSelection } from '../../components/NewSessionProjectShortcuts';
 import type {
     NewSessionScreenModel,
     NewSessionSimpleScreenProps,
 } from '@/components/sessions/new/hooks/newSessionScreenModelTypes';
 export function buildNewSessionScreenVariantModel(params: Readonly<{
+    projectSelection?: NewSessionProjectSelection;
+    hiddenControlIds?: NewSessionSimplePanelProps['hiddenControlIds'];
+    showModelSelection?: boolean;
     useEnhancedSessionWizard: boolean;
     popoverBoundaryRef: React.RefObject<ViewInstance | null>;
     simplePanelProps: NewSessionSimplePanelProps;
@@ -21,6 +25,9 @@ export function buildNewSessionScreenVariantModel(params: Readonly<{
     if (!params.useEnhancedSessionWizard || !params.wizardSections) {
         const simpleProps: NewSessionSimpleScreenProps = {
             ...params.simplePanelProps,
+            projectSelection: params.projectSelection,
+            hiddenControlIds: params.hiddenControlIds,
+            showModelSelection: params.showModelSelection,
             checkoutCreationDraft: params.checkoutCreationDraft,
             setCheckoutCreationDraft: params.setCheckoutCreationDraft,
         };
@@ -42,7 +49,12 @@ export function buildNewSessionScreenVariantModel(params: Readonly<{
             profiles: params.wizardProfilesProps,
             agent: params.wizardSections.agent,
             machine: params.wizardSections.machine,
-            footer: params.wizardSections.footer,
+            footer: {
+                ...params.wizardSections.footer,
+                projectSelection: params.projectSelection,
+                hiddenControlIds: params.hiddenControlIds,
+                showModelSelection: params.showModelSelection,
+            },
         },
     };
 }

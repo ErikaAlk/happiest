@@ -13,8 +13,10 @@ function sortControlIdsInRegistryOrder(controlIds: readonly AgentInputControlId[
 export function resolveAgentInputControlLines(params: Readonly<{
     layout: AgentInputActionBarLayout;
     controlIds: readonly AgentInputControlId[];
+    hiddenControlIds?: readonly AgentInputControlId[];
 }>): AgentInputResolvedControlLines {
-    const orderedControlIds = sortControlIdsInRegistryOrder(params.controlIds);
+    const hidden = new Set(params.hiddenControlIds);
+    const orderedControlIds = sortControlIdsInRegistryOrder(params.controlIds).filter((id) => !hidden.has(id));
 
     if (params.layout === 'collapsed') {
         return {

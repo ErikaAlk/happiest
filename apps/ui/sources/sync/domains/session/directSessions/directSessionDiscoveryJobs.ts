@@ -3,11 +3,24 @@ export type DirectSessionDiscoveryJob = Readonly<{
     promise: Promise<void>;
 }>;
 
-export async function settleDirectSessionDiscoveryJobs(jobs: readonly Promise<void>[], isCancelled: () => boolean): Promise<void> {
+export async function settleDirectSessionDiscoveryJobs(jobs: readonly Promise<void>[], isCancelled: () => boolean): Promise<AggregateError | null> {
     const results = await Promise.allSettled(jobs);
-    if (isCancelled()) return;
+    if (isCancelled()) return null;
     const failures = results.flatMap((result) => result.status === 'rejected' ? [result.reason] : []);
-    if (failures.length > 0) throw new AggregateError(failures, '电脑会话发现失败');
+    return failures.length > 0 ? new AggregateError(failures, '电脑会话发现失败') : null;
+}
+
+export function collectUnreportedDirectSessionDiscoveryErrors(failure: AggregateError, reported: Map<string, string>): string[] {
+    const messages = new Set<string>();
+    for (const error of failure.errors as unknown[]) {
+        const message = error instanceof Error ? error.message : String(error);
+        const key = error instanceof Error && 'discoveryKey' in error && typeof error.discoveryKey === 'string'
+            ? error.discoveryKey : message;
+        if (reported.get(key) === message) continue;
+        reported.set(key, message);
+        messages.add(message);
+    }
+    return [...messages];
 }
 
 export function runDirectSessionDiscoveryJob(

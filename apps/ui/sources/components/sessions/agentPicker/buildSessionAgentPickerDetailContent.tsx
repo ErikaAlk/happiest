@@ -48,6 +48,8 @@ export function buildSessionAgentPickerDetailContent(params: Readonly<{
      * that the conversation carries over and nothing is sent yet.
      */
     modelSummary?: string;
+    showModelSelection?: boolean;
+    showConfigSelection?: boolean;
     selection: SessionAgentPickerSelection;
     favoriteModelSelections?: readonly FavoriteModelSelectionV1[];
     onToggleFavoriteModel?: (model: Readonly<{ modelId: string; modelLabel: string }>) => void;
@@ -73,6 +75,8 @@ export function buildSessionAgentPickerDetailContent(params: Readonly<{
             connectedServices={params.connectedServices ?? null}
             refreshProbe={params.refreshProbe}
             modelSummary={params.modelSummary}
+            showModelSelection={params.showModelSelection}
+            showConfigSelection={params.showConfigSelection}
             selectedModelId={params.selection.modelId}
             selectedSessionModeId={params.selection.sessionModeId}
             selectedConfigOverrides={params.selection.configOverrides}

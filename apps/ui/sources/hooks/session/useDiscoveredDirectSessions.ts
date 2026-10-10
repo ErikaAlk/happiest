@@ -14,7 +14,7 @@ import { DEFAULT_STALE_MS, getMachineCapabilitiesSnapshot, prefetchMachineCapabi
 import { resolveDaemonCapabilitiesCacheKeySalt } from '@/hooks/server/useDaemonScopedMachineCapabilitiesCache';
 import { buildAgentCliCapabilityId } from '@/capabilities/agentCliCapabilityId';
 import type { AgentId } from '@/agents/catalog/catalog';
-import { runDirectSessionDiscoveryJob, settleDirectSessionDiscoveryJobs, type DirectSessionDiscoveryJob } from '@/sync/domains/session/directSessions/directSessionDiscoveryJobs';
+import { collectUnreportedDirectSessionDiscoveryErrors, runDirectSessionDiscoveryJob, settleDirectSessionDiscoveryJobs, type DirectSessionDiscoveryJob } from '@/sync/domains/session/directSessions/directSessionDiscoveryJobs';
 import type { Machine } from '@/sync/domains/state/storageTypes';
 
 const EMPTY_CANDIDATES: readonly DirectSessionListCandidate[] = Object.freeze([]);
@@ -80,6 +80,9 @@ export function useDiscoveredDirectSessions(dataActive: boolean): Readonly<{
         for (const target of targets) for (const { providerId, source } of sources) {
             const key = JSON.stringify([observationScope, target.serverId, target.machineId, providerId, source]);
             const fullRefresh = forceFullRefresh || !completed.current.has(key);
+            function fail(message: string): never {
+                throw Object.assign(new Error(message), { discoveryKey: key });
+            }
             const publish = (available: boolean, out: readonly DirectSessionListCandidate[]) => {
                 completed.current.add(key);
                 reportedErrors.current.delete(key);
@@ -97,9 +100,7 @@ export function useDiscoveredDirectSessions(dataActive: boolean): Readonly<{
                 const capability = getMachineCapabilitiesSnapshot(target.machineId, target.serverId, target.cacheKeySalt)?.response.results[buildAgentCliCapabilityId(providerId as AgentId)];
                 if (!capability?.ok) {
                     const message = `${providerId} · ${target.machine.metadata?.displayName ?? target.machineId}：电脑代理能力检测失败`;
-                    if (reportedErrors.current.get(key) !== 'capability_detection_failed') Modal.alert(t('common.error'), message);
-                    reportedErrors.current.set(key, 'capability_detection_failed');
-                    throw new Error(message);
+                    fail(message);
                 }
                 const capabilityData = capability.data;
                 if (capabilityData && typeof capabilityData === 'object' && 'available' in capabilityData && capabilityData.available === false) {
@@ -115,9 +116,7 @@ export function useDiscoveredDirectSessions(dataActive: boolean): Readonly<{
                     if (cancelled) return;
                     if (!result.ok) {
                         const message = `${providerId} · ${target.machine.metadata?.displayName ?? target.machineId}：会话发现失败（${result.errorCode}）`;
-                        if (reportedErrors.current.get(key) !== result.errorCode) Modal.alert(t('common.error'), message);
-                        reportedErrors.current.set(key, result.errorCode);
-                        throw new Error(message);
+                        fail(message);
                     }
                     for (const candidate of result.candidates) {
                         const extras = resolveDirectBrowseLinkEnsureRequestExtras({ providerId, source, candidate });
@@ -125,7 +124,7 @@ export function useDiscoveredDirectSessions(dataActive: boolean): Readonly<{
                         out.push({ ...target, discoveryKey: key, providerId, source: effectiveSource, candidate });
                     }
                     cursor = result.nextCursor ?? undefined;
-                    if (cursor && visited.has(cursor)) throw new Error('会话发现返回重复的分页游标');
+                    if (cursor && visited.has(cursor)) fail('会话发现返回重复的分页游标');
                     if (cursor) visited.add(cursor);
                 } while (cursor && fullRefresh);
                 if (cancelled) return;
@@ -133,7 +132,13 @@ export function useDiscoveredDirectSessions(dataActive: boolean): Readonly<{
             };
             requestedJobs.push(runDirectSessionDiscoveryJob(jobs, key, fullRefresh, load));
         }
-        await settleDirectSessionDiscoveryJobs(requestedJobs, () => cancelled);
+        const failure = await settleDirectSessionDiscoveryJobs(requestedJobs, () => cancelled);
+        if (failure) {
+            const messages = collectUnreportedDirectSessionDiscoveryErrors(failure, reportedErrors.current);
+            if (messages.length > 0) Modal.alert(t('common.error'), messages.join('\n'));
+        } else if (!cancelled) {
+            reportedErrors.current.clear();
+        }
         };
         refreshRef.current = start;
         void start();

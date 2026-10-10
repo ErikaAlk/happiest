@@ -108,6 +108,8 @@ import { resolveSessionModeChipPresentation } from './controls/resolveSessionMod
 import { useAgentInputActionMenuControls } from './controls/useAgentInputActionMenuControls';
 import { useAgentInputCoreControlHandlers } from './controls/useAgentInputCoreControlHandlers';
 import { useRenderedAgentInputControlRows } from './controls/useRenderedAgentInputControlRows';
+import type { AgentInputControlId } from './controls/agentInputControlTypes';
+import { applyAgentInputControlVisibility } from './controls/applyAgentInputControlVisibility';
 import { buildAgentInputSelectionOverlayViewModel } from './selection/buildAgentInputSelectionOverlayViewModel';
 import { useAgentInputSelectionAnchors } from './selection/useAgentInputSelectionAnchors';
 import { useAgentInputSelectionOverlayController } from './selection/useAgentInputSelectionOverlayController';
@@ -246,7 +248,9 @@ function areStructuredInputMentionListsEqual(
     return JSON.stringify(left) === JSON.stringify(right);
 }
 
-interface AgentInputProps {
+export interface AgentInputProps {
+    showModelSelection?: boolean;
+    hiddenControlIds?: readonly AgentInputControlId[];
     value: string;
     placeholder: string;
     onChangeText: (text: string) => void;
@@ -1114,7 +1118,8 @@ const stylesheet = StyleSheet.create((theme, runtime) => ({
     },
 }));
 
-export const AgentInput = React.memo(React.forwardRef<MultiTextInputHandle, AgentInputProps>((props, ref) => {
+export const AgentInput = React.memo(React.forwardRef<MultiTextInputHandle, AgentInputProps>((rawProps, ref) => {
+    const props = React.useMemo(() => applyAgentInputControlVisibility(rawProps), [rawProps]);
     const styles = stylesheet;
     const { theme } = useUnistyles();
     const { width: screenWidth, height: screenHeight } = useWindowDimensions();
@@ -2177,13 +2182,18 @@ export const AgentInput = React.memo(React.forwardRef<MultiTextInputHandle, Agen
                         }
                         : undefined
                 }
-                sectionOrder={['model', 'config']}
+                sectionOrder={[
+                    ...(props.showModelSelection === false ? [] : ['model'] as const),
+                    ...(props.hiddenControlIds?.includes('providerOption') ? [] : ['config'] as const),
+                ]}
                 surfaceVariant="carded"
             />
         );
     }, [
         agentId,
         acpConfigOptionControls,
+        props.showModelSelection,
+        props.hiddenControlIds,
         props.acpConfigOptionOverridesOverride,
         effectiveModelPolicy.selectedModelId,
         modelNotes,
@@ -2664,6 +2674,7 @@ export const AgentInput = React.memo(React.forwardRef<MultiTextInputHandle, Agen
         secondaryLeadingControls: secondaryLeadingControlsForWrap,
         extraChipAnchorRefsByKey,
     } = useRenderedAgentInputControlRows({
+        hiddenControlIds: props.hiddenControlIds,
         layout: effectiveActionBarLayout,
         chips: props.extraActionChips,
         overlayAnchorRef,

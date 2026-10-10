@@ -7,6 +7,8 @@
 
 import type { TranslationStructure } from "../_types";
 
+import { newSessionDisplayOptions } from './newSessionDisplayOptions';
+
 const mcpServersUxTranslationExtension = {
   mcpServersConfiguredEmptySubtitle: '创建一个服务器、导入主机 JSON，或安装推荐预设。',
   mcpServersHeroSubtitle: ({ configuredCount }: { configuredCount: number }) => `在 Happiest 中已配置 ${configuredCount} 个`,
@@ -4647,6 +4649,7 @@ export const zhHans: TranslationStructure = {
   },
 
   newSession: {
+    displayOptions: newSessionDisplayOptions,
     ...newSessionMcpTranslationExtension,
     ...acpCatalogTranslationExtension.newSession,
     // Used by new-session screen and launch flows

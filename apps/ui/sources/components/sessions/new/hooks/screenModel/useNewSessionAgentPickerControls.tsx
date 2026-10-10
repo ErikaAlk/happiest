@@ -561,7 +561,9 @@ export function useNewSessionAgentPickerControls(rawParams: Readonly<{
             ]),
         );
         const favoriteConnectedServicesCacheKeyPart = stableJsonStringify(favoriteConnectedServicesByTargetKey);
-        const favoriteModelsOption: AgentInputChipPickerOption[] = favoriteModelSelectionsForVisibleBackends.length > 0
+        const showModelSelection = !params.settings.newSessionHiddenOptionsV1?.includes('models');
+        const showConfigSelection = !params.settings.newSessionHiddenOptionsV1?.includes('providerOption');
+        const favoriteModelsOption: AgentInputChipPickerOption[] = showModelSelection && favoriteModelSelectionsForVisibleBackends.length > 0
             ? [{
                 id: FAVORITE_MODELS_AGENT_PICKER_OPTION_ID,
                 label: t('profiles.groups.favorites'),
@@ -570,6 +572,7 @@ export function useNewSessionAgentPickerControls(rawParams: Readonly<{
                 deferRenderDetailContent: true,
                 deferredDetailContentCacheKey: [
                     'new-session-favorite-models',
+                    String(showConfigSelection),
                     params.capabilityServerId,
                     params.selectedMachineId ?? '',
                     params.selectedPath ?? '',
@@ -584,6 +587,7 @@ export function useNewSessionAgentPickerControls(rawParams: Readonly<{
                     const selection = favoriteModelsDetailSelectionRef.current;
                     return (
                         <NewSessionFavoriteModelsDetail
+                            showConfigSelection={showConfigSelection}
                             favoriteModelSelections={favoriteModelSelectionsForVisibleBackends}
                             resolvedBackendEntries={favoriteBackendEntries}
                             selectedBackendTargetKey={selection.selectedBackendTargetKey}
@@ -635,6 +639,8 @@ export function useNewSessionAgentPickerControls(rawParams: Readonly<{
                 deferRenderDetailContent: true,
                 deferredDetailContentCacheKey: [
                     'new-session-engine',
+                    String(showModelSelection),
+                    String(showConfigSelection),
                     params.capabilityServerId,
                     params.selectedMachineId ?? '',
                     entry.targetKey,
@@ -658,6 +664,8 @@ export function useNewSessionAgentPickerControls(rawParams: Readonly<{
                 renderDetailContent: () => {
                     const selection = getEngineSelectionForTargetKey(entry.targetKey);
                     return buildSessionAgentPickerDetailContent({
+                        showModelSelection,
+                        showConfigSelection,
                         backendTarget: entry.target,
                         selectedMachineId: params.selectedMachineId,
                         capabilityServerId: params.capabilityServerId,

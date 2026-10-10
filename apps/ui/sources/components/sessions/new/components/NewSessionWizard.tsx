@@ -40,6 +40,7 @@ import { getAgentPickerOptions } from '@/agents/catalog/agentPickerOptions';
 import type { ResolvedBackendCatalogEntry } from '@/agents/backendCatalog/getResolvedBackendCatalogEntries';
 import { InstallableDepInstaller, type InstallableDepInstallerProps } from '@/components/machines/InstallableDepInstaller';
 import { Text } from '@/components/ui/text/Text';
+import { NewSessionProjectShortcuts, type NewSessionProjectSelection } from './NewSessionProjectShortcuts';
 import { normalizeNodeForView } from '@/components/ui/rendering/normalizeNodeForView';
 import { isMachineOnline } from '@/utils/sessions/machineUtils';
 import type { HandleCreateSessionOptions } from '../hooks/useCreateNewSession';
@@ -161,6 +162,9 @@ export interface NewSessionWizardMachineProps {
 }
 
 export interface NewSessionWizardFooterProps {
+    projectSelection?: NewSessionProjectSelection;
+    hiddenControlIds?: React.ComponentProps<typeof AgentInput>['hiddenControlIds'];
+    showModelSelection?: boolean;
     promptStore: NewSessionPromptStore;
     setSessionPrompt: (v: string) => void;
     handleCreateSession: (opts?: HandleCreateSessionOptions) => void;
@@ -227,6 +231,7 @@ function countVisibleWizardSavedPathRows(params: Readonly<{
 }
 
 export const NewSessionWizard = React.memo(function NewSessionWizard(props: NewSessionWizardProps) {
+    const [projectRowHeight, setProjectRowHeight] = React.useState(0);
     const {
         theme,
         styles,
@@ -239,6 +244,7 @@ export const NewSessionWizard = React.memo(function NewSessionWizard(props: NewS
         shouldBottomAnchor: shouldBottomAnchorOverride,
     } = props.layout;
     const { width: windowWidth } = useWindowDimensions();
+    const hidden = new Set(props.footer.hiddenControlIds);
     const shouldBottomAnchor =
         shouldBottomAnchorOverride ?? (Platform.OS !== 'web' || isMobileLayoutWidth(windowWidth));
     const useSelectionColumns = props.useColumnLayout === true
@@ -568,8 +574,11 @@ export const NewSessionWizard = React.memo(function NewSessionWizard(props: NewS
                             <View style={{ paddingHorizontal: newSessionSidePadding, width: '100%', alignSelf: 'stretch' }}>
                                 <View style={{ maxWidth: layout.maxWidth, width: '100%', alignSelf: 'center' }}>
                                     {props.composerTopContent}
+                                    {props.footer.projectSelection ? <NewSessionProjectShortcuts {...props.footer.projectSelection} onHeightChange={setProjectRowHeight} /> : null}
                                     <NewSessionWizardComposerInput
-                                        composerReservedHeight={12 + newSessionBottomPadding}
+                                        hiddenControlIds={props.footer.hiddenControlIds}
+                                        showModelSelection={props.footer.showModelSelection}
+                                        composerReservedHeight={12 + newSessionBottomPadding + (props.footer.projectSelection?.projects.length ? projectRowHeight : 0)}
                                         value={sessionPrompt}
                                         onChangeText={setSessionPrompt}
                                         onSend={handleSend}
@@ -658,7 +667,7 @@ export const NewSessionWizard = React.memo(function NewSessionWizard(props: NewS
                                         }
                                     ]}>
                                         <View onLayout={registerWizardSectionOffset('profile')} style={styles.wizardContainer}>
-                                {useProfiles && (
+                                {useProfiles && !hidden.has('profile') && (
                                     <>
                                         <View style={styles.wizardSectionHeaderRow}>
                                             {renderNormalizedIconNode('person', 18, theme.colors.text.primary)}
@@ -705,6 +714,7 @@ export const NewSessionWizard = React.memo(function NewSessionWizard(props: NewS
                                 )}
 
                                 <View style={pairAgentAndModelSections ? styles.wizardSelectionPair : undefined}>
+                                    {!hidden.has('engine') && (
                                     <View style={pairAgentAndModelSections ? styles.wizardSelectionPairColumn : undefined}>
                                         {/* Section: AI Backend */}
                                         <View onLayout={registerWizardSectionOffset('agent')}>
@@ -847,8 +857,9 @@ export const NewSessionWizard = React.memo(function NewSessionWizard(props: NewS
                                     );
                                         })()}
                                     </View>
+                                    )}
 
-                                    {shouldRenderModelSection && (
+                                    {shouldRenderModelSection && props.footer.showModelSelection !== false && (
                                         <View style={pairAgentAndModelSections ? styles.wizardSelectionPairColumn : { marginTop: 24 }}>
                                         <View onLayout={registerWizardSectionOffset('model')}>
                                             <WizardSectionHeaderRow
@@ -891,6 +902,7 @@ export const NewSessionWizard = React.memo(function NewSessionWizard(props: NewS
                                 <View style={{ height: 24 }} />
 
                                 <View style={useSelectionColumns ? styles.wizardSelectionPair : undefined}>
+                                    {!hidden.has('machine') && (
                                     <View style={useSelectionColumns ? styles.wizardSelectionPairColumn : undefined}>
                                         {/* Section 2: Machine Selection */}
                                         <View onLayout={registerWizardSectionOffset('machine')}>
@@ -986,6 +998,8 @@ export const NewSessionWizard = React.memo(function NewSessionWizard(props: NewS
                                         </View>
                                     </View>
 
+                                    )}
+                                    {!hidden.has('path') && (
                                     <View style={useSelectionColumns ? styles.wizardSelectionPairColumn : undefined}>
                                         {/* API key selection is now handled inline from the profile list (via the requirements badge). */}
 
@@ -1034,9 +1048,11 @@ export const NewSessionWizard = React.memo(function NewSessionWizard(props: NewS
                                             />
                                         </View>
                                     </View>
+                                    )}
                                 </View>
 
                                 {/* Section 4: Permission Mode */}
+                                {!hidden.has('permission') && (<>
                                 <View onLayout={registerWizardSectionOffset('permission')}>
                                     <View style={styles.wizardSectionHeaderRow}>
                                         {renderNormalizedIconNode('shield', 18, theme.colors.text.primary)}
@@ -1087,6 +1103,7 @@ export const NewSessionWizard = React.memo(function NewSessionWizard(props: NewS
                                 />
 
                                 <View style={{ height: 24 }} />
+                                </>)}
 
                             </View>
                         </View>

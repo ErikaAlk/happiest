@@ -1,3 +1,5 @@
+import { newSessionDisplayOptions } from './newSessionDisplayOptions';
+
 const mcpServersUxTranslationExtension = {
   mcpServersConfiguredEmptySubtitle: 'Create a server, import host JSON, or install a recommended preset.',
   mcpServersHeroSubtitle: ({ configuredCount }: { configuredCount: number }) => `${configuredCount} configured in Happiest`,
@@ -4471,6 +4473,7 @@ export const en = {
     },
 
     newSession: {
+        displayOptions: newSessionDisplayOptions,
         ...newSessionMcpTranslationExtension,
         ...acpCatalogTranslationExtension.newSession,
         // Used by new-session screen and launch flows

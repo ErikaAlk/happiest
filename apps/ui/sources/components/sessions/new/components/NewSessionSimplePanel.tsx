@@ -24,6 +24,7 @@ import { AgentInput } from '@/components/sessions/agentInput';
 import { AttachmentFilePicker } from '@/components/sessions/attachments/AttachmentFilePicker';
 import { PopoverBoundaryProvider } from '@/components/ui/popover';
 import { t } from '@/text';
+import { NewSessionProjectShortcuts, type NewSessionProjectSelection } from './NewSessionProjectShortcuts';
 import type { AcpConfigOptionOverridesV1 } from '@happier-dev/protocol';
 import type { HandleCreateSessionOptions } from '../hooks/useCreateNewSession';
 import { useNewSessionAttachmentsController } from '@/components/sessions/new/attachments/useNewSessionAttachmentsController';
@@ -62,6 +63,9 @@ const SIMPLE_NEW_SESSION_EXIT_TRAVEL_PX = 12;
 const SIMPLE_NEW_SESSION_DISMISS_SAFETY_MS = 1000;
 
 export type NewSessionSimplePanelProps = Readonly<{
+    projectSelection?: NewSessionProjectSelection;
+    hiddenControlIds?: React.ComponentProps<typeof AgentInput>['hiddenControlIds'];
+    showModelSelection?: boolean;
     composerTopContent?: React.ReactNode;
     statusBadges?: React.ComponentProps<typeof AgentInput>['statusBadges'];
     statusTrailingActions?: React.ReactNode;
@@ -440,6 +444,7 @@ function NewSessionSimplePanelComposer({
     panelProps: props,
     attachmentsController,
 }: NewSessionSimplePanelComposerProps): React.ReactElement {
+    const [projectRowHeight, setProjectRowHeight] = React.useState(0);
     // The composer scaffold computes the available panel height synchronously at mount
     // (seeded from the viewport + safe-area insets), so the bottom-anchored panel can
     // size from the settled value on its first frame.
@@ -455,9 +460,11 @@ function NewSessionSimplePanelComposer({
     // only visible way out — off screen. `headerHeight` cannot carry this: the owner drops it to
     // zero once the scaffold reports a measured height.
     const maxPanelHeight = React.useMemo(() => {
-        if (!isFloatingComposer || typeof availablePanelHeight !== 'number') return availablePanelHeight;
-        return Math.max(0, availablePanelHeight - props.safeAreaTop - NEW_SESSION_CLOSE_ROW_HEIGHT);
-    }, [availablePanelHeight, isFloatingComposer, props.safeAreaTop]);
+        if (typeof availablePanelHeight !== 'number') return availablePanelHeight;
+        const reservedHeight = isFloatingComposer ? props.safeAreaTop + NEW_SESSION_CLOSE_ROW_HEIGHT : 0;
+        const projectsHeight = props.projectSelection?.projects.length ? projectRowHeight : 0;
+        return Math.max(0, availablePanelHeight - reservedHeight - projectsHeight);
+    }, [availablePanelHeight, isFloatingComposer, props.safeAreaTop, props.projectSelection?.projects.length, projectRowHeight]);
     // RENDER CHURN: the composer input is the only thing that re-renders per keystroke.
     // Everything above it (panel, keyboard scaffold, screen model) stays put.
     const sessionPrompt = useNewSessionPromptValue(props.promptStore);
@@ -475,7 +482,10 @@ function NewSessionSimplePanelComposer({
                     style={{ width: '100%', alignSelf: 'center' }}
                 >
                     {props.composerTopContent}
+                    {props.projectSelection ? <NewSessionProjectShortcuts {...props.projectSelection} onHeightChange={setProjectRowHeight} /> : null}
                     <AgentInput
+                        hiddenControlIds={props.hiddenControlIds}
+                        showModelSelection={props.showModelSelection}
                         value={sessionPrompt}
                         onChangeText={props.setSessionPrompt}
                         onSend={attachmentsController.handleSend}

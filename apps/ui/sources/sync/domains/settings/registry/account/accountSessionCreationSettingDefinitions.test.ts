@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { settingsParse, applySettings } from '@/sync/domains/settings/settings';
 
 import {
     ACCOUNT_SESSION_CREATION_SETTING_DEFINITIONS,
@@ -6,6 +7,16 @@ import {
 } from '@/sync/domains/settings/registry/account/accountSessionCreationSettingDefinitions';
 
 describe('account session creation setting definitions', () => {
+    it('keeps old settings visible and preserves hidden options when another setting changes', () => {
+        const previous = settingsParse({ schemaVersion: 8 });
+        expect(previous.newSessionHiddenOptionsV1).toEqual([]);
+        const hidden = applySettings(previous, { newSessionHiddenOptionsV1: ['machine', 'models', 'providerOption'] });
+        const reloaded = settingsParse(JSON.parse(JSON.stringify(hidden)));
+        const updated = applySettings(reloaded, { newSessionWizardColumnsEnabled: true });
+        expect(updated.newSessionHiddenOptionsV1).toEqual(['machine', 'models', 'providerOption']);
+        expect(ACCOUNT_SESSION_CREATION_SETTING_DEFINITIONS.newSessionHiddenOptionsV1.storageScope).toBe('account');
+    });
+
     it('resumes the previous ordinary-entry draft by default from an account-synced preference', () => {
         const definition = ACCOUNT_SESSION_CREATION_SETTING_DEFINITIONS.newSessionDraftEntryMode;
 

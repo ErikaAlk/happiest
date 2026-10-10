@@ -1,5 +1,7 @@
 import type { TranslationStructure } from "../_types";
 
+import { newSessionDisplayOptions } from './newSessionDisplayOptions';
+
 const mcpServersUxTranslationExtension = {
   mcpServersConfiguredEmptySubtitle:
     "Crie um servidor, importe JSON do host ou instale uma predefinição recomendada.",
@@ -4919,6 +4921,7 @@ export const pt: TranslationStructure = {
   },
 
   newSession: {
+    displayOptions: newSessionDisplayOptions,
     ...newSessionMcpTranslationExtension,
     ...acpCatalogTranslationExtension.newSession,
     // Used by new-session screen and launch flows

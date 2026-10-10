@@ -74,6 +74,7 @@ import { useNewSessionServerTargetState } from '@/components/sessions/new/hooks/
 import { useNewSessionActiveServerSource } from '@/components/sessions/new/hooks/serverTarget/useNewSessionActiveServerSource';
 import { useNewSessionBackendTargetState } from '@/components/sessions/new/hooks/screenModel/useNewSessionBackendTargetState';
 import { useNewSessionMachinePathState } from '@/components/sessions/new/hooks/screenModel/useNewSessionMachinePathState';
+import { buildNewSessionProjects } from '@/components/sessions/new/modules/newSessionProjects';
 import { useNewSessionPreflightModelsState } from '@/components/sessions/new/hooks/screenModel/useNewSessionPreflightModelsState';
 import { useNewSessionPreflightConfigOptionsState } from '@/components/sessions/new/hooks/screenModel/useNewSessionPreflightConfigOptionsState';
 import { useNewSessionPreflightSessionModesState } from '@/components/sessions/new/hooks/screenModel/useNewSessionPreflightSessionModesState';
@@ -368,6 +369,8 @@ export function useNewSessionScreenModel(params?: Readonly<{ draftId?: string }>
     const useMachinePickerSearch = useSetting('useMachinePickerSearch');
     const usePathPickerSearch = useSetting('usePathPickerSearch');
     const newSessionWizardSectionPresentation = useSetting('newSessionWizardSectionPresentationV1');
+    const hiddenOptions = useSetting('newSessionHiddenOptionsV1') ?? settingsDefaults.newSessionHiddenOptionsV1;
+    const hiddenControlIds = React.useMemo(() => hiddenOptions.filter((id) => id !== 'models'), [hiddenOptions]);
     const newSessionWizardColumnsEnabled = useSetting('newSessionWizardColumnsEnabled');
     const newSessionDefaultCheckoutMode = useSetting('newSessionDefaultCheckoutModeV1');
     const [profiles, setProfiles] = useSettingMutable('profiles');
@@ -692,6 +695,7 @@ export function useNewSessionScreenModel(params?: Readonly<{ draftId?: string }>
         setDraftSelectedPath,
         getRequestedPath,
         getBestPathForMachine,
+        selectProject,
     } = useNewSessionMachinePathState({
         machines,
         recentMachinePaths,
@@ -2102,7 +2106,21 @@ export function useNewSessionScreenModel(params?: Readonly<{ draftId?: string }>
         resumePersistedLaunchKey,
     });
 
+    const projects = React.useMemo(() => buildNewSessionProjects({
+        machines, recentMachinePaths, sessions: sessionRecentPathEntries, favoriteDirectories, selectedMachineId,
+    }), [machines, recentMachinePaths, sessionRecentPathEntries, favoriteDirectories, selectedMachineId]);
+    const projectSelection = React.useMemo(() => hiddenOptions.includes('path') ? undefined : {
+            projects,
+            machines,
+            selectedMachineId,
+            selectedPath,
+            onSelect: selectProject,
+            disabled: isCreating,
+        }, [hiddenOptions, projects, machines, selectedMachineId, selectedPath, selectProject, isCreating]);
     return buildNewSessionScreenVariantModel({
+        projectSelection,
+        showModelSelection: !hiddenOptions.includes('models'),
+        hiddenControlIds,
         useEnhancedSessionWizard,
         popoverBoundaryRef,
         simplePanelProps,

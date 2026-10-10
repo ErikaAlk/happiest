@@ -32,6 +32,8 @@ import {
 } from '@/sync/domains/models/modelOptions';
 
 export type NewSessionEngineOptionDetailProps = Readonly<{
+    showModelSelection?: boolean;
+    showConfigSelection?: boolean;
     backendTarget: BackendTargetRefV1;
     selectedMachineId: string | null;
     capabilityServerId: string;
@@ -382,7 +384,7 @@ export function NewSessionEngineOptionDetail(props: NewSessionEngineOptionDetail
                     configOverrides,
                 });
             } : undefined}
-            selectedModelOptionControls={selectedModelOptionControls}
+            selectedModelOptionControls={props.showConfigSelection === false ? undefined : selectedModelOptionControls}
             onSelectModelOptionValue={(configId, valueId) => {
                 publishSelection({
                     ...selectionRef.current,
@@ -402,7 +404,10 @@ export function NewSessionEngineOptionDetail(props: NewSessionEngineOptionDetail
                     },
                 });
             }}
-            sectionOrder={['model', 'config']}
+            sectionOrder={[
+                ...(props.showModelSelection === false ? [] : ['model'] as const),
+                ...(props.showConfigSelection === false ? [] : ['config'] as const),
+            ]}
         />
     );
 }
