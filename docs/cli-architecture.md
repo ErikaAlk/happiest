@@ -735,6 +735,21 @@ not authorize marker deletion. Failed terminal-exit staging retains tracking and
 marker evidence; visible-console startup awaits that cleanup and reports an
 incomplete retirement rather than allowing its rejection to escape.
 
+### 账号限额来源（开发中）
+
+Claude statusline 的 `rate_limits.five_hour`、`rate_limits.seven_day` 和 SDK 单窗口事件
+复用运行时配额记录入口，随后进入 `ProviderAccountUsageStore` 与既有账号用量持久化。
+单窗口观察保留其他尚未重置的窗口，完整查询替换窗口集合。
+
+Codex app-server 会话初始化后读取 `account/rateLimits/read`。后台服务在
+`connectedServices.quotas` 能力启用时，通过提供方目录的 `loadNativeQuota` 查询本机登录：
+Claude 使用原生凭据读取器与既有官方 HTTP 查询器，Codex 使用官方 app-server。
+原生凭据保留在本机，服务器只接收账号用量；持久化遵循账号加密模式。
+后台停止时先结束查询生产者，再排空持久化。
+
+这些路径尚未完成 S30 验收。Claude 原生凭据续期与真实窗口对照仍待验证；
+后台暂时复用既有提供方查询间隔，接口频率限制的依据尚未核实。
+
 ### Model-capacity recovery (development)
 
 `TemporaryThrottleRecoveryScheduler` owns scheduling after a terminal capacity failure.

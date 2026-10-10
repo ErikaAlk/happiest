@@ -109,4 +109,29 @@ describe('startHookServer (statusline hook)', () => {
 
     expect(response.status).toBe(200);
   });
+
+  it('keeps an asynchronous consumer failure non-fatal for the process', async () => {
+    const unhandled: unknown[] = [];
+    const onUnhandledRejection = (reason: unknown) => { unhandled.push(reason); };
+    process.on('unhandledRejection', onUnhandledRejection);
+    try {
+      const server = await startHookServer({
+        onSessionHook: vi.fn(),
+        permissionHookSecret: 'secret-5',
+        // 真实用量记录会做网络请求，消费者失败是常见的暂时失败。
+        onStatuslineUpdate: async () => {
+          throw new Error('consumer exploded asynchronously');
+        },
+      });
+      servers.push(server);
+
+      const response = await postStatusline({ port: server.port, secret: 'secret-5', body: '{"session_id":"x"}' });
+
+      expect(response.status).toBe(200);
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      expect(unhandled).toEqual([]);
+    } finally {
+      process.off('unhandledRejection', onUnhandledRejection);
+    }
+  });
 });

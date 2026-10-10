@@ -317,7 +317,11 @@ export async function recordConnectedServiceRuntimeQuotaSnapshotForSession(input
             && credentialFingerprintMatchesCurrentSource === true
           )
         : undefined,
-      observation: accountUsageObservation,
+      observation: {
+        ...accountUsageObservation,
+        partialMeters: effectiveSnapshot.evidence?.kind === 'claude_runtime_quota_utilization'
+          || effectiveSnapshot.evidence?.kind === 'claude_runtime_usage_limit',
+      },
       sessionId: input.sessionId,
       snapshot: accountUsageSnapshot,
     });

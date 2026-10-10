@@ -73,6 +73,7 @@ export type ProviderAccountUsagePersistenceScheduler = Readonly<{
     | Readonly<{ status: 'already_persisted'; reason: string }>
   >;
   flush(timeoutMs: number): Promise<unknown>;
+  hasPersistedRecord?: (recordId: string) => boolean;
   dispose(): void;
 }>;
 
@@ -295,6 +296,7 @@ export function createProviderAccountUsagePersistenceScheduler(params: Readonly<
       return { status: 'already_persisted', reason: lastSuppressionReason };
     },
     flush: async (timeoutMs) => await scheduler.flushAll(timeoutMs),
+    hasPersistedRecord: (recordId) => stateByPersistenceKey.has(`${recordId}\u0000record`),
     dispose: () => scheduler.dispose(),
   };
 }

@@ -47,8 +47,14 @@ export type ConnectedServiceQuotaFetcherHostParams = Readonly<{
 }>;
 
 export type ConnectedServiceQuotaFetcherDescriptor = Readonly<{
+  loadNativeQuota?: (params: Readonly<{ env: NodeJS.ProcessEnv }>) => NativeProviderQuotaSource | null;
   loadQuota?: (params: ConnectedServiceQuotaFetcherHostParams) => ConnectedServiceQuotaFetcher;
   loadSubscription?: (params: ConnectedServiceQuotaFetcherHostParams) => ConnectedServiceSubscriptionFetcher;
+}>;
+
+export type NativeProviderQuotaSource = Readonly<{
+  pollIntervalMs: number;
+  fetch: (signal: AbortSignal) => Promise<ConnectedServiceQuotaSnapshotV1 | null>;
 }>;
 
 /**

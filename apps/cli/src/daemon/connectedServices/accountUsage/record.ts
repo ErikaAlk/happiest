@@ -104,14 +104,15 @@ export function authorizeProviderAccountUsageObservation(input: Readonly<{
   observation?: ProviderAccountUsageObservation;
   sourceProviderAccountId?: string | null;
 }>): ProviderAccountUsageObservation | undefined {
-  if (!input.observation?.sources?.length) return undefined;
+  const meterObservation = input.observation?.partialMeters ? { partialMeters: true } : undefined;
+  if (!input.observation?.sources?.length) return meterObservation;
   if (!canRecordProviderAccountUsageSourceLinks({
     snapshot: input.snapshot,
     sourceProviderAccountId: input.sourceProviderAccountId,
   })) {
-    return undefined;
+    return meterObservation;
   }
-  return { sources: input.observation.sources };
+  return { ...meterObservation, sources: input.observation.sources };
 }
 
 export function createProviderAccountUsageRecordIdMetadataPublisher(params: Readonly<{
@@ -139,6 +140,7 @@ export async function recordProviderAccountUsageSnapshotForSession(input: Readon
   verifyCredentialFingerprint?: ProviderAccountUsageCredentialFingerprintVerifier;
   observation?: Readonly<{
     sources?: readonly ConnectedServiceUsageSourceV1[];
+    partialMeters?: boolean;
   }>;
   sessionId: string;
   snapshot: ProviderAccountUsageSnapshotV1;
@@ -174,6 +176,7 @@ export async function recordProviderAccountUsageSnapshotForSession(input: Readon
   }
   const observation: ProviderAccountUsageObservation = {
     ...(input.observation?.sources ? { sources: input.observation.sources } : {}),
+    ...(input.observation?.partialMeters ? { partialMeters: true } : {}),
   };
   const authorizedObservation = authorizeProviderAccountUsageObservation({
     snapshot,

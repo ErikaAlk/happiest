@@ -1,5 +1,6 @@
 import type { ConnectedServiceCredentialRecordV1, ConnectedServiceQuotaMeterV1 } from '@happier-dev/protocol';
 import { createHash } from 'node:crypto';
+import { createClaudeNativeQuotaSource } from './nativeQuota';
 
 import { resolveClaudeCodeUserAgent } from '@/backends/claude/utils/claudeCodeUserAgent';
 
@@ -26,6 +27,13 @@ function parseDisableQuotaEndpointEnv(raw: string | undefined): boolean {
 }
 
 export const claudeSubscriptionQuotaFetcherDescriptor: ConnectedServiceQuotaFetcherDescriptor = {
+  loadNativeQuota: ({ env }) => {
+    if (parseDisableQuotaEndpointEnv(env.HAPPIER_CONNECTED_SERVICES_DISABLE_CLAUDE_SUBSCRIPTION_QUOTA_ENDPOINT)) return null;
+    return createClaudeNativeQuotaSource(env, claudeSubscriptionQuotaFetcherDescriptor.loadQuota!({
+      env,
+      staleAfterMs: createClaudeSubscriptionQuotaFetcher().pollPolicy!.minPollIntervalMs!,
+    }));
+  },
   loadQuota: ({ env, staleAfterMs }) => createClaudeSubscriptionQuotaFetcher({
     usageUrl: parseNonEmptyStringEnv(
       env.HAPPIER_CONNECTED_SERVICES_CLAUDE_SUBSCRIPTION_USAGE_URL
@@ -543,6 +551,8 @@ function buildUsageWindowMeter(
     unit: resolveUsageWindowUnit(window),
     utilizationPct,
     providerLimitId,
+    ...(meterId === 'five_hour' ? { windowDurationMs: 5 * 60 * 60_000 }
+      : meterId === 'seven_day' ? { windowDurationMs: 7 * 24 * 60 * 60_000 } : {}),
     ...(modelId ? { modelId } : {}),
     resetsAt: resolveUsageWindowResetAtMs(window),
     status: utilizationPct === null ? 'unavailable' : 'ok',

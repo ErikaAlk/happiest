@@ -3963,6 +3963,7 @@ export function createCodexAppServerRuntime(params: Readonly<{
         });
     };
 
+    let initialQuotaReadGeneration = -1;
     const ensureClient = async (options: Readonly<{
         reattachRetainedThread?: boolean;
     }> = {}): Promise<DisposableCodexAppServerClient> => {
@@ -4310,7 +4311,22 @@ export function createCodexAppServerRuntime(params: Readonly<{
                     throw error;
                 });
         }
-        return await clientPromise;
+        const client = await clientPromise;
+        if (initialQuotaReadGeneration !== clientLifecycleGeneration) {
+            initialQuotaReadGeneration = clientLifecycleGeneration;
+            const accountResponse = await client.request('account/read', { refreshToken: false });
+            const account = readRecord(readRecord(accountResponse)?.account);
+            if (account && account.type !== 'apiKey') {
+                const rawSnapshot = await readCodexRateLimitsSnapshot({
+                    request: async (_method, params) => await client.request('account/rateLimits/read', params),
+                });
+                await publishRateLimitSnapshot(rawSnapshot, {
+                    includeLiveAccountIdentity: true,
+                    operationIdentityAtStart: latestConnectedServiceRuntimeIdentity,
+                });
+            }
+        }
+        return client;
     };
 
     const disposeClient = async (options?: Readonly<{

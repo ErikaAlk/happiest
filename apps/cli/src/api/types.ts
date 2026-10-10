@@ -333,6 +333,7 @@ export const MachineMetadataSchema = z.object({
   happyLibDir: z.string(),
   daemonTerminalSessionAttachSupported: z.boolean().optional(),
   daemonSessionGoalControlsSupported: z.boolean().optional(),
+  providerAccountUsageRecordIds: z.array(z.string().min(1)).optional(),
   /** K5 — this machine's first-party CLI update facts (plan R13); absent from older daemons. */
   cliUpdate: CliUpdateFactsSchema.optional(),
 })

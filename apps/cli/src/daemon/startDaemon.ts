@@ -53,6 +53,7 @@ import {
 } from '@/utils/spawnHappyCLI';
 import {
   getConnectedServiceRuntimeAuthAdapter,
+  getConnectedServiceQuotaFetcherDescriptors,
   getConnectedServiceStateSharingDescriptor,
   getVendorResumeSupport,
   requireCatalogEntry,
@@ -65,6 +66,7 @@ import {
   resolveTerminalAttachmentControlDescriptorStatusThroughCatalog,
   notifyTerminalAttachmentRetiredThroughCatalog,
 } from '@/backends/catalog';
+import { startNativeProviderQuotaLoop } from './connectedServices/accountUsage/nativeQuotaLoop';
 import { CATALOG_AGENT_IDS } from '@/backends/types';
 import {
   writeDaemonStateIfLockOwned,
@@ -2037,6 +2039,9 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
           await listRetainedConnectedServiceMaterializationIdentityIds({ credentials }),
       });
       let connectedServiceQuotasLoopHandle: ConnectedServiceQuotasLoopHandle | null = null;
+      let nativeProviderQuotaLoop: ReturnType<typeof startNativeProviderQuotaLoop> | null = null;
+      let nativeAccountUsageRecordIds: readonly string[] = [];
+      let publishNativeAccountUsageRecordIds: (() => Promise<void>) | null = null;
       let connectedServiceMaterializedHomeCleanupLoopHandle: Readonly<{
         stop: () => void;
         trigger: () => void;
@@ -2138,6 +2143,8 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
 	        let beforeShutdownOnce: Promise<void> | null = null;
 	        const quiesceConnectedServiceQuotaProducersForShutdown = async (): Promise<void> => {
 	          connectedServiceQuotaProducersQuiesced = true;
+              await nativeProviderQuotaLoop?.stop();
+              nativeProviderQuotaLoop = null;
 	          if (!connectedServiceQuotasLoopHandle) return;
 	          connectedServiceQuotasLoopHandle.pause();
 	          await connectedServiceQuotasLoopHandle.stop();
@@ -7361,6 +7368,24 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
         env: process.env,
         serverUrl: configuration.serverUrl,
       });
+      if (connectedServicesQuotasEnabled) {
+        nativeProviderQuotaLoop = startNativeProviderQuotaLoop({
+          sources: getConnectedServiceQuotaFetcherDescriptors().flatMap((descriptor) => {
+            const source = descriptor.loadNativeQuota?.({ env: process.env });
+            return source ? [source] : [];
+          }),
+          store: providerAccountUsageStore,
+          persistence: providerAccountUsagePersistence,
+          fetchTimeoutMs: resolveConnectedServiceQuotasDaemonOptions(process.env).fetchTimeoutMs,
+          publishRecordIds: async (recordIds) => {
+            nativeAccountUsageRecordIds = recordIds;
+            await publishNativeAccountUsageRecordIds?.();
+          },
+          onTickError: (error) => {
+            logger.debug('[DAEMON RUN] Native account usage tick failed (non-fatal)', error);
+          },
+        });
+      }
       connectedServicesSubscriptionEnabled = await resolveConnectedServicesQuotasDaemonEnabled({
         env: process.env,
         serverUrl: configuration.serverUrl,
@@ -8515,6 +8540,15 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
                 onConnect: async () => {
                   if (shutdownInitiated) return;
 
+                  publishNativeAccountUsageRecordIds = async () => {
+                    await connectedApiMachine.updateMachineMetadata((metadata) => ({
+                      ...metadataForRegistration,
+                      ...metadata,
+                      providerAccountUsageRecordIds: [...nativeAccountUsageRecordIds],
+                    }));
+                  };
+                  await publishNativeAccountUsageRecordIds();
+
                   await reconcileSessionMachineAccessBindings();
 
                   await recoverPendingSessionActivations({
@@ -8716,6 +8750,7 @@ export async function startDaemon(options: Readonly<{ takeover?: boolean }> = {}
       connectedServiceQuotasCoordinator?.dispose();
       connectedServiceQuotasCoordinator = null;
       connectedServiceRuntimeRegistrationCleanup();
+      await nativeProviderQuotaLoop?.stop();
       providerAccountUsagePersistence.dispose();
 
       if (apiMachine) {

@@ -150,7 +150,7 @@ export interface HookServerOptions {
      * Always additive enrichment: the response is sent regardless of what the callback does,
      * and consumer errors never fail the request (the forwarder is fire-and-forget anyway).
      */
-    onStatuslineUpdate?: (payload: ClaudeStatuslinePayload) => void;
+    onStatuslineUpdate?: (payload: ClaudeStatuslinePayload) => void | Promise<void>;
     /** Shared secret required for permission hook requests */
     permissionHookSecret?: string;
     /**
@@ -407,6 +407,7 @@ export async function startHookServer(options: HookServerOptions): Promise<HookS
                     }
                 }, 5000);
 
+                let statuslinePayload: ClaudeStatuslinePayload | null = null;
                 try {
                     const rawBody = await readBoundedRequestBody(req);
                     clearTimeout(readTimeout);
@@ -427,18 +428,19 @@ export async function startHookServer(options: HookServerOptions): Promise<HookS
                     // statusline pipeline is additive enrichment, never a request/response protocol.
                     res.writeHead(200, { 'Content-Type': 'text/plain' }).end('ok');
 
-                    if (payload && options.onStatuslineUpdate) {
-                        try {
-                            options.onStatuslineUpdate(payload);
-                        } catch (error) {
-                            logger.debug('[hookServer] Statusline consumer failed (non-fatal):', error);
-                        }
-                    }
+                    statuslinePayload = payload;
                 } catch (error) {
                     clearTimeout(readTimeout);
                     logger.debug('[hookServer] Error handling statusline hook:', error);
                     if (!res.headersSent) {
                         res.writeHead(200, { 'Content-Type': 'text/plain' }).end('ok');
+                    }
+                }
+                if (statuslinePayload && options.onStatuslineUpdate) {
+                    try {
+                        await options.onStatuslineUpdate(statuslinePayload);
+                    } catch (error) {
+                        logger.debug('[hookServer] Statusline consumer failed (non-fatal):', error);
                     }
                 }
                 return;

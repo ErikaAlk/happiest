@@ -13,6 +13,7 @@ import { computeProviderAccountUsageSnapshotMaterialRevision } from './fingerpri
 
 export type ProviderAccountUsageObservation = Readonly<{
   sources?: readonly ConnectedServiceUsageSourceV1[];
+  partialMeters?: boolean;
 }>;
 
 export type ProviderAccountUsageStoreMutationStatus =
@@ -145,9 +146,19 @@ export function createProviderAccountUsageStore(): ProviderAccountUsageStore {
       : 'incoming_newer';
     const olderUsage = recency === 'incoming_older' || recency === 'incoming_future';
     const usage = olderUsage && existing ? existing : parsed;
+    const meters = observation?.partialMeters && existing && !olderUsage
+      ? [...new Map([
+          ...existing.meters.filter((meter) => {
+            const resetAtMs = meter.resetAtMs ?? meter.resetsAt;
+            return resetAtMs === null || resetAtMs > parsed.fetchedAtMs;
+          }),
+          ...parsed.meters,
+        ].map((meter) => [meter.meterId, meter])).values()]
+      : usage.meters;
     const subscription = mergeProviderAccountSubscription(existing?.subscription, parsed.subscription);
     const next = ProviderAccountUsageSnapshotV1Schema.parse({
       ...usage,
+      meters,
       ...(subscription ? { subscription } : {}),
       recordId: targetRecordId,
       recordKey: targetRecordKey,

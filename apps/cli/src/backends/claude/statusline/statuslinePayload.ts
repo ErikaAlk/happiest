@@ -46,6 +46,7 @@ export interface ClaudeStatuslinePayload {
     fast_mode?: boolean;
     thinking?: { enabled?: boolean; [key: string]: unknown };
     effort?: { level?: string; [key: string]: unknown };
+    rate_limits?: { five_hour?: unknown; seven_day?: unknown; [key: string]: unknown };
     [key: string]: unknown;
 }
 

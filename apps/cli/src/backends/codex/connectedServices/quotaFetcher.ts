@@ -14,6 +14,7 @@ import { isRecord, normalizeNonEmptyString, resolveConnectedServiceQuotaAccountL
 import { parseRetryAfterHeader } from '@/daemon/connectedServices/quotas/normalization';
 import { createOpenAiCodexSubscriptionFetcher } from './subscriptionFetcher';
 import { mapCodexRateLimitPayloadToQuotaMeters } from './mapCodexRateLimitSnapshot';
+import { createCodexNativeQuotaSource } from './nativeQuota';
 
 function resolveAccountLabel(record: ConnectedServiceCredentialRecordV1): string | null {
   return resolveConnectedServiceQuotaAccountLabel(record);
@@ -62,6 +63,10 @@ function parseDisableQuotaEndpointEnv(raw: string | undefined): boolean {
 }
 
 export const openAiCodexQuotaFetcherDescriptor: ConnectedServiceQuotaFetcherDescriptor = {
+  loadNativeQuota: ({ env }) => {
+    if (parseDisableQuotaEndpointEnv(env.HAPPIER_CONNECTED_SERVICES_DISABLE_CODEX_QUOTA_ENDPOINT)) return null;
+    return createCodexNativeQuotaSource(env, createOpenAiCodexQuotaFetcher().pollPolicy!.minPollIntervalMs!);
+  },
   loadSubscription: ({ env, staleAfterMs }) => createOpenAiCodexSubscriptionFetcher({
     staleAfterMs,
     disablePrivateEndpoint: parseDisableQuotaEndpointEnv(env.HAPPIER_CONNECTED_SERVICES_DISABLE_CODEX_SUBSCRIPTION_ENDPOINT),

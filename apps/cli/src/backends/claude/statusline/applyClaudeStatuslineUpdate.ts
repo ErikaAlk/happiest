@@ -3,6 +3,8 @@ import { logger } from '@/ui/logger';
 import type { Session } from '../session';
 import { applyClaudeEffectiveModelUpdate } from '../sessionModels/effectiveModelUpdate';
 import type { ClaudeStatuslinePayload } from './statuslinePayload';
+import { mapClaudeStatuslineQuotaEvidence } from './statuslineQuota';
+import { recordClaudeRateLimitQuotaEvidence } from '../connectedServices/surfaceClaudeRuntimeIssues';
 
 /**
  * Consumes Claude statusline payloads (pushed by the statusline forwarder wrapper) and feeds
@@ -58,7 +60,7 @@ type StatuslineSessionState = {
 export function createClaudeStatuslineApplier(params: Readonly<{
     logPrefix: string;
 }>): Readonly<{
-    apply(session: Session, payload: ClaudeStatuslinePayload): void;
+    apply(session: Session, payload: ClaudeStatuslinePayload): Promise<void>;
 }> {
     const stateBySession = new WeakMap<Session, StatuslineSessionState>();
 
@@ -132,7 +134,7 @@ export function createClaudeStatuslineApplier(params: Readonly<{
     };
 
     return {
-        apply(session, payload) {
+        async apply(session, payload) {
             if (!matchesSession(session, payload)) {
                 logger.debug(`${params.logPrefix}: ignoring statusline payload from foreign/stale Claude session`, {
                     payloadSessionId: payload.session_id ?? null,
@@ -143,6 +145,9 @@ export function createClaudeStatuslineApplier(params: Readonly<{
             maybeAdoptModelAndWindow(session, payload);
             maybeReconcileRuntime(session, payload, stateFor(session));
             maybeLogRuntimeCanary(payload, stateFor(session));
+            for (const evidence of mapClaudeStatuslineQuotaEvidence(payload)) {
+                await recordClaudeRateLimitQuotaEvidence(session, evidence, params.logPrefix);
+            }
         },
     };
 }

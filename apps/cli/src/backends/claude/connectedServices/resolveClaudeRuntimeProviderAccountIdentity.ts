@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 
-import { resolveConfiguredClaudeConfigDir } from '../utils/resolveConfiguredClaudeConfigDir';
+import { resolveHomeDirFromEnvironment } from '@happier-dev/cli-common/providers';
+import { resolveClaudeConfigDirOverride } from '../utils/resolveClaudeConfigDirOverride';
 
 import { readClaudeOauthAccountIdentity, readClaudeRootConfigFile } from './claudeRootConfig';
 
@@ -9,12 +10,7 @@ export type ClaudeRuntimeProviderAccountIdentity = Readonly<{
   providerEmail: string | null;
 }>;
 
-/**
- * Read the live provider-account identity from a materialized Claude config dir
- * (`<dir>/.claude.json` → `oauthAccount`). This is the SAME identity the runtime-auth adapter
- * consults when it forms exact-identity source links; keeping one owner avoids a second, drifting
- * identity source (mirrors Codex `readCodexAuthStoreProviderAccountId`).
- */
+// 从 Claude 根配置读取账号身份，原生和托管配置共用此处。
 export async function readClaudeMaterializedOAuthAccountIdentity(
   claudeConfigDir: string,
 ): Promise<ClaudeRuntimeProviderAccountIdentity> {
@@ -26,16 +22,11 @@ export async function readClaudeMaterializedOAuthAccountIdentity(
   };
 }
 
-/**
- * Resolve the live provider-account identity for the CURRENT runtime, from the configured Claude
- * config dir (`CLAUDE_CONFIG_DIR` override or the default home). Fails closed — returns a null
- * `providerAccountId` when the account is genuinely unknown (e.g. api-key/anthropic sessions with
- * no `oauthAccount`), so unproven evidence never forms a source link.
- */
+// 原生默认配置位于用户目录，指定配置目录时读取该目录内的根配置。
 export async function resolveClaudeRuntimeProviderAccountIdentity(
   params: Readonly<{ env: NodeJS.ProcessEnv }>,
 ): Promise<ClaudeRuntimeProviderAccountIdentity> {
   return readClaudeMaterializedOAuthAccountIdentity(
-    resolveConfiguredClaudeConfigDir({ env: params.env }),
+    resolveClaudeConfigDirOverride(params.env) ?? resolveHomeDirFromEnvironment(params.env),
   );
 }

@@ -244,15 +244,7 @@ async function enrichClaudeUsageDetailsWithRuntimeAccountIdentity(
     if (typeof details.sourceProviderAccountId === 'string' && details.sourceProviderAccountId.trim().length > 0) {
         return details;
     }
-    // Only connected-service (pool) sessions carry a source identity: the soft-switch is a pool
-    // feature, and source links are attributed to a connected-service account. Native sessions
-    // have no pool to switch within, so they stay unstamped (and must not read the ambient home).
-    const hasConnectedServiceSelection = Boolean(
-        findConnectedServiceChildSelection(process.env, 'claude-subscription')
-        ?? findConnectedServiceChildSelection(process.env, 'anthropic'),
-    );
-    if (!hasConnectedServiceSelection) return details;
-    const identity = await resolveClaudeRuntimeProviderAccountIdentity({ env: process.env }).catch(() => null);
+    const identity = await resolveClaudeRuntimeProviderAccountIdentity({ env: process.env });
     const providerAccountId = identity?.providerAccountId ?? null;
     if (!providerAccountId) return details;
     return { ...details, sourceProviderAccountId: providerAccountId };
@@ -274,9 +266,12 @@ function buildClaudeRuntimeQuotaSnapshot(params: Readonly<{
     source?: ClaudeQuotaSnapshotSource;
     evidenceKind?: ClaudeQuotaSnapshotEvidenceKind;
 }>): ConnectedServiceQuotaSnapshotV1 {
-    const providerLimitId = params.details.providerLimitId ?? params.details.limitCategory ?? 'account';
+    const rawLimitId = params.details.providerLimitId ?? params.details.limitCategory ?? 'account';
+    const providerLimitId = rawLimitId === 'weekly' ? 'seven_day' : rawLimitId;
     const resetAtMs = params.details.resetAtMs ?? params.details.overage?.resetAtMs ?? null;
     const utilizationPct = params.details.utilization;
+    const windowDurationMs = providerLimitId === 'five_hour' ? 5 * 60 * 60_000
+        : providerLimitId === 'seven_day' ? 7 * 24 * 60 * 60_000 : null;
     const source = params.source ?? 'runtime_event';
     const evidenceKind = params.evidenceKind ?? 'claude_runtime_usage_limit';
     return {
@@ -319,6 +314,7 @@ function buildClaudeRuntimeQuotaSnapshot(params: Readonly<{
             limitScope: params.details.quotaScope,
             confidence: utilizationPct === null ? 'derived' : 'exact',
             providerLimitId,
+            ...(windowDurationMs === null ? {} : { windowDurationMs }),
             details: {
                 providerLimitId,
                 limitCategory: normalizeClaudePublicLimitCategory(params.details.limitCategory),
@@ -377,7 +373,7 @@ export async function recordClaudeRateLimitQuotaEvidence(
             source: 'in_band_provider_snapshot',
             evidenceKind: 'claude_runtime_quota_utilization',
         }),
-    }).catch(() => undefined);
+    });
 }
 
 function buildClaudeRuntimeIssueUsageLimit(params: Readonly<{

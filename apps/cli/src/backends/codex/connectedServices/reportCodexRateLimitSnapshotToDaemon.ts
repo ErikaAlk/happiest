@@ -81,7 +81,7 @@ export async function flushPendingCodexQuotaSnapshotsToDaemon(input: Readonly<{
   });
 }
 
-async function resolveCodexNativeQuotaIdentity(env: Pick<NodeJS.ProcessEnv, string>): Promise<Readonly<{
+export async function resolveCodexNativeQuotaIdentity(env: Pick<NodeJS.ProcessEnv, string>): Promise<Readonly<{
   profileId: string;
   activeAccountId: string | null;
   accountLabel: string | null;
