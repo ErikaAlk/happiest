@@ -1,4 +1,6 @@
 import { Platform } from 'react-native';
+import { CoTokens } from './coloros/tokens.g';
+import { themedValue } from './coloros/runtime';
 import {
     buildDarkShadowLevels,
     buildGlassBorderColor,
@@ -38,14 +40,13 @@ const sharedSpacing = {
         xxl: 24, // Section spacing
     },
 
-    // Border radii (based on actual usage patterns in codebase)
     borderRadius: {
-        sm: 4,   // Checkboxes (20x20 boxes use 4px corners)
-        md: 8,   // Buttons, items (most common - 31 uses)
-        lg: 10,  // Input fields (matches "new session panel input fields")
-        xl: 12,  // Cards, containers (20 uses)
-        xxl: 16, // Main containers
-        modalCard: 14, // Modal card surfaces (wizard shell, story deck)
+        sm: CoTokens.radius.xs,
+        md: CoTokens.radius.s,
+        lg: CoTokens.radius.m,
+        xl: CoTokens.list.cardRadiusNoSmooth,
+        xxl: CoTokens.radius.xxl,
+        modalCard: CoTokens.dialog.cornerRadiusNoSmooth,
     },
 
     // Icon sizes (based on actual usage patterns)
@@ -88,7 +89,7 @@ export const lightTheme = {
             default: LIGHT_STATE_INFO_FOREGROUND.default,
         })),
         background: {
-            canvas: '#F5F5F5',
+            canvas: themedValue<string>(CoTokens.color.bgGrouped, false),
         },
         surface: lightSurfaceColors,
         // The keyboard focus indicator. Deliberately its own hue rather than an alias of
@@ -115,8 +116,8 @@ export const lightTheme = {
         },
         chrome: {
             header: {
-                background: '#ffffff',
-                foreground: '#18171C',
+                background: themedValue<string>(CoTokens.color.bgGrouped, false),
+                foreground: themedValue<string>(CoTokens.color.label1, false),
             },
         },
         overlay: {
@@ -153,11 +154,11 @@ export const lightTheme = {
             composerInnerShadow: buildGlassInnerShadow(false, COMPOSER_GLASS_INNER_SHADOW_OPACITY_SCALE),
             castShadow: buildGlassCastShadow(false),
             // Glass composer fill: white on light (unchanged from `surface.base`).
-            composerSurface: '#ffffff',
+            composerSurface: themedValue<string>(CoTokens.color.surface, false),
             // Near-white solid fallback for glass panels (e.g. the session-list
             // selection action bar) when blur is unavailable/off — lighter than
             // `surface.elevated` (#f0f0f0), close to white so it reads as glass.
-            panelSurface: '#fafafa',
+            panelSurface: themedValue<string>(CoTokens.color.surfaceGrouped, false),
             // Translucent tint behind the web `backdrop-filter` blur (GlassSurface webBlur
             // tier) — kept fairly transparent so the blurred content actually shows through
             // as frosted glass (too opaque reads as a flat panel over the light list).
@@ -170,12 +171,12 @@ export const lightTheme = {
 
         switch: {
             track: {
-                active: '#1976D2',
-                inactive: '#dddddd',
+                active: themedValue<string>(CoTokens.color.primary, false),
+                inactive: themedValue<string>(CoTokens.color.fillSolid, false),
             },
             thumb: {
-                active: '#FFFFFF',
-                inactive: '#767577',
+                active: CoTokens.switch.thumb,
+                inactive: CoTokens.switch.thumb,
             },
         },
         fab: {
@@ -185,15 +186,15 @@ export const lightTheme = {
             icon: '#FFFFFF',
         },
         segmentedControl: {
-            trackBackground: '#f0f0f0',
+            trackBackground: themedValue<string>(CoTokens.segment.bg, false),
             trackGradient: undefined,
-            activeBackground: '#ffffff',
-            activeGradient: createVerticalGradient(['#FDFDFD', '#FFFFFF']),
+            activeBackground: themedValue<string>(CoTokens.segment.indicator, false),
+            activeGradient: createVerticalGradient<[string, string]>([CoTokens.segment.indicator.light, CoTokens.segment.indicator.light]),
         },
         radio: {
-            active: '#007AFF',
+            active: themedValue<string>(CoTokens.color.primary, false),
             inactive: '#C0C0C0',
-            dot: '#007AFF',
+            dot: themedValue<string>(CoTokens.color.primary, false),
         },
         button: {
             primary: {
@@ -209,16 +210,16 @@ export const lightTheme = {
         },
         feed: {
             card: {
-                background: '#f8f8f8',
+                background: lightSurfaceColors.elevated,
             }
         },
         input: {
-            background: '#F5F5F5',
-            text: '#222222',
-            placeholder: '#999999',
+            background: themedValue<string>(CoTokens.color.fillSolid, false),
+            text: themedValue<string>(CoTokens.color.label1, false),
+            placeholder: themedValue<string>(CoTokens.color.label2Variant, false),
         },
         composer: {
-            chipTint: '#767676',
+            chipTint: themedValue<string>(CoTokens.color.label2, false),
         },
         //
         // App components
@@ -312,14 +313,14 @@ export const lightTheme = {
         // Message View colors
         message: {
             user: {
-                background: '#f0eee6',
-                foreground: '#222222',
+                background: themedValue<string>(CoTokens.color.fillSolid, false),
+                foreground: themedValue<string>(CoTokens.color.label1, false),
             },
             agent: {
-                foreground: '#222222',
+                foreground: themedValue<string>(CoTokens.color.label1, false),
             },
             event: {
-                foreground: '#666666',
+                foreground: themedValue<string>(CoTokens.color.label2, false),
             },
         },
 
@@ -377,7 +378,7 @@ export const darkTheme = {
         // See `theme/tokens/stateColors.ts` for the `foreground` vs `onTint` split and the ratios.
         state: darkStateColors,
         background: {
-            canvas: '#131111',
+            canvas: themedValue<string>(CoTokens.color.bgGrouped, true),
         },
         surface: darkSurfaceColors,
         // See the light theme for why this is a dedicated hue. #A9C2FF measures 10.07:1 on
@@ -387,7 +388,7 @@ export const darkTheme = {
         },
         border: {
             default: 'rgba(255,255,255,0.050)',
-            surface: 'rgba(255,255,255,0.056)',
+            surface: 'transparent',
             strong: 'rgba(255,255,255,0.090)',
             modal: 'rgba(255,255,255,0.064)',
             subtle: 'rgba(255,255,255,0.040)',
@@ -397,8 +398,8 @@ export const darkTheme = {
         },
         chrome: {
             header: {
-                background: '#131111',
-                foreground: '#EFEFEF',
+                background: themedValue<string>(CoTokens.color.bgGrouped, true),
+                foreground: themedValue<string>(CoTokens.color.label1, true),
             },
         },
         overlay: {
@@ -433,10 +434,10 @@ export const darkTheme = {
             castShadow: buildGlassCastShadow(true),
             // Glass composer fill: a lifted/elevated tone on dark so the dark glass
             // composer reads as raised glass (vs the flat `surface.base` = #191717).
-            composerSurface: '#221C1C',
+            composerSurface: themedValue<string>(CoTokens.color.surface, true),
             // Solid grey-ish fill for opt-in glass panels — the same lifted/elevated
             // tone as the dark glass composer (already glass-ish vs the flat base).
-            panelSurface: '#221C1C',
+            panelSurface: themedValue<string>(CoTokens.color.surfaceTop, true),
             // Translucent tint behind the web `backdrop-filter` blur — a frosted dark
             // (≈ `surface.base` #191717), kept transparent enough to read as glass.
             webBlurTint: 'rgba(25, 23, 23, 0.5)',
@@ -448,37 +449,37 @@ export const darkTheme = {
 
         switch: {
             track: {
-                active: '#9EB9FF',
-                inactive: '#252121',
+                active: themedValue<string>(CoTokens.color.primary, true),
+                inactive: themedValue<string>(CoTokens.color.fillSolid, true),
             },
             thumb: {
-                active: '#EFEFEF',
-                inactive: '#766C67',
+                active: CoTokens.switch.thumb,
+                inactive: CoTokens.switch.thumb,
             },
         },
         fab: {
-            background: '#221C1C',
-            backgroundPressed: '#2A2323',
-            gradient: createVerticalGradient(['#221C1C', '#251F1F']),
+            background: themedValue<string>(CoTokens.color.surfaceTop, true),
+            backgroundPressed: themedValue<string>(CoTokens.color.fillSolid, true),
+            gradient: createVerticalGradient([CoTokens.color.surfaceTop.dark, CoTokens.color.fillSolid.dark]),
             icon: '#EFEFEF',
         },
         segmentedControl: {
-            trackBackground: '#201A1A',
+            trackBackground: themedValue<string>(CoTokens.segment.bg, true),
             trackGradient: undefined,
-            activeBackground: '#2A2222',
-            activeGradient: createVerticalGradient(['#2A2222', '#242020']),
+            activeBackground: themedValue<string>(CoTokens.segment.indicator, true),
+            activeGradient: createVerticalGradient<[string, string]>([CoTokens.segment.indicator.dark, CoTokens.segment.indicator.dark]),
         },
         radio: {
-            active: '#9EB9FF',
+            active: themedValue<string>(CoTokens.color.primary, true),
             inactive: '#766C67',
             dot: '#131111',
         },
         button: {
             primary: {
-                background: '#221C1C',
-                gradient: createVerticalGradient(['#221C1C', '#251F1F']),
+                background: themedValue<string>(CoTokens.color.surfaceTop, true),
+                gradient: createVerticalGradient([CoTokens.color.surfaceTop.dark, CoTokens.color.fillSolid.dark]),
                 tint: '#EFEFEF',
-                disabled: '#2A2323',
+                disabled: themedValue<string>(CoTokens.color.fillSolid, true),
             },
             secondary: {
                 background: 'transparent',
@@ -486,16 +487,16 @@ export const darkTheme = {
             }
         },
         input: {
-            background: '#171515',
-            text: '#EFEFEF',
-            placeholder: '#766C67',
+            background: themedValue<string>(CoTokens.color.fillSolid, true),
+            text: themedValue<string>(CoTokens.color.label1, true),
+            placeholder: themedValue<string>(CoTokens.color.label2Variant, true),
         },
         composer: {
-            chipTint: '#A79D97',
+            chipTint: themedValue<string>(CoTokens.color.label2, true),
         },
         feed: {
             card: {
-                background: '#221C1C',
+                background: darkSurfaceColors.elevated,
             }
         },
         //
@@ -590,14 +591,14 @@ export const darkTheme = {
         // Message View colors
         message: {
             user: {
-                background: '#221C1C',
-                foreground: '#EFEFEF',
+                background: themedValue<string>(CoTokens.color.fillSolid, true),
+                foreground: themedValue<string>(CoTokens.color.label1, true),
             },
             agent: {
-                foreground: '#EFEFEF',
+                foreground: themedValue<string>(CoTokens.color.label1, true),
             },
             event: {
-                foreground: '#8A817C',
+                foreground: themedValue<string>(CoTokens.color.label2, true),
             },
         },
 

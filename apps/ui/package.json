@@ -77,6 +77,7 @@
     "eas-build-post-install": "yarn -s postinstall:real",
     "postinstall": "node ./tools/postinstall/runUiPostinstall.cjs",
     "generate-theme": "tsx sources/theme.gen.ts",
+    "sync:coloros-tokens": "node scripts/syncColorOsTokens.mjs",
     "// ==== Development/Preview/Production Variants ====": "",
     "ios:dev": "yarn -s ensure:workspace:built && cross-env APP_ENV=development expo run:ios",
     "ios:preview": "yarn -s ensure:workspace:built && cross-env APP_ENV=preview expo run:ios",

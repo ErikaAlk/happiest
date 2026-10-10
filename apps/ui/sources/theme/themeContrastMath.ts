@@ -1,52 +1,16 @@
-/**
- * WCAG 2.x contrast math over theme token values.
- *
- * Three places in this repo need this and they had started to disagree: the R-1 gate
- * (`components/ui/theme/themeContrast.test.ts`) carried a private alpha-aware copy, the theme
- * editor (`themeProfileEditorModel.ts`) carries an alpha-BLIND one that reads
- * `rgba(52,199,89,0.12)` as opaque `#34C759`, and the press/focus gate needed a third. Rather than
- * add the third, the correct version lives here and the gates share it.
- *
- * Most `state.*.background` and dark `border.*` values are translucent, so a ratio only exists once
- * the colour is composited over the surface behind it — `contrastRatioOverLayers` is the entry
- * point that makes that explicit instead of leaving each caller to remember.
- *
- * Known divergent reader, deliberately not migrated here: the theme editor's parser. Correcting it
- * changes user-visible contrast warnings in the profile editor, which is a product decision.
- */
+// WCAG 对比度计算共用入口，按绘制顺序合成背景和文字的透明度。
+
+import Color from 'color';
 
 export type ThemeContrastColor = Readonly<{ r: number; g: number; b: number; a: number }>;
 
-const HEX_PATTERN = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
-const RGB_PATTERN = /^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)$/;
-
 export function parseThemeColor(value: string): ThemeContrastColor {
-    const normalized = value.trim();
-
-    const hex = HEX_PATTERN.exec(normalized);
-    if (hex) {
-        const raw = hex[1] ?? '';
-        const expanded = raw.length === 3
-            ? raw.split('').map((part) => `${part}${part}`).join('')
-            : raw;
-        return {
-            r: Number.parseInt(expanded.slice(0, 2), 16),
-            g: Number.parseInt(expanded.slice(2, 4), 16),
-            b: Number.parseInt(expanded.slice(4, 6), 16),
-            a: 1,
-        };
-    }
-
-    const rgb = RGB_PATTERN.exec(normalized);
-    if (!rgb) {
-        throw new Error(`Unsupported color value for a contrast pairing: ${value}`);
-    }
-
+    const color = Color(value.trim());
     return {
-        r: Number(rgb[1]),
-        g: Number(rgb[2]),
-        b: Number(rgb[3]),
-        a: rgb[4] === undefined ? 1 : Number(rgb[4]),
+        r: color.red(),
+        g: color.green(),
+        b: color.blue(),
+        a: color.alpha(),
     };
 }
 
@@ -113,5 +77,5 @@ export function themeContrastRatioOverLayers(ink: ThemeContrastColor, layers: re
     if (backdrop === null) {
         throw new Error('themeContrastRatioOverLayers needs at least one backdrop layer');
     }
-    return themeContrastRatio(ink, backdrop);
+    return themeContrastRatio(compositeThemeColorOver(ink, backdrop), backdrop);
 }

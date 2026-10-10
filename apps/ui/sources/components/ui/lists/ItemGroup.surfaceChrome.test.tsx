@@ -2,6 +2,7 @@ import * as React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { renderScreen, standardCleanup } from '@/dev/testkit';
+import { lightSurfaceColors } from '@/theme/tokens/surfaceAndTextColors';
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -51,7 +52,7 @@ async function renderItemGroup(props?: Readonly<{ clipContent?: boolean }>) {
 function findGroupSurfaceStyle(screen: Awaited<ReturnType<typeof renderItemGroup>>): Record<string, unknown> {
     const matchingNode = screen.findAllByType('View' as never).find((node) => {
         const style = flattenStyle(node.props.style);
-        return style.backgroundColor === '#ffffff' && style.borderRadius === 16;
+        return style.backgroundColor === lightSurfaceColors.base && style.overflow === 'visible';
     });
     return matchingNode ? flattenStyle(matchingNode.props.style) : {};
 }

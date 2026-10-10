@@ -79,7 +79,6 @@ const stylesheet = StyleSheet.create((theme) => ({
         borderRadius: 5,
     },
     tabActive: {
-        backgroundColor: theme.colors.segmentedControl.activeBackground,
         ...shadowLevelStyle(theme.colors.shadowLevels[1]),
     },
     tabLabel: {

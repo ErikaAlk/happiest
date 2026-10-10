@@ -3,6 +3,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { darkTheme, lightTheme } from '.';
+import { CoTokens } from './coloros/tokens.g';
 
 function collectLeafPaths(value: unknown, prefix = ''): string[] {
     if (value === null || typeof value !== 'object') {
@@ -31,37 +32,37 @@ describe('canonical theme color shape', () => {
     });
 
     it('uses the public canvas, surface, border, effect, and chrome token shape', () => {
-        expect(lightTheme.colors.background.canvas).toBe('#F5F5F5');
-        expect(darkTheme.colors.background.canvas).toBe('#131111');
+        expect(lightTheme.colors.background.canvas).toBe(CoTokens.color.bgGrouped.light);
+        expect(darkTheme.colors.background.canvas).toBe(CoTokens.color.bgGrouped.dark);
 
-        expect(lightTheme.colors.surface.base).toBe('#ffffff');
-        expect(lightTheme.colors.surface.inset).toBe('#F8F8F8');
-        expect(lightTheme.colors.surface.elevated).toBe('#f0f0f0');
-        expect(darkTheme.colors.surface.base).toBe('#191717');
-        expect(darkTheme.colors.surface.inset).toBe('#171515');
-        expect(darkTheme.colors.surface.elevated).toBe('#221C1C');
+        expect(lightTheme.colors.surface.base).toBe(CoTokens.color.surface.light);
+        expect(lightTheme.colors.surface.inset).toBe(CoTokens.color.bgGrouped.light);
+        expect(lightTheme.colors.surface.elevated).toBe(CoTokens.color.surfaceGrouped.light);
+        expect(darkTheme.colors.surface.base).toBe(CoTokens.color.surface.dark);
+        expect(darkTheme.colors.surface.inset).toBe(CoTokens.color.bgGrouped.dark);
+        expect(darkTheme.colors.surface.elevated).toBe(CoTokens.color.surfaceTop.dark);
 
-        expect(lightTheme.colors.surface.pressed).toBe('#fafafa');
-        expect(lightTheme.colors.surface.selected).toBe('#f8f8f8');
-        expect(lightTheme.colors.surface.pressedOverlay).toBe('#fafafa');
-        expect(lightTheme.colors.surface.ripple).toBe('rgba(0, 0, 0, 0.08)');
+        expect(lightTheme.colors.surface.pressed).toBe(CoTokens.color.cardPressed.light);
+        expect(lightTheme.colors.surface.selected).toBe(CoTokens.color.fillSolid.light);
+        expect(lightTheme.colors.surface.pressedOverlay).toBe(CoTokens.color.hover.light);
+        expect(lightTheme.colors.surface.ripple).toBe(CoTokens.color.press.light);
 
         expect(lightTheme.colors.border.default).toBe('#eaeaea');
         expect(lightTheme.colors.border.surface).toBe('transparent');
         expect(lightTheme.colors.border.modal).toBe('rgba(0, 0, 0, 0.1)');
         expect(darkTheme.colors.border.default).toBe('rgba(255,255,255,0.050)');
-        expect(darkTheme.colors.border.surface).toBe('rgba(255,255,255,0.056)');
+        expect(darkTheme.colors.border.surface).toBe('transparent');
         expect(darkTheme.colors.border.modal).toBe('rgba(255,255,255,0.064)');
 
         expect(lightTheme.colors.effect.surfaceHighlight).toBe('transparent');
         expect(darkTheme.colors.effect.surfaceHighlight).toBe('transparent');
-        expect(lightTheme.colors.chrome.header.background).toBe('#ffffff');
-        expect(lightTheme.colors.chrome.header.foreground).toBe('#18171C');
-        expect(darkTheme.colors.chrome.header.background).toBe('#131111');
-        expect(darkTheme.colors.chrome.header.foreground).toBe('#EFEFEF');
+        expect(lightTheme.colors.chrome.header.background).toBe(CoTokens.color.bgGrouped.light);
+        expect(lightTheme.colors.chrome.header.foreground).toBe(CoTokens.color.label1.light);
+        expect(darkTheme.colors.chrome.header.background).toBe(CoTokens.color.bgGrouped.dark);
+        expect(darkTheme.colors.chrome.header.foreground).toBe(CoTokens.color.label1.dark);
 
-        expect(lightTheme.colors.composer.chipTint).toBe('#767676');
-        expect(darkTheme.colors.composer.chipTint).toBe('#A79D97');
+        expect(lightTheme.colors.composer.chipTint).toBe(CoTokens.color.label2.light);
+        expect(darkTheme.colors.composer.chipTint).toBe(CoTokens.color.label2.dark);
     });
 
     it('uses action foreground tokens for backgroundless permission buttons', () => {
@@ -72,6 +73,18 @@ describe('canonical theme color shape', () => {
         expect(darkTheme.colors.permissionButton.allow.text).toBe('#66DC7E');
         expect(darkTheme.colors.permissionButton.deny.text).toBe('#EE6E6C');
         expect(darkTheme.colors.permissionButton.allowAll.text).toBe('#9EB9FF');
+    });
+
+    it('keeps links in the design kit theme color family in both modes', () => {
+        expect(lightTheme.colors.text.link).toBe(CoTokens.color.primaryText.light);
+        expect(darkTheme.colors.text.link).toBe(CoTokens.color.primaryText.dark);
+        expect(lightTheme.colors.text.link).not.toBe(lightTheme.colors.text.primary);
+        expect(darkTheme.colors.text.link).not.toBe(darkTheme.colors.text.primary);
+    });
+
+    it('uses the canonical elevated surface for default tool call cards', () => {
+        expect(lightTheme.colors.feed.card.background).toBe(lightTheme.colors.surface.elevated);
+        expect(darkTheme.colors.feed.card.background).toBe(darkTheme.colors.surface.elevated);
     });
 
     it('does not expose legacy groupped or flat surface tokens in the canonical color shape', () => {
@@ -88,12 +101,12 @@ describe('canonical theme color shape', () => {
     });
 
     it('uses canonical semantic, text, message, syntax, version-control, and diff color groups', () => {
-        expect(darkTheme.colors).toHaveProperty('text.primary', '#EFEFEF');
-        expect(darkTheme.colors).toHaveProperty('text.secondary', '#8A817C');
-        expect(darkTheme.colors).toHaveProperty('text.tertiary', '#6C625D');
-        expect(darkTheme.colors).toHaveProperty('text.link', '#9EB9FF');
+        expect(darkTheme.colors).toHaveProperty('text.primary', CoTokens.color.label1.dark);
+        expect(darkTheme.colors).toHaveProperty('text.secondary', CoTokens.color.label2.dark);
+        expect(darkTheme.colors).toHaveProperty('text.tertiary', CoTokens.color.label2.dark);
+        expect(darkTheme.colors).toHaveProperty('text.link', CoTokens.color.primaryText.dark);
         expect(darkTheme.colors).toHaveProperty('text.destructive', '#EE6E6C');
-        expect(darkTheme.colors).toHaveProperty('composer.chipTint', '#A79D97');
+        expect(darkTheme.colors).toHaveProperty('composer.chipTint', CoTokens.color.label2.dark);
 
         expect(darkTheme.colors).toHaveProperty('state.success.foreground', '#66DC7E');
         expect(darkTheme.colors).toHaveProperty('state.warning.foreground', '#E0B65A');
@@ -104,10 +117,10 @@ describe('canonical theme color shape', () => {
         expect(darkTheme.colors).toHaveProperty('state.active.background', 'rgba(158, 185, 255, 0.12)');
         expect(darkTheme.colors).toHaveProperty('state.active.border', 'rgba(158, 185, 255, 0.50)');
 
-        expect(darkTheme.colors).toHaveProperty('message.user.background', '#221C1C');
-        expect(darkTheme.colors).toHaveProperty('message.user.foreground', '#EFEFEF');
-        expect(darkTheme.colors).toHaveProperty('message.agent.foreground', '#EFEFEF');
-        expect(darkTheme.colors).toHaveProperty('message.event.foreground', '#8A817C');
+        expect(darkTheme.colors).toHaveProperty('message.user.background', CoTokens.color.fillSolid.dark);
+        expect(darkTheme.colors).toHaveProperty('message.user.foreground', CoTokens.color.label1.dark);
+        expect(darkTheme.colors).toHaveProperty('message.agent.foreground', CoTokens.color.label1.dark);
+        expect(darkTheme.colors).toHaveProperty('message.event.foreground', CoTokens.color.label2.dark);
 
         expect(darkTheme.colors).toHaveProperty('syntax.keyword', '#9EB9FF');
         expect(darkTheme.colors).toHaveProperty('syntax.default', '#EFEFEF');

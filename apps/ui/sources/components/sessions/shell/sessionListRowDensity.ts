@@ -1,3 +1,4 @@
+import { CoTokens } from '@/theme/coloros/tokens.g';
 import {
     SESSION_LIST_ROW_HEIGHT_COMPACT,
     SESSION_LIST_ROW_HEIGHT_DEFAULT,
@@ -8,10 +9,10 @@ import {
 export type SessionListRowPlatform = 'ios' | 'android' | 'web' | 'windows' | 'macos';
 export type SessionListRowDensity = 'default' | 'compact' | 'minimal';
 
-export const SESSION_LIST_ROW_CORNER_RADIUS = 12;
+export const SESSION_LIST_ROW_CORNER_RADIUS = CoTokens.list.cardRadius;
 
 export const SESSION_LIST_ROW_TITLE_TEXT_METRICS = {
-    default: { fontSize: 14, lineHeight: 18 },
+    default: { fontSize: CoTokens.type.bodyXL.size, lineHeight: CoTokens.type.bodyXL.lineHeight },
     compact: { fontSize: 14, lineHeight: 18 },
     minimal: { fontSize: 12, lineHeight: 16 },
     minimalNativePhone: { fontSize: 14, lineHeight: 18 },

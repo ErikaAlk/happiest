@@ -30,7 +30,7 @@ export const AgentContentView: React.FC<AgentContentViewProps> = React.memo(({
     // controller for the rationale): the bar overlays content, so the composer is
     // lifted above it here rather than by an in-flow chrome-host reservation.
     return (
-        <View style={{ flex: 1, minHeight: 0, paddingBottom: bottomChromeHeight, backgroundColor: theme.colors.surface.base }}>
+        <View style={{ flex: 1, minHeight: 0, paddingBottom: bottomChromeHeight, backgroundColor: theme.colors.background.canvas }}>
             <ComposerKeyboardScaffold
                 testID="agent-content-keyboard-host"
                 mode="session"

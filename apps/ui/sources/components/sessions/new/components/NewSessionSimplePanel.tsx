@@ -6,10 +6,10 @@ import Animated, {
     runOnJS,
     useAnimatedStyle,
     useSharedValue,
-    withTiming,
+    withSpring,
 } from 'react-native-reanimated';
 import { motionTokens } from '@/components/ui/motion/motionTokens';
-import { reanimatedMotionTokens } from '@/components/ui/motion/reanimatedMotionTokens';
+import { resolveColorOsPanelSpring } from '@/components/ui/motion/motionSprings';
 import { OverlayScrim } from '@/components/ui/overlays/OverlayScrim';
 import { useReducedMotionPreference } from '@/hooks/ui/useReducedMotionPreference';
 import { isNewSessionFloatingComposerPresentation } from '@/components/sessions/new/navigation/newSessionPresentation';
@@ -40,18 +40,6 @@ import {
 
 const SIMPLE_NEW_SESSION_MIN_TOP_GAP = 8;
 
-/**
- * How far the composer card travels on entry.
- *
- * Durations and the curve come from `motionTokens.overlay.modal` — this is an ordinary overlay and
- * should settle like every other one. Only the distance is local, because distance is a property of
- * the surface rather than of the preset (the shared tokens themselves range from 8 for a popover to
- * 32 for a full slide). A bottom-anchored card wants enough travel to read as lifting into place and
- * little enough that it does not read as a sheet arriving: the preset's own 10 is invisible here,
- * and anything past ~32 reads as the sheet this replaces. The bar the composer replaces occupies
- * roughly this much of the same space, so the card reads as rising into the layer the tab bar just
- * vacated rather than sliding in from off-screen.
- */
 /**
  * How far the composer's frosted band reaches above the card.
  *
@@ -205,6 +193,8 @@ export const NewSessionSimplePanel = React.memo(function NewSessionSimplePanel(p
     const router = useRouter();
     const navigation = useNavigation();
     const reducedMotion = useReducedMotionPreference();
+    const enterSpring = resolveColorOsPanelSpring('enter', { reducedMotion });
+    const exitSpring = resolveColorOsPanelSpring('exit', { reducedMotion });
     // Seeded settled for the non-floating case so the sheet path renders exactly as it did before.
     const enterProgress = useSharedValue(isFloatingComposer ? 0 : 1);
     const hasStartedEntranceRef = React.useRef(false);
@@ -240,12 +230,9 @@ export const NewSessionSimplePanel = React.memo(function NewSessionSimplePanel(p
         // turn precisely so children are laid out first — so starting here spent the opening frames
         // off screen and only the tail of the curve was ever visible.
         requestAnimationFrame(() => {
-            enterProgress.value = withTiming(1, {
-                duration: motionTokens.overlay.popover.enterMs,
-                easing: reanimatedMotionTokens.easing.standard,
-            });
+            enterProgress.value = withSpring(1, enterSpring);
         });
-    }, [enterProgress, isFloatingComposer, reducedMotion]);
+    }, [enterProgress, enterSpring, isFloatingComposer, reducedMotion]);
 
     const handleDismissKeyboard = React.useCallback(() => {
         Keyboard.dismiss();
@@ -283,13 +270,10 @@ export const NewSessionSimplePanel = React.memo(function NewSessionSimplePanel(p
         }
         // Only the CARD animates out; the scrim is left where it is. Animating opacity on an
         // ancestor of the blur stack has the same offscreen-composite cost as moving it.
-        cardExitProgress.value = withTiming(0, {
-            duration: motionTokens.overlay.popover.exitMs,
-            easing: reanimatedMotionTokens.easing.standard,
-        }, (finished) => {
+        cardExitProgress.value = withSpring(0, exitSpring, (finished) => {
             if (finished) runOnJS(leave)();
         });
-    }, [cardExitProgress, navigation, reducedMotion, router]);
+    }, [cardExitProgress, exitSpring, navigation, reducedMotion, router]);
 
     // Rise plus a touch of scale. Travel alone reads as a panel being repositioned; the small scale
     // is what makes it read as a surface arriving. `fromScale` is the shared modal token rather than

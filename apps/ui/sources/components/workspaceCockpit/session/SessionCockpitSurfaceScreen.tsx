@@ -358,7 +358,7 @@ const SessionCockpitFullscreenSurface = React.memo((props: Readonly<{
                 flex: 1,
                 minHeight: 0,
                 minWidth: 0,
-                backgroundColor: theme.colors.surface.base,
+                backgroundColor: theme.colors.background.canvas,
                 paddingTop: safeAreaPaddingEnabled ? safeArea.top : 0,
                 paddingBottom: safeAreaPaddingEnabled ? safeArea.bottom : bottomChromeHeight,
             }}

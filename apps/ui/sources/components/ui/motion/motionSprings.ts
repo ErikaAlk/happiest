@@ -1,4 +1,6 @@
 import { ReduceMotion, type WithSpringConfig } from 'react-native-reanimated';
+import { CoTokens } from '@/theme/coloros/tokens.g';
+import { coSpringPhysics } from '@/theme/coloros/runtime';
 
 /**
  * The app's spring vocabulary: springs named for the ROLE they play, not for how they feel.
@@ -215,3 +217,14 @@ export const resolveMotionSpring: SpringConfigResolver<MotionSpringRole> = creat
     MOTION_SPRING_PHYSICS,
     MOTION_REDUCED_MOTION_FALLBACKS,
 );
+
+function panelSpringPhysics(response: number): SpringPhysics {
+    const { mass, stiffness, damping } = coSpringPhysics({ bounce: CoTokens.panel.settle.bounce, response });
+    return { mass, stiffness, damping };
+}
+
+// 短距离面板使用设计库的进出场响应下限；减少动态由统一解析器处理。
+export const resolveColorOsPanelSpring = createSpringConfigResolver({
+    enter: panelSpringPhysics(CoTokens.panel.enterResponseMin),
+    exit: panelSpringPhysics(CoTokens.panel.exitResponseMin),
+}, { enter: 'instant', exit: 'instant' });

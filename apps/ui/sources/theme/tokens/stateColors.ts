@@ -104,9 +104,7 @@ export const darkStateColors: ThemeStateColors = {
     },
     danger: {
         foreground: '#EE6E6C',
-        // A hair lighter than the glyph tint: the foreground reads 4.88:1 on surface.base but
-        // drops to 4.24/3.92 once the tint sits on surface.selected/surface.pressed.
-        onTint: '#F18583',   // 4.66:1 worst case
+        onTint: '#FF9D96',
         background: 'rgba(238, 110, 108, 0.15)',
         border: '#EE6E6C',
     },

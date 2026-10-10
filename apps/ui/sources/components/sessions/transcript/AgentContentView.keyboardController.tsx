@@ -33,7 +33,7 @@ export const AgentContentView: React.FC<AgentContentViewProps> = React.memo(({
     // is 0 when the bar is hidden (e.g. keyboard open), collapsing the reservation
     // so the scaffold geometry is identical to having no bar.
     return (
-        <View style={{ flex: 1, minHeight: 0, paddingBottom: bottomChromeHeight, backgroundColor: theme.colors.surface.base }}>
+        <View style={{ flex: 1, minHeight: 0, paddingBottom: bottomChromeHeight, backgroundColor: theme.colors.background.canvas }}>
             <ComposerKeyboardScaffold
                 testID="agent-content-keyboard-host"
                 mode="session"

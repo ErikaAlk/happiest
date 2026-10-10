@@ -33,7 +33,7 @@ const stylesheet = StyleSheet.create((theme) => ({
         right: 0,
         bottom: 0,
         left: 0,
-        backgroundColor: theme.colors.surface.base,
+        backgroundColor: theme.colors.background.canvas,
         paddingTop: PLACEHOLDER_TOP_PADDING_PX,
         paddingHorizontal: PLACEHOLDER_HORIZONTAL_PADDING_PX,
     },

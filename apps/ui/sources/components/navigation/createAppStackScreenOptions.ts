@@ -14,7 +14,7 @@ export function createAppStackScreenOptions(args: Readonly<{
         headerBackTitle: args.headerBackTitle,
         headerShadowVisible: false,
         contentStyle: {
-            backgroundColor: args.theme.colors.surface.base,
+            backgroundColor: args.theme.colors.background.canvas,
         },
         headerStyle: {
             backgroundColor: args.theme.colors.chrome.header.background,

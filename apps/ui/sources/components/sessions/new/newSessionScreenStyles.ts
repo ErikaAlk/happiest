@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 import { Typography } from '@/constants/Typography';
+import { CoTokens } from '@/theme/coloros/tokens.g';
 
 export const newSessionScreenStyles = StyleSheet.create((theme, rt) => ({
     container: {
@@ -37,7 +38,7 @@ export const newSessionScreenStyles = StyleSheet.create((theme, rt) => ({
         paddingHorizontal: 16,
     },
     sectionHeader: {
-        fontSize: 17,
+        fontSize: CoTokens.type.bodyM.size,
         fontWeight: '600',
         color: theme.colors.text.primary,
         marginBottom: 8,
@@ -63,7 +64,7 @@ export const newSessionScreenStyles = StyleSheet.create((theme, rt) => ({
     },
     profileListItem: {
         backgroundColor: theme.colors.input.background,
-        borderRadius: 12,
+        borderRadius: CoTokens.radius.m,
         padding: 8,
         marginBottom: 8,
         flexDirection: 'row',
@@ -98,7 +99,7 @@ export const newSessionScreenStyles = StyleSheet.create((theme, rt) => ({
     },
     addProfileButton: {
         backgroundColor: theme.colors.surface.base,
-        borderRadius: 12,
+        borderRadius: CoTokens.radius.m,
         padding: 12,
         marginBottom: 12,
         flexDirection: 'row',
@@ -114,11 +115,10 @@ export const newSessionScreenStyles = StyleSheet.create((theme, rt) => ({
     },
     selectorButton: {
         backgroundColor: theme.colors.input.background,
-        borderRadius: 8,
+        borderRadius: CoTokens.radius.m,
         padding: 10,
         marginBottom: 12,
-        borderWidth: 1,
-        borderColor: theme.colors.border.default,
+        borderWidth: 0,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -138,7 +138,7 @@ export const newSessionScreenStyles = StyleSheet.create((theme, rt) => ({
     permissionButton: {
         width: '48%',
         backgroundColor: theme.colors.input.background,
-        borderRadius: 12,
+        borderRadius: CoTokens.radius.m,
         padding: 16,
         marginBottom: 12,
         alignItems: 'center',

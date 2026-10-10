@@ -1900,7 +1900,7 @@ export const SessionView = React.memo((props: SessionViewProps) => {
                     left: 0,
                     right: 0,
                     height: safeArea.top,
-                    backgroundColor: theme.colors.surface.base,
+                    backgroundColor: theme.colors.background.canvas,
                     zIndex: 1000,
                     ...shadowLevelStyle(theme.colors.shadowLevels[3]),
                 }} />

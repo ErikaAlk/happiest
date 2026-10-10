@@ -31,7 +31,7 @@ const stylesheet = StyleSheet.create((theme) => ({
         flex: 1,
         minHeight: 0,
         minWidth: 0,
-        backgroundColor: theme.colors.surface.base,
+        backgroundColor: theme.colors.background.canvas,
     },
 }));
 

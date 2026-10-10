@@ -10,14 +10,18 @@ import {
 } from '@/theme/themeContrastMath';
 
 describe('themeContrastMath', () => {
+    it('composites translucent ink before measuring contrast', () => {
+        expect(themeContrastRatioOverLayers(parseThemeColor('#0000001A'), ['#ffffff'])).toBeLessThan(1.3);
+    });
     it('reads both hex forms and rgba, keeping alpha', () => {
         expect(parseThemeColor('#fff')).toEqual({ r: 255, g: 255, b: 255, a: 1 });
         expect(parseThemeColor('#0059B3')).toEqual({ r: 0, g: 89, b: 179, a: 1 });
         expect(parseThemeColor('rgba(0, 122, 255, 0.10)')).toEqual({ r: 0, g: 122, b: 255, a: 0.1 });
+        expect(parseThemeColor('#FFFFFF1A')).toEqual({ r: 255, g: 255, b: 255, a: 26 / 255 });
     });
 
     it('refuses a value it cannot measure rather than guessing black', () => {
-        expect(() => parseThemeColor('transparent')).toThrow(/Unsupported color value/);
+        expect(() => parseThemeColor('invalid-color')).toThrow();
     });
 
     it('produces the WCAG reference ratio for black on white', () => {

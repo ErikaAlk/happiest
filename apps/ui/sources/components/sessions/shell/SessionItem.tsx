@@ -427,7 +427,7 @@ const stylesheet = StyleSheet.create((theme) => ({
         ...SESSION_LIST_ROW_TITLE_TEXT_METRICS.default,
         flex: 1,
         ...Typography.default(),
-        color: theme.colors.text.secondary,
+        color: theme.colors.text.primary,
     },
     sessionTitleCompact: {
         ...SESSION_LIST_ROW_TITLE_TEXT_METRICS.compact,

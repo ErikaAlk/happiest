@@ -23,7 +23,7 @@ export const GradientSurface = React.memo(function GradientSurface(props: Gradie
         <View
             style={[
                 {
-                    backgroundColor: props.fallbackColor,
+                    backgroundColor: props.gradient ? 'transparent' : props.fallbackColor,
                     borderRadius: props.borderRadius,
                     overflow: 'hidden',
                     position: 'relative',

@@ -21,6 +21,7 @@ import {
     resolveItemGroupContentHorizontalInsetPx,
 } from './itemGroupSpacing';
 import { Text } from '@/components/ui/text/Text';
+import { CoTokens } from '@/theme/coloros/tokens.g';
 
 
 export { withItemGroupDividers } from './ItemGroup.dividers';
@@ -68,7 +69,7 @@ const stylesheet = StyleSheet.create((theme, runtime) => {
     // standalone card in the multi-column layout, so the two can never drift.
     const cardChrome = {
         backgroundColor: theme.colors.surface.base,
-        borderRadius: Platform.select({ ios: 10, default: 16 }),
+        borderRadius: Platform.OS === 'web' ? CoTokens.radius.l : CoTokens.list.cardRadius,
         ...surfaceChromeStyle,
         // IMPORTANT: allow popovers to overflow this rounded container.
         overflow: 'visible' as const,
@@ -83,27 +84,27 @@ const stylesheet = StyleSheet.create((theme, runtime) => {
             paddingHorizontal: Platform.select(ITEM_GROUP_CONTAINER_HORIZONTAL_PADDING_PX),
         },
         header: {
-            paddingTop: Platform.select({ ios: 26, default: 20 }),
-            paddingBottom: Platform.select({ ios: 8, default: 8 }),
-            paddingHorizontal: Platform.select({ ios: 32, default: 24 }),
+            paddingTop: CoTokens.list.groupTop,
+            paddingBottom: CoTokens.list.categoryMarginV,
+            paddingHorizontal: CoTokens.list.categoryIndent,
         },
         headerNoTitle: {
-            paddingTop: Platform.select({ ios: 20, default: 16 }),
+            paddingTop: CoTokens.list.groupTop,
         },
         headerText: {
             ...Typography.default('regular'),
             color: theme.colors.text.secondary,
-            fontSize: Platform.select({ ios: 13, default: 14 }),
-            lineHeight: Platform.select({ ios: 18, default: 20 }),
+            fontSize: CoTokens.list.categorySize,
+            lineHeight: CoTokens.list.categoryLineHeight,
             letterSpacing: -0.08,
-            textTransform: 'uppercase'
+            textTransform: 'none'
         },
         contentContainerOuter: {
             ...cardChrome,
             marginHorizontal: Platform.select(ITEM_GROUP_CONTENT_MARGIN_HORIZONTAL_PX),
         },
         contentContainerInner: {
-            borderRadius: Platform.select({ ios: 10, default: 16 }),
+            borderRadius: Platform.OS === 'web' ? CoTokens.radius.l : CoTokens.list.cardRadius,
         },
         contentContainerInnerClipped: {
             overflow: 'hidden',
@@ -123,13 +124,13 @@ const stylesheet = StyleSheet.create((theme, runtime) => {
         footer: {
             paddingTop: Platform.select({ ios: 6, default: 8 }),
             paddingBottom: Platform.select({ ios: 8, default: 16 }),
-            paddingHorizontal: Platform.select({ ios: 32, default: 24 }),
+            paddingHorizontal: CoTokens.list.categoryIndent,
         },
         footerText: {
             ...Typography.default('regular'),
             color: theme.colors.text.secondary,
-            fontSize: Platform.select({ ios: 13, default: 14 }),
-            lineHeight: Platform.select({ ios: 18, default: 20 }),
+            fontSize: CoTokens.type.bodyXS.size,
+            lineHeight: CoTokens.type.bodyXS.lineHeight,
             letterSpacing: Platform.select({ ios: -0.08, default: 0 }),
         },
     };
