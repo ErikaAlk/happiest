@@ -132,7 +132,7 @@ import {
 import { preloadEnrichedMarkdownRuntime } from '@/components/markdown/enriched/preloadEnrichedMarkdownRuntime';
 import { SyncPerformanceReactProfiler } from '@/components/ui/performance/SyncPerformanceReactProfiler';
 import { syncPerformanceTelemetry } from '@/sync/runtime/syncPerformanceTelemetry';
-import { runRefreshDiagnosticAction } from '@/utils/system/userInteractionDiagnostics';
+import { useSessionListRefresh } from './useSessionListRefresh';
 import type {
     SessionBulkActionExecutionContext,
     SessionBulkActionTarget,
@@ -635,8 +635,11 @@ export const SessionsListContent = React.memo(function SessionsListContent(props
     } = useSessionListHeaderFilterRetention(retentionKey);
     const [activeSearchHeaderControlsAnchorKey, setActiveSearchHeaderControlsAnchorKey] = React.useState<string | null>(null);
     const [focusedSearchHeaderControlsAnchorKey, setFocusedSearchHeaderControlsAnchorKey] = React.useState<string | null>(null);
-    const [refreshingSessions, setRefreshingSessions] = React.useState(false);
-    const refreshingSessionsRef = React.useRef(false);
+    const { refreshingSessions, handleRefreshSessions } = useSessionListRefresh({
+        dataActiveRef: surfaceDataActiveRef,
+        refreshSessions: sync.refreshSessions,
+        refreshDirectSessions: props.refreshDirectSessions,
+    });
     const searchFocusTransferTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
     const getSessionListMemoryCandidateKeys = React.useCallback(
         () => buildSessionCandidateKeySet(data ?? EMPTY_SESSION_LIST_VIEW_ITEMS),
@@ -1119,25 +1122,6 @@ export const SessionsListContent = React.memo(function SessionsListContent(props
         if (!surfaceDataActiveRef.current) return;
         fireAndForget(sync.fetchMoreSessions(), { tag: 'SessionsList.fetchMoreSessions' });
     }, []);
-    const handleRefreshSessions = React.useCallback(async () => {
-        if (!surfaceDataActiveRef.current) return;
-        if (refreshingSessionsRef.current) return;
-        refreshingSessionsRef.current = true;
-        setRefreshingSessions(true);
-        try {
-            await runRefreshDiagnosticAction(
-                { action: 'pull_to_refresh', screen: 'session_list' },
-                async () => {
-                    const results = await Promise.allSettled([sync.refreshSessions(), props.refreshDirectSessions?.()]);
-                    const failures = results.flatMap((result) => result.status === 'rejected' ? [result.reason] : []);
-                    if (failures.length > 0) throw new AggregateError(failures, '会话列表刷新失败');
-                },
-            );
-        } finally {
-            refreshingSessionsRef.current = false;
-            setRefreshingSessions(false);
-        }
-    }, [props.refreshDirectSessions]);
     const handleVirtualizedListScroll = React.useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
         if (surfaceDataActiveRef.current) {
             sync.markSessionListScrollActivity();
