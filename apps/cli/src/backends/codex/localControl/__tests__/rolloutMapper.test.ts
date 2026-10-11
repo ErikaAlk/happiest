@@ -2,6 +2,43 @@ import { describe, expect, it } from 'vitest';
 import { mapCodexRolloutEventToActions } from '../rolloutMapper';
 
 describe('mapCodexRolloutEventToActions', () => {
+    it('reads paginated native message identities once while preserving tools and lifecycle', () => {
+        const options = { debug: false, historyMode: 'paginated' as const };
+        const user = {
+            type: 'event_msg', payload: {
+                type: 'item_completed', thread_id: 'thread-1', turn_id: 'turn-1',
+                item: { type: 'UserMessage', id: 'user-item-1', client_id: 'input-1', content: [{ type: 'Text', text: '用户输入' }] },
+            },
+        };
+        const assistant = {
+            type: 'event_msg', payload: {
+                type: 'item_completed', thread_id: 'thread-1', turn_id: 'turn-1',
+                item: { type: 'AgentMessage', id: 'assistant-item-1', content: [{ type: 'Text', text: '助手回复' }] },
+            },
+        };
+        const records = [
+            { type: 'response_item', payload: { type: 'message', role: 'user', id: 'response-user-1', content: [{ type: 'input_text', text: '用户输入' }] } },
+            user,
+            assistant,
+            { type: 'response_item', payload: { type: 'message', role: 'assistant', id: 'assistant-item-1', content: [{ type: 'output_text', text: '助手回复' }] } },
+        ];
+        expect(records.flatMap(record => mapCodexRolloutEventToActions(record, options))).toEqual([
+            { type: 'user-text', text: '用户输入', providerItemId: 'user-item-1', clientId: 'input-1', threadId: 'thread-1' },
+            { type: 'assistant-text', text: '助手回复', providerItemId: 'assistant-item-1', threadId: 'thread-1' },
+        ]);
+        expect(mapCodexRolloutEventToActions({ type: 'event_msg', payload: { type: 'task_started', turn_id: 'turn-1' } }, options)[0]?.type).toBe('turn-lifecycle');
+        expect(mapCodexRolloutEventToActions({ type: 'response_item', payload: { type: 'function_call', name: 'exec_command', call_id: 'call-1', arguments: '{"cmd":"pwd"}' } }, options)[0]?.type).toBe('tool-call');
+    });
+
+    it('keeps response-item-only legacy messages and filters paginated harness messages', () => {
+        const response = { type: 'response_item', payload: { type: 'message', role: 'user', content: [{ type: 'input_text', text: '用户输入' }] } };
+        expect(mapCodexRolloutEventToActions(response, { debug: false })).toEqual([{ type: 'user-text', text: '用户输入' }]);
+        expect(mapCodexRolloutEventToActions(response, { debug: false, historyMode: 'legacy' })).toEqual([{ type: 'user-text', text: '用户输入' }]);
+        expect(mapCodexRolloutEventToActions({
+            type: 'event_msg', payload: { type: 'item_completed', thread_id: 'thread-1', item: { type: 'UserMessage', id: 'harness-1', content: [{ type: 'Text', text: '<environment_context>测试环境</environment_context>' }] } },
+        }, { debug: false, historyMode: 'paginated' })).toEqual([]);
+    });
+
     it('extracts codex session id from session_meta', () => {
         const actions = mapCodexRolloutEventToActions(
             { type: 'session_meta', payload: { id: 'abc' } },
