@@ -2184,6 +2184,10 @@ const zhHantOverrides: DeepPartial<TranslationStructure> = {
         // Main settings hub category groups
         profileAndAccount: '個人資料與帳號',
         aiAndAgents: 'AI 與代理',
+        moreAgentSettings: '更多代理設定',
+        moreSessionSettings: '更多會話設定',
+        moreFileSettings: '更多檔案設定',
+        moreSystemSettings: '更多系統設定',
         sessionsBehavior: '工作階段與行為',
         general: '一般',
         filesAndSourceControl: '檔案與原始碼控制',

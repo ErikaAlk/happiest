@@ -1894,6 +1894,10 @@ export const es: TranslationStructure = {
     // Main settings hub category groups
     profileAndAccount: 'Perfil y cuenta',
     aiAndAgents: 'IA y agentes',
+    moreAgentSettings: '更多代理设置',
+    moreSessionSettings: '更多会话设置',
+    moreFileSettings: '更多文件设置',
+    moreSystemSettings: '更多系统设置',
     sessionsBehavior: 'Sesiones y comportamiento',
     general: 'Generales',
     filesAndSourceControl: 'Archivos y control de código fuente',

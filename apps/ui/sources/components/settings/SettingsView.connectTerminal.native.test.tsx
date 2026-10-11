@@ -214,24 +214,6 @@ function findItemByTitle(tree: ReactTestRenderer, title: string) {
     return tree.findAllByType('Item' as any).find((item: any) => item?.props?.title === title);
 }
 
-async function flushDeferredSettingsDelay(delayMs = 0): Promise<void> {
-    await act(async () => {
-        if (vi.isFakeTimers()) {
-            await vi.advanceTimersByTimeAsync(delayMs);
-            return;
-        }
-        await new Promise<void>((resolve) => setTimeout(resolve, delayMs));
-    });
-    await flushHookEffects({ cycles: 1 });
-}
-
-async function flushAllDeferredSettingsSections(): Promise<void> {
-    await flushDeferredSettingsDelay();
-    await flushDeferredSettingsDelay(20);
-    await flushDeferredSettingsDelay(20);
-    await flushDeferredSettingsDelay(20);
-}
-
 describe('SettingsView (native connect terminal)', () => {
     it('shows terminal connect actions on native platforms', async () => {
         promptSpy.mockReset();
@@ -281,45 +263,19 @@ describe('SettingsView (native connect terminal)', () => {
         expect(processAuthUrlSpy).toHaveBeenCalledWith('happier:///account?manual');
     });
 
-    it('defers below-fold settings sections until after interactions settle', async () => {
+    it('mounts advanced settings only inside the selected category', async () => {
         vi.resetModules();
         const { SettingsView } = await import('./SettingsView');
 
-        vi.useFakeTimers();
-        try {
-            const screen = await renderScreen(<SettingsView />, { flushOptions: { cycles: 0 } });
-
-            expect(findItemByTitle(screen.tree, 'settings.account')).toBeTruthy();
-            expect(findItemByTitle(screen.tree, 'settings.appearance')).toBeTruthy();
-            expect(Boolean(findItemByTitle(screen.tree, 'settingsProviders.title'))).toBe(false);
-            expect(Boolean(findItemByTitle(screen.tree, 'settings.sessions'))).toBe(false);
-
-            // Native defers through `setImmediate`, whose callback schedules the zero-delay first
-            // stage from inside the tick; fake timers run such a timer one millisecond later.
-            await flushDeferredSettingsDelay(1);
-
-            expect(findItemByTitle(screen.tree, 'settingsProviders.title')).toBeTruthy();
-            expect(Boolean(findItemByTitle(screen.tree, 'settings.sessions'))).toBe(false);
-            expect(Boolean(findItemByTitle(screen.tree, 'settings.servers'))).toBe(false);
-            expect(Boolean(findItemByTitle(screen.tree, 'settings.github'))).toBe(false);
-
-            await flushDeferredSettingsDelay(20);
-
-            expect(findItemByTitle(screen.tree, 'settings.sessions')).toBeTruthy();
-            expect(Boolean(findItemByTitle(screen.tree, 'settings.servers'))).toBe(false);
-            expect(Boolean(findItemByTitle(screen.tree, 'settings.github'))).toBe(false);
-
-            await flushDeferredSettingsDelay(20);
-
-            expect(findItemByTitle(screen.tree, 'settings.servers')).toBeTruthy();
-            expect(Boolean(findItemByTitle(screen.tree, 'settings.github'))).toBe(false);
-
-            await flushDeferredSettingsDelay(20);
-
-            expect(findItemByTitle(screen.tree, 'settings.github')).toBeTruthy();
-        } finally {
-            vi.useRealTimers();
-        }
+        const home = await renderScreen(<SettingsView />);
+        expect(findItemByTitle(home.tree, 'settings.account')).toBeTruthy();
+        expect(findItemByTitle(home.tree, 'settings.appearance')).toBeTruthy();
+        expect(findItemByTitle(home.tree, 'settingsProviders.title')).toBeUndefined();
+        expect(findItemByTitle(home.tree, 'settings.sessions')).toBeUndefined();
+        const agents = await renderScreen(<SettingsView section="agents" />);
+        expect(findItemByTitle(agents.tree, 'settingsProviders.title')).toBeTruthy();
+        expect(findItemByTitle(agents.tree, 'settings.sessions')).toBeUndefined();
+        expect(findItemByTitle(agents.tree, 'settings.servers')).toBeUndefined();
     });
 
     it('keeps unaffected settings row props stable when rate-us availability updates', async () => {
@@ -331,14 +287,10 @@ describe('SettingsView (native connect terminal)', () => {
         const { SettingsView } = await import('./SettingsView');
 
         const screen = await renderScreen(<SettingsView />, { flushOptions: { cycles: 0 } });
-        await flushAllDeferredSettingsSections();
 
         const stableRowTitles = [
             'settings.account',
             'settings.appearance',
-            'settingsProviders.title',
-            'settings.sessions',
-            'settings.servers',
         ];
         const iconsBefore = new Map<string, unknown>();
         for (const title of stableRowTitles) {
@@ -352,7 +304,7 @@ describe('SettingsView (native connect terminal)', () => {
         });
         await flushHookEffects();
 
-        expect(findItemByTitle(screen.tree, 'settings.rateUs')).toBeTruthy();
+        expect(findItemByTitle(screen.tree, 'settings.rateUs')).toBeUndefined();
         for (const title of stableRowTitles) {
             const item = findItemByTitle(screen.tree, title);
             expect(item).toBeTruthy();

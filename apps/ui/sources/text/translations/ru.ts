@@ -1863,6 +1863,10 @@ export const ru: TranslationStructure = {
     // Main settings hub category groups
     profileAndAccount: 'Профиль и аккаунт',
     aiAndAgents: 'ИИ и агенты',
+    moreAgentSettings: '更多代理设置',
+    moreSessionSettings: '更多会话设置',
+    moreFileSettings: '更多文件设置',
+    moreSystemSettings: '更多系统设置',
     sessionsBehavior: 'Сессии и поведение',
     general: 'Общие',
     filesAndSourceControl: 'Файлы и контроль версий',

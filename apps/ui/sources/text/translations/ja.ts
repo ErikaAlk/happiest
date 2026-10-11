@@ -2200,6 +2200,10 @@ export const ja: TranslationStructure = {
     // Main settings hub category groups
     profileAndAccount: 'プロフィールとアカウント',
     aiAndAgents: 'AI とエージェント',
+    moreAgentSettings: '更多代理设置',
+    moreSessionSettings: '更多会话设置',
+    moreFileSettings: '更多文件设置',
+    moreSystemSettings: '更多系统设置',
     sessionsBehavior: 'セッションと動作',
     general: '一般',
     filesAndSourceControl: 'ファイルとソース管理',

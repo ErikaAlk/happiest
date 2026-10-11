@@ -7,6 +7,7 @@ import {
     standardCleanup,
 } from '@/dev/testkit';
 import { installSettingsViewCommonModuleMocks } from './settingsViewTestHelpers';
+import type { SettingsSection } from './SettingsSectionContent';
 
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -252,11 +253,20 @@ afterEach(() => {
 });
 
 describe('SettingsView', () => {
-    async function renderSettingsViewUnderTest() {
+    it('opens focused settings categories while keeping the home page free of advanced rows', async () => {
+        vi.useFakeTimers();
+        const { SettingsView } = await import('./SettingsView');
+        const screen = await renderSettingsView(React.createElement(SettingsView), { flushOptions: { runAllTimers: true, cycles: 8 } });
+        expect(screen.findRowByTitle('settings.permissions')).toBeNull();
+        expect(screen.findRowByTitle('settings.systemStatus')).toBeNull();
+        await screen.pressRow('settings-section-system');
+        expect(shared.routerPushSpy).toHaveBeenCalledWith({ pathname: '/settings/sections/[section]', params: { section: 'system' } });
+    });
+    async function renderSettingsViewUnderTest(section: SettingsSection | null = 'about') {
         vi.useFakeTimers();
         const { SettingsView } = await import('./SettingsView');
         const screen = await renderSettingsView(
-            React.createElement(SettingsView),
+            React.createElement(SettingsView, { section: section ?? undefined }),
             { flushOptions: { runAllTimers: true, cycles: 8 } },
         );
         for (let index = 0; index < 8; index += 1) {
@@ -268,7 +278,7 @@ describe('SettingsView', () => {
     }
 
     it('includes a first-class Relays entry that routes to /server', async () => {
-        const screen = await renderSettingsViewUnderTest();
+        const screen = await renderSettingsViewUnderTest('system');
 
         expect(screen.findRowByTitle('settings.servers')).toBeTruthy();
 
@@ -280,7 +290,7 @@ describe('SettingsView', () => {
     });
 
     it('includes a System Status entry that routes to /settings/system-status', async () => {
-        const screen = await renderSettingsViewUnderTest();
+        const screen = await renderSettingsViewUnderTest('system');
 
         expect(screen.findRowByTitle('settings.systemStatus')).toBeTruthy();
 
@@ -292,7 +302,7 @@ describe('SettingsView', () => {
     });
 
     it('blurs the active element before routing to Features on web', async () => {
-        const screen = await renderSettingsViewUnderTest();
+        const screen = await renderSettingsViewUnderTest(null);
 
         expect(screen.findRowByTitle('settings.featuresTitle')).toBeTruthy();
 

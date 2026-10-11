@@ -1838,6 +1838,10 @@ export const zhHans: TranslationStructure = {
     // Main settings hub category groups
     profileAndAccount: '个人资料与账号',
     aiAndAgents: 'AI 与代理',
+    moreAgentSettings: '更多代理设置',
+    moreSessionSettings: '更多会话设置',
+    moreFileSettings: '更多文件设置',
+    moreSystemSettings: '更多系统设置',
     sessionsBehavior: '会话与行为',
     general: '常规',
     filesAndSourceControl: '文件与源代码管理',

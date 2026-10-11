@@ -1790,6 +1790,10 @@ export const ca: TranslationStructure = {
         // Main settings hub category groups
         profileAndAccount: 'Perfil i compte',
         aiAndAgents: 'IA i agents',
+        moreAgentSettings: '更多代理设置',
+        moreSessionSettings: '更多会话设置',
+        moreFileSettings: '更多文件设置',
+        moreSystemSettings: '更多系统设置',
         sessionsBehavior: 'Sessions i comportament',
         general: 'Generals',
         filesAndSourceControl: 'Fitxers i control de versions',

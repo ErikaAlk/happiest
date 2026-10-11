@@ -1,10 +1,8 @@
-import { View, Pressable, Platform, Linking, useWindowDimensions } from 'react-native';
-import { Image } from 'expo-image';
+import { View, Platform, Linking, useWindowDimensions } from 'react-native';
 import * as React from 'react';
 import { Text } from '@/components/ui/text/Text';
 import { useFocusEffect, useRouter } from 'expo-router';
 import Constants from 'expo-constants';
-import { Typography } from "@/constants/Typography";
 import { Item } from '@/components/ui/lists/Item';
 import { ItemGroup } from '@/components/ui/lists/ItemGroup';
 import { ItemList } from '@/components/ui/lists/ItemList';
@@ -21,7 +19,7 @@ import { useHappyAction } from '@/hooks/ui/useHappyAction';
 import { getDisplayName, getAvatarUrl, getBio } from '@/sync/domains/profiles/profile';
 import { Avatar } from '@/components/ui/avatar/Avatar';
 import { t } from '@/text';
-import { canRequestReview, requestReview } from '@/utils/system/requestReview';
+import { canRequestReview } from '@/utils/system/requestReview';
 import { DEFAULT_AGENT_ID, getAgentCore, resolveAgentIdFromConnectedServiceId } from '@/agents/catalog/catalog';
 import { AgentIcon } from '@/agents/registry/AgentIcon';
 import { resolveSupportUsAction } from '@/components/settings/supportUsBehavior';
@@ -38,17 +36,13 @@ import { navigateWithBlurOnWeb } from '@/utils/platform/navigateWithBlurOnWeb';
 import { deferOnWeb } from '@/utils/platform/deferOnWeb';
 import { isTauriDesktop } from '@/utils/platform/tauri';
 import { DesktopSettingsSection } from '@/components/settings/desktop/DesktopSettingsSection';
-import { SettingsBelowFoldSections } from '@/components/settings/SettingsBelowFoldSections';
-import { runAfterInteractionsWithFallback } from '@/utils/timing/runAfterInteractionsWithFallback';
+import { SETTINGS_SECTIONS, SettingsSectionContent, type SettingsSection } from '@/components/settings/SettingsSectionContent';
 import { Icon } from '@/components/ui/icons/Icon';
 import { describeUpdatesSettingsSubtitle } from '@/components/updates/describeUpdatesSummary';
 import { useSharedUpdatesSummary } from '@/updates/useUpdatesSummary';
 import { productLinks } from '@/constants/productLinks';
 
-const DEFER_BELOW_FOLD_SETTINGS_SECTIONS_DELAY_MS = 0;
-const DEFER_BELOW_FOLD_SETTINGS_STAGE_DELAY_MS = 16;
-
-export const SettingsView = React.memo(function SettingsView() {
+export const SettingsView = React.memo(function SettingsView({ section }: { section?: SettingsSection }) {
     const { theme } = useUnistyles();
     const router = useRouter();
     const { width, height } = useWindowDimensions();
@@ -94,7 +88,6 @@ export const SettingsView = React.memo(function SettingsView() {
 
     const showHiddenSettingsButtons = devModeEnabled;
     const showDesktopSettings = isTauriDesktop();
-    const [belowFoldSettingsStage, setBelowFoldSettingsStage] = React.useState(0);
 
     const { connectTerminal, isLoading } = useConnectTerminal();
     const { processAuthUrl: processScannedAuthUrl } = useScannedAuthUrlProcessor();
@@ -104,36 +97,6 @@ export const SettingsView = React.memo(function SettingsView() {
             fireAndForget(sync.refreshMachinesThrottled({ staleMs: 30_000 }), { tag: 'SettingsView.refreshMachinesThrottled' });
         }, [])
     );
-
-    React.useEffect(() => {
-        if (belowFoldSettingsStage >= 4) return undefined;
-
-        const nextStage = belowFoldSettingsStage + 1;
-        const delayMs = belowFoldSettingsStage === 0
-            ? DEFER_BELOW_FOLD_SETTINGS_SECTIONS_DELAY_MS
-            : DEFER_BELOW_FOLD_SETTINGS_STAGE_DELAY_MS;
-        let cancelStageTimer: (() => void) | undefined;
-
-        const scheduleNextStage = () => {
-            const timer = setTimeout(() => {
-                setBelowFoldSettingsStage((currentStage) => Math.max(currentStage, nextStage));
-            }, delayMs);
-            cancelStageTimer = () => clearTimeout(timer);
-        };
-
-        if (belowFoldSettingsStage === 0) {
-            const cancelInteractions = runAfterInteractionsWithFallback(scheduleNextStage);
-            return () => {
-                cancelStageTimer?.();
-                cancelInteractions();
-            };
-        }
-
-        scheduleNextStage();
-        return () => {
-            cancelStageTimer?.();
-        };
-    }, [belowFoldSettingsStage]);
 
     React.useEffect(() => {
         let cancelled = false;
@@ -224,38 +187,33 @@ export const SettingsView = React.memo(function SettingsView() {
         <ItemGroup title={t('settings.profileAndAccount')}>
             <Item
                 title={t('settings.account')}
-                subtitle={t('settings.accountSubtitle')}
-                icon={<Icon name="user-circle" size={29} color={theme.colors.accent.blue} />}
+                icon={<Icon name="user-circle" size={29} color={theme.colors.text.secondary} />}
                 onPress={() => router.push('/settings/account')}
             />
             {useProfiles && (
                 <Item
                     title={t('settings.secrets')}
-                    subtitle={t('settings.secretsSubtitle')}
-                    icon={<Icon name="key" size={29} color={theme.colors.accent.purple} />}
+                    icon={<Icon name="key" size={29} color={theme.colors.text.secondary} />}
                     onPress={() => router.push('/settings/secrets')}
                 />
             )}
             {usageReportingEnabled && (
                 <Item
                     title={t('settings.usage')}
-                    subtitle={t('settings.usageSubtitle')}
-                    icon={<Icon name="chart-line" size={29} color={theme.colors.accent.blue} />}
+                    icon={<Icon name="chart-line" size={29} color={theme.colors.text.secondary} />}
                     onPress={() => router.push('/settings/usage')}
                 />
             )}
             <Item
                 title={t('settings.machines')}
-                icon={<Icon name="desktop" size={29} color={theme.colors.accent.orange} />}
+                icon={<Icon name="desktop" size={29} color={theme.colors.text.secondary} />}
                 onPress={() => pushRoute('/settings/machines')}
             />
         </ItemGroup>
     ), [
         pushRoute,
         router,
-        theme.colors.accent.blue,
-        theme.colors.accent.orange,
-        theme.colors.accent.purple,
+        theme.colors.text.secondary,
         usageReportingEnabled,
         useProfiles,
     ]);
@@ -266,34 +224,30 @@ export const SettingsView = React.memo(function SettingsView() {
                 testID="settings-updates-row"
                 title={t('updates.title')}
                 subtitle={updatesSubtitle}
-                icon={<Icon name="arrow-circle-up" size={29} color={theme.colors.accent.blue} />}
+                icon={<Icon name="arrow-circle-up" size={29} color={theme.colors.text.secondary} />}
                 onPress={() => pushRoute('/settings/updates')}
             />
             <Item
                 title={t('settings.appearance')}
-                subtitle={t('settings.appearanceSubtitle')}
-                icon={<Icon name="palette" size={29} color={theme.colors.accent.indigo} />}
+                icon={<Icon name="palette" size={29} color={theme.colors.text.secondary} />}
                 onPress={() => pushRoute('/settings/appearance')}
             />
             <Item
                 title={t('settings.featuresTitle')}
-                subtitle={t('settings.featuresSubtitle')}
-                icon={<Icon name="flask" size={29} color={theme.colors.accent.orange} />}
+                icon={<Icon name="flask" size={29} color={theme.colors.text.secondary} />}
                 onPress={() => pushRoute('/settings/features')}
             />
             <Item
                 testID="settings-keyboard-shortcuts-row"
                 title={t('settingsKeyboard.title')}
-                subtitle={t('settingsKeyboard.entrySubtitle')}
-                icon={<Icon name="squares-four" size={29} color={theme.colors.accent.blue} />}
+                icon={<Icon name="squares-four" size={29} color={theme.colors.text.secondary} />}
                 onPress={() => pushRoute('/settings/keyboard')}
             />
             {petsCompanionEnabled || petsSyncEnabled ? (
                 <Item
                     testID="settings-pets-row"
                     title={t('settings.pets')}
-                    subtitle={t('settings.petsSubtitle')}
-                    icon={<Icon name="paw-print" size={29} color={theme.colors.accent.green} />}
+                    icon={<Icon name="paw-print" size={29} color={theme.colors.text.secondary} />}
                     onPress={() => pushRoute('/settings/pets')}
                 />
             ) : null}
@@ -303,49 +257,35 @@ export const SettingsView = React.memo(function SettingsView() {
         petsCompanionEnabled,
         petsSyncEnabled,
         pushRoute,
-        theme.colors.accent.blue,
-        theme.colors.accent.green,
-        theme.colors.accent.indigo,
-        theme.colors.accent.orange,
+        theme.colors.text.secondary,
     ]);
 
     return (
-        <ItemList style={{ paddingTop: 0 }}>
-            {/* App Info Header */}
-            <View style={{ maxWidth: layout.maxWidth, alignSelf: 'center', width: '100%' }}>
-                <View style={{ alignItems: 'center', paddingVertical: 24, backgroundColor: theme.colors.surface.base, marginTop: 16, borderRadius: 12, marginHorizontal: 16 }}>
-                    {profile.firstName ? (
-                        // Profile view: Avatar + name + version
-                        <>
-                            <View style={{ marginBottom: 12 }}>
+        <ItemList testID={section ? `settings-list-${section}` : 'settings-list'} style={{ paddingTop: 0 }}>
+            {!section ? (<>
+            {profile.firstName ? (
+                <View style={{ maxWidth: layout.maxWidth, alignSelf: 'center', width: '100%', paddingHorizontal: 32, paddingTop: 24, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', gap: 16 }}>
                                 <Avatar
                                     id={profile.id}
-                                    size={90}
+                                    size={48}
                                     imageUrl={avatarUrl}
                                     thumbhash={profile.avatar?.thumbhash}
                                 />
-                            </View>
-                            <Text style={{ fontSize: 20, fontWeight: '600', color: theme.colors.text.primary, marginBottom: bio ? 4 : 8 }}>
+                    <View style={{ flex: 1, minWidth: 0 }}>
+                            <Text style={{ fontSize: 20, fontWeight: '600', color: theme.colors.text.primary }}>
                                 {displayName}
                             </Text>
                             {bio && (
-                                <Text style={{ fontSize: 14, color: theme.colors.text.secondary, textAlign: 'center', marginBottom: 8, paddingHorizontal: 16 }}>
+                                <Text style={{ fontSize: 14, color: theme.colors.text.secondary, marginTop: 4 }}>
                                     {bio}
                                 </Text>
                             )}
-                        </>
-                    ) : (
-                        // Logo view: Original logo + version
-                        <>
-                            <Image
-                                source={theme.dark ? require('@/assets/images/logotype-light.png') : require('@/assets/images/logotype-dark.png')}
-                                contentFit="contain"
-                                style={{ width: 300, height: 90 }}
-                            />
-                        </>
-                    )}
+                    </View>
                 </View>
-            </View>
+            ) : null}
+
+            {profileAndAccountSection}
+            {generalSection}
 
             {/* Add your phone (desktop/web only) */}
             {(isRunningOnMac() || (Platform.OS === 'web' && !isPhoneSizedWeb)) &&
@@ -354,8 +294,7 @@ export const SettingsView = React.memo(function SettingsView() {
                     <Item
                         testID="settings-add-your-phone-shortcut"
                         title={t('settings.addYourPhone')}
-                        subtitle={t('settings.addYourPhoneSubtitle')}
-                        icon={<Icon name="device-mobile" size={29} color={theme.colors.accent.blue} />}
+                        icon={<Icon name="device-mobile" size={29} color={theme.colors.text.secondary} />}
                         onPress={() => router.push('/settings/add-phone')}
                     />
                 </ItemGroup>
@@ -369,7 +308,7 @@ export const SettingsView = React.memo(function SettingsView() {
                     <Item
                         testID="settings-connect-terminal-scan"
                         title={t('settingsAccount.linkNewDevice')}
-                        icon={<Icon name="qr-code" size={29} color={theme.colors.accent.blue} />}
+                        icon={<Icon name="qr-code" size={29} color={theme.colors.text.secondary} />}
                         onPress={connectTerminal}
                         loading={isLoading}
                         showChevron={false}
@@ -377,7 +316,7 @@ export const SettingsView = React.memo(function SettingsView() {
                     <Item
                         testID="settings-connect-terminal-enter-url"
                         title={t('connect.enterUrlManually')}
-                        icon={<Icon name="link" size={29} color={theme.colors.accent.blue} />}
+                        icon={<Icon name="link" size={29} color={theme.colors.text.secondary} />}
                         onPress={async () => {
                             const url = await Modal.prompt(
                                 t('connect.linkNewDeviceTitle'),
@@ -432,24 +371,20 @@ export const SettingsView = React.memo(function SettingsView() {
                 </>
             )}
 
-            {/* Social */}
-            {/* <ItemGroup title={t('settings.social')}>
-                <Item
-                    title={t('navigation.friends')}
-                    subtitle={t('friends.manageFriends')}
-                    icon={<Icon name="users" size={29} color={theme.colors.accent.blue} />}
-                    onPress={() => router.push('/friends')}
-                />
-            </ItemGroup> */}
-
-            {/* Profile & Account */}
-            {profileAndAccountSection}
-
-            {/* General */}
-            {generalSection}
-
-            {belowFoldSettingsStage > 0 ? (
-                <SettingsBelowFoldSections
+            <ItemGroup>
+                {SETTINGS_SECTIONS.filter((entry) => entry.id !== 'files' || sourceControlEnabled || attachmentsUploadsEnabled).map((entry) => (
+                    <Item
+                        key={entry.id}
+                        testID={`settings-section-${entry.id}`}
+                        title={t(entry.entryTitleKey)}
+                        icon={<Icon name={entry.icon} size={29} color={theme.colors.text.secondary} />}
+                        onPress={() => pushRoute({ pathname: '/settings/sections/[section]', params: { section: entry.id } })}
+                    />
+                ))}
+            </ItemGroup>
+            </>) : (
+                <SettingsSectionContent
+                    section={section}
                     appVersion={appVersion}
                     attachmentsUploadsEnabled={attachmentsUploadsEnabled}
                     automationsNeedLocalEnablement={automationsNeedLocalEnablement}
@@ -467,13 +402,12 @@ export const SettingsView = React.memo(function SettingsView() {
                     showChangelog={showChangelog}
                     showRateUs={showRateUs}
                     sourceControlEnabled={sourceControlEnabled}
-                    stage={belowFoldSettingsStage}
                     terminalUseTmux={terminalUseTmux}
                     theme={theme}
                     useProfiles={useProfiles}
                     voiceEnabled={voiceEnabled}
                 />
-            ) : null}
+            )}
 
         </ItemList>
     );

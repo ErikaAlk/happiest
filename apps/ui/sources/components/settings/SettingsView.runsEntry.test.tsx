@@ -3,6 +3,7 @@ import { act } from 'react-test-renderer';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { installSettingsViewCommonModuleMocks } from './settingsViewTestHelpers';
 import { renderSettingsView } from '@/dev/testkit/harness/settingsViewHarness';
+import type { SettingsSection } from './SettingsSectionContent';
 
 
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
@@ -236,11 +237,11 @@ afterEach(() => {
 });
 
 describe('SettingsView (runs entry)', () => {
-    async function renderSettingsViewUnderTest() {
+    async function renderSettingsViewUnderTest(section: SettingsSection = 'sessions') {
         vi.useFakeTimers();
         const { SettingsView } = await import('./SettingsView');
         const screen = await renderSettingsView(
-            React.createElement(SettingsView),
+            React.createElement(SettingsView, { section }),
             { flushOptions: { runAllTimers: true, cycles: 8 } },
         );
         for (let index = 0; index < 8; index += 1) {
@@ -294,7 +295,7 @@ describe('SettingsView (runs entry)', () => {
     });
 
     it('includes a Subagents entry that routes to /settings/sub-agent', async () => {
-        const screen = await renderSettingsViewUnderTest();
+        const screen = await renderSettingsViewUnderTest('agents');
         expect(screen.findRowByTitle('subAgentGuidance.settings.groupTitle')).toBeTruthy();
 
         await screen.pressRowByTitle('subAgentGuidance.settings.groupTitle');
@@ -304,7 +305,7 @@ describe('SettingsView (runs entry)', () => {
 
     it('includes a Connected services entry that routes through the settings stack', async () => {
         mockFeatureEnabled = (featureId) => featureId === 'connectedServices';
-        const screen = await renderSettingsViewUnderTest();
+        const screen = await renderSettingsViewUnderTest('agents');
         expect(screen.findRowByTitle('settings.connectedServices')).toBeTruthy();
 
         await screen.pressRowByTitle('settings.connectedServices');
@@ -327,7 +328,7 @@ describe('SettingsView (runs entry)', () => {
         vi.resetModules();
 
         try {
-            const screen = await renderSettingsViewUnderTest();
+            const screen = await renderSettingsViewUnderTest('about');
             expect(screen.findRowByTitle('settings.whatsNew')).toBeNull();
         } finally {
             if (previousDeny === undefined) delete process.env.EXPO_PUBLIC_HAPPIER_BUILD_FEATURES_DENY;
@@ -337,20 +338,22 @@ describe('SettingsView (runs entry)', () => {
 
     it('hides feature-gated entries when disabled by feature policy', async () => {
         mockFeatureEnabled = (featureId) => featureId === 'execution.runs';
-        const screen = await renderSettingsViewUnderTest();
+        const screen = await renderSettingsViewUnderTest('agents');
+        const files = await renderSettingsViewUnderTest('files');
 
         expect(screen.findRowByTitle('settings.voiceAssistant')).toBeNull();
-        expect(screen.findRowByTitle('settings.filesSourceControl')).toBeNull();
+        expect(files.findRowByTitle('settings.filesSourceControl')).toBeNull();
         expect(screen.findRowByTitle('settings.memorySearch')).toBeNull();
     });
 
     it('shows feature-gated entries when voice, source control, and memory search are enabled', async () => {
         mockFeatureEnabled = (featureId) =>
             ['execution.runs', 'voice', 'scm.writeOperations', 'memory.search'].includes(featureId);
-        const screen = await renderSettingsViewUnderTest();
+        const screen = await renderSettingsViewUnderTest('agents');
+        const files = await renderSettingsViewUnderTest('files');
 
         expect(screen.findRowByTitle('settings.voiceAssistant')).toBeTruthy();
-        expect(screen.findRowByTitle('settings.filesSourceControl')).toBeTruthy();
+        expect(files.findRowByTitle('settings.filesSourceControl')).toBeTruthy();
         expect(screen.findRowByTitle('settings.memorySearch')).toBeTruthy();
     });
 });

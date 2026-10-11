@@ -1713,6 +1713,10 @@ export const fr: TranslationStructure = {
         // Main settings hub category groups
         profileAndAccount: 'Profil et compte',
         aiAndAgents: 'IA et agents',
+        moreAgentSettings: '更多代理设置',
+        moreSessionSettings: '更多会话设置',
+        moreFileSettings: '更多文件设置',
+        moreSystemSettings: '更多系统设置',
         sessionsBehavior: 'Sessions et comportement',
         general: 'Général',
         filesAndSourceControl: 'Fichiers et gestion de version',
