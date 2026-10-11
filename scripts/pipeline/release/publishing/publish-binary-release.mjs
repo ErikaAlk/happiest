@@ -307,7 +307,7 @@ export async function publishBinaryReleaseMain(options = {}) {
       '--target-sha', targetSha,
       '--prerelease', prerelease,
       '--notes', notes,
-      '--release-message', releaseMessage,
+      `--release-message=${releaseMessage}`,
       '--repo', repoSlug,
       '--public-key', RELEASE_PUBLIC_KEY_RELATIVE_PATH,
       ...(opts.dryRun ? ['--dry-run'] : []),
@@ -392,7 +392,7 @@ export async function publishBinaryReleaseMain(options = {}) {
     '--assets-dir', path.relative(repoRoot, artifactsDir),
     '--clobber', 'false',
     '--prune-assets', 'false',
-    '--release-message', releaseMessage,
+    `--release-message=${releaseMessage}`,
     ...(opts.dryRun ? ['--dry-run'] : []),
   ], { cwd: repoRoot });
 
@@ -405,7 +405,7 @@ export async function publishBinaryReleaseMain(options = {}) {
       '--target-sha', targetSha,
       '--prerelease', prerelease,
       '--notes', notes,
-      '--release-message', releaseMessage,
+      `--release-message=${releaseMessage}`,
       '--repo', repoSlug,
       '--public-key', RELEASE_PUBLIC_KEY_RELATIVE_PATH,
       ...(opts.dryRun ? ['--dry-run'] : []),
