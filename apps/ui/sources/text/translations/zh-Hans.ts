@@ -593,14 +593,14 @@ function plural({
 
 export const zhHans: TranslationStructure = {
     settingsKeyboard: {
-        title: 'Keyboard shortcuts',
-        entrySubtitle: 'Discover and control app shortcuts',
-        generalGroupTitle: 'Keyboard controls',
-        generalGroupFooter: 'Shortcut preferences are stored locally on this device.',
-        enableShortcutsTitle: 'Enable unified shortcuts',
-        enableShortcutsSubtitle: 'Use the new keyboard command registry for app shortcuts.',
-        singleKeyTitle: 'Single-key shortcuts',
-        singleKeySubtitle: 'Allow shortcuts such as ? when text input is not focused.',
+        title: '键盘快捷键',
+        entrySubtitle: '查看和设置应用快捷键',
+        generalGroupTitle: '键盘操作',
+        generalGroupFooter: '快捷键设置保存在当前设备上',
+        enableShortcutsTitle: '启用快捷键',
+        enableShortcutsSubtitle: '通过键盘执行应用操作',
+        singleKeyTitle: '单键快捷键',
+        singleKeySubtitle: '未输入文字时允许使用 ? 等单键快捷键',
         conflictsTitle: ({ count }: { count: number }) => `${count} shortcut conflict${count === 1 ? '' : 's'} detected`,
         conflictsSubtitle: ({ count }: { count: number }) => `${count} command${count === 1 ? '' : 's'} need review before all shortcuts can be active.`,
         conflictsGroupTitle: 'Diagnostics',

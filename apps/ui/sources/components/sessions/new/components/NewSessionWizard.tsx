@@ -675,9 +675,6 @@ export const NewSessionWizard = React.memo(function NewSessionWizard(props: NewS
                                                 {t('newSession.selectAiProfileTitle')}
                                             </Text>
                                         </View>
-                                        <Text style={styles.sectionDescription}>
-                                            {t('newSession.selectAiProfileDescription')}
-                                        </Text>
                                         <AdaptiveSelectionSection
                                             presentation={profilePresentation}
                                             expandedContent={(
@@ -881,9 +878,6 @@ export const NewSessionWizard = React.memo(function NewSessionWizard(props: NewS
                                                 } : undefined}
                                             />
                                         </View>
-                                        <Text style={styles.sectionDescription}>
-                                            {t('newSession.selectModelDescription')}
-                                        </Text>
                                         <NewSessionModelSelectionContent
                                             presentation={modelPresentation}
                                             modelOptions={modelOptions}
@@ -920,9 +914,6 @@ export const NewSessionWizard = React.memo(function NewSessionWizard(props: NewS
                                                 } : undefined}
                                             />
                                         </View>
-                                        <Text style={styles.sectionDescription}>
-                                            {t('newSession.selectMachineDescription')}
-                                        </Text>
 
                                         <View style={{ marginBottom: 24 }}>
                                             <AdaptiveSelectionSection
@@ -1010,9 +1001,6 @@ export const NewSessionWizard = React.memo(function NewSessionWizard(props: NewS
                                                 <Text style={[styles.sectionHeader, { marginBottom: 0, marginTop: 0 }]}>{t('newSession.selectWorkingDirectoryTitle')}</Text>
                                             </View>
                                         </View>
-                                        <Text style={styles.sectionDescription}>
-                                            {t('newSession.selectWorkingDirectoryDescription')}
-                                        </Text>
 
                                         <View style={{ marginBottom: 24 }}>
                                             <PathSelectionList
@@ -1059,9 +1047,6 @@ export const NewSessionWizard = React.memo(function NewSessionWizard(props: NewS
                                         <Text style={[styles.sectionHeader, { marginBottom: 0, marginTop: 0 }]}>{t('newSession.selectPermissionModeTitle')}</Text>
                                     </View>
                                 </View>
-                                <Text style={styles.sectionDescription}>
-                                    {t('newSession.selectPermissionModeDescription')}
-                                </Text>
                                 <AdaptiveSelectionSection
                                     presentation={permissionPresentation}
                                     expandedContent={(

@@ -25,7 +25,7 @@ export const SESSION_LIST_ROW_STATUS_TEXT_METRICS = {
 } as const;
 
 export const SESSION_LIST_ROW_IDENTITY_METRICS = {
-    default: { slotSize: 48, agentLogoSize: 37 },
+    default: { slotSize: 40, agentLogoSize: 28 },
     compact: { slotSize: 30, agentLogoSize: 23 },
     minimal: { slotSize: 18, agentLogoSize: 14 },
     minimalNativePhone: { slotSize: 20, agentLogoSize: 16 },

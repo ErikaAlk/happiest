@@ -2669,6 +2669,7 @@ export const AgentInput = React.memo(React.forwardRef<MultiTextInputHandle, Agen
         hasEnvVars,
         hasAgent,
     });
+    const collapsedMenuControlIds = React.useMemo(() => actionMenuActions.map((action) => action.controlId), [actionMenuActions]);
     const {
         controlNodes: renderedActionControlNodes,
         secondaryLeadingControls: secondaryLeadingControlsForWrap,
@@ -2676,6 +2677,7 @@ export const AgentInput = React.memo(React.forwardRef<MultiTextInputHandle, Agen
     } = useRenderedAgentInputControlRows({
         hiddenControlIds: props.hiddenControlIds,
         layout: effectiveActionBarLayout,
+        collapsedMenuControlIds,
         chips: props.extraActionChips,
         overlayAnchorRef,
         onToggleExtraChipCollapsedPopover: (chipKey) => {
@@ -3179,7 +3181,7 @@ export const AgentInput = React.memo(React.forwardRef<MultiTextInputHandle, Agen
                 }}
                 style={[
                     styles.container,
-                    { paddingHorizontal: props.contentPaddingHorizontal ?? (screenWidth > 700 ? 16 : 8) },
+                    { paddingHorizontal: props.contentPaddingHorizontal ?? 16 },
                 ]}
             >
                 <View style={[

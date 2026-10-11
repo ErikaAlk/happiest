@@ -1774,8 +1774,8 @@ const styles = StyleSheet.create((theme) => ({
     },
     userMessageBubble: {
       backgroundColor: theme.colors.message.user.background,
-      paddingHorizontal: 14,
-      paddingVertical: 8,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
       borderRadius: theme.borderRadius.xl,
       maxWidth: '100%',
     },

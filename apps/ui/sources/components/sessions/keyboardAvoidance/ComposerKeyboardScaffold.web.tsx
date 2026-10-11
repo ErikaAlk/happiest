@@ -49,7 +49,7 @@ export function ComposerKeyboardScaffold(props: ComposerKeyboardScaffoldProps): 
                 testID={props.testID}
                 onLayout={handleScaffoldLayout}
                 style={[
-                    { flexBasis: 0, flexGrow: 1, minHeight: 0, backgroundColor: theme.colors.surface.base },
+                    { flexBasis: 0, flexGrow: 1, minHeight: 0, backgroundColor: props.mode === 'session' ? theme.colors.background.canvas : theme.colors.surface.base },
                     liftPaddingStyle,
                     props.style,
                 ]}
@@ -64,7 +64,7 @@ export function ComposerKeyboardScaffold(props: ComposerKeyboardScaffoldProps): 
                 <View
                     testID={props.composerTestID}
                     onLayout={handleComposerLayout}
-                    style={{ backgroundColor: theme.colors.surface.base }}
+                    style={{ backgroundColor: props.mode === 'session' ? theme.colors.background.canvas : theme.colors.surface.base }}
                 >
                     {props.composer}
                 </View>

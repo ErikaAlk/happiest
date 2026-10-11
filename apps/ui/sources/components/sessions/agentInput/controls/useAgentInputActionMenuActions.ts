@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import type { AgentId } from '@/agents/catalog/catalog';
-import type { ActionListItem } from '@/components/ui/lists/ActionListSection';
 
 import { buildAgentInputActionMenuActions } from '../actionMenuActions';
 import type { AgentInputExtraActionChip } from '../agentInputContracts';
@@ -37,7 +36,7 @@ export function useAgentInputActionMenuActions(params: Readonly<{
     onFileViewerPress?: () => void;
     canStop?: boolean;
     onStop?: () => void;
-}>): ReadonlyArray<ActionListItem> {
+}>): ReturnType<typeof buildAgentInputActionMenuActions> {
     return React.useMemo(() => {
         const extraControlActions = buildCollapsedExtraControlActions({
             chips: params.extraActionChips,

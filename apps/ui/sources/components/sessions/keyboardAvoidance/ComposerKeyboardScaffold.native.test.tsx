@@ -292,7 +292,7 @@ describe('ComposerKeyboardScaffold native', () => {
             </ComposerKeyboardScaffold>,
         );
 
-        // Both the root and the absolutely-positioned composer wrapper paint `surface.base` in the
+        // Both the root and the absolutely-positioned composer wrapper paint a background in the
         // opaque case. A transparent presentation needs BOTH gone, or the screen behind is covered
         // by an opaque strip even though the navigator stopped painting one.
         expect(resolveStyleBackgroundColor(findViewByTestID(screen, 'scaffold')?.props.style)).toBeUndefined();

@@ -11,8 +11,8 @@ export type ComposerKeyboardScaffoldMode = 'session' | 'newSession';
 /**
  * Whether the scaffold paints its own ground.
  *
- * `opaque` (the default) fills the root and the composer wrapper with `surface.base`, which is what
- * every bar and sheet in the app expects. `transparent` paints neither, so a screen presented as a
+ * `opaque` (the default) fills the root and the composer wrapper with the session page canvas or
+ * the new-session sheet surface. `transparent` paints neither, so a screen presented as a
  * transparent modal can show what is behind it.
  *
  * This is deliberately NOT derived from `mode`: the new-session wizard is also `newSession` and

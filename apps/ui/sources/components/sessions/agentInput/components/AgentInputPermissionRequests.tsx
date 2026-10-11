@@ -11,6 +11,7 @@ import type { PendingPermissionRequest } from '@/utils/sessions/sessionUtils';
 import type { PermissionToolCallMessageLocation } from '@/utils/sessions/permissions/permissionToolCallLocationTypes';
 import type { Metadata } from '@/sync/domains/state/storageTypes';
 import type { OpenApprovalArtifactForSession } from '@/sync/domains/artifacts/approvalArtifacts';
+import { COMPOSER_SURFACE_RADIUS } from '../composerContentInset';
 
 const stylesheet = StyleSheet.create((theme) => ({
     permissionRequestsContainer: {
@@ -25,8 +26,8 @@ const stylesheet = StyleSheet.create((theme) => ({
         ...Typography.default('semiBold'),
     },
     chrome: {
-        borderTopLeftRadius: Platform.select({ default: 16, android: 20 }),
-        borderTopRightRadius: Platform.select({ default: 16, android: 20 }),
+        borderTopLeftRadius: COMPOSER_SURFACE_RADIUS,
+        borderTopRightRadius: COMPOSER_SURFACE_RADIUS,
         borderBottomLeftRadius: 0,
         borderBottomRightRadius: 0,
         borderWidth: 1,

@@ -35,6 +35,21 @@ describe('agentInput/actionBarLogic', () => {
         })).toBe('collapsed');
     });
 
+    it.each(['android', 'ios', 'web'])('keeps secondary controls in the menu on a phone (%s)', (platform) => {
+        const layout = resolveAgentInputActionBarLayout({
+            configuredLayout: 'auto',
+            platform,
+            isMobileLayout: true,
+        });
+        expect(layout).toBe('collapsed');
+        expect(shouldShowSecondaryControlRow(layout, true)).toBe(false);
+        expect(resolveAgentInputActionBarLayout({
+            configuredLayout: 'scroll',
+            platform,
+            isMobileLayout: true,
+        })).toBe('scroll');
+    });
+
     it('treats resume as an action (prevents collapsed menu from being empty)', () => {
         expect(getHasAnyAgentInputActions({
             showPermissionChip: false,

@@ -5,6 +5,8 @@ import { resolveAgentInputControlLines } from './controls/resolveAgentInputContr
 import type { AgentInputControlId } from './controls/agentInputControlTypes';
 import { buildCoreCollapsedControlActions } from './controls/buildCoreCollapsedControlActions';
 
+export type AgentInputMenuAction = ActionListItem & Readonly<{ controlId: AgentInputControlId }>;
+
 export function buildAgentInputActionMenuActions(opts: {
     actionBarIsCollapsed: boolean;
     hasAnyActions: boolean;
@@ -33,8 +35,8 @@ export function buildAgentInputActionMenuActions(opts: {
     extraControlActions?: Partial<Record<AgentInputControlId, ActionListItem | ReadonlyArray<ActionListItem>>>;
     dismiss: () => void;
     blurInput: () => void;
-}): ActionListItem[] {
-    if (!opts.actionBarIsCollapsed || !opts.hasAnyActions) return [] as ActionListItem[];
+}): AgentInputMenuAction[] {
+    if (!opts.actionBarIsCollapsed || !opts.hasAnyActions) return [];
 
     const controlActionsById: Partial<Record<AgentInputControlId, ReadonlyArray<ActionListItem>>> = {
         ...buildCoreCollapsedControlActions(opts),
@@ -50,7 +52,7 @@ export function buildAgentInputActionMenuActions(opts: {
 
     return [
         ...orderedControlIds.flatMap((controlId) => {
-            return controlActionsById[controlId] ?? [];
+            return (controlActionsById[controlId] ?? []).map((action) => ({ ...action, controlId }));
         }),
     ];
 }

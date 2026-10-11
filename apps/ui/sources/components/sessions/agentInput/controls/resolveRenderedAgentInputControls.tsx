@@ -10,6 +10,7 @@ export function resolveRenderedAgentInputControls(params: Readonly<{
     coreControlNodesById: ControlNodesById;
     extraControlNodesById: ControlNodesById;
     extraChips: readonly React.ReactNode[];
+    collapsedMenuControlIds: readonly AgentInputControlId[];
     hiddenControlIds?: readonly AgentInputControlId[];
 }>): Readonly<{
     chips: readonly React.ReactNode[];
@@ -37,8 +38,15 @@ export function resolveRenderedAgentInputControls(params: Readonly<{
         controlLines.secondary.filter((controlId) => controlId !== 'path' && controlId !== 'resume'),
     );
 
+    const menuControls = new Set(params.collapsedMenuControlIds);
     const chips = params.layout === 'collapsed'
-        ? resolveControlNodes(controlLines.collapsed).filter(Boolean)
+        ? [
+            ...resolveControlNodes(controlLines.collapsed.filter((controlId) => (
+                controlId === 'engine' || controlId === 'permission' || controlId === 'actionMenu'
+                || !menuControls.has(controlId)
+            ))),
+            ...params.extraChips,
+        ].filter(Boolean)
         : [
             ...resolveControlNodes(controlLines.primary),
             ...params.extraChips,
