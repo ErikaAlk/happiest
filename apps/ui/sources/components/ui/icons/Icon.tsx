@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useUnistyles } from 'react-native-unistyles';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 import { HugeiconsIcon } from '@hugeicons/react-native';
@@ -128,7 +128,9 @@ export const Icon = React.memo((props: IconProps) => {
                     testID={props.testID}
                     {...(props.accessibilityLabel
                         ? { accessibilityLabel: props.accessibilityLabel, accessible: true }
-                        : { accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' as const })}
+                        : Platform.OS === 'web'
+                            ? { 'aria-hidden': true }
+                            : { accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' as const })}
                     />
             </View>
         );
@@ -158,7 +160,9 @@ export const Icon = React.memo((props: IconProps) => {
             testID={props.testID}
             {...(props.accessibilityLabel
                 ? { accessibilityLabel: props.accessibilityLabel, accessible: true }
-                : { accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' as const })}
+                : Platform.OS === 'web'
+                    ? { 'aria-hidden': true }
+                    : { accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' as const })}
             />
     );
 });

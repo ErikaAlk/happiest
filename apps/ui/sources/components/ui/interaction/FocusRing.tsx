@@ -1,5 +1,6 @@
 import * as React from 'react';
 import type { ViewStyle } from 'react-native';
+import { Platform } from 'react-native';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { StyleSheet } from 'react-native-unistyles';
 
@@ -133,8 +134,9 @@ export const FocusRing = React.memo((props: FocusRingProps) => {
         <Animated.View
             testID={props.testID}
             pointerEvents="none"
-            accessibilityElementsHidden
-            importantForAccessibility="no-hide-descendants"
+            {...(Platform.OS === 'web'
+                ? { 'aria-hidden': true }
+                : { accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' as const })}
             style={[styles.ring, geometry, animatedStyle]}
         />
     );

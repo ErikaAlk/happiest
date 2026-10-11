@@ -944,8 +944,9 @@ export const Item = React.memo<ItemProps>((props) => {
                         style={[styles.rightSection, fullWidthSplitRipple ? { paddingRight: splitRightPadding } : null]}
                         onLayout={fullWidthSplitRipple ? (event) => setRightAccessoryWidth(event.nativeEvent.layout.width) : undefined}
                         pointerEvents={disabled || loading ? 'none' : 'auto'}
-                        accessibilityElementsHidden={disabled || loading}
-                        importantForAccessibility={disabled || loading ? 'no-hide-descendants' : 'auto'}
+                        {...(Platform.OS === 'web'
+                            ? { 'aria-hidden': disabled || loading }
+                            : { accessibilityElementsHidden: disabled || loading, importantForAccessibility: disabled || loading ? 'no-hide-descendants' as const : 'auto' as const })}
                     >
                         {rightAccessory}
                     </View>
