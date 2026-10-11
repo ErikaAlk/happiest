@@ -158,8 +158,7 @@ export const RestoreQrView = React.memo(function RestoreQrView() {
                 );
 
                 if (credentials && !isCancelledRef.current) {
-                    const secretString = encodeBase64(credentials.secret, 'base64url');
-                    await auth.login(credentials.token, secretString);
+                    await auth.loginWithCredentials(credentials);
                     if (!isCancelledRef.current) {
                         router.back();
                     }

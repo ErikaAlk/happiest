@@ -1212,6 +1212,7 @@ export {
   openBoxBundle,
   sealBoxBundle,
 } from './crypto/boxBundle.js';
+export { sealAccountLinkPayload, openAccountLinkPayload, type AccountLinkEncryptionMaterial } from './crypto/accountLink.js';
 export {
   parseSerializedJsonValue,
   stringifySerializedJsonValue,

@@ -602,6 +602,31 @@ not participate: their envelope remains bound to the owning Session. A missing o
 census, a revision mismatch, or a wrong envelope kind aborts the Account transition without
 partially changing the mode.
 
+## 账号链接凭据交接（开发中）
+
+账号链接通过既有 Box bundle 加密交接凭据，服务器只保存并转交不透明的 `response`。
+`packages/protocol/src/crypto/accountLink.ts` 是载荷编码与解码的规范所有者。
+
+legacy 恢复密钥继续使用裸 32 字节明文。dataKey 明文固定为 70 字节：
+
+| 字节位置 | 内容 |
+|---|---|
+| 0–3 | 魔数 `HALK`，十六进制 `48 41 4c 4b` |
+| 4 | 版本 `1` |
+| 5 | 类型 `1`，表示 dataKey |
+| 6–37 | 凭据中的账号内容公钥 `publicKey` |
+| 38–69 | 凭据中的 `machineKey` |
+
+读取器先接受任意 32 字节 legacy 密钥，因此魔数前缀相同的真实恢复密钥不会被误判。
+其他长度必须满足完整的魔数、版本、类型与固定布局；无效载荷终止认证。
+dataKey 的两个字段原样保留，包括既有直接私钥与 seed 语义，由既有内容解密所有者处理。
+恢复入口将规范凭据交给 `loginWithCredentials` 保存，避免将内容私钥再次作为恢复 secret 派生。
+
+这个契约变化修复了 dataKey 账号链接时丢失凭据类型和账号内容公钥的问题。
+它与终端 V2/V3 共用 Box 密码学和既有 legacy/dataKey 凭据语义；终端交接内容私钥，
+账号链接还需保留原账号凭据类型与公钥，因此具有单独的明确载荷布局。
+兼容性边界见 [compatibility.md](compatibility.md#账号链接响应开发中)。
+
 ## Terminal pairing authentication rollout
 
 Terminal pairing v3 adds a 32-byte secret to the QR/deep link and authenticates the sealed

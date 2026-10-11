@@ -289,6 +289,24 @@ opt-out restores previews; users can disable them again from an updated client. 
 the flag and retain their existing reduced hints. There is no new server operation,
 migration, duplicate settings owner, or client-update requirement.
 
+## 账号链接响应（开发中）
+
+发布基线为 Web `ui-web-v0.1.2`（`3cefc41dfa813794d22136189d374fbbdcc5ea8a`）和桌面
+`ui-desktop-v0.1.2`（`4412ad5e42c80aaa2ba12f66b849813a10affa0c`）。两者的账号链接
+读取器均把解密明文作为 legacy secret，dataKey 审批端也发送裸 32 字节 machineKey。
+
+| 方向 | 行为 |
+|---|---|
+| 新批准端 → 新接收端 | dataKey 使用类型化载荷并原样保存公钥与 machineKey；legacy 原值不变。 |
+| 旧批准端 → 新接收端 | 裸 32 字节继续按 legacy 读取。真实 legacy 可用；旧 dataKey 审批仍有原缺陷，需更新批准端后重新链接。 |
+| 新批准端 → 旧接收端 | legacy 保持可用。dataKey 的 70 字节载荷被旧读取器保存为 secret，旧加密初始化随后因密钥长度不符而拒绝；需更新接收端后重新链接。 |
+| 新客户端 → 旧服务器 | 请求与响应 HTTP 形状不变，服务器仍只保存和转交不透明 response；V1/V2 的区别仍仅涉及 token 传输。 |
+
+dataKey 混合客户端方向此前已无法正确解密，本次没有增加服务器协商或改变可用的 legacy 方向。
+旧接收端的界面反馈取决于其错误处理，不能承诺展示新的升级提示。
+历史上误存为 legacy 的 machineKey 与真实恢复 secret 具有相同形状，不能批量改写或自动猜测类型。
+本次更新后需通过已更新的批准端与接收端重新链接，原已登录设备的凭据保持原值。
+
 ## Migration history
 
 Migration source has a stricter authoring boundary than ordinary internal code:

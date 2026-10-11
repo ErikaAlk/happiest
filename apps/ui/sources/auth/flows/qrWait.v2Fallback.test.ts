@@ -6,39 +6,17 @@ import { encryptBox } from '@/encryption/libsodium';
 import { generateAuthKeyPair } from './qrStart';
 import { authQRWait } from './qrWait';
 import { serverFetch } from '@/sync/http/client';
-
-const activeServerSnapshot = vi.hoisted(() => ({
-    serverId: 'relay-example',
-    serverUrl: 'https://relay.example.test',
-    generation: 0,
-}));
-
-const setServerProfileIdentityForUrlMock = vi.hoisted(() => vi.fn());
+import { getActiveServerSnapshot, upsertAndActivateServer } from '@/sync/domains/server/serverRuntime';
+import { listServerProfiles } from '@/sync/domains/server/serverProfiles';
+import { buildAccountLinkResponse } from './buildAccountLinkResponse';
+import tweetnacl from 'tweetnacl';
 
 vi.mock('@/sync/http/client', () => ({
     serverFetch: vi.fn(),
 }));
 
-vi.mock('@/sync/domains/server/serverRuntime', () => ({
-    getActiveServerSnapshot: () => activeServerSnapshot,
-}));
-
-vi.mock('@/sync/domains/server/serverProfiles', () => ({
-    setServerProfileIdentityForUrl: (...args: unknown[]) => setServerProfileIdentityForUrlMock(...args),
-}));
-
-type StubResponse = {
-    ok: boolean;
-    status: number;
-    json: () => Promise<any>;
-};
-
-function makeJsonResponse(status: number, payload: any): StubResponse {
-    return {
-        ok: status >= 200 && status < 300,
-        status,
-        json: async () => payload,
-    };
+function makeJsonResponse(status: number, payload: unknown): Response {
+    return new Response(JSON.stringify(payload), { status });
 }
 
 describe('authQRWait v2 fallback', () => {
@@ -49,7 +27,7 @@ describe('authQRWait v2 fallback', () => {
     it('uses /v2/auth/account/request when available', async () => {
         const keypair = generateAuthKeyPair();
         const expectedToken = 'tkn-test-1';
-        const expectedSecret = new Uint8Array([1, 2, 3, 4]);
+        const expectedSecret = tweetnacl.randomBytes(32);
 
         const tokenEncrypted = encodeBase64(encryptBox(new TextEncoder().encode(expectedToken), keypair.publicKey));
         const responseEncrypted = encodeBase64(encryptBox(expectedSecret, keypair.publicKey));
@@ -57,12 +35,12 @@ describe('authQRWait v2 fallback', () => {
         const fetchMock = vi.mocked(serverFetch);
         fetchMock.mockReset();
         fetchMock.mockResolvedValueOnce(
-            makeJsonResponse(200, { state: 'authorized', tokenEncrypted, response: responseEncrypted }) as any,
+            makeJsonResponse(200, { state: 'authorized', tokenEncrypted, response: responseEncrypted }),
         );
 
         const out = await authQRWait(keypair);
         expect(out?.token).toBe(expectedToken);
-        expect(out?.secret).toEqual(expectedSecret);
+        expect(out).toEqual({ token: expectedToken, secret: encodeBase64(expectedSecret, 'base64url') });
         expect(fetchMock.mock.calls[0]?.[0]).toBe('/v2/auth/account/request');
         expect(fetchMock).toHaveBeenCalledTimes(1);
     });
@@ -70,20 +48,20 @@ describe('authQRWait v2 fallback', () => {
     it('falls back to /v1/auth/account/request when /v2 is missing', async () => {
         const keypair = generateAuthKeyPair();
         const expectedToken = 'tkn-test-2';
-        const expectedSecret = new Uint8Array([9, 8, 7]);
+        const expectedSecret = tweetnacl.randomBytes(32);
 
         const responseEncrypted = encodeBase64(encryptBox(expectedSecret, keypair.publicKey));
 
         const fetchMock = vi.mocked(serverFetch);
         fetchMock.mockReset();
-        fetchMock.mockResolvedValueOnce(makeJsonResponse(404, { error: 'Not Found' }) as any);
+        fetchMock.mockResolvedValueOnce(makeJsonResponse(404, { error: 'Not Found' }));
         fetchMock.mockResolvedValueOnce(
-            makeJsonResponse(200, { state: 'authorized', token: expectedToken, response: responseEncrypted }) as any,
+            makeJsonResponse(200, { state: 'authorized', token: expectedToken, response: responseEncrypted }),
         );
 
         const out = await authQRWait(keypair);
         expect(out?.token).toBe(expectedToken);
-        expect(out?.secret).toEqual(expectedSecret);
+        expect(out).toEqual({ token: expectedToken, secret: encodeBase64(expectedSecret, 'base64url') });
         expect(fetchMock.mock.calls.map((c) => c[0])).toEqual([
             '/v2/auth/account/request',
             '/v1/auth/account/request',
@@ -94,10 +72,11 @@ describe('authQRWait v2 fallback', () => {
     it('stores server identity from authorized auth responses', async () => {
         const keypair = generateAuthKeyPair();
         const expectedToken = 'tkn-test-identity';
-        const expectedSecret = new Uint8Array([4, 5, 6]);
+        const expectedSecret = tweetnacl.randomBytes(32);
         const responseEncrypted = encodeBase64(encryptBox(expectedSecret, keypair.publicKey));
 
-        setServerProfileIdentityForUrlMock.mockClear();
+        upsertAndActivateServer({ serverUrl: 'https://relay.example.test' });
+        const serverUrl = getActiveServerSnapshot().serverUrl;
         const fetchMock = vi.mocked(serverFetch);
         fetchMock.mockReset();
         fetchMock.mockResolvedValueOnce(
@@ -106,15 +85,24 @@ describe('authQRWait v2 fallback', () => {
                 token: expectedToken,
                 response: responseEncrypted,
                 serverIdentityId: 'srv_auth_identity',
-            }) as any,
+            }),
         );
 
         const out = await authQRWait(keypair);
 
         expect(out?.token).toBe(expectedToken);
-        expect(setServerProfileIdentityForUrlMock).toHaveBeenCalledWith(
-            'https://relay.example.test',
-            'srv_auth_identity',
-        );
+        expect(listServerProfiles().find(profile => profile.serverUrl === serverUrl)?.serverIdentityId).toBe('srv_auth_identity');
+    });
+
+    it('returns complete dataKey credentials through the existing v1 relay contract', async () => {
+        const keypair = generateAuthKeyPair();
+        const content = tweetnacl.box.keyPair();
+        const credentials = { token: 'data-key-token', encryption: { publicKey: encodeBase64(content.publicKey), machineKey: encodeBase64(content.secretKey) } };
+        const responseEncrypted = encodeBase64(buildAccountLinkResponse(credentials, keypair.publicKey));
+        const fetchMock = vi.mocked(serverFetch);
+        fetchMock.mockReset();
+        fetchMock.mockResolvedValueOnce(makeJsonResponse(404, {}));
+        fetchMock.mockResolvedValueOnce(makeJsonResponse(200, { state: 'authorized', token: credentials.token, response: responseEncrypted }));
+        expect(await authQRWait(keypair)).toEqual(credentials);
     });
 });

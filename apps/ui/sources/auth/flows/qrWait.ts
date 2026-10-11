@@ -6,11 +6,8 @@ import { getActiveServerSnapshot } from '@/sync/domains/server/serverRuntime';
 import { setServerProfileIdentityForUrl } from '@/sync/domains/server/serverProfiles';
 import { isRuntimeActive } from '@/utils/runtime/isRuntimeActive';
 import { delay } from '@/utils/timing/time';
-
-export interface AuthCredentials {
-    secret: Uint8Array;
-    token: string;
-}
+import type { AuthCredentials } from '@/auth/storage/tokenStorage';
+import { openAccountLinkPayload } from '@happier-dev/protocol';
 
 export async function authQRWait(keypair: QRAuthKeyPair, onProgress?: (dots: number) => void, shouldCancel?: () => boolean): Promise<AuthCredentials | null> {
     let dots = 0;
@@ -78,12 +75,11 @@ export async function authQRWait(keypair: QRAuthKeyPair, onProgress?: (dots: num
 
                 const encryptedResponse = decodeBase64(data.response);
                 
-                const decrypted = decryptBox(encryptedResponse, keypair.secretKey);
-                if (decrypted) {
-                    return {
-                        secret: decrypted,
-                        token: token
-                    };
+                const material = openAccountLinkPayload({ payload: encryptedResponse, recipientSecretKeyOrSeed: keypair.secretKey });
+                if (material) {
+                    return material.type === 'legacy'
+                        ? { token, secret: encodeBase64(material.secret, 'base64url') }
+                        : { token, encryption: { publicKey: encodeBase64(material.publicKey), machineKey: encodeBase64(material.machineKey) } };
                 }
                 return null;
             }
