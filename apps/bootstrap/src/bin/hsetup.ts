@@ -1,6 +1,7 @@
 import { systemTasks } from '@happier-dev/cli-common';
 import type { InteractiveSystemTaskEventInput, InteractiveSystemTaskKind, InteractiveSystemTaskKindMap } from '@happier-dev/cli-common/systemTasks';
 import { createInterface } from 'node:readline';
+import { pathToFileURL } from 'node:url';
 import {
   SystemTaskEventSchema,
   SystemTaskResultSchema,
@@ -406,7 +407,8 @@ function createDefaultIo(): HsetupIo {
   };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (('main' in import.meta && import.meta.main === true)
+    || (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href)) {
   runHsetupCli(process.argv.slice(2)).then((exitCode) => {
     process.exitCode = exitCode;
   });

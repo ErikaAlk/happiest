@@ -28,13 +28,17 @@ describe('applyTauriBadgeState', () => {
         expect(setBadgeLabel).not.toHaveBeenCalled();
     });
 
-    it('shows a dot label on macOS when only non-numeric attention exists', async () => {
+    it('applies non-numeric attention using the host platform badge capabilities', async () => {
         const { applyTauriBadgeState } = await import('./applyTauriBadgeState');
 
         await applyTauriBadgeState({ count: 0, showNonNumericDot: true });
 
         expect(setBadgeCount).toHaveBeenCalledWith(undefined);
-        expect(setBadgeLabel).toHaveBeenCalledWith('•');
+        if (typeof navigator !== 'undefined' && /^Mac/.test(navigator.platform)) {
+            expect(setBadgeLabel).toHaveBeenCalledWith('•');
+        } else {
+            expect(setBadgeLabel).not.toHaveBeenCalled();
+        }
     });
 
     it('serializes writes and coalesces queued intermediate badge states', async () => {

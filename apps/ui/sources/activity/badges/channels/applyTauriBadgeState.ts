@@ -19,7 +19,9 @@ async function applyTauriBadgeStateDirect(state: ActivityBadgeState): Promise<vo
     }
 
     await window.setBadgeCount(undefined);
-    await window.setBadgeLabel(state.showNonNumericDot ? '•' : undefined);
+    if (typeof navigator !== 'undefined' && /^Mac/.test(navigator.platform)) {
+        await window.setBadgeLabel(state.showNonNumericDot ? '•' : undefined);
+    }
 }
 
 async function drainPendingBadgeState(): Promise<void> {
