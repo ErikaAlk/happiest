@@ -4,6 +4,7 @@ export async function waitForDaemonRunningWithinBudget(params: {
   pollMs: number;
   sleep?: (ms: number) => Promise<void>;
 }): Promise<boolean> {
+  const deadline = performance.now() + params.timeoutMs;
   if (await params.isRunning()) return true;
 
   const sleep =
@@ -11,12 +12,12 @@ export async function waitForDaemonRunningWithinBudget(params: {
       ? params.sleep
       : (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
-  let remainingMs = params.timeoutMs;
+  let remainingMs = deadline - performance.now();
   while (remainingMs > 0) {
     const sleepMs = Math.min(params.pollMs, remainingMs);
     await sleep(sleepMs);
-    remainingMs -= sleepMs;
     if (await params.isRunning()) return true;
+    remainingMs = deadline - performance.now();
   }
 
   return false;

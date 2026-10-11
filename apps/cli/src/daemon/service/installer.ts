@@ -1,7 +1,15 @@
 import { readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
+import { spawnSync } from 'node:child_process';
 
 import { configuration } from '@/configuration';
+import { readPositiveIntEnv } from '@/utils/readPositiveIntEnv';
+import {
+  buildReadWindowsScheduledTaskStatusPowerShellCommand,
+  buildWindowsScheduledTaskPowerShellAction,
+  parseWindowsScheduledTaskStatusPowerShellJson,
+  splitQualifiedWindowsScheduledTaskName,
+} from '@happier-dev/cli-common/service';
 
 import {
   applyDaemonServiceInstallPlan,
@@ -20,7 +28,7 @@ import {
   readInstalledDaemonServiceAutostartMode,
   type InstalledDaemonServiceEntry,
 } from './discoverInstalledDaemonServiceEntries';
-import { planDaemonServiceInstall, planDaemonServiceUninstall } from './plan';
+import { planDaemonServiceInstall, planDaemonServiceUninstall, resolveWindowsDaemonTaskName } from './plan';
 import type { DaemonServiceAutostartMode, DaemonServiceMode, DaemonServiceTargetMode } from './plan';
 import {
   isManagedCliDaemonServiceLauncher,
@@ -272,7 +280,10 @@ export async function previewDaemonServiceInstall(options: Readonly<{
         installedPath: service.path,
         expectedContents: expectedInstalledFile.content,
       }))
-  );
+  ) && (platform !== 'win32' || Boolean(expectedInstalledFile && doesWindowsDaemonTaskMatchExpected({
+    taskName: resolveWindowsDaemonTaskName({ instanceId, channel, targetMode }),
+    wrapperPath: expectedInstalledFile.path,
+  })));
 
   // Only a switch between a CLI the user installed and the managed CLI — either way (R12/R13 b) —
   // changes which CLI the user's service runs. A node or override launcher legitimately drifts per
@@ -303,6 +314,28 @@ export async function previewDaemonServiceInstall(options: Readonly<{
     plan,
     exactTargetRuntimeReplacement,
   };
+}
+
+function doesWindowsDaemonTaskMatchExpected(params: Readonly<{
+  taskName: string;
+  wrapperPath: string;
+}>): boolean {
+  const result = spawnSync('powershell.exe', [
+    '-NoProfile', '-NonInteractive', '-Command',
+    '[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false); '
+      + buildReadWindowsScheduledTaskStatusPowerShellCommand(splitQualifiedWindowsScheduledTaskName(params.taskName)),
+  ], {
+    encoding: 'utf8',
+    windowsHide: true,
+    timeout: readPositiveIntEnv('HAPPIER_WINDOWS_SCHTASKS_TIMEOUT_MS', 15_000),
+  });
+  if (result.error) throw result.error;
+  if (result.status !== 0) throw new Error(`查询 Windows 计划任务失败：${result.stderr}`);
+  const task = parseWindowsScheduledTaskStatusPowerShellJson(result.stdout);
+  if (!task) throw new Error('Windows 计划任务查询返回了无效数据');
+  return task.exists && task.taskToRun.toLowerCase() === buildWindowsScheduledTaskPowerShellAction({
+    definitionPath: params.wrapperPath,
+  }).toLowerCase();
 }
 
 export function readInstalledDaemonServiceDefinition(path: string): string | null {
