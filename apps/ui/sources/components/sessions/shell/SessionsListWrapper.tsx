@@ -113,7 +113,7 @@ const ActiveSessionsListPaneStateSubscriber = React.memo((props: Readonly<{
 const SessionsListWrapperContent = React.memo((props: { pathname: string; surfaceRoutePathname: string }) => {
     const { theme } = useUnistyles();
     const isFocused = useIsFocused();
-    const { directSessionsEnabled, storageKind, setStorageKind } = useSessionListStorageKind();
+    const { directSessionsEnabled, storageKind } = useSessionListStorageKind();
     const newSessionDrafts = useNewSessionDraftProjections();
     const pathname = props.pathname;
     const surfaceRoutePathname = props.surfaceRoutePathname;
@@ -219,16 +219,15 @@ const SessionsListWrapperContent = React.memo((props: { pathname: string; surfac
         ?? (paneStateMatchesStorageKind && paneStateMatchesSource ? paneState : EMPTY_SESSIONS_LIST_PANE_STATE);
     const { sessionListViewData, visibleSessionCount, hasHiddenInactiveSessions } = displayPaneState;
     const styles = stylesheet;
-    const storageChrome = (
+    const storageChrome = React.useMemo(() => (
         <SessionsListStorageChrome
             directSessionsEnabled={directSessionsEnabled}
-            storageKind={storageKind}
-            onSelectStorageKind={setStorageKind}
         />
-    );
+    ), [directSessionsEnabled]);
     const sessionListContent = React.useMemo(
         () => (
             <SessionsListContent
+                listHeader={storageChrome}
                 storageKind={storageKind}
                 data={sessionListViewData}
                 pathname={pathname}
@@ -236,7 +235,7 @@ const SessionsListWrapperContent = React.memo((props: { pathname: string; surfac
                 refreshDirectSessions={refreshDirectSessions}
             />
         ),
-        [pathname, refreshDirectSessions, sessionListViewData, storageKind, surfaceOwnership],
+        [pathname, refreshDirectSessions, sessionListViewData, storageChrome, storageKind, surfaceOwnership],
     );
 
     if (!surfaceOwnership.visible) {
@@ -273,7 +272,6 @@ const SessionsListWrapperContent = React.memo((props: { pathname: string; surfac
     } else {
         content = (
             <View style={styles.container}>
-                {storageChrome}
                 {sessionListContent}
             </View>
         );

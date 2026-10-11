@@ -20,28 +20,6 @@ vi.mock('@expo/vector-icons', () => ({
     Ionicons: 'Ionicons',
 }));
 
-vi.mock('@/components/sessions/shell/SessionListStorageTabsBar', () => ({
-    SessionListStorageTabsBar: (props: Record<string, unknown>) =>
-        React.createElement('SessionListStorageTabsBar', props),
-}));
-
-vi.mock('@/components/ui/lists/Item', () => ({
-    Item: (props: Record<string, unknown>) => React.createElement('Item', props),
-}));
-
-vi.mock('@/components/ui/lists/ItemGroup', () => ({
-    ItemGroup: (props: Record<string, unknown> & { children?: React.ReactNode }) =>
-        React.createElement('ItemGroup', props, props.children),
-}));
-
-function flattenStyle(style: unknown): Record<string, unknown> {
-    if (Array.isArray(style)) {
-        return Object.assign({}, ...style.map((entry) => flattenStyle(entry)));
-    }
-    if (style && typeof style === 'object') return style as Record<string, unknown>;
-    return {};
-}
-
 describe('SessionsListStorageChrome sidebar surface', () => {
     it('renders the direct browse action without main-content ItemGroup constraints', async () => {
         const { SessionsListStorageChrome } = await import('./SessionsListStorageChrome');
@@ -49,24 +27,15 @@ describe('SessionsListStorageChrome sidebar surface', () => {
         const screen = await renderScreen(
             <SessionsListStorageChrome
                 directSessionsEnabled
-                storageKind="direct"
-                onSelectStorageKind={() => {}}
             />,
         );
 
-        const itemGroups = screen.findAllByType('ItemGroup' as never);
-        expect(itemGroups).toHaveLength(1);
-        expect(itemGroups[0]?.props.constrainToContentWidth).toBe(false);
-
-        const browseContainerStyle = flattenStyle(itemGroups[0]?.props.style);
-        expect(browseContainerStyle.marginTop).toBe(-4);
-        expect(browseContainerStyle.maxWidth).toBeUndefined();
-        expect(browseContainerStyle.backgroundColor).toBeUndefined();
-
-        const browseSurfaceStyle = flattenStyle(itemGroups[0]?.props.containerStyle);
-        expect(browseSurfaceStyle.backgroundColor).toBe('transparent');
-        expect(browseSurfaceStyle.boxShadow).toBe('none');
-        expect(browseSurfaceStyle.shadowOpacity).toBe(0);
-        expect(browseSurfaceStyle.elevation).toBe(0);
+        const itemGroups = screen.tree.findAll((node) => node.props.constrainToContentWidth === false);
+        expect(itemGroups).toHaveLength(2);
+        const usageGroup = itemGroups.find((group) => group.findAllByProps({ testID: 'account-usage-limits-entry' }).length > 0);
+        const browseGroup = itemGroups.find((group) => group.findAllByProps({ testID: 'direct-sessions-browse-button' }).length > 0);
+        expect(usageGroup?.props.constrainToContentWidth).toBe(false);
+        expect(browseGroup?.props.constrainToContentWidth).toBe(false);
+        expect(usageGroup).not.toBe(browseGroup);
     });
 });

@@ -602,6 +602,7 @@ export function SessionsList(props: Readonly<{
 }
 
 export const SessionsListContent = React.memo(function SessionsListContent(props: Readonly<{
+    listHeader?: React.ReactNode;
     storageKind?: SessionListStorageFilter;
     data: SessionListViewItem[] | null;
     refreshDirectSessions?: () => Promise<void>;
@@ -2217,7 +2218,7 @@ export const SessionsListContent = React.memo(function SessionsListContent(props
         workspaceMachineSubtitlesEnabled,
     ]);
     const renderSessionItem = React.useCallback((item: SessionListSessionItem, index: number) => {
-        if (item.session.directCandidate) return <DirectSessionListRow value={item.session.directCandidate} />;
+        if (item.session.directCandidate) return <DirectSessionListRow value={item.session.directCandidate} adjacency={resolveSessionListRowModelAdjacency(renderedListItems, index)} />;
         const groupKey = String(item.groupKey ?? '').trim();
         const effectiveOrderingMode = resolveEffectiveSessionListOrderingModeForGroup({
             section: sessionListSectionMode === 'single' ? 'sessions' : item.section,
@@ -2324,6 +2325,7 @@ export const SessionsListContent = React.memo(function SessionsListContent(props
     const renderVirtualizedHeader = React.useCallback(() => (
         <SessionsListHeader>
             <NewSessionDraftsSection density={rowPresentationSettings.density} />
+            {props.listHeader}
             <SessionFolderScopeBreadcrumb
                 breadcrumbs={folderBreadcrumbs}
                 onClear={handleClearSessionFolderFocus}
@@ -2331,7 +2333,7 @@ export const SessionsListContent = React.memo(function SessionsListContent(props
                 rootTitle={folderBreadcrumbRootTitle}
             />
         </SessionsListHeader>
-    ), [folderBreadcrumbRootTitle, folderBreadcrumbs, handleClearSessionFolderFocus, handleSelectSessionFolderBreadcrumb, rowPresentationSettings.density]);
+    ), [folderBreadcrumbRootTitle, folderBreadcrumbs, handleClearSessionFolderFocus, handleSelectSessionFolderBreadcrumb, props.listHeader, rowPresentationSettings.density]);
 
     const renderVirtualizedFooter = React.useCallback(() => {
         return (

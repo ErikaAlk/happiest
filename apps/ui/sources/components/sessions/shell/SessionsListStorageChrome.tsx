@@ -4,7 +4,6 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { Item } from '@/components/ui/lists/Item';
 import { ItemGroup } from '@/components/ui/lists/ItemGroup';
-import type { SessionStorageKind, SessionListStorageFilter } from '@/sync/domains/session/sessionStorageKind';
 import { t } from '@/text';
 import { Icon } from '@/components/ui/icons/Icon';
 
@@ -23,8 +22,6 @@ const stylesheet = StyleSheet.create(() => ({
 
 export type SessionsListStorageChromeProps = Readonly<{
     directSessionsEnabled: boolean;
-    storageKind: SessionListStorageFilter;
-    onSelectStorageKind: (storageKind: SessionStorageKind) => void;
 }>;
 
 export const SessionsListStorageChrome = React.memo((props: SessionsListStorageChromeProps) => {
@@ -50,7 +47,6 @@ export const SessionsListStorageChrome = React.memo((props: SessionsListStorageC
                     <Item
                         testID="direct-sessions-browse-button"
                         title={t('directSessions.browseOpenExisting')}
-                        subtitle={t('directSessions.browseActionSubtitle')}
                         icon={<Icon name="folder-open" size={20} color={theme.colors.text.secondary} />}
                         onPress={() => {
                             router.push('/direct/browse');

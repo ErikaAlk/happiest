@@ -160,9 +160,6 @@ vi.mock('@/components/sessions/model/useSessionListStorageKind', () => ({
         setStorageKind: storageKindState.setStorageKind,
     }),
 }));
-vi.mock('@/components/sessions/shell/SessionsListStorageChrome', () => ({
-    SessionsListStorageChrome: (props: any) => React.createElement('SessionsListStorageChrome', props),
-}));
 vi.mock('@/components/sessions/guidance/SessionGettingStartedGuidance', () => ({
     SessionGettingStartedGuidance: 'SessionGettingStartedGuidance',
 }));
@@ -173,7 +170,7 @@ vi.mock('@/components/sessions/shell/SessionsList', () => ({
     SessionsList: (props: any) => React.createElement('SessionsList', props),
     SessionsListContent: (props: any) => {
         sessionListState.contentRenderCalls += 1;
-        return React.createElement('SessionsListContent', props);
+        return React.createElement('SessionsListContent', props, props.listHeader);
     },
 }));
 vi.mock('@/components/sessions/shell/NewSessionDraftsSection', () => ({
@@ -258,7 +255,7 @@ describe('SessionsListWrapper (empty state)', () => {
         await screen.unmount();
     });
 
-    it('shows storage tabs and uses the selected direct storage filter when direct sessions are enabled', async () => {
+    it('renders usage and direct browse entries with the selected direct storage filter', async () => {
         featureDecisionState.enabled = true;
         storageKindState.storageKind = 'direct';
         sessionListState.data = [{ type: 'session', session: { id: 'session-1' } }];
@@ -267,8 +264,8 @@ describe('SessionsListWrapper (empty state)', () => {
 
         expect(sessionListState.storageKinds.length).toBeGreaterThan(0);
         expect(sessionListState.storageKinds.every((kind) => kind === 'direct')).toBe(true);
-        expect(() => screen.findByType('SessionsListStorageChrome' as any)).not.toThrow();
-        expect(screen.findByType('SessionsListStorageChrome' as any).props.storageKind).toBe('direct');
+        expect(() => screen.findByProps({ testID: 'account-usage-limits-entry' })).not.toThrow();
+        expect(() => screen.findByProps({ testID: 'direct-sessions-browse-button' })).not.toThrow();
         expect(screen.findByType('SessionsListContent' as any).props.storageKind).toBe('direct');
         expect(screen.findByType('SessionsListContent' as any).props.data).toBe(sessionListState.data);
 
@@ -282,8 +279,8 @@ describe('SessionsListWrapper (empty state)', () => {
 
         const screen = await renderSessionsListWrapper();
 
-        expect(() => screen.findByType('SessionsListStorageChrome' as any)).not.toThrow();
-        expect(screen.findByType('SessionsListStorageChrome' as any).props.storageKind).toBe('direct');
+        expect(() => screen.findByProps({ testID: 'account-usage-limits-entry' })).not.toThrow();
+        expect(() => screen.findByProps({ testID: 'direct-sessions-browse-button' })).not.toThrow();
 
         await screen.unmount();
     });
@@ -311,16 +308,16 @@ describe('SessionsListWrapper (empty state)', () => {
         await screen.unmount();
     });
 
-    it('keeps the storage chrome visible when the direct tab already has sessions', async () => {
-        featureDecisionState.enabled = true;
+    it('keeps usage available when direct sessions are disabled and sessions exist', async () => {
+        featureDecisionState.enabled = false;
         storageKindState.storageKind = 'direct';
         sessionListState.data = [{ type: 'session', session: { id: 'session-1' } }];
 
         const screen = await renderSessionsListWrapper();
 
-        expect(() => screen.findByType('SessionsListStorageChrome' as any)).not.toThrow();
-        expect(screen.findByType('SessionsListStorageChrome' as any).props.storageKind).toBe('direct');
-        expect(screen.findByType('SessionsListContent' as any).props.storageKind).toBe('direct');
+        expect(() => screen.findByProps({ testID: 'account-usage-limits-entry' })).not.toThrow();
+        expect(() => screen.findByProps({ testID: 'direct-sessions-browse-button' })).toThrow();
+        expect(screen.findByType('SessionsListContent' as any).props.storageKind).toBe('persisted');
 
         await screen.unmount();
     });

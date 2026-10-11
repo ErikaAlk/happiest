@@ -303,28 +303,6 @@ describe('MainView sidebar actions', () => {
         expect(() => findPressableByLabel(tree!, 'Open automations')).toThrow();
     });
 
-    it('keeps the phone sessions header new-session action', async () => {
-        platformState.isTablet = false;
-        let tree: renderer.ReactTestRenderer | null = null;
-        tree = (await renderScreen(<MainView variant="phone" />)).tree;
-
-        const header = tree!.findByType('Header');
-        const headerRight = header.props.headerRight();
-        expect(headerRight).toBeTruthy();
-
-        const renderedHeaderRight = await renderScreen(headerRight);
-        renderedHeaderRight.findByProps({ testID: 'main-header-start-new-session' }).props.onPress({ nativeEvent: { ctrlKey: true } });
-        expect(routerPushSpy).toHaveBeenCalledWith({
-            pathname: '/new',
-            params: {
-                draftId: expect.any(String),
-                draftOrigin: 'ordinary',
-            },
-        });
-        expect(renderedHeaderRight.findAllByType('FABWide')).toHaveLength(0);
-        expect(tree!.findAllByType('TabBar')).toHaveLength(0);
-    });
-
     it('does not subscribe to sidebar session-list derivations in phone mode', async () => {
         platformState.isTablet = false;
         sessionListState.data = [{
@@ -421,7 +399,7 @@ describe('MainView sidebar actions', () => {
         await renderScreen(<MainView variant="sidebar" />);
 
         expect(sessionListHookState.visibleSessionListPaneStateOptions).toEqual([
-            { activeSessionId: 'session-2', sessionListSurfaceDataActive: true },
+            { activeSessionId: 'session-2', sessionListSurfaceDataActive: true, refreshDirectSessionsRef: { current: null } },
         ]);
     });
 
@@ -436,7 +414,7 @@ describe('MainView sidebar actions', () => {
         const list = screen.tree.findByType('SessionsListContent');
 
         expect(sessionListHookState.visibleSessionListPaneStateOptions).toEqual([
-            { activeSessionId: 'session-2', sessionListSurfaceDataActive: true },
+            { activeSessionId: 'session-2', sessionListSurfaceDataActive: true, refreshDirectSessionsRef: { current: null } },
         ]);
         expect(list.props.surfaceOwnership).toMatchObject({
             ownerKey: 'sidebar',
@@ -457,7 +435,7 @@ describe('MainView sidebar actions', () => {
         const list = screen.tree.findByType('SessionsListContent');
 
         expect(sessionListHookState.visibleSessionListPaneStateOptions).toEqual([
-            { activeSessionId: null, sessionListSurfaceDataActive: true },
+            { activeSessionId: null, sessionListSurfaceDataActive: true, refreshDirectSessionsRef: { current: null } },
         ]);
         expect(list.props.surfaceOwnership).toMatchObject({
             ownerKey: 'sidebar',
@@ -471,33 +449,32 @@ describe('MainView sidebar actions', () => {
         platformState.isTablet = false;
         tabState.activeTab = 'settings';
 
-        const screen = await renderScreen(<MainView variant="phone" />);
-        const header = screen.tree.findByType('Header');
-        const renderedHeaderRight = await renderScreen(header.props.headerRight());
+        await renderScreen(<MainView variant="phone" />);
 
         expect(tabState.setActiveTab).not.toHaveBeenCalled();
         expect(routerReplaceSpy).not.toHaveBeenCalledWith('/settings');
-        expect(() => renderedHeaderRight.findByProps({ testID: 'main-header-start-new-session' })).not.toThrow();
     });
 
-    it('renders direct session storage tabs in the sidebar empty state when direct sessions are enabled', async () => {
+    it('opens usage limits from the sidebar empty state when direct sessions are enabled', async () => {
         directSessionsFeatureState.enabled = true;
         localSettingsState.sessionsListStorageTab = 'direct';
 
         let tree: renderer.ReactTestRenderer | null = null;
         tree = (await renderScreen(<MainView variant="sidebar" />)).tree;
 
-        expect(() => tree!.findByProps({ testID: 'sessions-list-storage-tab:direct' })).not.toThrow();
+        tree!.findByProps({ testID: 'account-usage-limits-entry' }).props.onPress();
+        expect(routerPushSpy).toHaveBeenCalledWith('/usage-limits');
     });
 
-    it('renders the browse direct sessions action in the sidebar empty state when the direct tab is active', async () => {
+    it('opens direct session browsing from the sidebar empty state', async () => {
         directSessionsFeatureState.enabled = true;
         localSettingsState.sessionsListStorageTab = 'direct';
 
         let tree: renderer.ReactTestRenderer | null = null;
         tree = (await renderScreen(<MainView variant="sidebar" />)).tree;
 
-        expect(() => tree!.findByProps({ testID: 'direct-sessions-browse-button' })).not.toThrow();
+        tree!.findByProps({ testID: 'direct-sessions-browse-button' }).props.onPress();
+        expect(routerPushSpy).toHaveBeenCalledWith('/direct/browse');
     });
 
     it('shows the hidden inactive sessions notice when hide inactive sessions empties the sidebar', async () => {

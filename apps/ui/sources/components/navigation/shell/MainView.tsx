@@ -207,19 +207,12 @@ const HeaderTitle = React.memo(({ activeTab }: { activeTab: ActiveTabType }) => 
 // Header right button - varies by tab
 const HeaderRight = React.memo(({ activeTab }: { activeTab: ActiveTabType }) => {
     const router = useRouter();
-    const resolveNewSessionOrdinaryEntryRoute = useResolveNewSessionOrdinaryEntryRoute();
     const { theme } = useUnistyles();
     const isCustomServer = isUsingCustomServer();
     const friendsIdentityReadiness = useFriendsIdentityReadiness();
     const friendsIdentityReady = friendsIdentityReadiness.isReady;
     const automationsSupport = useAutomationsSupport();
     const showAutomations = automationsSupport?.enabled !== false;
-    const handleNewSession = React.useCallback((event?: unknown) => {
-        const { draftId, draftOrigin } = resolveNewSessionOrdinaryEntryRoute({
-            forceFresh: shouldForceFreshNewSessionEntryFromPressEvent(event),
-        });
-        router.push({ pathname: '/new', params: { draftId, draftOrigin } });
-    }, [resolveNewSessionOrdinaryEntryRoute, router]);
 
     if (activeTab === 'sessions') {
         return (
@@ -234,14 +227,6 @@ const HeaderRight = React.memo(({ activeTab }: { activeTab: ActiveTabType }) => 
                         <Icon name="timer" size={20} color={theme.colors.chrome.header.foreground} />
                     </Pressable>
                 ) : null}
-                <Pressable
-                    testID="main-header-start-new-session"
-                    onPress={handleNewSession}
-                    hitSlop={15}
-                    style={styles.headerButton}
-                >
-                    <Icon name="plus" size={29} color={theme.colors.chrome.header.foreground} />
-                </Pressable>
             </View>
         );
     }
@@ -300,7 +285,7 @@ const SidebarMainViewContent = React.memo(function SidebarMainViewContent({
     pathname: string;
 }>) {
     const { theme } = useUnistyles();
-    const { directSessionsEnabled, storageKind, setStorageKind } = useSessionListStorageKind();
+    const { directSessionsEnabled, storageKind } = useSessionListStorageKind();
     const router = useRouter();
     const resolveNewSessionOrdinaryEntryRoute = useResolveNewSessionOrdinaryEntryRoute();
     const activeSessionId = React.useMemo(() => readSessionIdFromPathname(pathname), [pathname]);
@@ -332,13 +317,11 @@ const SidebarMainViewContent = React.memo(function SidebarMainViewContent({
         router.push({ pathname: '/new', params: { draftId, draftOrigin } });
     }, [resolveNewSessionOrdinaryEntryRoute, router]);
 
-    const storageChrome = (
+    const storageChrome = React.useMemo(() => (
         <SessionsListStorageChrome
             directSessionsEnabled={directSessionsEnabled}
-            storageKind={storageKind}
-            onSelectStorageKind={setStorageKind}
         />
-    );
+    ), [directSessionsEnabled]);
 
     let content: React.ReactNode;
     if (sessionListViewData === null) {
@@ -376,9 +359,9 @@ const SidebarMainViewContent = React.memo(function SidebarMainViewContent({
     } else {
         content = (
             <View style={styles.sidebarContainer}>
-                {storageChrome}
                 <View style={styles.sidebarContentContainer}>
                     <SessionsListContent
+                        listHeader={storageChrome}
                         storageKind={storageKind}
                         data={sessionListViewData}
                         pathname={pathname}
