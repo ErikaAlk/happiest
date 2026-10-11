@@ -151,6 +151,15 @@ _.env.pipeline.production.local
 /apply_fix.py
 /apps/cli/.restore.*
 /apps/cli/.happiest-runner-snapshots/
+
+# Local runtime data and build artifacts (machine-specific, not source)
+/apps/cli/.dev/
+/apps/cli/.runner-snapshots/
+/apps/cli/nul
+/apps/server/.dev/
+/({platform
+/({url
+
 /apps/cli/package.yaml
 /evidence/
 /liveqa_*.mjs
