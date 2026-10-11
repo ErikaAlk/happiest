@@ -4131,7 +4131,8 @@ function SessionViewLoaded({
         providerAccountUsageSnapshotsByRecordId,
     ]);
     const providerUsageGaugeSource = React.useMemo(() => {
-        if (!connectedServiceQuotasEnabled || sessionProviderUsageGaugeMode === 'hidden') return null;
+        if (providerUsageDisplaySnapshotSource?.kind !== 'account_usage'
+            && (!connectedServiceQuotasEnabled || sessionProviderUsageGaugeMode === 'hidden')) return null;
         if (!connectedServiceQuotaProfileCredentialUsable) return null;
         return selectConnectedServiceSessionProviderUsageGaugeSource({
             providerId: liveComposerState.agentId,
