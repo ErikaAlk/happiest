@@ -156,10 +156,10 @@ test(
     );
 
     const hstackArtifact = join(repoRoot, 'dist', 'release-assets', 'stack', `hstack-v${version}-${target}.tar.gz`);
-    const serverArtifact = join(repoRoot, 'dist', 'release-assets', 'server', `happier-server-v${version}-${target}.tar.gz`);
+    const serverArtifact = join(repoRoot, 'dist', 'release-assets', 'server', `happiest-server-v${version}-${target}.tar.gz`);
 
     const extractedHstack = await extractBinaryFromArtifact({ label: 'self-host-daemon', artifactPath: hstackArtifact, binaryName: process.platform === 'win32' ? 'hstack.exe' : 'hstack' });
-    const extractedServer = await extractBinaryFromArtifact({ label: 'self-host-daemon', artifactPath: serverArtifact, binaryName: process.platform === 'win32' ? 'happier-server.exe' : 'happier-server' });
+    const extractedServer = await extractBinaryFromArtifact({ label: 'self-host-daemon', artifactPath: serverArtifact, binaryName: process.platform === 'win32' ? 'happiest-server.exe' : 'happiest-server' });
 
     t.after(async () => {
       await rm(extractedHstack.extractDir, { recursive: true, force: true });
@@ -183,7 +183,7 @@ test(
     await cp(extractedHstack.binaryPath, hstackPath);
     await chmod(hstackPath, 0o755).catch(() => {});
 
-    const serviceName = `happier-server-e2e-${Date.now().toString(36).slice(-6)}`;
+    const serviceName = `happiest-server-e2e-${Date.now().toString(36).slice(-6)}`;
     const serverPort = await reserveLocalhostPort();
     const mode = process.platform === 'linux' ? 'system' : 'user';
 

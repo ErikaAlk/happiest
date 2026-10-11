@@ -78,10 +78,10 @@ test(
     );
 
     const hstackArtifact = join(repoRoot, 'dist', 'release-assets', 'stack', `hstack-v${version}-${target}.tar.gz`);
-    const serverArtifact = join(repoRoot, 'dist', 'release-assets', 'server', `happier-server-v${version}-${target}.tar.gz`);
+    const serverArtifact = join(repoRoot, 'dist', 'release-assets', 'server', `happiest-server-v${version}-${target}.tar.gz`);
 
     const extractedHstack = await extractBinaryFromArtifact({ label: 'self-host-launchd', artifactPath: hstackArtifact, binaryName: 'hstack' });
-    const extractedServer = await extractBinaryFromArtifact({ label: 'self-host-launchd', artifactPath: serverArtifact, binaryName: 'happier-server' });
+    const extractedServer = await extractBinaryFromArtifact({ label: 'self-host-launchd', artifactPath: serverArtifact, binaryName: 'happiest-server' });
 
     t.after(async () => {
       await rm(extractedHstack.extractDir, { recursive: true, force: true });
@@ -104,7 +104,7 @@ test(
     await cp(extractedHstack.binaryPath, hstackPath);
     await chmod(hstackPath, 0o755);
 
-    const serviceName = `happier-server-e2e-${Date.now().toString(36).slice(-6)}`;
+    const serviceName = `happiest-server-e2e-${Date.now().toString(36).slice(-6)}`;
     const serverPort = await reserveLocalhostPort();
     const commonEnv = {
       PATH: process.env.PATH ?? '',

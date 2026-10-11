@@ -111,10 +111,10 @@ test(
     );
 
     const hstackArtifact = join(repoRoot, 'dist', 'release-assets', 'stack', `hstack-v${version}-linux-x64.tar.gz`);
-    const serverArtifact = join(repoRoot, 'dist', 'release-assets', 'server', `happier-server-v${version}-linux-x64.tar.gz`);
+    const serverArtifact = join(repoRoot, 'dist', 'release-assets', 'server', `happiest-server-v${version}-linux-x64.tar.gz`);
 
     const extractedHstack = await extractBinaryFromArtifact({ label: 'self-host-systemd', artifactPath: hstackArtifact, binaryName: 'hstack' });
-    const extractedServer = await extractBinaryFromArtifact({ label: 'self-host-systemd', artifactPath: serverArtifact, binaryName: 'happier-server' });
+    const extractedServer = await extractBinaryFromArtifact({ label: 'self-host-systemd', artifactPath: serverArtifact, binaryName: 'happiest-server' });
 
     t.after(async () => {
       await rm(extractedHstack.extractDir, { recursive: true, force: true });
@@ -132,7 +132,7 @@ test(
       await rm(sandboxDir, { recursive: true, force: true });
     });
 
-    const installRoot = join(sandboxDir, 'opt-happier');
+    const installRoot = join(sandboxDir, 'opt-happiest');
     const binDir = join(sandboxDir, 'bin');
     await mkdir(binDir, { recursive: true });
 
@@ -140,7 +140,7 @@ test(
     await cp(extractedHstack.binaryPath, hstackPath);
     await chmod(hstackPath, 0o755);
 
-    const serviceName = `happier-server-e2e-${Date.now().toString(36).slice(-6)}`;
+    const serviceName = `happiest-server-e2e-${Date.now().toString(36).slice(-6)}`;
     const serverPort = await reserveLocalhostPort();
     const commonEnv = {
       PATH: process.env.PATH ?? '',
