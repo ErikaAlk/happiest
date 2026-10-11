@@ -7,7 +7,7 @@ import type { ActivitySpinnerProps } from './activitySpinnerModel';
 
 export { ICON_CIRCLE_INK_RATIO, iconMatchedSpinnerSize, type ActivitySpinnerProps } from './activitySpinnerModel';
 
-/** COUI's large ring is 26dp; smaller requests get the 18dp ring. */
+/** COUI 标准大号加载圈直径。 */
 const COUI_LARGE_RING_DP = 26;
 
 /** Android: the ColorOS UI kit loading ring. */
@@ -23,6 +23,7 @@ export function ActivitySpinner(props: ActivitySpinnerProps) {
         <CoLoadingNative
             {...environment}
             large={size === 'large' || (typeof size === 'number' && size >= COUI_LARGE_RING_DP)}
+            diameter={typeof size === 'number' ? size : undefined}
             animating={animating && animationEnabled}
             accessibilityText={props.accessibilityLabel}
             importantForAccessibility={props.importantForAccessibility}

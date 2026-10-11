@@ -1,10 +1,12 @@
 package click.erikaalk.happiest.colorosui
 
 import android.content.Context
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import click.erikaalk.coloroskit.components.CoLoading
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.Direction
@@ -14,6 +16,7 @@ import java.util.EnumSet
 @OptimizedComposeProps
 data class CoLoadingProps(
   val large: MutableState<Boolean> = mutableStateOf(false),
+  val diameter: MutableState<Float?> = mutableStateOf(null),
   /** false 时停转但保持可见（离屏行、状态不再上报时）。 */
   val animating: MutableState<Boolean> = mutableStateOf(true),
   override val dark: MutableState<Boolean> = mutableStateOf(false),
@@ -29,6 +32,11 @@ class CoLoadingView(context: Context, appContext: AppContext) :
 
   @Composable
   override fun Hosted(modifier: Modifier) {
-    CoLoading(modifier = modifier, large = props.large.value, animating = props.animating.value)
+    val diameter = props.diameter.value
+    CoLoading(
+      modifier = if (diameter != null) modifier.size(diameter.dp) else modifier,
+      large = props.large.value,
+      animating = props.animating.value
+    )
   }
 }

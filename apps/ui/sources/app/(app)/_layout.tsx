@@ -34,11 +34,11 @@ import {
     resolveNewSessionRoutePresentation,
 } from '@/components/sessions/new/navigation/newSessionPresentation';
 import { useSetting } from '@/sync/domains/state/storage';
+import { useReducedMotionPreference } from '@/hooks/ui/useReducedMotionPreference';
 
 const DESKTOP_PET_OVERLAY_SCREEN_OPTIONS = { headerShown: false } as const;
 // Module-scope so the options callback hands the navigator the same object on every render.
 const NEW_SESSION_TRANSPARENT_CONTENT_STYLE = { backgroundColor: 'transparent' } as const;
-const MAIN_TAB_STACK_SCREEN_OPTIONS = { animation: 'none' } as const;
 const SESSION_COCKPIT_SURFACE_STACK_SCREEN_OPTIONS = {
     animation: 'none',
     headerShown: false,
@@ -127,6 +127,10 @@ const RootLayoutShell = React.memo(function RootLayoutShell(): React.ReactElemen
     // made inside the screen. `useEnhancedSessionWizard` is the whole predicate: `wizardSections` is
     // null whenever it is false (see `buildNewSessionScreenVariantModel`).
     const newSessionVariant = useSetting('useEnhancedSessionWizard') ? 'wizard' : 'simple';
+    const reducedMotion = useReducedMotionPreference();
+    const mainTabScreenOptions = React.useMemo(() => ({
+        animation: reducedMotion ? 'none' as const : 'fade' as const,
+    }), [reducedMotion]);
     const newSessionPresentation = resolveNewSessionRoutePresentation({
         variant: newSessionVariant,
         platformOs: Platform.OS,
@@ -203,7 +207,7 @@ const RootLayoutShell = React.memo(function RootLayoutShell(): React.ReactElemen
             <Stack.Screen
                 name="index"
                 options={{
-                    ...MAIN_TAB_STACK_SCREEN_OPTIONS,
+                    ...mainTabScreenOptions,
                     headerShown: false,
                     headerTitle: '',
                 }}
@@ -212,14 +216,14 @@ const RootLayoutShell = React.memo(function RootLayoutShell(): React.ReactElemen
                 name="inbox/index"
                 options={{
                     ...createInboxStackScreenOptions(t),
-                    ...MAIN_TAB_STACK_SCREEN_OPTIONS,
+                    ...mainTabScreenOptions,
                 }}
             />
             <Stack.Screen
                 name="friends/index"
                 options={{
                     ...createFriendsStackScreenOptions(t),
-                    ...MAIN_TAB_STACK_SCREEN_OPTIONS,
+                    ...mainTabScreenOptions,
                 }}
             />
             <Stack.Screen
@@ -237,7 +241,7 @@ const RootLayoutShell = React.memo(function RootLayoutShell(): React.ReactElemen
             <Stack.Screen
                 name="settings"
                 options={{
-                    ...MAIN_TAB_STACK_SCREEN_OPTIONS,
+                    ...mainTabScreenOptions,
                     headerShown: false,
                 }}
             />

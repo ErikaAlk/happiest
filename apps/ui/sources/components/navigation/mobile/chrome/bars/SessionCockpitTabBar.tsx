@@ -11,7 +11,7 @@ import { resolveAgentIdFromSessionMetadata } from '@happier-dev/agents';
 
 import { SessionCockpitLateralReadout } from '../lateralSwipe/SessionCockpitLateralReadout';
 import { useSessionCockpitLateralNavigation } from '../lateralSwipe/useSessionCockpitLateralNavigation';
-import { CockpitTabBar, type CockpitTabBarTabDefinition } from './CockpitTabBar';
+import { CockpitTabBar, type CockpitTabBarTabDefinition } from '@/components/navigation/mobile/chrome/bars/CockpitTabBar';
 
 type SessionCockpitTabBarProps = Readonly<{
     sessionId: string;

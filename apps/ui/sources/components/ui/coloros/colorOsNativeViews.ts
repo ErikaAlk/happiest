@@ -27,6 +27,8 @@ type EmptyEvent = NativeSyntheticEvent<Record<string, never>>;
 
 const MODULE_NAME = 'HappiestColorOsUi';
 
+export const CoHeaderSurfaceNative = requireNativeView<ColorOsNativeViewProps>(MODULE_NAME, 'CoHeaderSurfaceView');
+
 export type CoSwitchNativeProps = ColorOsNativeViewProps & Readonly<{
     checked: boolean;
     enabled: boolean;
@@ -68,6 +70,7 @@ export const CoProgressBarNative = requireNativeView<CoProgressBarNativeProps>(M
 
 export type CoLoadingNativeProps = ColorOsNativeViewProps & Readonly<{
     large: boolean;
+    diameter?: number;
     /** False keeps the ring visible but stops it turning. */
     animating: boolean;
 }>;
@@ -146,6 +149,7 @@ export type CoButtonNativeProps = ColorOsNativeViewProps & Readonly<{
 export const CoButtonNative = requireNativeView<CoButtonNativeProps>(MODULE_NAME, 'CoButtonView');
 
 export type CoNavigationItem = Readonly<{
+    testID?: string;
     label: string;
     enabled: boolean;
     badgeCount?: number;
@@ -157,12 +161,15 @@ export type CoNavigationItem = Readonly<{
  * the item is selected — then the end accessory's icon.
  */
 export type CoNavigationBarNativeProps = ColorOsNativeViewProps & Readonly<{
+    accessibilityActions?: ReadonlyArray<Readonly<{ name: string; label: string }>>;
+    onAccessibilityAction?: (event: NativeSyntheticEvent<{ actionName: string }>) => void;
     items: ReadonlyArray<CoNavigationItem>;
     selectedIndex: number;
     showLabels: boolean;
     size: 'compact' | 'regular' | 'large';
     /** The end accessory's accessible name; omitted draws no accessory. */
     endAccessoryDescription?: string;
+    reserveAccessorySpace?: boolean;
     /** Not `onSelect`: React Native registers `topSelect` as a bubbling event, and these are direct events. */
     onItemSelect: (event: NativeSyntheticEvent<{ index: number }>) => void;
     onEndAccessory: (event: EmptyEvent) => void;

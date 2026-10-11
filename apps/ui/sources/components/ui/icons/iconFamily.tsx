@@ -8,8 +8,7 @@ import * as React from 'react';
  * migration. Flip it live from the console with `__setIconFamily('hugeicons')`.
  *
  * `hugeicons` is the default under trial. It covers 229 of the app's 231 concepts and draws
- * outline only, so a `fill` request and the two concepts it has no glyph for (`backspace`,
- * `markdown-logo`) fall through to Phosphor either way — see `Icon`.
+ * outline only. Concepts without a HugeIcons glyph use Phosphor — see `Icon`.
  */
 export type IconFamily = 'phosphor' | 'hugeicons';
 

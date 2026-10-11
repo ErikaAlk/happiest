@@ -3,8 +3,8 @@ import type { ActivityIndicatorProps } from 'react-native';
 /**
  * The ActivitySpinner contract shared by `ActivitySpinner.tsx` (iOS, web, desktop) and
  * `ActivitySpinner.android.tsx` (the ColorOS UI kit loading ring). On Android the ring keeps COUI's
- * two sizes and the theme colour: `'large'` or a numeric size of 26 or more is COUI's large ring,
- * anything else the small one, and `color` applies on web and desktop only.
+ * theme colour: numeric sizes specify the ring diameter in dp; `'large'` uses the 26dp ring and
+ * `'small'` uses the 18dp ring. `color` applies on web and desktop only.
  */
 export type ActivitySpinnerProps = Omit<ActivityIndicatorProps, 'size'> & {
     size?: ActivityIndicatorProps['size'] | number;

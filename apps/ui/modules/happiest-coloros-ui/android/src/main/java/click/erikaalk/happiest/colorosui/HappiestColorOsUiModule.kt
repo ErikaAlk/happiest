@@ -39,10 +39,11 @@ class HappiestColorOsUiModule : Module() {
       Events("onPress")
     }
     View(CoNavigationBarView::class) {
-      Events("onItemSelect", "onEndAccessory")
+      Events("onItemSelect", "onEndAccessory", "onAccessibilityAction")
     }
     View(CoTopBarView::class) {
       Events("onBack", "onAction")
     }
+    View(CoHeaderSurfaceView::class)
   }
 }

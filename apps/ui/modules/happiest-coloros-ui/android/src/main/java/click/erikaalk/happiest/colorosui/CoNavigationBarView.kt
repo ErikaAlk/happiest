@@ -5,6 +5,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import click.erikaalk.coloroskit.components.CoAccessory
 import click.erikaalk.coloroskit.components.CoFloatingNavigationBar
 import click.erikaalk.coloroskit.components.CoNavBadge
@@ -25,6 +30,12 @@ class CoNavItemRecord : Record {
   /** 数字徽标；与 [badgeDot] 都不传时没有徽标。 */
   @Field val badgeCount: Int? = null
   @Field val badgeDot: Boolean = false
+  @Field val testID: String? = null
+}
+
+class CoNavActionRecord : Record {
+  @Field val name: String = ""
+  @Field val label: String = ""
 }
 
 @OptimizedComposeProps
@@ -36,6 +47,8 @@ data class CoNavigationBarProps(
   val size: MutableState<String> = mutableStateOf("regular"),
   /** 右侧附属圆钮的读屏名称；不传时没有附属圆钮。 */
   val endAccessoryDescription: MutableState<String?> = mutableStateOf(null),
+  val reserveAccessorySpace: MutableState<Boolean> = mutableStateOf(false),
+  val accessibilityActions: MutableState<List<CoNavActionRecord>> = mutableStateOf(emptyList()),
   override val dark: MutableState<Boolean> = mutableStateOf(false),
   override val fontScale: MutableState<Float> = mutableStateOf(1f),
   override val reduceMotion: MutableState<Boolean> = mutableStateOf(false),
@@ -54,6 +67,7 @@ class CoNavigationBarView(context: Context, appContext: AppContext) :
   // 不叫 onSelect：topSelect 在 React Native 里是冒泡事件，同名的直达事件会让视图配置报错
   private val onItemSelect by EventDispatcher<Map<String, Int>>()
   private val onEndAccessory by EventDispatcher<Map<String, Any>>()
+  private val onAccessibilityAction by EventDispatcher<Map<String, String>>()
 
   @Composable
   override fun Hosted(modifier: Modifier) {
@@ -62,6 +76,15 @@ class CoNavigationBarView(context: Context, appContext: AppContext) :
       CoNavItem(
         label = record.label,
         enabled = record.enabled,
+        modifier = Modifier.semantics {
+          record.testID?.let { testTag = it }
+          customActions = props.accessibilityActions.value.map { action ->
+            CustomAccessibilityAction(action.label) {
+              onAccessibilityAction(mapOf("actionName" to action.name))
+              true
+            }
+          }
+        },
         badge = when {
           record.badgeCount != null -> CoNavBadge.Count(record.badgeCount, contentDescription = "")
           record.badgeDot -> CoNavBadge.Dot(contentDescription = "")
@@ -74,12 +97,14 @@ class CoNavigationBarView(context: Context, appContext: AppContext) :
       items = items,
       selectedIndex = props.selectedIndex.value,
       onSelect = { onItemSelect(mapOf("index" to it)) },
-      modifier = modifier,
+      modifier = modifier.semantics { testTagsAsResourceId = true },
       endAccessory = accessoryDescription?.let { description ->
         CoAccessory(description, onClick = { onEndAccessory(emptyMap()) }) { tint -> ReactChild(records.size * 2, tint) }
       },
       // 点当前项也派发：JavaScript 用它回到该页签的根页面
       dispatchWhenAlreadySelected = true,
+      compactItems = true,
+      reserveAccessorySpace = props.reserveAccessorySpace.value,
       showLabels = props.showLabels.value,
       size = when (props.size.value) {
         "compact" -> CoNavBarSize.Compact

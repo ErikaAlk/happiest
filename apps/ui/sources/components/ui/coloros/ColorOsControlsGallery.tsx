@@ -111,7 +111,7 @@ export function ColorOsControlsGallery() {
 
     return (
         <ItemList testID="coloros-gallery">
-            <ItemGroup title="Switch">
+            <ItemGroup title="开关">
                 <Item
                     title={t('settingsAccount.analytics')}
                     detail={analytics ? t('common.on') : t('common.off')}
@@ -155,7 +155,7 @@ export function ColorOsControlsGallery() {
                 />
             </ItemGroup>
 
-            <ItemGroup title="ActivitySpinner">
+            <ItemGroup title="加载指示器">
                 <View style={styles.row}>
                     <ActivitySpinner testID="coloros-gallery:spinner:small" size="small" animationEnabled={spinning} accessibilityLabel={t('common.loading')} />
                     <ActivitySpinner testID="coloros-gallery:spinner:large" size="large" animationEnabled={spinning} />
@@ -168,7 +168,7 @@ export function ColorOsControlsGallery() {
                 />
             </ItemGroup>
 
-            <ItemGroup title="MeterBar">
+            <ItemGroup title="进度条">
                 <View style={styles.meters}>
                     <MeterBar testID="coloros-gallery:meter:neutral" tone="neutral" fillFraction={0.35} caption="35%" progressAccessibilityLabel={t('common.loading')} />
                     <MeterBar testID="coloros-gallery:meter:warning" tone="warning" fillFraction={0.72} height={6} />
@@ -176,7 +176,7 @@ export function ColorOsControlsGallery() {
                 </View>
             </ItemGroup>
 
-            <ItemGroup title="TabBadge">
+            <ItemGroup title="通知标记">
                 <View style={styles.row}>
                     <View style={styles.badgeAnchor}><TabBadge testID="coloros-gallery:badge:dot" variant="dot" /></View>
                     <View style={styles.badgeAnchor}><TabBadge testID="coloros-gallery:badge:count" variant="count" value={7} /></View>
@@ -185,7 +185,7 @@ export function ColorOsControlsGallery() {
                 </View>
             </ItemGroup>
 
-            <ItemGroup title="EmptyState">
+            <ItemGroup title="空状态">
                 <EmptyState
                     testID="coloros-gallery:empty"
                     icon={<Icon name="check-circle" size={29} color={theme.colors.state.success.foreground} />}
@@ -195,12 +195,12 @@ export function ColorOsControlsGallery() {
                 />
             </ItemGroup>
 
-            <ItemGroup title="Dialog" footer={lastDialogResult ?? undefined}>
+            <ItemGroup title="对话框" footer={lastDialogResult ?? undefined}>
                 <Item testID="coloros-gallery:dialog:confirm" title={t('common.delete')} onPress={showConfirm} />
                 <Item testID="coloros-gallery:dialog:alert" title={t('common.info')} onPress={showAlert} />
             </ItemGroup>
 
-            <ItemGroup title="RoundButton" footer={lastDialogResult ?? undefined}>
+            <ItemGroup title="圆角按钮" footer={lastDialogResult ?? undefined}>
                 <View style={styles.buttons}>
                     <RoundButton testID="coloros-gallery:button:primary" title={t('common.save')} onPress={() => setLastDialogResult(t('common.save'))} />
                     <View style={styles.buttonRow}>
@@ -238,7 +238,7 @@ export function ColorOsControlsGallery() {
                 />
             </ItemGroup>
 
-            <ItemGroup title="CheckboxMark">
+            <ItemGroup title="复选标记">
                 <View style={styles.row}>
                     <Pressable
                         testID="coloros-gallery:checkbox:chip"
@@ -263,7 +263,7 @@ export function ColorOsControlsGallery() {
                 </View>
             </ItemGroup>
 
-            <ItemGroup title="Slider" footer={`${sliderPercent}%`}>
+            <ItemGroup title="滑块" footer={`${sliderPercent}%`}>
                 <View style={styles.slider}>
                     <Slider
                         testID="coloros-gallery:slider"
@@ -276,13 +276,13 @@ export function ColorOsControlsGallery() {
                 </View>
             </ItemGroup>
 
-            <ItemGroup title="TabBar" footer={activeTab}>
+            <ItemGroup title="底栏" footer={activeTab}>
                 <TabBar activeTab={activeTab} onTabPress={setActiveTab} trailingAccessory={tabAccessory} />
             </ItemGroup>
 
             <ColorOsNativeOnlyDemos onResult={setLastDialogResult} />
 
-            <ItemGroup title="FAB">
+            <ItemGroup title="悬浮按钮">
                 <View style={styles.fabArea}>
                     <FAB onPress={() => setLastDialogResult(t('common.add'))} />
                 </View>

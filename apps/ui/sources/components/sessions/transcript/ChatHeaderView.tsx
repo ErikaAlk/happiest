@@ -16,6 +16,9 @@ import { resolveOptionalSessionScreenTestId, useSessionScreenTestIdsEnabled } fr
 import { resolveChatHeaderContentInsets } from './chatHeaderLayout';
 import { Icon } from '@/components/ui/icons/Icon';
 import { resolveSessionHeaderActionTargetPx } from '@/components/sessions/actions/sessionHeaderIconMetrics';
+import { ColorOsHeaderSurface } from '@/components/ui/coloros/ColorOsHeaderSurface';
+import { CoTokens } from '@/theme/coloros/tokens.g';
+import { Modal } from '@/modal';
 
 
 /** The gutter control's tap target, matching every other header action. */
@@ -130,7 +133,7 @@ export const ChatHeaderView = React.memo(function ChatHeaderView({
     };
 
     return (
-        <View style={[styles.container, { paddingTop: includeTopInset ? insets.top : 0, backgroundColor: theme.colors.chrome.header.background }]}>
+        <View style={[styles.container, { paddingTop: includeTopInset ? insets.top : 0, backgroundColor: Platform.OS === 'android' ? 'transparent' : theme.colors.chrome.header.background }]}>
             <View
                 onLayout={handleWrapperLayout}
                 style={[styles.contentWrapper, constrainWidth ? null : { alignItems: 'stretch' }]}
@@ -147,6 +150,7 @@ export const ChatHeaderView = React.memo(function ChatHeaderView({
                     } : null,
                 ]}>
                 {showBackButton ? (
+                    <ColorOsHeaderSurface style={styles.backSurface} testID={resolveOptionalSessionScreenTestId(sessionScreenTestIdsEnabled, 'session-header-surface:back')}>
                     <Pressable
                         onPress={handleBackPress}
                         testID={backButtonTestId}
@@ -165,8 +169,18 @@ export const ChatHeaderView = React.memo(function ChatHeaderView({
                             color={theme.colors.chrome.header.foreground}
                         />
                     </Pressable>
+                    </ColorOsHeaderSurface>
                 ) : null}
 
+                <ColorOsHeaderSurface style={styles.identitySurface} testID={resolveOptionalSessionScreenTestId(sessionScreenTestIdsEnabled, 'session-header-surface:identity')}>
+                <Pressable
+                    disabled={Platform.OS !== 'android'}
+                    accessibilityRole={Platform.OS === 'android' ? 'button' : undefined}
+                    accessibilityLabel={Platform.OS === 'android' ? t('sessionInfo.title') : undefined}
+                    testID={resolveOptionalSessionScreenTestId(sessionScreenTestIdsEnabled, 'session-header-identity-details')}
+                    onPress={() => Modal.alert(t('sessionInfo.title'), [title, ...(badges ?? []), subtitle].filter(Boolean).join('\n\n'))}
+                    style={styles.identityContent}
+                >
                 {leadingIdentity ? (
                     <View style={styles.avatarLeading} testID={avatarButtonTestId}>
                         {leadingIdentity}
@@ -236,11 +250,13 @@ export const ChatHeaderView = React.memo(function ChatHeaderView({
                         </Text>
                     )}
                 </View>
+                </Pressable>
+                </ColorOsHeaderSurface>
 
                 {rightElement ? (
-                    <View style={styles.rightElementContainer}>
+                    <ColorOsHeaderSurface style={styles.rightElementContainer} testID={resolveOptionalSessionScreenTestId(sessionScreenTestIdsEnabled, 'session-header-surface:actions')}>
                         {rightElement}
-                    </View>
+                    </ColorOsHeaderSurface>
                 ) : null}
 
                 {gutterHoldsElement ? null : gutterElement}
@@ -287,7 +303,30 @@ const styles = StyleSheet.create(() => ({
         width: '100%',
     },
     backButton: {
-        marginRight: 8,
+        marginRight: Platform.OS === 'android' ? 0 : 8,
+    },
+    backSurface: {
+        ...(Platform.OS === 'android' ? { marginRight: CoTokens.topBar.buttonGap } : {}),
+    },
+    identitySurface: {
+        flex: 1,
+        minWidth: 0,
+        flexDirection: 'row',
+        alignItems: 'center',
+        ...(Platform.OS === 'android' ? {
+            minHeight: resolveSessionHeaderActionTargetPx(),
+            marginRight: CoTokens.topBar.buttonGap,
+        } : {}),
+    },
+    identityContent: {
+        flex: 1,
+        minWidth: 0,
+        flexDirection: 'row',
+        alignItems: 'center',
+        ...(Platform.OS === 'android' ? {
+            minHeight: resolveSessionHeaderActionTargetPx(),
+            paddingHorizontal: CoTokens.floatingNavBar.padding,
+        } : {}),
     },
     avatarLeading: {
         marginRight: 10,
@@ -340,6 +379,8 @@ const styles = StyleSheet.create(() => ({
     // chrome, 8px radius. A bordered capsule in the header read as a different species from every
     // other badge in the product.
     badge: {
+        flexShrink: 1,
+        minWidth: 0,
         borderWidth: 0,
         borderRadius: 8,
         paddingHorizontal: 8,
@@ -352,5 +393,6 @@ const styles = StyleSheet.create(() => ({
     rightElementContainer: {
         flexDirection: 'row',
         alignItems: 'center',
+        ...(Platform.OS === 'android' ? { minHeight: resolveSessionHeaderActionTargetPx() } : {}),
     },
 }));

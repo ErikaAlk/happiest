@@ -69,7 +69,7 @@ export type CockpitTabBarTabDefinition<TSurface extends string> = Readonly<{
     badge?: CockpitTabBadge;
 }>;
 
-type CockpitTabBarProps<TSurface extends string> = Readonly<{
+export type CockpitTabBarProps<TSurface extends string> = Readonly<{
     activeSurface: TSurface;
     barTestId: string;
     tabs: readonly CockpitTabBarTabDefinition<TSurface>[];

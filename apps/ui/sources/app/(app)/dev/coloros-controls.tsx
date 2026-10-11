@@ -6,7 +6,7 @@ import { ColorOsControlsGallery } from '@/components/ui/coloros/ColorOsControlsG
 export default function ColorOsControlsDevScreen() {
     return (
         <>
-            <Stack.Screen options={{ headerTitle: 'ColorOS controls' }} />
+            <Stack.Screen options={{ headerTitle: 'ColorOS 控件' }} />
             <ColorOsControlsGallery />
         </>
     );

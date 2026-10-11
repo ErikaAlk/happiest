@@ -36,12 +36,13 @@ class CoFloatingButtonView(context: Context, appContext: AppContext) :
     if (props.hasIcon.value) {
       CoFloatingButton(
         onClick = { onPress(emptyMap()) },
+        modifier = modifier,
         enabled = props.enabled.value,
         contentDescription = description,
         icon = { tint -> ReactChild(0, tint) }
       )
     } else {
-      CoFloatingButton(onClick = { onPress(emptyMap()) }, enabled = props.enabled.value, contentDescription = description)
+      CoFloatingButton(onClick = { onPress(emptyMap()) }, modifier = modifier, enabled = props.enabled.value, contentDescription = description)
     }
   }
 }
