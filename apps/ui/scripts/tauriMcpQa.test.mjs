@@ -4,8 +4,26 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { once } from 'node:events';
+
+import { spawnLoggedProcess } from './tauriMcpQa.mjs';
 
 const execFileAsync = promisify(execFile);
+
+test('tauriMcpQa starts the installed npm launcher on the current platform', async () => {
+  const child = spawnLoggedProcess({
+    label: 'npm-launcher',
+    command: 'npx',
+    args: ['--version'],
+    cwd: dirname(fileURLToPath(import.meta.url)),
+    env: process.env,
+  });
+  let output = '';
+  child.stdout.on('data', (chunk) => { output += chunk.toString(); });
+  const [code] = await once(child, 'close');
+  assert.equal(code, 0);
+  assert.match(output.trim(), /^\d+\.\d+\.\d+$/);
+});
 
 test('tauriMcpQa exposes the combined Tauri + MCP launch plan', async () => {
   const scriptsDir = dirname(fileURLToPath(import.meta.url));

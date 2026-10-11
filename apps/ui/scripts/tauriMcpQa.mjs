@@ -10,6 +10,7 @@ import { buildStackTauriDevProcessInvocation } from '../../stack/scripts/utils/d
 import { waitForExpoMetroRunning } from '../../stack/scripts/utils/expo/expo.mjs';
 import { getRootDir } from '../../stack/scripts/utils/paths/paths.mjs';
 import { getStackRuntimeStatePath, readStackRuntimeStateFile } from '../../stack/scripts/utils/stack/runtime_state.mjs';
+import { resolveCommandInvocation } from '../../stack/scripts/utils/process/resolveCommandInvocation.mjs';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const packageRoot = dirname(scriptDir);
@@ -50,12 +51,14 @@ function flushPrefixed(stream, prefix, state) {
   state.buffer = '';
 }
 
-function spawnLoggedProcess({ label, command, args, cwd, env }) {
-  const child = spawn(command, args, {
+export function spawnLoggedProcess({ label, command, args, cwd, env }) {
+  const invocation = resolveCommandInvocation({ command, args, env });
+  const child = spawn(invocation.command, invocation.args, {
     cwd,
     env,
     stdio: ['ignore', 'pipe', 'pipe'],
     shell: false,
+    windowsVerbatimArguments: invocation.windowsVerbatimArguments,
     detached: process.platform !== 'win32',
   });
 

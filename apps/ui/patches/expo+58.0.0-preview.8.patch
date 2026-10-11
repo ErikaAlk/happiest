@@ -1,0 +1,74 @@
+diff --git a/node_modules/expo/types/react-native-web.d.ts b/node_modules/expo/types/react-native-web.d.ts
+--- a/node_modules/expo/types/react-native-web.d.ts
++++ b/node_modules/expo/types/react-native-web.d.ts
+@@ -41,16 +41,6 @@
+     backgroundClip?: string;
+-    /** @platform web */
+-    backgroundImage?: string;
+     /** @platform web */
+     backgroundOrigin?: 'border-box' | 'content-box' | 'padding-box';
+-    /** @platform web */
+-    backgroundPosition?: string;
+-    /** @platform web */
+-    backgroundRepeat?: string;
+-    /** @platform web */
+-    backgroundSize?: string;
+-    /** @platform web */
+-    boxSizing?: string;
+     /** @platform web */
+     clip?: string;
+     /** @platform web */
+@@ -104,10 +94,8 @@
+-    userSelect?: string;
++    userSelect?: RN.TextStyle['userSelect'];
+     /** @platform web */
+     visibility?: string;
+     /** @platform web */
+     willChange?: string;
+-    /** @platform web */
+-    position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
+   }
+ 
+   /**
+@@ -160,23 +148,7 @@
+     backgroundClip?: string;
+-    /** @platform web */
+-    backgroundImage?: string;
+     /** @platform web */
+     backgroundOrigin?: 'border-box' | 'content-box' | 'padding-box';
+-    /** @platform web */
+-    backgroundPosition?: string;
+-    /** @platform web */
+-    backgroundRepeat?: string;
+-    /** @platform web */
+-    backgroundSize?: string;
+-    /** @platform web */
+-    boxShadow?: string;
+-    /** @platform web */
+-    boxSizing?: string;
+     /** @platform web */
+     clip?: string;
+-    /** @platform web */
+-    cursor?: string;
+-    /** @platform web */
+-    filter?: string;
+     /** @platform web */
+     gridAutoColumns?: string;
+@@ -198,8 +170,6 @@
+     outline?: string;
+-    /** @platform web */
+-    outlineColor?: string;
+     /** @platform web */
+     overflowX?: string;
+     /** @platform web */
+     overflowY?: string;
+     /** @platform web */
+@@ -223,8 +193,6 @@
+     visibility?: string;
+     /** @platform web */
+     willChange?: string;
+-    /** @platform web */
+-    position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
+     /** @platform web */
+     fontFeatureSettings?: string;
+     /** @platform web */
