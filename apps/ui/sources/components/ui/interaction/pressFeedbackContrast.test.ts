@@ -140,7 +140,7 @@ describe('resolvePressFeedbackSurfaceTokenId', () => {
         }
     });
 
-    it('leaves the pressed row fill to the platform ripple on Android and web', () => {
+    it('uses an overlay on iOS and native ripple on Android including cards', () => {
         expect(resolvePressFeedbackSurfaceTokenId({ ...base, tone: 'row', platform: 'ios', pressed: true }))
             .toBe('surface.pressedOverlay');
         expect(resolvePressFeedbackSurfaceTokenId({ ...base, tone: 'row', platform: 'android', pressed: true }))
@@ -149,7 +149,7 @@ describe('resolvePressFeedbackSurfaceTokenId', () => {
             .toBeNull();
     });
 
-    it('keeps a selected row selected while it is pressed on Android and web', () => {
+    it('keeps the selected card fill beneath its Android ripple', () => {
         expect(resolvePressFeedbackSurfaceTokenId({
             ...base, tone: 'row', platform: 'android', pressed: true, selected: true,
         })).toBe('surface.selected');

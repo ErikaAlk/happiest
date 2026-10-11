@@ -103,7 +103,7 @@ export const DirectBrowseCandidatesList = React.memo(function DirectBrowseCandid
 
             {props.loading ? (
                 <View style={styles.loadingRow}>
-                    <ActivitySpinner size="small" color={theme.colors.text.secondary} />
+                    <ActivitySpinner size="large" color={theme.colors.text.secondary} />
                 </View>
             ) : props.error ? (
                 <View>

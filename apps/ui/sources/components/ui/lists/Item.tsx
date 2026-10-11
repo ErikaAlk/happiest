@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Pressable, StyleProp, ViewStyle, TextStyle, Platform, type AccessibilityRole, type AccessibilityState, type PressableProps, type TextProps } from 'react-native';
+import { View, Pressable, StyleSheet as NativeStyleSheet, StyleProp, ViewStyle, TextStyle, Platform, type AccessibilityRole, type AccessibilityState, type PressableProps, type TextProps } from 'react-native';
 import { Typography } from '@/constants/Typography';
 import { Modal } from '@/modal';
 import { t } from '@/text';
@@ -33,6 +33,7 @@ import {
 import { setClipboardStringSafe } from '@/utils/ui/clipboard';
 import { Icon } from '@/components/ui/icons/Icon';
 import { ICON_LABEL_OPTICAL_NUDGE_STYLE } from '@/components/ui/icons/iconOpticalAlignment';
+import { CoTokens } from '@/theme/coloros/tokens.g';
 
 function resizeItemIconForDensity(icon: React.ReactNode, iconSize: number): React.ReactNode {
     if (!React.isValidElement(icon) || icon.type === React.Fragment) {
@@ -163,6 +164,7 @@ export interface ItemProps {
  */
 const MENU_ROW_HEIGHT_STYLE = { minHeight: MENU_ROW_METRICS.minHeightPx } as const;
 const MENU_ROW_PADDING_STYLE = { paddingVertical: MENU_ROW_METRICS.paddingVerticalPx } as const;
+const RIGHT_SECTION_MARGIN = 8;
 
 const stylesheet = StyleSheet.create((theme, runtime) => ({
     container: {
@@ -282,7 +284,7 @@ const stylesheet = StyleSheet.create((theme, runtime) => ({
         flexDirection: 'row',
         alignItems: 'center',
         maxWidth: '50%',
-        marginLeft: 8,
+        marginLeft: RIGHT_SECTION_MARGIN,
     },
     splitPressable: {
         flex: 1,
@@ -414,6 +416,7 @@ export const Item = React.memo<ItemProps>((props) => {
     
     const longPressConsumedRef = React.useRef(false);
     const [isSplitPrimaryPressed, setIsSplitPrimaryPressed] = React.useState(false);
+    const [rightAccessoryWidth, setRightAccessoryWidth] = React.useState(0);
 
     // Handle long press for copy functionality
     const handlePressIn = React.useCallback(() => {
@@ -495,7 +498,7 @@ export const Item = React.memo<ItemProps>((props) => {
         && (onPress || onDoublePress),
     );
     const showSelectedBackground = !!selected && ((selectionContext?.selectableItemCount ?? 2) > 1);
-    const groupCornerRadius = Platform.select({ ios: 10, default: 16 });
+    const groupCornerRadius = isWeb ? CoTokens.radius.l : CoTokens.list.cardRadius;
 
     const resolvedDensity = useResolvedItemDensity(density);
     const titleColor = destructive ? styles.titleDestructive : (selected ? styles.titleSelected : styles.titleNormal);
@@ -813,15 +816,24 @@ export const Item = React.memo<ItemProps>((props) => {
     const splitRightElementOutsidePressable = Boolean(
         isInteractive && rightElementOutsidePressable && rightAccessory,
     );
+    const androidCardRippleStyle = isAndroid && rowPosition !== null
+        ? {
+            ...getItemGroupRowCornerRadii({ hasBackground: true, position: rowPosition, radius: groupCornerRadius }),
+            overflow: 'hidden' as const,
+        }
+        : null;
+    const fullWidthSplitRipple = isAndroid && rowPosition !== null && splitRightElementOutsidePressable;
+    const splitContainerStyle: ViewStyle | null | undefined = fullWidthSplitRipple ? NativeStyleSheet.flatten([containerCore, style, pressableStyle]) : null;
+    const splitLeftPadding = splitContainerStyle?.paddingLeft ?? splitContainerStyle?.paddingHorizontal ?? splitContainerStyle?.padding ?? 0;
+    const splitRightPadding = splitContainerStyle?.paddingRight ?? splitContainerStyle?.paddingHorizontal ?? splitContainerStyle?.padding ?? 0;
+    // 主 Pressable 延伸到右侧操作下方，操作仍作为上层兄弟节点独立接收触摸。
+    const rightAccessoryOverlap = fullWidthSplitRipple ? rightAccessoryWidth + RIGHT_SECTION_MARGIN : 0;
 
     const resolveInteractiveRowStyle = React.useCallback((pressed: boolean) => {
         // `isHovered` is only ever set on web (the hover handlers are wired there only).
         const backgroundColor = pressFeedback.resolveBackgroundColor({
             pressed,
-            // Web/Android normally let their Pressable paint its own ripple. A split row's
-            // primary Pressable cannot paint beneath its sibling action, so the shared parent
-            // receives the same token while the press is held.
-            hovered: isHovered || (pressed && splitRightElementOutsidePressable),
+            hovered: isHovered || (pressed && splitRightElementOutsidePressable && (isWeb || (isAndroid && rowPosition === null))),
         })
             ?? 'transparent';
 
@@ -845,6 +857,7 @@ export const Item = React.memo<ItemProps>((props) => {
     }, [
         disabled,
         groupCornerRadius,
+        isAndroid,
         isHovered,
         isWeb,
         loading,
@@ -857,7 +870,12 @@ export const Item = React.memo<ItemProps>((props) => {
     if (splitRightElementOutsidePressable) {
         return (
             <>
-                <View style={[containerCore, style, resolveInteractiveRowStyle(isSplitPrimaryPressed)]}>
+                <View style={[
+                    containerCore,
+                    style,
+                    resolveInteractiveRowStyle(isSplitPrimaryPressed),
+                    fullWidthSplitRipple ? { paddingLeft: 0, paddingRight: 0 } : null,
+                ]}>
                     <Pressable
                         ref={focusRef}
                         testID={testID}
@@ -893,15 +911,25 @@ export const Item = React.memo<ItemProps>((props) => {
                             ? ({ 'aria-expanded': accessibilityState.expanded } as Record<string, unknown>)
                             : undefined)}
                         disabled={disabled || loading}
-                        style={[styles.splitPressable, isWeb ? WEB_FOCUS_OUTLINE_RESET : null]}
-                        android_ripple={(isAndroid || isWeb) ? {
+                        style={[
+                            styles.splitPressable,
+                            isWeb ? WEB_FOCUS_OUTLINE_RESET : null,
+                            fullWidthSplitRipple ? { marginRight: -rightAccessoryOverlap } : null,
+                            androidCardRippleStyle,
+                        ]}
+                        android_ripple={isWeb || isAndroid ? {
                             color: theme.colors.surface.ripple,
                             borderless: false,
                             foreground: true,
                         } : undefined}
                     >
-                        <View style={[styles.splitPressableInner, containerPadding]}>
+                        <View style={[
+                            styles.splitPressableInner,
+                            containerPadding,
+                            fullWidthSplitRipple ? { paddingLeft: splitLeftPadding } : null,
+                        ]}>
                             {renderRowContent({ includeRightAccessory: false })}
+                            {fullWidthSplitRipple ? <View style={{ width: rightAccessoryOverlap }} /> : null}
                         </View>
                         {isFocusRingMounted ? (
                             <FocusRing
@@ -913,7 +941,8 @@ export const Item = React.memo<ItemProps>((props) => {
                         ) : null}
                     </Pressable>
                     <View
-                        style={styles.rightSection}
+                        style={[styles.rightSection, fullWidthSplitRipple ? { paddingRight: splitRightPadding } : null]}
+                        onLayout={fullWidthSplitRipple ? (event) => setRightAccessoryWidth(event.nativeEvent.layout.width) : undefined}
                         pointerEvents={disabled || loading ? 'none' : 'auto'}
                         accessibilityElementsHidden={disabled || loading}
                         importantForAccessibility={disabled || loading ? 'no-hide-descendants' : 'auto'}
@@ -967,8 +996,8 @@ export const Item = React.memo<ItemProps>((props) => {
                     ? ({ 'aria-expanded': accessibilityState.expanded } as Record<string, unknown>)
                     : undefined)}
                 disabled={disabled || loading}
-                style={({ pressed }) => resolveInteractiveRowStyle(pressed)}
-                android_ripple={(isAndroid || isWeb) ? {
+                style={({ pressed }) => [resolveInteractiveRowStyle(pressed), androidCardRippleStyle]}
+                android_ripple={isWeb || isAndroid ? {
                     color: theme.colors.surface.ripple,
                     borderless: false,
                     foreground: true

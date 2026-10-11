@@ -11,6 +11,7 @@ import {
     type ListViewToken,
     type ViewInstance,
 } from 'react-native';
+import { ScrollView as GestureHandlerScrollView } from 'react-native-gesture-handler';
 import { SessionListVirtualizedList } from '@/components/ui/lists/flashListCompat/SessionListVirtualizedList';
 import { usePathname, useRouter } from 'expo-router';
 import { useNavigateToSession } from '@/hooks/session/useNavigateToSession';
@@ -2407,6 +2408,7 @@ export const SessionsListContent = React.memo(function SessionsListContent(props
         />
     ) : (
         <SessionListVirtualizedList
+            renderScrollComponent={Platform.OS === 'android' ? GestureHandlerScrollView : undefined}
             ref={virtualizedListRef as never}
             data={renderedListItems as any}
             renderItem={renderVirtualizedItem as any}

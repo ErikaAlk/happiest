@@ -1841,6 +1841,7 @@ const SessionItemContent = React.memo(
                 <Swipeable
                     ref={swipeableRef}
                     renderRightActions={renderRightActions}
+                    childrenContainerStyle={{ backgroundColor: theme.colors.surface.base }}
                     overshootRight={false}
                     enabled={!mutatingSession}
                 >

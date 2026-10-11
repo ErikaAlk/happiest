@@ -30,8 +30,7 @@ export const PRESS_FEEDBACK_SURFACE_TOKEN_IDS = [
 export type PressFeedbackSurfaceTokenId = typeof PRESS_FEEDBACK_SURFACE_TOKEN_IDS[number];
 
 /**
- * `row` is a full-bleed list row: iOS paints its own overlay, Android and web let the ripple carry
- * the press, and a selected row outranks a hover so it does not flicker under the pointer.
+ * `row` 在 iOS 按压时填充整行，Android 与网页使用 ripple。
  * `control` is a bounded button: it always paints its own press, and hover outranks selection
  * because a toggled-on control still has to acknowledge the pointer.
  */
@@ -72,7 +71,6 @@ export function resolvePressFeedbackSurfaceTokenId(params: Readonly<{
     if (params.disabled) return null;
 
     if (params.tone === 'row') {
-        // Android and web paint the press with a ripple, so a second fill would double it up.
         if (params.pressed && params.platform === 'ios') return 'surface.pressedOverlay';
         if (params.selected) return 'surface.selected';
         if (params.hovered) return 'surface.pressed';

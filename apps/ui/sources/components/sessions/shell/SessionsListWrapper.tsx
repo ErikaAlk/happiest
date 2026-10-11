@@ -250,7 +250,7 @@ const SessionsListWrapperContent = React.memo((props: { pathname: string; surfac
                 {storageChrome}
                 <View style={styles.loadingContainerWrapper}>
                     <View style={styles.loadingContainer}>
-                        <ActivitySpinner size="small" color={theme.colors.text.secondary} />
+                        <ActivitySpinner size="large" color={theme.colors.text.secondary} />
                     </View>
                 </View>
             </View>
