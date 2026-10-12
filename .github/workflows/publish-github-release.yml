@@ -225,7 +225,7 @@ jobs:
             --prerelease "$INPUT_PRERELEASE" \
             --rolling-tag "$INPUT_ROLLING_TAG" \
             --generate-notes "$INPUT_GENERATE_NOTES" \
-            --notes "${NOTES}" \
+            --notes="${NOTES}" \
             --assets "${ASSETS}" \
             --assets-dir "${assets_dir}" \
             --clobber "$INPUT_CLOBBER" \

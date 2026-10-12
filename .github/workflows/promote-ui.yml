@@ -487,7 +487,7 @@ jobs:
           node scripts/pipeline/expo/ota-update.mjs \
             --phase publish --environment "$DEPLOY_ENVIRONMENT" --platform android \
             --input-dir "$RUNNER_TEMP/prepared-ota/android" --expected-source-sha "$RELEASE_SHA" \
-            --message "$UPDATE_MESSAGE" --eas-cli-version "$EAS_CLI_VERSION"
+            --message="$UPDATE_MESSAGE" --eas-cli-version "$EAS_CLI_VERSION"
       - name: Publish iOS OTA from validated bytes
         if: inputs.expo_action == 'ota' || inputs.expo_action == 'full'
         env:
@@ -499,7 +499,7 @@ jobs:
           node scripts/pipeline/expo/ota-update.mjs \
             --phase publish --environment "$DEPLOY_ENVIRONMENT" --platform ios \
             --input-dir "$RUNNER_TEMP/prepared-ota/ios" --expected-source-sha "$RELEASE_SHA" \
-            --message "$UPDATE_MESSAGE" --eas-cli-version "$EAS_CLI_VERSION"
+            --message="$UPDATE_MESSAGE" --eas-cli-version "$EAS_CLI_VERSION"
       - name: Promote exact release SHA to deploy branch
         if: inputs.deploy_web
         id: promote_ref

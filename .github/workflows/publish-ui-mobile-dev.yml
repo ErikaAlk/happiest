@@ -231,7 +231,7 @@ jobs:
           node scripts/pipeline/expo/ota-update.mjs \
             --phase publish --environment dev --platform android \
             --input-dir "$RUNNER_TEMP/prepared-ota/android" --expected-source-sha "$SOURCE_SHA" \
-            --message "$RELEASE_MESSAGE" --eas-cli-version "$EAS_CLI_VERSION"
+            --message="$RELEASE_MESSAGE" --eas-cli-version "$EAS_CLI_VERSION"
       - name: Publish iOS OTA from validated bytes
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
@@ -242,7 +242,7 @@ jobs:
           node scripts/pipeline/expo/ota-update.mjs \
             --phase publish --environment dev --platform ios \
             --input-dir "$RUNNER_TEMP/prepared-ota/ios" --expected-source-sha "$SOURCE_SHA" \
-            --message "$RELEASE_MESSAGE" --eas-cli-version "$EAS_CLI_VERSION"
+            --message="$RELEASE_MESSAGE" --eas-cli-version "$EAS_CLI_VERSION"
 
   publish:
     needs: [release_actor_guard]
