@@ -2,8 +2,8 @@
   "entries": [
     {
       "version": 2,
-      "release": "0.1.6",
-      "date": "2026-10-11",
+      "release": "0.1.7",
+      "date": "2026-10-12",
       "summary": "",
       "changes": [
         "Windows 后台服务安装会查证实际创建的计划任务，避免安装命令返回成功后服务仍未安装。",

@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## Release 0.1.6 - 2026-10-11
+## Release 0.1.7 - 2026-10-12
 
 <!-- happier-release-note-projections:v1
 {
